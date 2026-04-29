@@ -1,0 +1,148 @@
+version: 2
+
+models:
+
+  # ── Staging ────────────────────────────────────────────────────────────────
+
+  - name: stg_arbeitnow_jobs
+    description: >
+      Current Arbeitnow job postings from the Silver layer.
+      Only is_current=true records. Schema already normalized by Bronze ingestor.
+    columns:
+      - name: job_id
+        description: Unique job identifier (renamed from slug in Bronze)
+        tests:
+          - not_null
+          - unique
+      - name: title
+        description: Job title, whitespace stripped by Pydantic
+        tests:
+          - not_null
+      - name: company
+        description: Company name (renamed from company_name in Bronze)
+        tests:
+          - not_null
+      - name: source
+        description: Always 'arbeitnow' for this model
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['arbeitnow']
+
+  - name: stg_ba_jobs
+    description: >
+      Current Bundesagentur für Arbeit job postings from the Silver layer.
+      Only is_current=true records. German field names translated to English in Bronze.
+      arbeitsort nested dict flattened into location, zip_code, state.
+    columns:
+      - name: job_id
+        description: Unique job identifier (renamed from refnr in Bronze)
+        tests:
+          - not_null
+          - unique
+      - name: title
+        description: Job title (renamed from titel in Bronze), whitespace stripped
+        tests:
+          - not_null
+      - name: company
+        description: Company name (renamed from arbeitgeber in Bronze)
+        tests:
+          - not_null
+      - name: source
+        description: Always 'ba_api' for this model
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['ba_api']
+
+  # ── Intermediate ───────────────────────────────────────────────────────────
+
+  - name: int_jobs_unified
+    description: >
+      Union of Arbeitnow and BA staging models into a single clean table.
+      Only current records. Deduplicated on job_id keeping most recently ingested.
+      Empty strings normalized to NULL for cleaner analytics.
+    columns:
+      - name: job_id
+        description: Unique job identifier across both sources
+        tests:
+          - not_null
+          - unique
+      - name: title
+        description: Job title
+        tests:
+          - not_null
+      - name: company
+        description: Company name
+        tests:
+          - not_null
+      - name: source
+        description: Data source identifier
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['arbeitnow', 'ba_api']
+
+  # ── Marts ──────────────────────────────────────────────────────────────────
+
+  - name: mart_top_locations
+    description: >
+      Top German cities ranked by number of current Data Engineer job postings.
+      Includes breakdown by source and percentage split.
+    columns:
+      - name: location
+        description: City name
+        tests:
+          - not_null
+      - name: job_count
+        description: Total current job postings in this city
+        tests:
+          - not_null
+      - name: location_rank
+        description: Rank by job count (1 = most jobs)
+        tests:
+          - not_null
+
+  - name: mart_jobs_by_source
+    description: >
+      Daily job posting counts pivoted by source.
+      Shows pipeline activity and Arbeitnow vs BA split over time.
+    columns:
+      - name: ingestion_date
+        description: Date jobs were ingested
+        tests:
+          - not_null
+      - name: total_jobs
+        description: Total jobs ingested on this date
+        tests:
+          - not_null
+
+  - name: mart_remote_vs_onsite
+    description: >
+      Remote vs on-site breakdown from Arbeitnow data (BA does not provide remote flag).
+      Contains both a summary row and daily trend rows distinguished by record_type.
+    columns:
+      - name: record_type
+        description: Either 'summary' or 'daily_trend'
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['summary', 'daily_trend']
+
+  - name: mart_latest_jobs
+    description: >
+      Most recent 50 current job postings across both sources.
+      Includes human-readable source_display and work_type labels for dashboard use.
+    columns:
+      - name: job_id
+        description: Unique job identifier
+        tests:
+          - not_null
+      - name: title
+        description: Job title
+        tests:
+          - not_null
+      - name: source_display
+        description: Human-readable source name for dashboard display
+        tests:
+          - not_null

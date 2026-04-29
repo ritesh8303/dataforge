@@ -1,0 +1,10 @@
+dataforge:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ':memory:'
+      extensions:
+        - httpfs
+      settings:
+        s3_region: eu-central-1

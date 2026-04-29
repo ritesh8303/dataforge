@@ -1,0 +1,14 @@
+.env
+*.tfvars
+!example.tfvars
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.lock.hcl
+__pycache__/
+*.pyc
+.pytest_cache/
+airflow/logs/
+*.egg-info/
+.DS_Store
+aws-keys-do-not-commit.txt

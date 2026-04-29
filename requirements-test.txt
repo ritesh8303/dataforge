@@ -1,0 +1,5 @@
+pytest
+pytest-mock
+moto
+pandas
+boto3
