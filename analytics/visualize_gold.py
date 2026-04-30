@@ -17,15 +17,15 @@ print("🔍 Pulling unified data from Silver Layer for visualization...")
 silver_path = "s3://dataforge-silver-dev-eu-central-1/cleaned/jobs_history.parquet/"
 con.execute(f"CREATE VIEW consolidated_jobs AS SELECT * FROM read_parquet('{silver_path}', union_by_name=True);")
 
-# 3. Query: Top 5 Job Locations
-# We use COALESCE to ensure 'None' doesn't show up in the chart
+# 3. Query: Top 5 Job Locations (current records only)
 df_loc = con.execute("""
-    SELECT 
-        COALESCE(location, 'Remote/Unknown') as city, 
-        COUNT(*) as job_count 
-    FROM consolidated_jobs 
-    GROUP BY city 
-    ORDER BY job_count DESC 
+    SELECT
+        COALESCE(location, 'Remote/Unknown') as city,
+        COUNT(*) as job_count
+    FROM consolidated_jobs
+    WHERE is_current = true AND location IS NOT NULL
+    GROUP BY city
+    ORDER BY job_count DESC
     LIMIT 5
 """).df()
 

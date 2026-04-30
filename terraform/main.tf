@@ -64,22 +64,23 @@ module "ingestion_lambda" {
     SSM_PARAMETER_NAME = aws_ssm_parameter.ba_api_keys.name
   }
   bronze_bucket_arn = module.s3_bronze.arn
+  enable_schedule   = true
   alert_email       = "riteshjadhav8303@gmail.com"
 }
 
 # BA (Federal) Ingestor
 module "ba_ingestor" {
-  source          = "./modules/lambda"
-  function_name   = "dataforge-ba-ingestor"
-  handler         = "ingest_ba_api.lambda_handler"
-  lambda_role_arn = module.iam.lambda_role_arn
+  source           = "./modules/lambda"
+  function_name    = "dataforge-ba-ingestor"
+  handler          = "ingest_ba_api.lambda_handler"
+  lambda_role_arn  = module.iam.lambda_role_arn
   lambda_role_name = module.iam.lambda_role_name
-  source_dir      = "../src/processing" # Point to a clean source folder
+  source_dir       = "../src"
   env_vars = {
     BRONZE_BUCKET      = module.s3_bronze.bucket_id
     SSM_PARAMETER_NAME = aws_ssm_parameter.ba_api_keys.name
   }
-  layers = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   bronze_bucket_arn = module.s3_bronze.arn
   enable_schedule   = true
   alert_email       = "riteshjadhav8303@gmail.com"
@@ -107,7 +108,7 @@ resource "aws_s3_bucket_notification" "on_json_upload" {
   lambda_function {
     lambda_function_arn = module.transformer_lambda.lambda_function_arn
     events              = ["s3:ObjectCreated:*"]
-    filter_suffix       = ".json"
+    filter_suffix       = ".parquet"
   }
   depends_on = [module.transformer_lambda]
 }
