@@ -138,7 +138,7 @@ def process_scd_type_2(bronze_df, silver_path):
         by=['job_id', 'scd_start_date'], ascending=[True, False]
     )
     final_df = final_df.drop_duplicates(
-        subset=['job_id', 'is_current'], keep='first'
+        subset=['job_id', 'is_current', 'scd_start_date'], keep='first'
     )
 
     # 8. Write back to Silver S3 (no Glue catalog dependency)

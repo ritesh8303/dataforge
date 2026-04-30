@@ -53,14 +53,14 @@ resource "aws_ssm_parameter" "ba_api_keys" {
 
 # Arbeitnow Ingestor
 module "ingestion_lambda" {
-  source          = "./modules/lambda"
-  function_name   = "dataforge-ingestor"
-  handler         = "lambda_function.lambda_handler"
-  lambda_role_arn = module.iam.lambda_role_arn
+  source           = "./modules/lambda"
+  function_name    = "dataforge-ingestor"
+  handler          = "ingest_arbeitnow.lambda_handler"
+  lambda_role_arn  = module.iam.lambda_role_arn
   lambda_role_name = module.iam.lambda_role_name
-  source_dir      = "../ingestion/src" 
-  env_vars = { 
-    BRONZE_BUCKET      = module.s3_bronze.bucket_id 
+  source_dir       = "../src"
+  env_vars = {
+    BRONZE_BUCKET      = module.s3_bronze.bucket_id
     SSM_PARAMETER_NAME = aws_ssm_parameter.ba_api_keys.name
   }
   bronze_bucket_arn = module.s3_bronze.arn
@@ -87,15 +87,15 @@ module "ba_ingestor" {
 
 # Silver Transformer (SCD Type 2 Logic)
 module "transformer_lambda" {
-  source          = "./modules/lambda"
-  function_name   = "dataforge-transformer"
-  handler         = "process_data.lambda_handler"
-  lambda_role_arn = module.iam.lambda_role_arn
+  source           = "./modules/lambda"
+  function_name    = "dataforge-transformer"
+  handler          = "silver_transformer.lambda_handler"
+  lambda_role_arn  = module.iam.lambda_role_arn
   lambda_role_name = module.iam.lambda_role_name
-  source_dir      = "../src/processing" # Point to a clean source folder
-  memory_size     = 512 
-  env_vars        = { SILVER_BUCKET = module.s3_silver.bucket_id }
-  layers          = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  source_dir       = "../src"
+  memory_size      = 512
+  env_vars         = { SILVER_PATH = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/" }
+  layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   bronze_bucket_arn = module.s3_bronze.arn
   enable_alerts     = true
   alert_email       = "riteshjadhav8303@gmail.com"
