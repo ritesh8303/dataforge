@@ -12,3 +12,8 @@ airflow/logs/
 *.egg-info/
 .DS_Store
 aws-keys-do-not-commit.txt
+
+# Lambda build artifacts
+*.zip
+*.dist-info/
+terraform/modules/lambda/typing_inspection/
