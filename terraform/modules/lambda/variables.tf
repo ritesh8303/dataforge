@@ -5,23 +5,19 @@ variable "lambda_role_name" { type = string }
 variable "source_dir" { type = string }
 variable "env_vars" { type = map(string) }
 
-# Add this if it's missing
 variable "layers" {
   type    = list(string)
   default = []
 }
 
-variable "bronze_bucket_id" { 
-  type    = string 
-  default = ""
-}
-variable "silver_bucket_id" { 
-  type    = string 
-  default = ""
-}
 variable "memory_size" {
   type    = number
   default = 128
+}
+
+variable "timeout" {
+  type    = number
+  default = 30
 }
 
 variable "bronze_bucket_arn" {
@@ -37,11 +33,6 @@ variable "enable_schedule" {
 variable "enable_alerts" {
   type    = bool
   default = false
-}
-
-variable "dlq_target_arn" {
-  type    = string
-  default = null
 }
 
 variable "alert_email" {
