@@ -37,7 +37,7 @@ df_loc = df_source.copy()
 print("\n--- JOBS ADDED OVER TIME ---")
 df_trend = con.execute("""
     SELECT
-        CAST(valid_from AS DATE) as date,
+        CAST(scd_start_date AS DATE) as date,
         COUNT(*) as new_jobs
     FROM consolidated_jobs
     GROUP BY date ORDER BY date

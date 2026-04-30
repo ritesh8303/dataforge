@@ -78,6 +78,8 @@ def process_scd_type_2(bronze_df, silver_path):
 
     # First run — write everything directly
     if not silver_exists or silver_df.empty:
+        for col in bronze_df.select_dtypes(include='object').columns:
+            bronze_df[col] = bronze_df[col].astype(str)
         wr.s3.to_parquet(
             df=bronze_df,
             path=silver_path,
@@ -142,6 +144,10 @@ def process_scd_type_2(bronze_df, silver_path):
     )
 
     # 8. Write back to Silver S3 (no Glue catalog dependency)
+    # Cast object columns to string to avoid pyarrow categorical ordering errors
+    for col in final_df.select_dtypes(include='object').columns:
+        final_df[col] = final_df[col].astype(str)
+
     wr.s3.to_parquet(
         df=final_df,
         path=silver_path,
