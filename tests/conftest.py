@@ -1,9 +1,25 @@
-import pytest
+import sys
+import os
+from pathlib import Path
 
+# The src/ directory contains pydantic/requests/etc. bundled for Lambda deployment.
+# These are Linux binaries and must NOT be imported during testing.
+# We remove src/ from sys.path and purge any already-imported src/ modules
+# so tests use the system-installed packages from requirements-test.txt instead.
+_src = str(Path(__file__).resolve().parents[1] / "src")
+if _src in sys.path:
+    sys.path.remove(_src)
+
+# Purge any src/-based modules already cached
+_to_remove = [k for k, v in sys.modules.items()
+              if hasattr(v, '__file__') and v.__file__ and _src in str(v.__file__)]
+for k in _to_remove:
+    del sys.modules[k]
+
+import pytest
 import json
 import boto3
 from moto import mock_aws
-
 from io import BytesIO
 
 @pytest.fixture
