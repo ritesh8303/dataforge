@@ -2,6 +2,7 @@ import hashlib
 import pandas as pd
 import awswrangler as wr
 from datetime import datetime, timezone
+from urllib.parse import unquote_plus
 import os
 
 
@@ -17,7 +18,7 @@ def lambda_handler(event, context):
 
     for record in event.get('Records', []):
         bucket = record['s3']['bucket']['name']
-        key = record['s3']['object']['key']
+        key = unquote_plus(record['s3']['object']['key'])
 
         print(f"Detected new data in Bronze: s3://{bucket}/{key}")
 

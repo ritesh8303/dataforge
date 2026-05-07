@@ -60,6 +60,8 @@ module "ingestion_lambda" {
   lambda_role_name = module.iam.lambda_role_name
   source_dir       = "../src"
   layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  memory_size      = 512
+  timeout          = 300
   env_vars = {
     BRONZE_BUCKET      = module.s3_bronze.bucket_id
     SSM_PARAMETER_NAME = aws_ssm_parameter.ba_api_keys.name
@@ -82,8 +84,8 @@ module "ba_ingestor" {
     SSM_PARAMETER_NAME = aws_ssm_parameter.ba_api_keys.name
   }
   layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
-  bronze_bucket_arn = module.s3_bronze.arn
-  enable_schedule   = true
+  memory_size       = 512
+  timeout           = 300
   alert_email       = "riteshjadhav8303@gmail.com"
 }
 
