@@ -66,7 +66,7 @@ def process_scd_type_2(bronze_df, silver_path):
     silver_df = pd.DataFrame()
 
     try:
-        silver_df = wr.s3.read_parquet(path=silver_path)
+        silver_df = wr.s3.read_parquet(path=silver_path, dataset=True)
         silver_exists = True
         print(f"Loaded {len(silver_df)} existing Silver records.")
     except wr.exceptions.NoFilesFound:
