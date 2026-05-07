@@ -1,53 +1,59 @@
-import duckdb
-import matplotlib.pyplot as plt
+import awswrangler as wr
 import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
-# 1. Connect to DuckDB and load S3 extensions
-con = duckdb.connect()
-con.execute("INSTALL httpfs;")
-con.execute("LOAD httpfs;")
+GOLD_BUCKET = "s3://dataforge-gold-dev-eu-central-1"
 
-# Load local AWS credentials
-con.execute("CALL load_aws_credentials();")
-con.execute("SET s3_region='eu-central-1';")
+print("Reading Gold layer from S3...")
+df_loc       = wr.s3.read_csv(f"{GOLD_BUCKET}/top_locations.csv")
+df_source    = wr.s3.read_csv(f"{GOLD_BUCKET}/jobs_by_source.csv")
+df_remote    = wr.s3.read_csv(f"{GOLD_BUCKET}/remote_vs_onsite.csv")
+df_trend     = wr.s3.read_csv(f"{GOLD_BUCKET}/jobs_trend.csv")
+df_companies = wr.s3.read_csv(f"{GOLD_BUCKET}/top_companies.csv")
 
-print("🔍 Pulling unified data from Silver Layer for visualization...")
+fig = plt.figure(figsize=(18, 14))
+fig.suptitle("German Data Job Market Dashboard", fontsize=18, fontweight="bold", y=0.98)
+gs = gridspec.GridSpec(2, 3, figure=fig, hspace=0.45, wspace=0.35)
 
-# 2. Create the unified view
-silver_path = "s3://dataforge-silver-dev-eu-central-1/cleaned/jobs_history.parquet/"
-con.execute(f"CREATE VIEW consolidated_jobs AS SELECT * FROM read_parquet('{silver_path}', union_by_name=True);")
+# 1. Top locations — horizontal bar
+ax1 = fig.add_subplot(gs[0, :2])
+top10 = df_loc.head(10).sort_values("job_count")
+ax1.barh(top10["location"], top10["job_count"], color="#3498db")
+ax1.set_title("Top 10 Cities for Data Jobs")
+ax1.set_xlabel("Job Count")
+for i, v in enumerate(top10["job_count"]):
+    ax1.text(v + 1, i, str(v), va="center", fontsize=9)
 
-# 3. Query: Top 5 Job Locations (current records only)
-df_loc = con.execute("""
-    SELECT
-        COALESCE(location, 'Remote/Unknown') as city,
-        COUNT(*) as job_count
-    FROM consolidated_jobs
-    WHERE is_current = true AND location IS NOT NULL
-    GROUP BY city
-    ORDER BY job_count DESC
-    LIMIT 5
-""").df()
+# 2. Jobs by source — pie
+ax2 = fig.add_subplot(gs[0, 2])
+ax2.pie(df_source["job_count"], labels=df_source["source"],
+        autopct="%1.1f%%", colors=["#2ecc71", "#e74c3c"], startangle=90)
+ax2.set_title("Jobs by Source")
 
-# 4. Create the Visualization
-plt.figure(figsize=(12, 7))
-bars = plt.bar(df_loc['city'], df_loc['job_count'], color='#3498db', edgecolor='#2980b9')
+# 3. Remote vs onsite — pie
+ax3 = fig.add_subplot(gs[1, 0])
+ax3.pie(df_remote["job_count"], labels=df_remote["work_type"],
+        autopct="%1.1f%%", colors=["#9b59b6", "#f39c12"], startangle=90)
+ax3.set_title("Remote vs On-site\n(Arbeitnow)")
 
-# Add labels and styling
-plt.title('Top 5 German Cities for Data Engineers', fontsize=16, fontweight='bold', pad=20)
-plt.xlabel('City', fontsize=12)
-plt.ylabel('Number of Job Postings', fontsize=12)
-plt.xticks(rotation=45)
-plt.grid(axis='y', linestyle='--', alpha=0.6)
+# 4. Jobs trend — line
+ax4 = fig.add_subplot(gs[1, 1])
+ax4.plot(df_trend["date"], df_trend["new_jobs"], marker="o", color="#e74c3c", linewidth=2)
+ax4.set_title("Jobs Added Over Time")
+ax4.set_xlabel("Date")
+ax4.set_ylabel("New Jobs")
+ax4.tick_params(axis="x", rotation=30)
 
-# Add data labels on top of bars
-for bar in bars:
-    yval = bar.get_height()
-    plt.text(bar.get_x() + bar.get_width()/2, yval + 0.5, yval, ha='center', va='bottom', fontweight='bold')
+# 5. Top companies — horizontal bar
+ax5 = fig.add_subplot(gs[1, 2])
+top8 = df_companies.head(8).sort_values("job_count")
+ax5.barh(top8["company"], top8["job_count"], color="#1abc9c")
+ax5.set_title("Top 8 Hiring Companies")
+ax5.set_xlabel("Job Count")
+for i, v in enumerate(top8["job_count"]):
+    ax5.text(v + 0.3, i, str(v), va="center", fontsize=8)
 
-plt.tight_layout()
-
-# 5. Save the result
-output_file = 'job_market_overview.png'
-plt.savefig(output_file)
-print(f"✅ Success! Chart saved as: {output_file}")
+output = "analytics/job_market_dashboard.png"
+plt.savefig(output, dpi=150, bbox_inches="tight")
+print(f"Dashboard saved to {output}")

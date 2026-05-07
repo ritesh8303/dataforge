@@ -16,8 +16,22 @@ def lambda_handler(event, context):
         if not bucket:
             raise ValueError("BRONZE_BUCKET environment variable is not set.")
         fetcher = BAFetcher()
-        data = fetcher.fetch_jobs(query="Data Engineer")
-        df = pd.DataFrame(data['stellenangebote'])
+        queries = [
+            "Data Engineer", "Data Scientist", "Data Analyst",
+            "Machine Learning", "Business Intelligence", "Data Architect",
+            "MLOps", "Analytics Engineer"
+        ]
+        all_jobs = []
+        seen_ids = set()
+        for query in queries:
+            result = fetcher.fetch_jobs(query=query)
+            for job in result['stellenangebote']:
+                if job['refnr'] not in seen_ids:
+                    seen_ids.add(job['refnr'])
+                    all_jobs.append(job)
+            print(f"Query '{query}': {len(result['stellenangebote'])} jobs fetched")
+
+        df = pd.DataFrame(all_jobs)
 
         if df.empty:
             print("No jobs found from BA API.")

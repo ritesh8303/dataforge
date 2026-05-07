@@ -40,6 +40,10 @@ def lambda_handler(event, context):
         if 'slug' in df.columns:
             df.rename(columns={'slug': 'job_id'}, inplace=True)
 
+        # Add remote flag explicitly as bool
+        if 'remote' in df.columns:
+            df['remote'] = df['remote'].astype(bool)
+
         # Add source and ingestion timestamp
         df['source'] = 'arbeitnow'
         df['ingested_at'] = datetime.now(timezone.utc).isoformat()

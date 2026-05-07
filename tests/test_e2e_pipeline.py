@@ -79,7 +79,7 @@ def test_pipeline_e2e():
     try:
         objects = s3_client.list_objects_v2(
             Bucket='dataforge-silver-dev-eu-central-1',
-            Prefix='cleaned/jobs_history.parquet/'
+            Prefix='cleaned/jobs_history.parquet'
         )
         if objects.get('KeyCount', 0) == 0:
             print("   ❌ FAILED: No files in Silver")

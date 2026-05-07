@@ -1,10 +1,7 @@
-import json
 import os
-import boto3
 import requests
 from typing import Any, Dict
 from .typing_inspection.arbeitnow import validate_api_response as validate_arbeitnow
-from .typing_inspection.ba_api import validate_ba_response as validate_ba
 
 class ArbeitnowFetcher:
     """Fetcher for the Arbeitnow public job board API."""
@@ -36,43 +33,17 @@ class ArbeitnowFetcher:
         return {'data': all_jobs}
 
 class BAFetcher:
-    """Fetcher for the Bundesagentur für Arbeit (BA) API using OAuth2."""
-    
-    TOKEN_URL = "https://rest.arbeitsagentur.de/oauth/get-token"
-    JOBS_URL = "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/v1/jobsuche"
+    """Fetcher for the Bundesagentur fur Arbeit public Jobsuche API (no auth required)."""
+
+    JOBS_URL = "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v4/jobs"
 
     def __init__(self, ssm_parameter_name: str = None):
-        self.ssm_parameter_name = ssm_parameter_name or os.environ.get("SSM_PARAMETER_NAME")
-        self.ssm = boto3.client("ssm")
-
-    def _get_credentials(self) -> Dict[str, str]:
-        """Retrieves OAuth2 credentials from SSM Parameter Store."""
-        print(f"Retrieving credentials from SSM: {self.ssm_parameter_name}")
-        response = self.ssm.get_parameter(
-            Name=self.ssm_parameter_name, 
-            WithDecryption=True
-        )
-        return json.loads(response["Parameter"]["Value"])
-
-    def _get_access_token(self, client_id: str, client_secret: str) -> str:
-        """Performs OAuth2 Client Credentials flow."""
-        payload = {
-            "grant_type": "client_credentials",
-            "client_id": client_id,
-            "client_secret": client_secret
-        }
-        response = requests.post(self.TOKEN_URL, data=payload, timeout=10)
-        response.raise_for_status()
-        return response.json()["access_token"]
+        pass  # No credentials needed for public API
 
     def fetch_jobs(self, query: str = "Data Engineer") -> Dict[str, Any]:
-        """Fetches all pages of jobs from BA API and validates them."""
-        creds = self._get_credentials()
-        token = self._get_access_token(creds["client_id"], creds["client_secret"])
-
+        """Fetches all pages of jobs from BA public API."""
         headers = {
-            "Authorization": f"Bearer {token}",
-            "X-API-Key": creds.get("api_key", ""),
+            "X-API-Key": "jobboerse-jobsuche",
             "Accept": "application/json"
         }
 
@@ -81,22 +52,21 @@ class BAFetcher:
         page_size = 100
 
         while True:
-            params = {"was": query, "repro": "long", "page": page, "size": page_size}
+            params = {"was": query, "size": page_size, "page": page}
             print(f"Fetching BA API page {page} for query: {query}")
             response = requests.get(self.JOBS_URL, headers=headers, params=params, timeout=15)
             response.raise_for_status()
             raw_data = response.json()
-            validated = validate_ba(raw_data)
-            jobs = validated.get('stellenangebote', [])
+            jobs = raw_data.get('stellenangebote', [])
             if not jobs:
                 break
             all_jobs.extend(jobs)
-            max_results = validated.get('max_results', 0)
+            max_results = raw_data.get('maxErgebnisse', 0)
             if len(all_jobs) >= max_results:
                 break
             page += 1
 
-        print(f"Fetched {len(all_jobs)} total jobs from BA API.")
+        print(f"Fetched {len(all_jobs)} total jobs from BA API for '{query}'.")
         return {'stellenangebote': all_jobs}
 
 def get_fetcher(source: str) -> Any:

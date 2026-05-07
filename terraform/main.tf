@@ -107,8 +107,30 @@ module "transformer_lambda" {
   alert_email       = "riteshjadhav8303@gmail.com"
 }
 
+# Gold Generator (runs after Silver is updated)
+module "gold_lambda" {
+  source           = "./modules/lambda"
+  function_name    = "dataforge-gold-generator"
+  handler          = "gold_generator.lambda_handler"
+  lambda_role_arn  = module.iam.lambda_role_arn
+  lambda_role_name = module.iam.lambda_role_name
+  source_dir       = "../src"
+  memory_size      = 512
+  timeout          = 300
+  layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  env_vars = {
+    SILVER_PATH = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
+    GOLD_BUCKET = module.s3_gold.bucket_id
+  }
+  bronze_bucket_arn = module.s3_bronze.arn
+  enable_alerts     = true
+  alert_email       = "riteshjadhav8303@gmail.com"
+}
+
 # --- 4. AUTOMATION & TRIGGERS ---
-resource "aws_s3_bucket_notification" "on_json_upload" {
+
+# Bronze .parquet upload → transformer
+resource "aws_s3_bucket_notification" "on_bronze_upload" {
   bucket = module.s3_bronze.bucket_id
   lambda_function {
     lambda_function_arn = module.transformer_lambda.lambda_function_arn
@@ -116,4 +138,23 @@ resource "aws_s3_bucket_notification" "on_json_upload" {
     filter_suffix       = ".parquet"
   }
   depends_on = [module.transformer_lambda]
+}
+
+# Silver .parquet write → gold generator
+resource "aws_s3_bucket_notification" "on_silver_upload" {
+  bucket = module.s3_silver.bucket_id
+  lambda_function {
+    lambda_function_arn = module.gold_lambda.lambda_function_arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_suffix       = ".parquet"
+  }
+  depends_on = [module.gold_lambda]
+}
+
+resource "aws_lambda_permission" "allow_silver_s3" {
+  statement_id  = "AllowSilverS3Invoke"
+  action        = "lambda:InvokeFunction"
+  function_name = module.gold_lambda.lambda_function_arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = module.s3_silver.arn
 }
