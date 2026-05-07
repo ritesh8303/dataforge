@@ -86,6 +86,7 @@ module "ba_ingestor" {
   layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   memory_size       = 512
   timeout           = 300
+  enable_schedule   = true
   alert_email       = "riteshjadhav8303@gmail.com"
 }
 
