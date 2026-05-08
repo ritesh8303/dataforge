@@ -22,9 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
-        # Install src package if needed, or just ensure path is correct
-        pip install . || true
+        pip install -r requirements-test.txt
         
     - name: Test with pytest
       env:
