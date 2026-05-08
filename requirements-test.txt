@@ -1,6 +1,5 @@
 pytest
 pytest-mock
-pytest-cov
 moto
 pandas
 boto3
