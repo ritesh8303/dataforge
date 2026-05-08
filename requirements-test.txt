@@ -3,5 +3,6 @@ pytest-mock
 moto
 pandas
 boto3
+awswrangler
 pydantic
 typing_extensions
