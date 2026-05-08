@@ -1,9 +1,13 @@
 import hashlib
 import pandas as pd
-import awswrangler as wr
 from datetime import datetime, timezone
 from urllib.parse import unquote_plus
 import os
+
+try:
+    import awswrangler as wr
+except ImportError:
+    wr = None  # Not available in test environment
 
 
 def lambda_handler(event, context):
