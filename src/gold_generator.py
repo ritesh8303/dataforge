@@ -71,9 +71,10 @@ def lambda_handler(event, context):
         else:
             remote_vs_onsite = pd.DataFrame({'work_type': [], 'job_count': []})
 
-        # 5. Jobs trend over time
-        df['date'] = pd.to_datetime(df['scd_start_date']).dt.date.astype(str)
-        jobs_trend = df.groupby('date').size().reset_index(name='new_jobs').sort_values('date')
+        # 5. Jobs trend — count only first appearance of each job_id (true new jobs)
+        first_seen = df.sort_values('scd_start_date').drop_duplicates(subset='job_id', keep='first')
+        first_seen['date'] = pd.to_datetime(first_seen['scd_start_date']).dt.date.astype(str)
+        jobs_trend = first_seen.groupby('date').size().reset_index(name='new_jobs').sort_values('date')
 
         # 6. Top companies
         top_companies = (
