@@ -18,7 +18,11 @@ def lambda_handler(event, context):
         print(f"Total active jobs: {len(current)}")
 
         # 1. All jobs
-        cols = [c for c in ['job_id', 'title', 'company', 'location', 'source', 'scd_start_date', 'remote', 'url', 'job_types', 'ingested_at'] if c in current.columns]
+        cols = [c for c in [
+            'job_id', 'title', 'company', 'location', 'zip_code', 'state',
+            'source', 'scd_start_date', 'remote', 'url', 'job_types',
+            'tags', 'description', 'start_date_raw', 'modified_at', 'ingested_at'
+        ] if c in current.columns]
         all_jobs = current[cols].copy()
         all_jobs['date_added'] = pd.to_datetime(all_jobs['scd_start_date']).dt.date.astype(str)
         all_jobs.drop(columns=['scd_start_date'], inplace=True)
