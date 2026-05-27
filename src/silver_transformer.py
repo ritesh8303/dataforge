@@ -4,14 +4,12 @@ import awswrangler as wr
 from datetime import datetime, timezone
 from urllib.parse import unquote_plus
 import os
+import json
 
 
 def lambda_handler(event, context):
-    """
-    AWS Lambda entry point triggered by S3 ObjectCreated events.
-    Reads a new Bronze Parquet file and applies SCD Type 2 logic to Silver.
-    """
     silver_path = os.environ.get('SILVER_PATH')
+    gold_bucket = os.environ.get('GOLD_BUCKET')
 
     if not silver_path:
         raise ValueError("SILVER_PATH environment variable is not set.")
@@ -19,11 +17,9 @@ def lambda_handler(event, context):
     for record in event.get('Records', []):
         bucket = record['s3']['bucket']['name']
         key = unquote_plus(record['s3']['object']['key'])
-
         print(f"Detected new data in Bronze: s3://{bucket}/{key}")
-
         bronze_df = wr.s3.read_parquet(path=f"s3://{bucket}/{key}")
-        process_scd_type_2(bronze_df, silver_path)
+        process_scd_type_2(bronze_df, silver_path, gold_bucket)
 
 
 def generate_hash(df, cols):
@@ -35,7 +31,7 @@ def generate_hash(df, cols):
     )
 
 
-def process_scd_type_2(bronze_df, silver_path):
+def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
     """
     Implements SCD Type 2 logic:
     1. Identifies new records.
@@ -162,3 +158,17 @@ def process_scd_type_2(bronze_df, silver_path):
         f"Unchanged: {len(unchanged_silver)}, "
         f"Total Silver records: {len(final_df)}"
     )
+
+    # Write pipeline stats to Gold so dashboard can show real-time SCD metrics
+    if gold_bucket:
+        today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+        stats = pd.DataFrame([{
+            'date':           today,
+            'new_jobs':       len(new_ids),
+            'updated_jobs':   len(changed_ids),
+            'unchanged_jobs': len(unchanged_silver),
+            'total_silver':   len(final_df),
+            'run_at':         datetime.now(timezone.utc).isoformat(),
+        }])
+        wr.s3.to_csv(stats, path=f"s3://{gold_bucket}/pipeline_stats.csv", index=False)
+        print(f"Pipeline stats written to Gold: new={len(new_ids)}, updated={len(changed_ids)}")

@@ -228,6 +228,11 @@
       <div class="value" id="kpi-benefits"><span class="skeleton"></span></div>
       <div class="sub">explicit benefits section</div>
     </div>
+    <div class="kpi-card" style="--accent:#e879f9">
+      <div class="label">🔄 Jobs Updated</div>
+      <div class="value" id="kpi-updated"><span class="skeleton"></span></div>
+      <div class="sub">changed since last run</div>
+    </div>
   </div>
 
   <!-- Trend chart — full width -->
@@ -438,6 +443,10 @@
     document.getElementById("kpi-english").textContent   = (di.english_jobs         || 0).toLocaleString();
     document.getElementById("kpi-homeoffice").textContent = (di.homeoffice_mentioned || 0).toLocaleString();
     document.getElementById("kpi-benefits").textContent  = (di.jobs_with_benefits   || 0).toLocaleString();
+
+    // Pipeline stats KPI — real SCD counts from transformer
+    const ps = data.pipeline_stats || {};
+    document.getElementById("kpi-updated").textContent = (ps.updated_jobs || 0).toLocaleString();
 
     // Top skill KPI
     if (data.top_skills?.length) {

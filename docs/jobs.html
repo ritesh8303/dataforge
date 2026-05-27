@@ -167,29 +167,39 @@
         .map(t => `<span class="tag type">${esc(TYPE_LABELS[t] || t)}</span>`)
         .join("");
 
+      // Tags chips (Arbeitnow real category tags)
+      const tagChips = (j.tags || '')
+        .split(',')
+        .map(t => t.trim())
+        .filter(t => t && t !== 'nan' && t.length < 40)
+        .slice(0, 3)
+        .map(t => `<span class="tag">${esc(t)}</span>`)
+        .join('');
+
       // Strip HTML from description and show first 160 chars (Arbeitnow only)
       const rawDesc = j.description || '';
       const plainDesc = rawDesc.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
       const descSnippet = j.source === 'arbeitnow' && plainDesc.length > 10
-        ? `<div class="job-desc">${esc(plainDesc.slice(0, 160))}${plainDesc.length > 160 ? '…' : ''}</div>`
+        ? `<div class="job-desc">${esc(plainDesc.slice(0, 160))}${plainDesc.length > 160 ? '\u2026' : ''}</div>`
         : '';
 
       return `
         <div class="job-card">
           <div class="job-info">
             <div class="job-title" title="${esc(j.title)}">${esc(j.title)}</div>
-            <div class="job-company">${esc(j.company || "—")}</div>
+            <div class="job-company">${esc(j.company || '\u2014')}</div>
             <div class="job-meta">
-              <span>📍 ${esc((j.location || "—").split(",")[0].trim())}</span>
+              <span>\ud83d\udccd ${esc((j.location || '\u2014').split(',')[0].trim())}</span>
               <span class="tag ${sourceClass}">${sourceLabel}</span>
-              ${isRemote ? '<span class="tag remote">🌐 Remote</span>' : ""}
+              ${isRemote ? '<span class="tag remote">\ud83c\udf10 Remote</span>' : ''}
               ${typeTags}
-              <span>${j.date_added || ""}</span>
+              ${tagChips}
+              <span>${j.date_added || ''}</span>
             </div>
             ${descSnippet}
           </div>
           <a class="apply-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
-            Apply →
+            Apply \u2192
           </a>
         </div>`;
     }).join("");

@@ -42,11 +42,13 @@ module "iam" {
   environment  = "dev"
 }
 
+# BA API is fully public — no credentials needed
+# SSM Standard String is free (SecureString costs $0.05/month)
 resource "aws_ssm_parameter" "ba_api_keys" {
   name        = "/dataforge/dev/ba_api_credentials"
-  description = "BA API OAuth2 Credentials (Cost Optimized)"
-  type        = "SecureString"
-  value       = "{\"client_id\": \"YOUR_ID\", \"client_secret\": \"YOUR_SECRET\"}"
+  description = "BA API public key (no auth required)"
+  type        = "String"
+  value       = "jobboerse-jobsuche"
 }
 
 # --- 3. COMPUTE LAYER ---
@@ -68,7 +70,7 @@ module "ingestion_lambda" {
   }
   bronze_bucket_arn = module.s3_bronze.arn
   enable_schedule   = true
-  alert_email       = "riteshjadhav8303@gmail.com"
+  alert_email       = var.alert_email
 }
 
 # BA (Federal) Ingestor
@@ -87,7 +89,7 @@ module "ba_ingestor" {
   memory_size       = 512
   timeout           = 300
   enable_schedule   = true
-  alert_email       = "riteshjadhav8303@gmail.com"
+  alert_email       = var.alert_email
 }
 
 # Silver Transformer (SCD Type 2 Logic)
@@ -100,12 +102,15 @@ module "transformer_lambda" {
   source_dir       = "../src"
   memory_size      = 512
   timeout          = 300
-  env_vars         = { SILVER_PATH = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/" }
+  env_vars         = {
+    SILVER_PATH = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
+    GOLD_BUCKET = module.s3_gold.bucket_id
+  }
   layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   bronze_bucket_arn = module.s3_bronze.arn
   enable_schedule   = true
   enable_alerts     = true
-  alert_email       = "riteshjadhav8303@gmail.com"
+  alert_email       = var.alert_email
 }
 
 # Gold Generator (runs after Silver is updated)
@@ -125,7 +130,7 @@ module "gold_lambda" {
   }
   bronze_bucket_arn = module.s3_bronze.arn
   enable_alerts     = true
-  alert_email       = "riteshjadhav8303@gmail.com"
+  alert_email       = var.alert_email
 }
 
 # --- 4. AUTOMATION & TRIGGERS ---

@@ -34,6 +34,10 @@ def _build_payload(bucket):
     status_rows   = _read_csv(bucket, "active_vs_expired.csv")
     skill_rows    = _read_csv(bucket, "top_skills.csv")
     desc_rows     = _read_csv(bucket, "description_insights.csv")
+    try:
+        stats_rows = _read_csv(bucket, "pipeline_stats.csv")
+    except Exception:
+        stats_rows = []
 
     today = date.today().isoformat()
 
@@ -71,6 +75,20 @@ def _build_payload(bucket):
         "arbeitnow_total":      int(desc.get("arbeitnow_total", 0)),
     }
 
+    stats = stats_rows[0] if stats_rows else {}
+    pipeline_stats = {
+        "new_jobs":     int(stats.get("new_jobs", 0)),
+        "updated_jobs": int(stats.get("updated_jobs", 0)),
+        "run_at":       stats.get("run_at", ""),
+    }
+
+    stats = stats_rows[0] if stats_rows else {}
+    pipeline_stats = {
+        "new_jobs":     int(stats.get("new_jobs", 0)),
+        "updated_jobs": int(stats.get("updated_jobs", 0)),
+        "run_at":       stats.get("run_at", ""),
+    }
+
     return {
         "total_jobs":        len(all_jobs),
         "new_today":         sum(1 for j in all_jobs if j.get("date_added", "") == today),
@@ -82,6 +100,7 @@ def _build_payload(bucket):
         "active_vs_expired": active_vs_expired,
         "top_skills":          top_skills,
         "description_insights": description_insights,
+        "pipeline_stats":        pipeline_stats,
         "last_updated":      __import__("datetime").datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
 
