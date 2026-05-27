@@ -25,9 +25,13 @@ def _read_csv(bucket, key):
 
 
 def _build_payload(bucket):
-    all_jobs = _read_csv(bucket, "all_jobs.csv")
-    trend_rows = _read_csv(bucket, "jobs_trend.csv")
-    source_rows = _read_csv(bucket, "jobs_by_source.csv")
+    all_jobs      = _read_csv(bucket, "all_jobs.csv")
+    trend_rows    = _read_csv(bucket, "jobs_trend.csv")
+    source_rows   = _read_csv(bucket, "jobs_by_source.csv")
+    location_rows = _read_csv(bucket, "top_locations.csv")
+    company_rows  = _read_csv(bucket, "top_companies.csv")
+    remote_rows   = _read_csv(bucket, "remote_vs_onsite.csv")
+    status_rows   = _read_csv(bucket, "active_vs_expired.csv")
 
     today = date.today().isoformat()
 
@@ -38,12 +42,30 @@ def _build_payload(bucket):
         for r in sorted(trend_rows, key=lambda x: x["date"])[-30:]
     ]
 
+    top_locations = [
+        {"location": r["location"], "count": int(r["job_count"])}
+        for r in location_rows[:10]
+    ]
+
+    top_companies = [
+        {"company": r["company"], "count": int(r["job_count"])}
+        for r in company_rows[:10]
+    ]
+
+    remote_vs_onsite = {r["work_type"]: int(r["job_count"]) for r in remote_rows}
+
+    active_vs_expired = {r["status"]: int(r["job_count"]) for r in status_rows}
+
     return {
-        "total_jobs": len(all_jobs),
-        "new_today": sum(1 for j in all_jobs if j.get("date_added", "") == today),
-        "jobs_by_source": jobs_by_source,
-        "trend": trend,
-        "last_updated": __import__("datetime").datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "total_jobs":        len(all_jobs),
+        "new_today":         sum(1 for j in all_jobs if j.get("date_added", "") == today),
+        "jobs_by_source":    jobs_by_source,
+        "trend":             trend,
+        "top_locations":     top_locations,
+        "top_companies":     top_companies,
+        "remote_vs_onsite":  remote_vs_onsite,
+        "active_vs_expired": active_vs_expired,
+        "last_updated":      __import__("datetime").datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
 
 

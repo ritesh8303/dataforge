@@ -3,65 +3,103 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataForge — German Data Job Market</title>
+  <title>DataForge — German Data & AI Job Market</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0f1117; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
-    #root { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+    #root { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
     .nav { display: flex; gap: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; }
     .nav a { color: #6366f1; text-decoration: none; font-weight: 600; }
     .nav a:hover { text-decoration: underline; }
+    .header { margin-bottom: 2rem; }
     .header h1 { font-size: 1.6rem; font-weight: 700; color: #f8fafc; }
     .header p { color: #94a3b8; font-size: 0.85rem; margin-top: 0.3rem; }
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
     .kpi-card { background: #1e2130; border: 1px solid #2d3748; border-radius: 10px; padding: 1.25rem 1.5rem; }
-    .kpi-card .label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+    .kpi-card .label { font-size: 0.72rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
     .kpi-card .value { font-size: 2rem; font-weight: 700; color: #f8fafc; min-height: 2.5rem; }
-    .kpi-card .sub { font-size: 0.75rem; color: #64748b; margin-top: 0.2rem; }
+    .kpi-card .sub { font-size: 0.72rem; color: #64748b; margin-top: 0.2rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    @media(max-width:700px){ .grid-2 { grid-template-columns: 1fr; } }
     .card { background: #1e2130; border: 1px solid #2d3748; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
-    .card h2 { font-size: 0.9rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem; }
-    .source-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
-    .source-row .name { font-size: 0.85rem; color: #cbd5e1; width: 110px; flex-shrink: 0; }
-    .source-row .bar-wrap { flex: 1; background: #2d3748; border-radius: 4px; height: 8px; overflow: hidden; }
-    .source-row .bar { height: 100%; border-radius: 4px; background: #6366f1; transition: width 0.6s ease; }
-    .source-row .count { font-size: 0.8rem; color: #94a3b8; width: 50px; text-align: right; }
+    .card.no-mb { margin-bottom: 0; }
+    .card h2 { font-size: 0.82rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem; }
+    .bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.55rem; }
+    .bar-row .name { font-size: 0.8rem; color: #cbd5e1; width: 130px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-row .bar-wrap { flex: 1; background: #2d3748; border-radius: 4px; height: 7px; overflow: hidden; }
+    .bar-row .bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .bar-indigo  .bar { background: #6366f1; }
+    .bar-emerald .bar { background: #10b981; }
+    .bar-amber   .bar { background: #f59e0b; }
+    .bar-rose    .bar { background: #f43f5e; }
+    .bar-row .count { font-size: 0.78rem; color: #94a3b8; width: 45px; text-align: right; flex-shrink: 0; }
     .chart-wrap { position: relative; width: 100%; height: 200px; }
     canvas { width: 100% !important; height: 100% !important; }
+    .donut-wrap { display: flex; align-items: center; gap: 1.5rem; }
+    .donut-canvas { flex-shrink: 0; }
+    .donut-legend { display: flex; flex-direction: column; gap: 0.5rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: #cbd5e1; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
     .status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: #64748b; margin-top: 1.5rem; }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; flex-shrink: 0; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
     .error { color: #f87171; font-size: 0.85rem; padding: 1rem; background: #1e2130; border: 1px solid #7f1d1d; border-radius: 8px; margin-bottom: 1.5rem; }
-    .skeleton { background: linear-gradient(90deg, #1e2130 25%, #2d3748 50%, #1e2130 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; display: inline-block; width: 80px; height: 2rem; }
+    .skeleton { background: linear-gradient(90deg,#1e2130 25%,#2d3748 50%,#1e2130 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; display: inline-block; width: 80px; height: 2rem; }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
   </style>
 </head>
 <body>
 <div id="root">
-  <div class="nav">
-    <a href="jobs.html">🔍 Search &amp; Apply for Jobs →</a>
+  <div class="nav"><a href="jobs.html">🔍 Search &amp; Apply for Jobs →</a></div>
+  <div class="header">
+    <h1>🇩🇪 DataForge — German Data &amp; AI Job Market</h1>
+    <p>Live analytics from Arbeitnow + BA Jobsuche · Updated up to 14× daily</p>
   </div>
-    <h1>🇩🇪 DataForge — German Data Job Market</h1>
-    <p>Live analytics from Arbeitnow + BA Jobsuche · Data updated up to 14× daily</p>
-  </div>
+
   <div id="error-box" class="error" style="display:none"></div>
+
   <div class="kpi-grid">
     <div class="kpi-card"><div class="label">Total Active Jobs</div><div class="value" id="kpi-total"><span class="skeleton"></span></div></div>
     <div class="kpi-card"><div class="label">New Today</div><div class="value" id="kpi-today"><span class="skeleton"></span></div></div>
     <div class="kpi-card"><div class="label">Arbeitnow</div><div class="value" id="kpi-arbeitnow"><span class="skeleton"></span></div><div class="sub">job board</div></div>
     <div class="kpi-card"><div class="label">BA Jobsuche</div><div class="value" id="kpi-ba"><span class="skeleton"></span></div><div class="sub">federal agency</div></div>
+    <div class="kpi-card"><div class="label">Remote Jobs</div><div class="value" id="kpi-remote"><span class="skeleton"></span></div><div class="sub">Arbeitnow only</div></div>
+    <div class="kpi-card"><div class="label">Expired (History)</div><div class="value" id="kpi-expired"><span class="skeleton"></span></div><div class="sub">SCD tracked</div></div>
   </div>
+
   <div class="card">
     <h2>New Jobs Per Day — Last 30 Days</h2>
     <div class="chart-wrap"><canvas id="trend-chart"></canvas></div>
   </div>
-  <div class="card">
-    <h2>Jobs by Source</h2>
-    <div id="source-bars"></div>
+
+  <div class="grid-2">
+    <div class="card no-mb">
+      <h2>Top 10 Cities</h2>
+      <div id="top-locations"></div>
+    </div>
+    <div class="card no-mb">
+      <h2>Top 10 Companies Hiring</h2>
+      <div id="top-companies"></div>
+    </div>
   </div>
+
+  <div style="margin-bottom:1.5rem"></div>
+
+  <div class="grid-2">
+    <div class="card no-mb">
+      <h2>Jobs by Source</h2>
+      <div id="source-bars"></div>
+    </div>
+    <div class="card no-mb">
+      <h2>Remote vs On-site &amp; Active vs Expired</h2>
+      <div id="donut-section"></div>
+    </div>
+  </div>
+
   <div class="status">
     <span class="dot"></span>
     <span>Last updated: <span id="last-updated">—</span></span>
-    <span style="margin-left:auto">Pipeline: Lambda → S3 Bronze → Silver → Gold</span>
+    <span style="margin-left:auto">Pipeline: Lambda → Bronze → Silver (SCD2) → Gold</span>
   </div>
 </div>
 
@@ -70,9 +108,8 @@
   const REFRESH_MS = 2 * 60 * 1000;
   const SOURCE_LABELS = { arbeitnow: "Arbeitnow", ba_api: "BA Jobsuche" };
 
-  let chartInstance = null;
-
-  function drawChart(trend) {
+  // ── Trend chart (Canvas) ──────────────────────────────────────────────────
+  function drawTrend(trend) {
     const canvas = document.getElementById("trend-chart");
     const ctx = canvas.getContext("2d");
     const dpr = window.devicePixelRatio || 1;
@@ -81,86 +118,135 @@
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
     const W = rect.width, H = rect.height;
-    const pad = { top: 10, right: 10, bottom: 30, left: 40 };
-    const cW = W - pad.left - pad.right;
-    const cH = H - pad.top - pad.bottom;
-
+    const pad = { top: 10, right: 10, bottom: 30, left: 42 };
+    const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
     ctx.clearRect(0, 0, W, H);
-
     const counts = trend.map(d => d.count);
     const maxVal = Math.max(...counts, 1);
-    const minVal = 0;
-
-    // Grid lines
-    ctx.strokeStyle = "#2d3748";
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = "#2d3748"; ctx.lineWidth = 1;
     [0, 0.25, 0.5, 0.75, 1].forEach(t => {
       const y = pad.top + cH * (1 - t);
       ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
-      ctx.fillStyle = "#64748b";
-      ctx.font = "11px system-ui";
-      ctx.textAlign = "right";
-      ctx.fillText(Math.round(minVal + t * (maxVal - minVal)), pad.left - 6, y + 4);
+      ctx.fillStyle = "#64748b"; ctx.font = "11px system-ui"; ctx.textAlign = "right";
+      ctx.fillText(Math.round(t * maxVal), pad.left - 6, y + 4);
     });
-
-    // X labels — show every ~5th
     const step = Math.ceil(trend.length / 6);
     trend.forEach((d, i) => {
       if (i % step !== 0) return;
       const x = pad.left + (i / (trend.length - 1)) * cW;
-      ctx.fillStyle = "#64748b";
-      ctx.font = "11px system-ui";
-      ctx.textAlign = "center";
+      ctx.fillStyle = "#64748b"; ctx.font = "11px system-ui"; ctx.textAlign = "center";
       ctx.fillText(d.date.slice(5), x, H - 6);
     });
-
-    // Gradient fill
     const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + cH);
-    grad.addColorStop(0, "rgba(99,102,241,0.3)");
-    grad.addColorStop(1, "rgba(99,102,241,0)");
-
+    grad.addColorStop(0, "rgba(99,102,241,0.3)"); grad.addColorStop(1, "rgba(99,102,241,0)");
     const pts = trend.map((d, i) => ({
       x: pad.left + (i / (trend.length - 1)) * cW,
-      y: pad.top + cH * (1 - (d.count - minVal) / (maxVal - minVal))
+      y: pad.top + cH * (1 - d.count / maxVal)
     }));
-
-    ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
     pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
-    ctx.lineTo(pts[pts.length - 1].x, pad.top + cH);
-    ctx.lineTo(pts[0].x, pad.top + cH);
-    ctx.closePath();
-    ctx.fillStyle = grad;
-    ctx.fill();
-
-    // Line
-    ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
+    ctx.lineTo(pts[pts.length-1].x, pad.top+cH); ctx.lineTo(pts[0].x, pad.top+cH);
+    ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
     pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
-    ctx.strokeStyle = "#6366f1";
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    ctx.strokeStyle = "#6366f1"; ctx.lineWidth = 2; ctx.stroke();
   }
 
-  function renderSourceBars(jobsBySource) {
-    const entries = Object.entries(jobsBySource).sort((a, b) => b[1] - a[1]);
-    const max = entries[0]?.[1] || 1;
-    document.getElementById("source-bars").innerHTML = entries.map(([src, count]) => `
-      <div class="source-row">
-        <span class="name">${SOURCE_LABELS[src] ?? src}</span>
-        <div class="bar-wrap"><div class="bar" style="width:${(count / max) * 100}%"></div></div>
-        <span class="count">${count.toLocaleString()}</span>
+  // ── Generic bar list ──────────────────────────────────────────────────────
+  function renderBars(containerId, items, nameKey, countKey, colorClass) {
+    const max = items[0]?.[countKey] || 1;
+    document.getElementById(containerId).innerHTML = items.map(item => `
+      <div class="bar-row ${colorClass}">
+        <span class="name" title="${esc(item[nameKey])}">${esc(item[nameKey])}</span>
+        <div class="bar-wrap"><div class="bar" style="width:${(item[countKey]/max)*100}%"></div></div>
+        <span class="count">${Number(item[countKey]).toLocaleString()}</span>
       </div>`).join("");
   }
 
+  // ── Donut chart (Canvas) ──────────────────────────────────────────────────
+  function drawDonut(canvasId, slices) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const size = 100, cx = size/2, cy = size/2, r = 38, inner = 22;
+    canvas.width = size; canvas.height = size;
+    const total = slices.reduce((s, x) => s + x.value, 0);
+    if (!total) return;
+    let angle = -Math.PI / 2;
+    slices.forEach(s => {
+      const sweep = (s.value / total) * 2 * Math.PI;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, angle, angle + sweep);
+      ctx.closePath();
+      ctx.fillStyle = s.color;
+      ctx.fill();
+      angle += sweep;
+    });
+    ctx.beginPath();
+    ctx.arc(cx, cy, inner, 0, 2 * Math.PI);
+    ctx.fillStyle = "#1e2130";
+    ctx.fill();
+  }
+
+  // ── Main render ───────────────────────────────────────────────────────────
   function render(data) {
-    document.getElementById("kpi-total").textContent = data.total_jobs.toLocaleString();
-    document.getElementById("kpi-today").textContent = data.new_today.toLocaleString();
-    document.getElementById("kpi-arbeitnow").textContent = (data.jobs_by_source.arbeitnow ?? 0).toLocaleString();
-    document.getElementById("kpi-ba").textContent = (data.jobs_by_source.ba_api ?? 0).toLocaleString();
-    document.getElementById("last-updated").textContent = new Date(data.last_updated).toLocaleString([], {dateStyle:'medium', timeStyle:'short'});
-    renderSourceBars(data.jobs_by_source);
-    if (data.trend?.length) drawChart(data.trend);
+    const rv = data.remote_vs_onsite || {};
+    const av = data.active_vs_expired || {};
+
+    document.getElementById("kpi-total").textContent    = (data.total_jobs || 0).toLocaleString();
+    document.getElementById("kpi-today").textContent    = (data.new_today  || 0).toLocaleString();
+    document.getElementById("kpi-arbeitnow").textContent = (data.jobs_by_source?.arbeitnow ?? 0).toLocaleString();
+    document.getElementById("kpi-ba").textContent        = (data.jobs_by_source?.ba_api    ?? 0).toLocaleString();
+    document.getElementById("kpi-remote").textContent    = (rv["Remote"]  || 0).toLocaleString();
+    document.getElementById("kpi-expired").textContent   = (av["Expired"] || 0).toLocaleString();
+    document.getElementById("last-updated").textContent  = new Date(data.last_updated).toLocaleString([], {dateStyle:"medium", timeStyle:"short"});
+
+    if (data.trend?.length)         drawTrend(data.trend);
+    if (data.top_locations?.length) renderBars("top-locations", data.top_locations, "location", "count", "bar-indigo");
+    if (data.top_companies?.length) renderBars("top-companies", data.top_companies, "company",  "count", "bar-emerald");
+
+    // Source bars
+    const srcEntries = Object.entries(data.jobs_by_source || {}).sort((a,b) => b[1]-a[1]);
+    const srcMax = srcEntries[0]?.[1] || 1;
+    document.getElementById("source-bars").innerHTML = srcEntries.map(([src, count]) => `
+      <div class="bar-row bar-indigo">
+        <span class="name">${SOURCE_LABELS[src] ?? src}</span>
+        <div class="bar-wrap"><div class="bar" style="width:${(count/srcMax)*100}%"></div></div>
+        <span class="count">${count.toLocaleString()}</span>
+      </div>`).join("");
+
+    // Donut section — two mini donuts side by side
+    document.getElementById("donut-section").innerHTML = `
+      <div style="display:flex;gap:2rem;flex-wrap:wrap">
+        <div class="donut-wrap">
+          <canvas id="donut-remote" class="donut-canvas" width="100" height="100"></canvas>
+          <div class="donut-legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#6366f1"></span>Remote: ${(rv["Remote"]||0).toLocaleString()}</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#2d3748"></span>On-site: ${(rv["On-site"]||0).toLocaleString()}</div>
+          </div>
+        </div>
+        <div class="donut-wrap">
+          <canvas id="donut-status" class="donut-canvas" width="100" height="100"></canvas>
+          <div class="donut-legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span>Active: ${(av["Active"]||0).toLocaleString()}</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#f43f5e"></span>Expired: ${(av["Expired"]||0).toLocaleString()}</div>
+          </div>
+        </div>
+      </div>`;
+
+    drawDonut("donut-remote", [
+      { value: rv["Remote"]  || 0, color: "#6366f1" },
+      { value: rv["On-site"] || 0, color: "#2d3748" },
+    ]);
+    drawDonut("donut-status", [
+      { value: av["Active"]  || 0, color: "#10b981" },
+      { value: av["Expired"] || 0, color: "#f43f5e" },
+    ]);
+  }
+
+  function esc(s) {
+    return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
   async function fetchMetrics() {
@@ -170,7 +256,7 @@
       const data = await res.json();
       document.getElementById("error-box").style.display = "none";
       render(data);
-    } catch (e) {
+    } catch(e) {
       const box = document.getElementById("error-box");
       box.style.display = "block";
       box.textContent = `⚠ Could not load data: ${e.message}`;

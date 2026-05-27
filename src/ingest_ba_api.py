@@ -17,9 +17,20 @@ def lambda_handler(event, context):
             raise ValueError("BRONZE_BUCKET environment variable is not set.")
         fetcher = BAFetcher()
         queries = [
+            # Data & Analytics
             "Data Engineer", "Data Scientist", "Data Analyst",
-            "Machine Learning", "Business Intelligence", "Data Architect",
-            "MLOps", "Analytics Engineer"
+            "Analytics Engineer", "Data Architect", "Business Intelligence",
+            "Data Platform", "Data Mesh", "Data Governance",
+            # Machine Learning & AI
+            "Machine Learning", "MLOps", "LLM Engineer",
+            "AI Engineer", "Artificial Intelligence", "Deep Learning",
+            "Computer Vision", "NLP Engineer", "Prompt Engineer",
+            "Generative AI", "AI Product Manager",
+            # Cloud & Infrastructure
+            "Cloud Engineer", "DevOps", "Platform Engineer",
+            "Site Reliability", "DataOps",
+            # Software Engineering
+            "Backend Engineer", "Software Engineer",
         ]
         all_jobs = []
         seen_ids = set()
@@ -57,6 +68,9 @@ def lambda_handler(event, context):
             'eintrittsdatum':     'start_date_raw',
             'modifikationsdatum': 'modified_at',
         }, inplace=True)
+
+        # Construct apply URL from job_id (refnr)
+        df['url'] = 'https://www.arbeitsagentur.de/jobsuche/jobdetail/' + df['job_id'].astype(str)
 
         # Add source and ingestion timestamp
         df['source'] = 'ba_api'
