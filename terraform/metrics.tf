@@ -23,30 +23,46 @@ module "metrics_lambda" {
   alert_email       = var.alert_email
 }
 
-# Lambda Function URL — public HTTPS endpoint, no API Gateway needed ($0 cost)
-resource "aws_lambda_function_url" "metrics" {
-  function_name      = module.metrics_lambda.lambda_function_name
-  authorization_type = "NONE"
-
-  cors {
-    allow_credentials = false
-    allow_origins     = [var.dashboard_origin]
-    allow_methods     = ["*"]
-    allow_headers     = ["Content-Type"]
-    max_age           = 300
+# API Gateway HTTP API — no account-level public access block, $0 cost within free tier
+resource "aws_apigatewayv2_api" "metrics" {
+  name          = "dataforge-metrics-api"
+  protocol_type = "HTTP"
+  cors_configuration {
+    allow_origins = ["*"]
+    allow_methods = ["GET", "OPTIONS"]
+    allow_headers = ["*"]
+    max_age       = 300
   }
 }
 
-# Allows anyone to invoke via the Function URL (required even with AUTH_TYPE=NONE)
-resource "aws_lambda_permission" "metrics_url_public" {
-  statement_id           = "AllowPublicFunctionURL"
-  action                 = "lambda:InvokeFunctionUrl"
-  function_name          = module.metrics_lambda.lambda_function_name
-  principal              = "*"
-  function_url_auth_type = "NONE"
+resource "aws_apigatewayv2_integration" "metrics" {
+  api_id                 = aws_apigatewayv2_api.metrics.id
+  integration_type       = "AWS_PROXY"
+  integration_uri        = module.metrics_lambda.lambda_function_arn
+  payload_format_version = "2.0"
+}
+
+resource "aws_apigatewayv2_route" "metrics" {
+  api_id    = aws_apigatewayv2_api.metrics.id
+  route_key = "GET /"
+  target    = "integrations/${aws_apigatewayv2_integration.metrics.id}"
+}
+
+resource "aws_apigatewayv2_stage" "metrics" {
+  api_id      = aws_apigatewayv2_api.metrics.id
+  name        = "$default"
+  auto_deploy = true
+}
+
+resource "aws_lambda_permission" "apigw_metrics" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = module.metrics_lambda.lambda_function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.metrics.execution_arn}/*/*"
 }
 
 output "metrics_function_url" {
   description = "Paste this URL into docs/index.html as METRICS_API_URL"
-  value       = aws_lambda_function_url.metrics.function_url
+  value       = aws_apigatewayv2_stage.metrics.invoke_url
 }
