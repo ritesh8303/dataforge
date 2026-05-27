@@ -43,7 +43,7 @@
     /* ── KPI row ── */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 1rem; margin-bottom: 2rem;
     }
     @media(max-width:1024px){ .kpi-grid { grid-template-columns: repeat(3,1fr); } }
@@ -212,6 +212,21 @@
       <div class="label">Expired (History)</div>
       <div class="value" id="kpi-expired"><span class="skeleton"></span></div>
       <div class="sub">SCD tracked</div>
+    </div>
+    <div class="kpi-card" style="--accent:#a78bfa">
+      <div class="label">🇬🇧 English Jobs</div>
+      <div class="value" id="kpi-english"><span class="skeleton"></span></div>
+      <div class="sub">English descriptions</div>
+    </div>
+    <div class="kpi-card" style="--accent:#34d399">
+      <div class="label">🏠 Homeoffice Mentioned</div>
+      <div class="value" id="kpi-homeoffice"><span class="skeleton"></span></div>
+      <div class="sub">in job description</div>
+    </div>
+    <div class="kpi-card" style="--accent:#fb923c">
+      <div class="label">🎁 Jobs with Benefits</div>
+      <div class="value" id="kpi-benefits"><span class="skeleton"></span></div>
+      <div class="sub">explicit benefits section</div>
     </div>
   </div>
 
@@ -417,6 +432,12 @@
     document.getElementById("kpi-ba").textContent        = (data.jobs_by_source?.ba_api    ?? 0).toLocaleString();
     document.getElementById("kpi-remote").textContent    = (rv["Remote"]  || 0).toLocaleString();
     document.getElementById("kpi-expired").textContent   = (av["Expired"] || 0).toLocaleString();
+
+    // Description-derived KPIs (Arbeitnow only — real data from job descriptions)
+    const di = data.description_insights || {};
+    document.getElementById("kpi-english").textContent   = (di.english_jobs         || 0).toLocaleString();
+    document.getElementById("kpi-homeoffice").textContent = (di.homeoffice_mentioned || 0).toLocaleString();
+    document.getElementById("kpi-benefits").textContent  = (di.jobs_with_benefits   || 0).toLocaleString();
 
     // Top skill KPI
     if (data.top_skills?.length) {

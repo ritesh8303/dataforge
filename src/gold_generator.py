@@ -92,6 +92,12 @@ def lambda_handler(event, context):
         # 8. Top skills from tags (Arbeitnow) + title keywords (both sources)
         import re
         from collections import Counter
+        import html
+
+        def strip_html(text):
+            """Remove HTML tags and decode entities."""
+            text = re.sub(r'<[^>]+>', ' ', str(text))
+            return html.unescape(text)
 
         SKILL_KEYWORDS = [
             # Data
@@ -112,20 +118,54 @@ def lambda_handler(event, context):
             r'\b(' + '|'.join(re.escape(s) for s in SKILL_KEYWORDS) + r')\b',
             re.IGNORECASE
         )
-        skill_counter = Counter()
+
+        # Patterns for description-derived KPIs
+        english_pattern  = re.compile(r'\b(the|and|for|with|you|our|your|we are|we\'re|join|team|role|experience|skills|requirements|responsibilities)\b', re.IGNORECASE)
+        homeoffice_pattern = re.compile(r'\b(homeoffice|home.office|remote|hybrid|work from home|mobiles arbeiten)\b', re.IGNORECASE)
+        benefits_pattern = re.compile(r'<h2[^>]*>\s*(benefits|benefits|vorteile|was wir bieten|was wir dir bieten|unser angebot)\s*</h2>', re.IGNORECASE)
+
+        skill_counter    = Counter()
+        english_count    = 0
+        homeoffice_desc_count = 0
+        benefits_count   = 0
+
+        arbeitnow_jobs = current[current['source'] == 'arbeitnow']
+
         for _, row in current.iterrows():
-            text = ' '.join(filter(None, [
+            raw_desc = str(row.get('description', ''))
+            plain_text = strip_html(raw_desc)
+            combined = ' '.join(filter(None, [
                 str(row.get('title', '')),
                 str(row.get('tags', '')),
-                str(row.get('description', ''))[:500],  # cap description length
+                plain_text[:500],
             ]))
-            for match in skill_pattern.finditer(text):
+            for match in skill_pattern.finditer(combined):
                 skill_counter[match.group().title()] += 1
+
+        for _, row in arbeitnow_jobs.iterrows():
+            raw_desc = str(row.get('description', ''))
+            plain_text = strip_html(raw_desc)
+            if len(plain_text) > 100:
+                en_matches = len(english_pattern.findall(plain_text[:1000]))
+                total_words = len(plain_text[:1000].split())
+                if total_words > 0 and (en_matches / total_words) > 0.04:
+                    english_count += 1
+            if homeoffice_pattern.search(raw_desc):
+                homeoffice_desc_count += 1
+            if benefits_pattern.search(raw_desc):
+                benefits_count += 1
 
         top_skills = pd.DataFrame(
             skill_counter.most_common(20),
             columns=['skill', 'job_count']
         )
+
+        description_insights = pd.DataFrame([{
+            'english_jobs':        english_count,
+            'homeoffice_mentioned': homeoffice_desc_count,
+            'jobs_with_benefits':  benefits_count,
+            'arbeitnow_total':     len(arbeitnow_jobs),
+        }])
         gold_base = f"s3://{gold_bucket}"
         wr.s3.to_csv(all_jobs,          path=f"{gold_base}/all_jobs.csv",           index=False, quoting=1)  # QUOTE_ALL
         wr.s3.to_csv(expired_jobs,       path=f"{gold_base}/expired_jobs.csv",       index=False, quoting=1)  # QUOTE_ALL
@@ -135,9 +175,10 @@ def lambda_handler(event, context):
         wr.s3.to_csv(jobs_trend,        path=f"{gold_base}/jobs_trend.csv",         index=False)
         wr.s3.to_csv(top_companies,     path=f"{gold_base}/top_companies.csv",      index=False)
         wr.s3.to_csv(active_vs_expired, path=f"{gold_base}/active_vs_expired.csv",  index=False)
-        wr.s3.to_csv(top_skills,         path=f"{gold_base}/top_skills.csv",          index=False)
+        wr.s3.to_csv(top_skills,          path=f"{gold_base}/top_skills.csv",           index=False)
+        wr.s3.to_csv(description_insights, path=f"{gold_base}/description_insights.csv", index=False)
 
-        msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 9"
+        msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 10"
         print(msg)
         return {"statusCode": 200, "body": json.dumps({"message": msg})}
 

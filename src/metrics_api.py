@@ -33,6 +33,7 @@ def _build_payload(bucket):
     remote_rows   = _read_csv(bucket, "remote_vs_onsite.csv")
     status_rows   = _read_csv(bucket, "active_vs_expired.csv")
     skill_rows    = _read_csv(bucket, "top_skills.csv")
+    desc_rows     = _read_csv(bucket, "description_insights.csv")
 
     today = date.today().isoformat()
 
@@ -62,6 +63,14 @@ def _build_payload(bucket):
         for r in skill_rows[:15]
     ]
 
+    desc = desc_rows[0] if desc_rows else {}
+    description_insights = {
+        "english_jobs":         int(desc.get("english_jobs", 0)),
+        "homeoffice_mentioned": int(desc.get("homeoffice_mentioned", 0)),
+        "jobs_with_benefits":   int(desc.get("jobs_with_benefits", 0)),
+        "arbeitnow_total":      int(desc.get("arbeitnow_total", 0)),
+    }
+
     return {
         "total_jobs":        len(all_jobs),
         "new_today":         sum(1 for j in all_jobs if j.get("date_added", "") == today),
@@ -71,7 +80,8 @@ def _build_payload(bucket):
         "top_companies":     top_companies,
         "remote_vs_onsite":  remote_vs_onsite,
         "active_vs_expired": active_vs_expired,
-        "top_skills":         top_skills,
+        "top_skills":          top_skills,
+        "description_insights": description_insights,
         "last_updated":      __import__("datetime").datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
 
