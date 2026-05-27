@@ -45,7 +45,7 @@ def process_scd_type_2(bronze_df, silver_path):
     now = datetime.now(timezone.utc)
 
     # Columns used to detect changes — all present after Bronze normalization
-    attr_cols = ['title', 'company', 'location', 'source']
+    attr_cols = ['title', 'company', 'location', 'source', 'job_types']
 
     # Validate that job_id exists — both ingestors now produce this column
     if 'job_id' not in bronze_df.columns:

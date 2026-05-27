@@ -18,10 +18,15 @@ def lambda_handler(event, context):
         print(f"Total active jobs: {len(current)}")
 
         # 1. All jobs
-        cols = [c for c in ['job_id', 'title', 'company', 'location', 'source', 'scd_start_date', 'remote'] if c in current.columns]
+        cols = [c for c in ['job_id', 'title', 'company', 'location', 'source', 'scd_start_date', 'remote', 'url', 'job_types', 'ingested_at'] if c in current.columns]
         all_jobs = current[cols].copy()
         all_jobs['date_added'] = pd.to_datetime(all_jobs['scd_start_date']).dt.date.astype(str)
         all_jobs.drop(columns=['scd_start_date'], inplace=True)
+        # Normalize to frontend-friendly column names
+        all_jobs.rename(columns={'url': 'job_url', 'remote': 'is_remote'}, inplace=True)
+        all_jobs['is_remote'] = all_jobs.get('is_remote', pd.Series(False, index=all_jobs.index)).apply(
+            lambda x: True if str(x) == 'True' else False
+        )
 
         # 2. Jobs by source
         jobs_by_source = current.groupby('source').size().reset_index(name='job_count').sort_values('job_count', ascending=False)

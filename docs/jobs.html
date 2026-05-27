@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataForge — Find Jobs in Germany</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0f1117; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+    #root { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+    .header { margin-bottom: 1.5rem; }
+    .header h1 { font-size: 1.5rem; font-weight: 700; color: #f8fafc; }
+    .header p { color: #94a3b8; font-size: 0.85rem; margin-top: 0.3rem; }
+    .nav { display: flex; gap: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; }
+    .nav a { color: #6366f1; text-decoration: none; }
+    .nav a:hover { text-decoration: underline; }
+    .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+    @media(min-width:640px){ .filters { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; } }
+    input, select { background: #1e2130; border: 1px solid #2d3748; border-radius: 8px; color: #e2e8f0; padding: 0.6rem 0.85rem; font-size: 0.85rem; width: 100%; outline: none; }
+    input:focus, select:focus { border-color: #6366f1; }
+    select option { background: #1e2130; }
+    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.8rem; color: #64748b; }
+    .job-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .job-card { background: #1e2130; border: 1px solid #2d3748; border-radius: 10px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; transition: border-color 0.15s; }
+    .job-card:hover { border-color: #6366f1; }
+    .job-info { flex: 1; min-width: 0; }
+    .job-title { font-size: 0.9rem; font-weight: 600; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .job-company { font-size: 0.82rem; color: #94a3b8; margin-top: 0.2rem; }
+    .job-meta { font-size: 0.78rem; color: #64748b; margin-top: 0.4rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+    .tag { background: #2d3748; border-radius: 4px; padding: 0.15rem 0.5rem; font-size: 0.72rem; color: #94a3b8; }
+    .tag.remote { background: #1e3a2f; color: #4ade80; }
+    .tag.source-ba { background: #1e2a3a; color: #60a5fa; }
+    .tag.type { background: #2d2040; color: #c084fc; }
+    .apply-btn { flex-shrink: 0; background: #6366f1; color: #fff; border: none; border-radius: 7px; padding: 0.5rem 1.1rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; display: inline-block; }
+    .apply-btn:hover { background: #4f46e5; }
+    .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    .page-btn { background: #1e2130; border: 1px solid #2d3748; border-radius: 6px; color: #94a3b8; padding: 0.4rem 0.75rem; font-size: 0.8rem; cursor: pointer; }
+    .page-btn.active { background: #6366f1; border-color: #6366f1; color: #fff; }
+    .page-btn:hover:not(.active) { border-color: #6366f1; color: #e2e8f0; }
+    .loading { text-align: center; color: #64748b; padding: 3rem; }
+    .error { color: #f87171; font-size: 0.85rem; padding: 1rem; background: #1e2130; border: 1px solid #7f1d1d; border-radius: 8px; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+<div id="root">
+  <div class="header">
+    <h1>🔍 Find Jobs in Germany</h1>
+    <p>Search across Arbeitnow + BA Jobsuche · Updated up to 14× daily</p>
+  </div>
+  <div class="nav">
+    <a href="index.html">← Analytics Dashboard</a>
+  </div>
+  <div id="error-box" class="error" style="display:none"></div>
+  <div class="filters">
+    <input id="search"   type="text" placeholder="Title, company, or keyword..." />
+    <input id="location" type="text" placeholder="City (e.g. Berlin)" />
+    <select id="job_type">
+      <option value="">All types</option>
+      <option value="full_time">Full-time</option>
+      <option value="part_time">Part-time</option>
+      <option value="internship">Internship</option>
+      <option value="freelance">Freelance</option>
+      <option value="temporary">Temporary</option>
+    </select>
+    <select id="source">
+      <option value="">All sources</option>
+      <option value="arbeitnow">Arbeitnow</option>
+      <option value="ba_api">BA Jobsuche</option>
+    </select>
+    <select id="remote">
+      <option value="">Remote &amp; On-site</option>
+      <option value="true">Remote only</option>
+      <option value="false">On-site only</option>
+    </select>
+  </div>
+
+  <div class="results-header">
+    <span id="result-count">Loading...</span>
+    <span id="last-updated"></span>
+  </div>
+
+  <div class="job-list" id="job-list">
+    <div class="loading">Loading jobs...</div>
+  </div>
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<script>
+  const JOBS_API_URL = "https://2amv4immb0.execute-api.eu-central-1.amazonaws.com/";
+  const PAGE_SIZE = 25;
+
+  let allJobs = [];
+  let filtered = [];
+  let page = 1;
+
+  const TYPE_LABELS = {
+    full_time: "Full-time", part_time: "Part-time",
+    internship: "Internship", freelance: "Freelance", temporary: "Temporary"
+  };
+
+  async function loadJobs() {
+    try {
+      const res = await fetch(`${JOBS_API_URL}?limit=1000`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      allJobs = data.jobs || [];
+      document.getElementById("last-updated").textContent =
+        `${allJobs.length.toLocaleString()} jobs loaded`;
+      applyFilters();
+    } catch(e) {
+      document.getElementById("error-box").style.display = "block";
+      document.getElementById("error-box").textContent = `⚠ ${e.message}`;
+      document.getElementById("result-count").textContent = "Failed to load";
+    }
+  }
+
+  function applyFilters() {
+    const search   = document.getElementById("search").value.toLowerCase().trim();
+    const location = document.getElementById("location").value.toLowerCase().trim();
+    const job_type = document.getElementById("job_type").value;
+    const source   = document.getElementById("source").value;
+    const remote   = document.getElementById("remote").value;
+
+    filtered = allJobs.filter(j => {
+      const title   = (j.title    || "").toLowerCase();
+      const company = (j.company  || "").toLowerCase();
+      const loc     = (j.location || "").toLowerCase();
+      const types   = (j.job_types || "").toLowerCase();
+      const isRemote = j.is_remote === "True" || j.is_remote === true;
+
+      if (search   && !title.includes(search) && !company.includes(search) && !loc.includes(search)) return false;
+      if (location && !loc.includes(location)) return false;
+      if (source   && j.source !== source) return false;
+      if (job_type && !types.includes(job_type)) return false;
+      if (remote === "true"  && !isRemote) return false;
+      if (remote === "false" &&  isRemote) return false;
+      return true;
+    });
+
+    page = 1;
+    document.getElementById("result-count").textContent =
+      `${filtered.length.toLocaleString()} of ${allJobs.length.toLocaleString()} jobs`;
+    renderJobs();
+  }
+
+  function renderJobs() {
+    const start = (page - 1) * PAGE_SIZE;
+    const slice = filtered.slice(start, start + PAGE_SIZE);
+    const list  = document.getElementById("job-list");
+
+    if (!filtered.length) {
+      list.innerHTML = `<div class="loading">No jobs match your filters.</div>`;
+      document.getElementById("pagination").innerHTML = "";
+      return;
+    }
+
+    list.innerHTML = slice.map(j => {
+      const isRemote = j.is_remote === "True" || j.is_remote === true;
+      const sourceLabel = j.source === "ba_api" ? "BA Jobsuche" : "Arbeitnow";
+      const sourceClass = j.source === "ba_api" ? "source-ba" : "";
+      const url = j.job_url || j.url || "#";
+
+      // Parse job_types CSV string into individual tags
+      const typeTags = (j.job_types || "")
+        .split(",")
+        .map(t => t.trim())
+        .filter(Boolean)
+        .map(t => `<span class="tag type">${esc(TYPE_LABELS[t] || t)}</span>`)
+        .join("");
+
+      return `
+        <div class="job-card">
+          <div class="job-info">
+            <div class="job-title" title="${esc(j.title)}">${esc(j.title)}</div>
+            <div class="job-company">${esc(j.company || "—")}</div>
+            <div class="job-meta">
+              <span>📍 ${esc((j.location || "—").split(",")[0].trim())}</span>
+              <span class="tag ${sourceClass}">${sourceLabel}</span>
+              ${isRemote ? '<span class="tag remote">🌐 Remote</span>' : ""}
+              ${typeTags}
+              <span>${j.date_added || ""}</span>
+            </div>
+          </div>
+          <a class="apply-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
+            Apply →
+          </a>
+        </div>`;
+    }).join("");
+
+    renderPagination();
+  }
+
+  function renderPagination() {
+    const total = Math.ceil(filtered.length / PAGE_SIZE);
+    if (total <= 1) { document.getElementById("pagination").innerHTML = ""; return; }
+    const lo = Math.max(1, page - 2), hi = Math.min(total, page + 2);
+    const btns = [];
+    if (page > 1) btns.push(`<button class="page-btn" onclick="goPage(${page-1})">‹</button>`);
+    for (let i = lo; i <= hi; i++)
+      btns.push(`<button class="page-btn ${i===page?"active":""}" onclick="goPage(${i})">${i}</button>`);
+    if (page < total) btns.push(`<button class="page-btn" onclick="goPage(${page+1})">›</button>`);
+    document.getElementById("pagination").innerHTML = btns.join("");
+  }
+
+  function goPage(p) { page = p; renderJobs(); window.scrollTo(0, 0); }
+
+  function esc(s) {
+    return String(s || "")
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  ["search","location","job_type","source","remote"].forEach(id => {
+    document.getElementById(id).addEventListener("input",  applyFilters);
+    document.getElementById(id).addEventListener("change", applyFilters);
+  });
+
+  loadJobs();
+</script>
+</body>
+</html>
