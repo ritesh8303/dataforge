@@ -15,7 +15,7 @@
     .nav a { color: #6366f1; text-decoration: none; }
     .nav a:hover { text-decoration: underline; }
     .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
-    @media(min-width:640px){ .filters { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; } }
+    @media(min-width:640px){ .filters { grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr; } }
     input, select { background: #1e2130; border: 1px solid #2d3748; border-radius: 8px; color: #e2e8f0; padding: 0.6rem 0.85rem; font-size: 0.85rem; width: 100%; outline: none; }
     input:focus, select:focus { border-color: #6366f1; }
     select option { background: #1e2130; }
@@ -72,6 +72,14 @@
       <option value="true">Remote only</option>
       <option value="false">On-site only</option>
     </select>
+    <select id="sort">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+    </select>
+    <select id="status">
+      <option value="active">Active jobs</option>
+      <option value="expired">Expired jobs</option>
+    </select>
   </div>
 
   <div class="results-header">
@@ -107,6 +115,8 @@
     if (source)   params.set("source",   source);
     if (remote)   params.set("remote",   remote);
     if (job_type) params.set("job_type", job_type);
+    params.set("sort",   document.getElementById("sort").value || "newest");
+    params.set("status", document.getElementById("status").value || "active");
 
     try {
       const res = await fetch(`${JOBS_API_URL}?${params}`);
@@ -212,7 +222,7 @@
   ["search","location"].forEach(id => {
     document.getElementById(id).addEventListener("input",  applyFilters);
   });
-  ["source","remote","job_type"].forEach(id => {
+  ["source","remote","job_type","sort","status"].forEach(id => {
     document.getElementById(id).addEventListener("change", loadJobs);
   });
 

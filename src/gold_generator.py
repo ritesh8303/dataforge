@@ -17,7 +17,7 @@ def lambda_handler(event, context):
         current = df[df['is_current'] == True].copy().reset_index(drop=True)
         print(f"Total active jobs: {len(current)}")
 
-        # 1. All jobs
+        # 1. All active jobs
         cols = [c for c in [
             'job_id', 'title', 'company', 'location', 'zip_code', 'state',
             'source', 'scd_start_date', 'remote', 'url', 'job_types',
@@ -26,9 +26,24 @@ def lambda_handler(event, context):
         all_jobs = current[cols].copy()
         all_jobs['date_added'] = pd.to_datetime(all_jobs['scd_start_date']).dt.date.astype(str)
         all_jobs.drop(columns=['scd_start_date'], inplace=True)
-        # Normalize to frontend-friendly column names
         all_jobs.rename(columns={'url': 'job_url', 'remote': 'is_remote'}, inplace=True)
         all_jobs['is_remote'] = all_jobs.get('is_remote', pd.Series(False, index=all_jobs.index)).apply(
+            lambda x: True if str(x) == 'True' else False
+        )
+
+        # 1b. Expired jobs (is_current=False)
+        expired_raw = df[df['is_current'] == False].copy()
+        exp_cols = [c for c in [
+            'job_id', 'title', 'company', 'location', 'zip_code', 'state',
+            'source', 'scd_start_date', 'scd_end_date', 'remote', 'url', 'job_types',
+            'tags', 'start_date_raw', 'modified_at', 'ingested_at'
+        ] if c in expired_raw.columns]
+        expired_jobs = expired_raw[exp_cols].copy()
+        expired_jobs['date_added']   = pd.to_datetime(expired_jobs['scd_start_date']).dt.date.astype(str)
+        expired_jobs['date_expired'] = pd.to_datetime(expired_jobs['scd_end_date']).dt.date.astype(str)
+        expired_jobs.drop(columns=['scd_start_date', 'scd_end_date'], inplace=True)
+        expired_jobs.rename(columns={'url': 'job_url', 'remote': 'is_remote'}, inplace=True)
+        expired_jobs['is_remote'] = expired_jobs.get('is_remote', pd.Series(False, index=expired_jobs.index)).apply(
             lambda x: True if str(x) == 'True' else False
         )
 
@@ -76,6 +91,7 @@ def lambda_handler(event, context):
         # Write all to S3 gold bucket
         gold_base = f"s3://{gold_bucket}"
         wr.s3.to_csv(all_jobs,          path=f"{gold_base}/all_jobs.csv",           index=False, quoting=1)  # QUOTE_ALL
+        wr.s3.to_csv(expired_jobs,       path=f"{gold_base}/expired_jobs.csv",       index=False, quoting=1)  # QUOTE_ALL
         wr.s3.to_csv(jobs_by_source,    path=f"{gold_base}/jobs_by_source.csv",     index=False)
         wr.s3.to_csv(top_locations,     path=f"{gold_base}/top_locations.csv",      index=False)
         wr.s3.to_csv(remote_vs_onsite,  path=f"{gold_base}/remote_vs_onsite.csv",   index=False)

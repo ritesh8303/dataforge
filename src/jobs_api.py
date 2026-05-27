@@ -47,14 +47,21 @@ def lambda_handler(event, context):
     remote    = (params.get('remote') or '').lower().strip()
     job_type  = (params.get('job_type') or '').lower().strip()
     location  = (params.get('location') or '').lower().strip()
-    limit     = min(int(params.get('limit', 500)), 1000)
+    sort      = (params.get('sort') or 'newest').lower().strip()  # newest | oldest
+    status    = (params.get('status') or 'active').lower().strip()  # active | expired
+    limit     = min(int(params.get('limit', 500)), 5000)
 
+    cache_key = status
     now = time.time()
-    if _cache['data'] is None or (now - _cache['ts']) > CACHE_TTL:
-        _cache['data'] = _load_jobs()
-        _cache['ts'] = now
+    if _cache.get(cache_key) is None or (now - _cache.get(cache_key + '_ts', 0)) > CACHE_TTL:
+        bucket = os.environ['GOLD_BUCKET']
+        key = 'expired_jobs.csv' if status == 'expired' else 'all_jobs.csv'
+        obj = s3.get_object(Bucket=bucket, Key=key)
+        content = obj['Body'].read().decode('utf-8')
+        _cache[cache_key] = list(csv.DictReader(StringIO(content)))
+        _cache[cache_key + '_ts'] = now
 
-    jobs = _cache['data']
+    jobs = _cache[cache_key]
 
     if search:
         jobs = [j for j in jobs if
@@ -72,7 +79,11 @@ def lambda_handler(event, context):
     if job_type:
         jobs = [j for j in jobs if job_type in j.get('job_types', '').lower()]
 
-    all_jobs = _cache['data']
+    # Sort by date
+    reverse = (sort != 'oldest')
+    jobs = sorted(jobs, key=lambda j: j.get('date_added', ''), reverse=reverse)
+
+    all_jobs = _cache.get('active', _cache.get('data', []))
     today = __import__('datetime').date.today().isoformat()
     kpis = {
         'total':     len(all_jobs),
