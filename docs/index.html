@@ -37,7 +37,7 @@
 <div id="root">
   <div class="header">
     <h1>🇩🇪 DataForge — German Data Job Market</h1>
-    <p>Live analytics from Arbeitnow + BA Jobsuche · Refreshes every 2 minutes</p>
+    <p>Live analytics from Arbeitnow + BA Jobsuche · Data updated up to 14× daily</p>
   </div>
   <div id="error-box" class="error" style="display:none"></div>
   <div class="kpi-grid">
@@ -154,7 +154,7 @@
     document.getElementById("kpi-today").textContent = data.new_today.toLocaleString();
     document.getElementById("kpi-arbeitnow").textContent = (data.jobs_by_source.arbeitnow ?? 0).toLocaleString();
     document.getElementById("kpi-ba").textContent = (data.jobs_by_source.ba_api ?? 0).toLocaleString();
-    document.getElementById("last-updated").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    document.getElementById("last-updated").textContent = new Date(data.last_updated).toLocaleString([], {dateStyle:'medium', timeStyle:'short'});
     renderSourceBars(data.jobs_by_source);
     if (data.trend?.length) drawChart(data.trend);
   }
