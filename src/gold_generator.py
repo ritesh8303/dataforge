@@ -75,7 +75,7 @@ def lambda_handler(event, context):
 
         # Write all to S3 gold bucket
         gold_base = f"s3://{gold_bucket}"
-        wr.s3.to_csv(all_jobs,          path=f"{gold_base}/all_jobs.csv",           index=False)
+        wr.s3.to_csv(all_jobs,          path=f"{gold_base}/all_jobs.csv",           index=False, quoting=1)  # QUOTE_ALL
         wr.s3.to_csv(jobs_by_source,    path=f"{gold_base}/jobs_by_source.csv",     index=False)
         wr.s3.to_csv(top_locations,     path=f"{gold_base}/top_locations.csv",      index=False)
         wr.s3.to_csv(remote_vs_onsite,  path=f"{gold_base}/remote_vs_onsite.csv",   index=False)
