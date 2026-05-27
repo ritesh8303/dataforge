@@ -6,247 +6,445 @@
   <title>DataForge — German Data & AI Job Market</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0f1117; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
-    #root { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
-    .nav { display: flex; gap: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; }
-    .nav a { color: #6366f1; text-decoration: none; font-weight: 600; }
-    .nav a:hover { text-decoration: underline; }
-    .header { margin-bottom: 2rem; }
-    .header h1 { font-size: 1.6rem; font-weight: 700; color: #f8fafc; }
-    .header p { color: #94a3b8; font-size: 0.85rem; margin-top: 0.3rem; }
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-    .kpi-card { background: #1e2130; border: 1px solid #2d3748; border-radius: 10px; padding: 1.25rem 1.5rem; }
-    .kpi-card .label { font-size: 0.72rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
-    .kpi-card .value { font-size: 2rem; font-weight: 700; color: #f8fafc; min-height: 2.5rem; }
-    .kpi-card .sub { font-size: 0.72rem; color: #64748b; margin-top: 0.2rem; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-    @media(max-width:700px){ .grid-2 { grid-template-columns: 1fr; } }
-    .card { background: #1e2130; border: 1px solid #2d3748; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
-    .card.no-mb { margin-bottom: 0; }
-    .card h2 { font-size: 0.82rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem; }
-    .bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.55rem; }
-    .bar-row .name { font-size: 0.8rem; color: #cbd5e1; width: 130px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .bar-row .bar-wrap { flex: 1; background: #2d3748; border-radius: 4px; height: 7px; overflow: hidden; }
-    .bar-row .bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
-    .bar-indigo  .bar { background: #6366f1; }
-    .bar-emerald .bar { background: #10b981; }
-    .bar-amber   .bar { background: #f59e0b; }
-    .bar-rose    .bar { background: #f43f5e; }
-    .bar-row .count { font-size: 0.78rem; color: #94a3b8; width: 45px; text-align: right; flex-shrink: 0; }
-    .chart-wrap { position: relative; width: 100%; height: 200px; }
-    canvas { width: 100% !important; height: 100% !important; }
-    .donut-wrap { display: flex; align-items: center; gap: 1.5rem; }
-    .donut-canvas { flex-shrink: 0; }
-    .donut-legend { display: flex; flex-direction: column; gap: 0.5rem; }
-    .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: #cbd5e1; }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: #64748b; margin-top: 1.5rem; }
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; flex-shrink: 0; }
+
+    body {
+      background: #080c14;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    #root { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* ── Top bar ── */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 2.5rem; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .topbar-left h1 { font-size: 1.4rem; font-weight: 700; color: #f8fafc; }
+    .topbar-left p  { color: #64748b; font-size: 0.8rem; margin-top: 0.2rem; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .nav-btn {
+      background: #6366f1; color: #fff; text-decoration: none;
+      padding: 0.5rem 1.1rem; border-radius: 8px; font-size: 0.82rem;
+      font-weight: 600; white-space: nowrap;
+    }
+    .nav-btn:hover { background: #4f46e5; }
+    .live-badge {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.75rem; color: #64748b;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #22c55e; animation: pulse 2s infinite; flex-shrink: 0;
+    }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-    .error { color: #f87171; font-size: 0.85rem; padding: 1rem; background: #1e2130; border: 1px solid #7f1d1d; border-radius: 8px; margin-bottom: 1.5rem; }
-    .skeleton { background: linear-gradient(90deg,#1e2130 25%,#2d3748 50%,#1e2130 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; display: inline-block; width: 80px; height: 2rem; }
+
+    /* ── KPI row ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    @media(max-width:1024px){ .kpi-grid { grid-template-columns: repeat(3,1fr); } }
+    @media(max-width:600px){  .kpi-grid { grid-template-columns: repeat(2,1fr); } }
+
+    .kpi-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      position: relative; overflow: hidden;
+    }
+    .kpi-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: var(--accent, #6366f1);
+    }
+    .kpi-card .label {
+      font-size: 0.68rem; color: #6b7280;
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem;
+    }
+    .kpi-card .value {
+      font-size: 1.75rem; font-weight: 700; color: #f9fafb; line-height: 1;
+    }
+    .kpi-card .sub { font-size: 0.68rem; color: #6b7280; margin-top: 0.35rem; }
+
+    /* ── Cards ── */
+    .card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+    .card-title {
+      font-size: 0.75rem; font-weight: 600; color: #9ca3af;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ── Layout grids ── */
+    .row { display: grid; gap: 1.25rem; margin-bottom: 1.25rem; }
+    .row-1   { grid-template-columns: 1fr; }
+    .row-2   { grid-template-columns: 1fr 1fr; }
+    .row-3   { grid-template-columns: 1fr 1fr 1fr; }
+    .row-2-1 { grid-template-columns: 2fr 1fr; }
+    @media(max-width:900px){
+      .row-2, .row-3, .row-2-1 { grid-template-columns: 1fr; }
+    }
+
+    /* ── Trend chart ── */
+    .chart-wrap { width: 100%; height: 220px; position: relative; }
+    canvas.trend { width: 100% !important; height: 100% !important; display: block; }
+
+    /* ── Bar rows ── */
+    .bar-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+    .bar-row:last-child { margin-bottom: 0; }
+    .bar-name {
+      font-size: 0.78rem; color: #d1d5db;
+      width: 120px; flex-shrink: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .bar-track {
+      flex: 1; background: #1f2937; border-radius: 99px; height: 6px; overflow: hidden;
+    }
+    .bar-fill { height: 100%; border-radius: 99px; transition: width 0.7s ease; }
+    .bar-count { font-size: 0.72rem; color: #6b7280; width: 40px; text-align: right; flex-shrink: 0; }
+
+    /* ── Donut ── */
+    .donut-card-inner {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 1rem; height: 100%;
+    }
+    .donut-ring { position: relative; width: 130px; height: 130px; flex-shrink: 0; }
+    .donut-ring canvas { width: 130px !important; height: 130px !important; display: block; }
+    .donut-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .donut-center .big { font-size: 1.3rem; font-weight: 700; color: #f9fafb; line-height: 1; }
+    .donut-center .small { font-size: 0.62rem; color: #6b7280; margin-top: 0.2rem; }
+    .donut-legend { display: flex; flex-direction: column; gap: 0.55rem; width: 100%; }
+    .legend-row {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.78rem;
+    }
+    .legend-left { display: flex; align-items: center; gap: 0.5rem; color: #d1d5db; }
+    .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .legend-val { color: #9ca3af; font-variant-numeric: tabular-nums; }
+
+    /* ── Skeleton ── */
+    .skeleton {
+      background: linear-gradient(90deg,#111827 25%,#1f2937 50%,#111827 75%);
+      background-size: 200% 100%; animation: shimmer 1.5s infinite;
+      border-radius: 6px; display: inline-block; width: 70px; height: 1.75rem;
+    }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* ── Error ── */
+    .error {
+      color: #f87171; font-size: 0.82rem; padding: 0.9rem 1rem;
+      background: #1c0a0a; border: 1px solid #7f1d1d;
+      border-radius: 10px; margin-bottom: 1.5rem;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 2rem; font-size: 0.72rem; color: #4b5563;
+      flex-wrap: wrap; gap: 0.5rem;
+    }
   </style>
 </head>
 <body>
 <div id="root">
-  <div class="nav"><a href="jobs.html">🔍 Search &amp; Apply for Jobs →</a></div>
-  <div class="header">
-    <h1>🇩🇪 DataForge — German Data &amp; AI Job Market</h1>
-    <p>Live analytics from Arbeitnow + BA Jobsuche · Updated up to 14× daily</p>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1>🇩🇪 DataForge — German Data &amp; AI Job Market</h1>
+      <p>Live analytics · Arbeitnow + BA Jobsuche · Updated up to 14× daily</p>
+    </div>
+    <div class="topbar-right">
+      <a class="nav-btn" href="jobs.html">🔍 Search &amp; Apply →</a>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        <span id="last-updated">—</span>
+      </div>
+    </div>
   </div>
 
   <div id="error-box" class="error" style="display:none"></div>
 
+  <!-- KPI row -->
   <div class="kpi-grid">
-    <div class="kpi-card"><div class="label">Total Active Jobs</div><div class="value" id="kpi-total"><span class="skeleton"></span></div></div>
-    <div class="kpi-card"><div class="label">New Today</div><div class="value" id="kpi-today"><span class="skeleton"></span></div></div>
-    <div class="kpi-card"><div class="label">Arbeitnow</div><div class="value" id="kpi-arbeitnow"><span class="skeleton"></span></div><div class="sub">job board</div></div>
-    <div class="kpi-card"><div class="label">BA Jobsuche</div><div class="value" id="kpi-ba"><span class="skeleton"></span></div><div class="sub">federal agency</div></div>
-    <div class="kpi-card"><div class="label">Remote Jobs</div><div class="value" id="kpi-remote"><span class="skeleton"></span></div><div class="sub">Arbeitnow only</div></div>
-    <div class="kpi-card"><div class="label">Expired (History)</div><div class="value" id="kpi-expired"><span class="skeleton"></span></div><div class="sub">SCD tracked</div></div>
+    <div class="kpi-card" style="--accent:#6366f1">
+      <div class="label">Total Active Jobs</div>
+      <div class="value" id="kpi-total"><span class="skeleton"></span></div>
+    </div>
+    <div class="kpi-card" style="--accent:#22c55e">
+      <div class="label">New Today</div>
+      <div class="value" id="kpi-today"><span class="skeleton"></span></div>
+    </div>
+    <div class="kpi-card" style="--accent:#6366f1">
+      <div class="label">Arbeitnow</div>
+      <div class="value" id="kpi-arbeitnow"><span class="skeleton"></span></div>
+      <div class="sub">job board</div>
+    </div>
+    <div class="kpi-card" style="--accent:#60a5fa">
+      <div class="label">BA Jobsuche</div>
+      <div class="value" id="kpi-ba"><span class="skeleton"></span></div>
+      <div class="sub">federal agency</div>
+    </div>
+    <div class="kpi-card" style="--accent:#10b981">
+      <div class="label">Remote Jobs</div>
+      <div class="value" id="kpi-remote"><span class="skeleton"></span></div>
+      <div class="sub">Arbeitnow only</div>
+    </div>
+    <div class="kpi-card" style="--accent:#f43f5e">
+      <div class="label">Expired (History)</div>
+      <div class="value" id="kpi-expired"><span class="skeleton"></span></div>
+      <div class="sub">SCD tracked</div>
+    </div>
   </div>
 
-  <div class="card">
-    <h2>New Jobs Per Day — Last 30 Days</h2>
-    <div class="chart-wrap"><canvas id="trend-chart"></canvas></div>
+  <!-- Trend chart — full width -->
+  <div class="row row-1">
+    <div class="card">
+      <div class="card-title">New Jobs Per Day — Last 30 Days</div>
+      <div class="chart-wrap"><canvas id="trend-chart" class="trend"></canvas></div>
+    </div>
   </div>
 
-  <div class="grid-2">
-    <div class="card no-mb">
-      <h2>Top 10 Cities</h2>
+  <!-- Top cities + Top companies -->
+  <div class="row row-2">
+    <div class="card">
+      <div class="card-title">Top 10 Cities</div>
       <div id="top-locations"></div>
     </div>
-    <div class="card no-mb">
-      <h2>Top 10 Companies Hiring</h2>
+    <div class="card">
+      <div class="card-title">Top 10 Companies Hiring</div>
       <div id="top-companies"></div>
     </div>
   </div>
 
-  <div style="margin-bottom:1.5rem"></div>
-
-  <div class="grid-2">
-    <div class="card no-mb">
-      <h2>Jobs by Source</h2>
+  <!-- Source bars + Remote donut + Status donut -->
+  <div class="row row-3">
+    <div class="card">
+      <div class="card-title">Jobs by Source</div>
       <div id="source-bars"></div>
     </div>
-    <div class="card no-mb">
-      <h2>Remote vs On-site &amp; Active vs Expired</h2>
-      <div id="donut-section"></div>
+    <div class="card">
+      <div class="card-title">Remote vs On-site</div>
+      <div class="donut-card-inner">
+        <div class="donut-ring">
+          <canvas id="donut-remote"></canvas>
+          <div class="donut-center">
+            <span class="big" id="donut-remote-pct">—</span>
+            <span class="small">remote</span>
+          </div>
+        </div>
+        <div class="donut-legend" id="legend-remote"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Active vs Expired</div>
+      <div class="donut-card-inner">
+        <div class="donut-ring">
+          <canvas id="donut-status"></canvas>
+          <div class="donut-center">
+            <span class="big" id="donut-status-pct">—</span>
+            <span class="small">active</span>
+          </div>
+        </div>
+        <div class="donut-legend" id="legend-status"></div>
+      </div>
     </div>
   </div>
 
-  <div class="status">
-    <span class="dot"></span>
-    <span>Last updated: <span id="last-updated">—</span></span>
-    <span style="margin-left:auto">Pipeline: Lambda → Bronze → Silver (SCD2) → Gold</span>
+  <!-- Footer -->
+  <div class="footer">
+    <span>Pipeline: Lambda → S3 Bronze → Silver (SCD Type 2) → Gold → API Gateway</span>
+    <span>DataForge · eu-central-1 · $0/month</span>
   </div>
-</div>
 
+</div>
 <script>
   const METRICS_API_URL = "https://2aww80hwgj.execute-api.eu-central-1.amazonaws.com/";
   const REFRESH_MS = 2 * 60 * 1000;
   const SOURCE_LABELS = { arbeitnow: "Arbeitnow", ba_api: "BA Jobsuche" };
 
-  // ── Trend chart (Canvas) ──────────────────────────────────────────────────
+  // ── Trend chart ────────────────────────────────────────────────────────────
   function drawTrend(trend) {
     const canvas = document.getElementById("trend-chart");
-    const ctx = canvas.getContext("2d");
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.parentElement.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
+    const ctx    = canvas.getContext("2d");
+    const dpr    = window.devicePixelRatio || 1;
+    const rect   = canvas.parentElement.getBoundingClientRect();
+    canvas.width  = rect.width  * dpr;
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
     const W = rect.width, H = rect.height;
-    const pad = { top: 10, right: 10, bottom: 30, left: 42 };
-    const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
+    const pad = { top: 12, right: 12, bottom: 32, left: 46 };
+    const cW = W - pad.left - pad.right;
+    const cH = H - pad.top  - pad.bottom;
     ctx.clearRect(0, 0, W, H);
-    const counts = trend.map(d => d.count);
-    const maxVal = Math.max(...counts, 1);
-    ctx.strokeStyle = "#2d3748"; ctx.lineWidth = 1;
+    const maxVal = Math.max(...trend.map(d => d.count), 1);
+
+    // Grid
     [0, 0.25, 0.5, 0.75, 1].forEach(t => {
       const y = pad.top + cH * (1 - t);
+      ctx.strokeStyle = "#1f2937"; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
-      ctx.fillStyle = "#64748b"; ctx.font = "11px system-ui"; ctx.textAlign = "right";
-      ctx.fillText(Math.round(t * maxVal), pad.left - 6, y + 4);
+      ctx.fillStyle = "#4b5563"; ctx.font = "10px system-ui"; ctx.textAlign = "right";
+      ctx.fillText(Math.round(t * maxVal), pad.left - 8, y + 3.5);
     });
-    const step = Math.ceil(trend.length / 6);
+
+    // X labels
+    const step = Math.ceil(trend.length / 7);
     trend.forEach((d, i) => {
       if (i % step !== 0) return;
       const x = pad.left + (i / (trend.length - 1)) * cW;
-      ctx.fillStyle = "#64748b"; ctx.font = "11px system-ui"; ctx.textAlign = "center";
-      ctx.fillText(d.date.slice(5), x, H - 6);
+      ctx.fillStyle = "#4b5563"; ctx.font = "10px system-ui"; ctx.textAlign = "center";
+      ctx.fillText(d.date.slice(5), x, H - 8);
     });
+
+    // Gradient fill
     const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + cH);
-    grad.addColorStop(0, "rgba(99,102,241,0.3)"); grad.addColorStop(1, "rgba(99,102,241,0)");
+    grad.addColorStop(0, "rgba(99,102,241,0.25)");
+    grad.addColorStop(1, "rgba(99,102,241,0)");
+
     const pts = trend.map((d, i) => ({
       x: pad.left + (i / (trend.length - 1)) * cW,
-      y: pad.top + cH * (1 - d.count / maxVal)
+      y: pad.top  + cH * (1 - d.count / maxVal)
     }));
-    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
-    pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
-    ctx.lineTo(pts[pts.length-1].x, pad.top+cH); ctx.lineTo(pts[0].x, pad.top+cH);
-    ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
-    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
-    pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
-    ctx.strokeStyle = "#6366f1"; ctx.lineWidth = 2; ctx.stroke();
+
+    // Smooth curve
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) {
+      const mx = (pts[i-1].x + pts[i].x) / 2;
+      ctx.bezierCurveTo(mx, pts[i-1].y, mx, pts[i].y, pts[i].x, pts[i].y);
+    }
+    ctx.lineTo(pts[pts.length-1].x, pad.top + cH);
+    ctx.lineTo(pts[0].x, pad.top + cH);
+    ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) {
+      const mx = (pts[i-1].x + pts[i].x) / 2;
+      ctx.bezierCurveTo(mx, pts[i-1].y, mx, pts[i].y, pts[i].x, pts[i].y);
+    }
+    ctx.strokeStyle = "#6366f1"; ctx.lineWidth = 2.5; ctx.stroke();
   }
 
-  // ── Generic bar list ──────────────────────────────────────────────────────
-  function renderBars(containerId, items, nameKey, countKey, colorClass) {
+  // ── Bar rows ───────────────────────────────────────────────────────────────
+  function renderBars(id, items, nameKey, countKey, color) {
     const max = items[0]?.[countKey] || 1;
-    document.getElementById(containerId).innerHTML = items.map(item => `
-      <div class="bar-row ${colorClass}">
-        <span class="name" title="${esc(item[nameKey])}">${esc(item[nameKey])}</span>
-        <div class="bar-wrap"><div class="bar" style="width:${(item[countKey]/max)*100}%"></div></div>
-        <span class="count">${Number(item[countKey]).toLocaleString()}</span>
+    document.getElementById(id).innerHTML = items.map(item => `
+      <div class="bar-row">
+        <span class="bar-name" title="${esc(item[nameKey])}">${esc(item[nameKey])}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${(item[countKey]/max)*100}%;background:${color}"></div>
+        </div>
+        <span class="bar-count">${Number(item[countKey]).toLocaleString()}</span>
       </div>`).join("");
   }
 
-  // ── Donut chart (Canvas) ──────────────────────────────────────────────────
+  // ── Donut ──────────────────────────────────────────────────────────────────
   function drawDonut(canvasId, slices) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const size = 130;
+    canvas.width  = size * dpr;
+    canvas.height = size * dpr;
     const ctx = canvas.getContext("2d");
-    const size = 100, cx = size/2, cy = size/2, r = 38, inner = 22;
-    canvas.width = size; canvas.height = size;
+    ctx.scale(dpr, dpr);
+    const cx = size/2, cy = size/2, r = 56, inner = 36;
     const total = slices.reduce((s, x) => s + x.value, 0);
     if (!total) return;
     let angle = -Math.PI / 2;
     slices.forEach(s => {
       const sweep = (s.value / total) * 2 * Math.PI;
       ctx.beginPath();
-      ctx.moveTo(cx, cy);
       ctx.arc(cx, cy, r, angle, angle + sweep);
+      ctx.arc(cx, cy, inner, angle + sweep, angle, true);
       ctx.closePath();
       ctx.fillStyle = s.color;
       ctx.fill();
       angle += sweep;
     });
-    ctx.beginPath();
-    ctx.arc(cx, cy, inner, 0, 2 * Math.PI);
-    ctx.fillStyle = "#1e2130";
-    ctx.fill();
   }
 
-  // ── Main render ───────────────────────────────────────────────────────────
+  function renderDonut(canvasId, pctId, legendId, slices, pctLabel) {
+    drawDonut(canvasId, slices);
+    const total = slices.reduce((s, x) => s + x.value, 0);
+    const pct = total ? Math.round((slices[0].value / total) * 100) : 0;
+    document.getElementById(pctId).textContent = pct + "%";
+    document.getElementById(legendId).innerHTML = slices.map(s => `
+      <div class="legend-row">
+        <div class="legend-left">
+          <span class="legend-dot" style="background:${s.color}"></span>
+          <span>${esc(s.label)}</span>
+        </div>
+        <span class="legend-val">${s.value.toLocaleString()}</span>
+      </div>`).join("");
+  }
+
+  // ── Render all ─────────────────────────────────────────────────────────────
   function render(data) {
-    const rv = data.remote_vs_onsite || {};
+    const rv = data.remote_vs_onsite  || {};
     const av = data.active_vs_expired || {};
 
-    document.getElementById("kpi-total").textContent    = (data.total_jobs || 0).toLocaleString();
-    document.getElementById("kpi-today").textContent    = (data.new_today  || 0).toLocaleString();
+    document.getElementById("kpi-total").textContent     = (data.total_jobs || 0).toLocaleString();
+    document.getElementById("kpi-today").textContent     = (data.new_today  || 0).toLocaleString();
     document.getElementById("kpi-arbeitnow").textContent = (data.jobs_by_source?.arbeitnow ?? 0).toLocaleString();
     document.getElementById("kpi-ba").textContent        = (data.jobs_by_source?.ba_api    ?? 0).toLocaleString();
     document.getElementById("kpi-remote").textContent    = (rv["Remote"]  || 0).toLocaleString();
     document.getElementById("kpi-expired").textContent   = (av["Expired"] || 0).toLocaleString();
-    document.getElementById("last-updated").textContent  = new Date(data.last_updated).toLocaleString([], {dateStyle:"medium", timeStyle:"short"});
+    document.getElementById("last-updated").textContent  =
+      "Updated " + new Date(data.last_updated).toLocaleString([], {dateStyle:"medium", timeStyle:"short"});
 
-    if (data.trend?.length)         drawTrend(data.trend);
-    if (data.top_locations?.length) renderBars("top-locations", data.top_locations, "location", "count", "bar-indigo");
-    if (data.top_companies?.length) renderBars("top-companies", data.top_companies, "company",  "count", "bar-emerald");
+    if (data.trend?.length)
+      drawTrend(data.trend);
+
+    if (data.top_locations?.length)
+      renderBars("top-locations", data.top_locations, "location", "count", "#6366f1");
+
+    if (data.top_companies?.length)
+      renderBars("top-companies", data.top_companies, "company", "count", "#10b981");
 
     // Source bars
     const srcEntries = Object.entries(data.jobs_by_source || {}).sort((a,b) => b[1]-a[1]);
     const srcMax = srcEntries[0]?.[1] || 1;
     document.getElementById("source-bars").innerHTML = srcEntries.map(([src, count]) => `
-      <div class="bar-row bar-indigo">
-        <span class="name">${SOURCE_LABELS[src] ?? src}</span>
-        <div class="bar-wrap"><div class="bar" style="width:${(count/srcMax)*100}%"></div></div>
-        <span class="count">${count.toLocaleString()}</span>
+      <div class="bar-row">
+        <span class="bar-name">${SOURCE_LABELS[src] ?? src}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${(count/srcMax)*100}%;background:#6366f1"></div>
+        </div>
+        <span class="bar-count">${count.toLocaleString()}</span>
       </div>`).join("");
 
-    // Donut section — two mini donuts side by side
-    document.getElementById("donut-section").innerHTML = `
-      <div style="display:flex;gap:2rem;flex-wrap:wrap">
-        <div class="donut-wrap">
-          <canvas id="donut-remote" class="donut-canvas" width="100" height="100"></canvas>
-          <div class="donut-legend">
-            <div class="legend-item"><span class="legend-dot" style="background:#6366f1"></span>Remote: ${(rv["Remote"]||0).toLocaleString()}</div>
-            <div class="legend-item"><span class="legend-dot" style="background:#2d3748"></span>On-site: ${(rv["On-site"]||0).toLocaleString()}</div>
-          </div>
-        </div>
-        <div class="donut-wrap">
-          <canvas id="donut-status" class="donut-canvas" width="100" height="100"></canvas>
-          <div class="donut-legend">
-            <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span>Active: ${(av["Active"]||0).toLocaleString()}</div>
-            <div class="legend-item"><span class="legend-dot" style="background:#f43f5e"></span>Expired: ${(av["Expired"]||0).toLocaleString()}</div>
-          </div>
-        </div>
-      </div>`;
-
-    drawDonut("donut-remote", [
-      { value: rv["Remote"]  || 0, color: "#6366f1" },
-      { value: rv["On-site"] || 0, color: "#2d3748" },
+    renderDonut("donut-remote", "donut-remote-pct", "legend-remote", [
+      { value: rv["Remote"]  || 0, color: "#6366f1", label: "Remote"  },
+      { value: rv["On-site"] || 0, color: "#1f2937", label: "On-site" },
     ]);
-    drawDonut("donut-status", [
-      { value: av["Active"]  || 0, color: "#10b981" },
-      { value: av["Expired"] || 0, color: "#f43f5e" },
+
+    renderDonut("donut-status", "donut-status-pct", "legend-status", [
+      { value: av["Active"]  || 0, color: "#10b981", label: "Active"  },
+      { value: av["Expired"] || 0, color: "#f43f5e", label: "Expired" },
     ]);
   }
 
   function esc(s) {
-    return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    return String(s||"")
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
   async function fetchMetrics() {
@@ -257,9 +455,8 @@
       document.getElementById("error-box").style.display = "none";
       render(data);
     } catch(e) {
-      const box = document.getElementById("error-box");
-      box.style.display = "block";
-      box.textContent = `⚠ Could not load data: ${e.message}`;
+      document.getElementById("error-box").style.display = "block";
+      document.getElementById("error-box").textContent = `⚠ ${e.message}`;
     }
   }
 
