@@ -99,13 +99,22 @@
   };
 
   async function loadJobs() {
+    const source   = document.getElementById("source").value;
+    const remote   = document.getElementById("remote").value;
+    const job_type = document.getElementById("job_type").value;
+
+    const params = new URLSearchParams({ limit: 1000 });
+    if (source)   params.set("source",   source);
+    if (remote)   params.set("remote",   remote);
+    if (job_type) params.set("job_type", job_type);
+
     try {
-      const res = await fetch(`${JOBS_API_URL}?limit=1000`);
+      const res = await fetch(`${JOBS_API_URL}?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       allJobs = data.jobs || [];
       document.getElementById("last-updated").textContent =
-        `${allJobs.length.toLocaleString()} jobs loaded`;
+        `${(data.kpis?.total || allJobs.length).toLocaleString()} total jobs`;
       applyFilters();
     } catch(e) {
       document.getElementById("error-box").style.display = "block";
@@ -117,29 +126,19 @@
   function applyFilters() {
     const search   = document.getElementById("search").value.toLowerCase().trim();
     const location = document.getElementById("location").value.toLowerCase().trim();
-    const job_type = document.getElementById("job_type").value;
-    const source   = document.getElementById("source").value;
-    const remote   = document.getElementById("remote").value;
 
     filtered = allJobs.filter(j => {
       const title   = (j.title    || "").toLowerCase();
       const company = (j.company  || "").toLowerCase();
       const loc     = (j.location || "").toLowerCase();
-      const types   = (j.job_types || "").toLowerCase();
-      const isRemote = j.is_remote === "True" || j.is_remote === true;
-
       if (search   && !title.includes(search) && !company.includes(search) && !loc.includes(search)) return false;
       if (location && !loc.includes(location)) return false;
-      if (source   && j.source !== source) return false;
-      if (job_type && !types.includes(job_type)) return false;
-      if (remote === "true"  && !isRemote) return false;
-      if (remote === "false" &&  isRemote) return false;
       return true;
     });
 
     page = 1;
     document.getElementById("result-count").textContent =
-      `${filtered.length.toLocaleString()} of ${allJobs.length.toLocaleString()} jobs`;
+      `${filtered.length.toLocaleString()} jobs`;
     renderJobs();
   }
 
@@ -210,9 +209,11 @@
       .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
-  ["search","location","job_type","source","remote"].forEach(id => {
+  ["search","location"].forEach(id => {
     document.getElementById(id).addEventListener("input",  applyFilters);
-    document.getElementById(id).addEventListener("change", applyFilters);
+  });
+  ["source","remote","job_type"].forEach(id => {
+    document.getElementById(id).addEventListener("change", loadJobs);
   });
 
   loadJobs();
