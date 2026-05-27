@@ -203,6 +203,11 @@
       <div class="value" id="kpi-remote"><span class="skeleton"></span></div>
       <div class="sub">Arbeitnow only</div>
     </div>
+    <div class="kpi-card" style="--accent:#f59e0b">
+      <div class="label">🔥 Top In-Demand Skill</div>
+      <div class="value" id="kpi-top-skill"><span class="skeleton"></span></div>
+      <div class="sub" id="kpi-top-skill-count">from job postings</div>
+    </div>
     <div class="kpi-card" style="--accent:#f43f5e">
       <div class="label">Expired (History)</div>
       <div class="value" id="kpi-expired"><span class="skeleton"></span></div>
@@ -218,8 +223,8 @@
     </div>
   </div>
 
-  <!-- Top cities + Top companies -->
-  <div class="row row-2">
+  <!-- Top cities + Top companies + Skill demand -->
+  <div class="row row-3">
     <div class="card">
       <div class="card-title">Top 10 Cities</div>
       <div id="top-locations"></div>
@@ -227,6 +232,11 @@
     <div class="card">
       <div class="card-title">Top 10 Companies Hiring</div>
       <div id="top-companies"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔥 Real-Time Skill Demand</div>
+      <div style="font-size:0.68rem;color:#6b7280;margin-bottom:1rem">Extracted from job titles, tags &amp; descriptions · Arbeitnow + BA API</div>
+      <div id="top-skills"></div>
     </div>
   </div>
 
@@ -406,6 +416,12 @@
     document.getElementById("kpi-ba").textContent        = (data.jobs_by_source?.ba_api    ?? 0).toLocaleString();
     document.getElementById("kpi-remote").textContent    = (rv["Remote"]  || 0).toLocaleString();
     document.getElementById("kpi-expired").textContent   = (av["Expired"] || 0).toLocaleString();
+
+    // Top skill KPI
+    if (data.top_skills?.length) {
+      document.getElementById("kpi-top-skill").textContent       = data.top_skills[0].skill;
+      document.getElementById("kpi-top-skill-count").textContent = data.top_skills[0].count.toLocaleString() + " job postings";
+    }
     document.getElementById("last-updated").textContent  =
       "Updated " + new Date(data.last_updated).toLocaleString([], {dateStyle:"medium", timeStyle:"short"});
 
@@ -417,6 +433,9 @@
 
     if (data.top_companies?.length)
       renderBars("top-companies", data.top_companies, "company", "count", "#10b981");
+
+    if (data.top_skills?.length)
+      renderBars("top-skills", data.top_skills, "skill", "count", "#f59e0b");
 
     // Source bars
     const srcEntries = Object.entries(data.jobs_by_source || {}).sort((a,b) => b[1]-a[1]);

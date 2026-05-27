@@ -88,7 +88,43 @@ def lambda_handler(event, context):
         df['status'] = df['is_current'].apply(lambda x: 'Active' if x else 'Expired')
         active_vs_expired = df.groupby('status').size().reset_index(name='job_count')
 
-        # Write all to S3 gold bucket
+        # 8. Top skills from tags (Arbeitnow) + title keywords (both sources)
+        import re
+        from collections import Counter
+
+        SKILL_KEYWORDS = [
+            # Data
+            'Python', 'SQL', 'Spark', 'Kafka', 'Airflow', 'dbt', 'Pandas',
+            'Hadoop', 'Hive', 'Flink', 'Databricks', 'Snowflake', 'BigQuery',
+            # AI / ML
+            'Machine Learning', 'Deep Learning', 'LLM', 'NLP', 'PyTorch',
+            'TensorFlow', 'Scikit', 'MLflow', 'Hugging Face', 'OpenAI',
+            'Generative AI', 'Computer Vision', 'RAG', 'LangChain',
+            # Cloud
+            'AWS', 'Azure', 'GCP', 'Kubernetes', 'Docker', 'Terraform',
+            # BI / Analytics
+            'Power BI', 'Tableau', 'Looker', 'Excel', 'Grafana',
+            # Engineering
+            'Java', 'Scala', 'Go', 'TypeScript', 'React', 'FastAPI',
+        ]
+        skill_pattern = re.compile(
+            r'\b(' + '|'.join(re.escape(s) for s in SKILL_KEYWORDS) + r')\b',
+            re.IGNORECASE
+        )
+        skill_counter = Counter()
+        for _, row in current.iterrows():
+            text = ' '.join(filter(None, [
+                str(row.get('title', '')),
+                str(row.get('tags', '')),
+                str(row.get('description', ''))[:500],  # cap description length
+            ]))
+            for match in skill_pattern.finditer(text):
+                skill_counter[match.group().title()] += 1
+
+        top_skills = pd.DataFrame(
+            skill_counter.most_common(20),
+            columns=['skill', 'job_count']
+        )
         gold_base = f"s3://{gold_bucket}"
         wr.s3.to_csv(all_jobs,          path=f"{gold_base}/all_jobs.csv",           index=False, quoting=1)  # QUOTE_ALL
         wr.s3.to_csv(expired_jobs,       path=f"{gold_base}/expired_jobs.csv",       index=False, quoting=1)  # QUOTE_ALL
@@ -98,8 +134,9 @@ def lambda_handler(event, context):
         wr.s3.to_csv(jobs_trend,        path=f"{gold_base}/jobs_trend.csv",         index=False)
         wr.s3.to_csv(top_companies,     path=f"{gold_base}/top_companies.csv",      index=False)
         wr.s3.to_csv(active_vs_expired, path=f"{gold_base}/active_vs_expired.csv",  index=False)
+        wr.s3.to_csv(top_skills,         path=f"{gold_base}/top_skills.csv",          index=False)
 
-        msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 7"
+        msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 9"
         print(msg)
         return {"statusCode": 200, "body": json.dumps({"message": msg})}
 
