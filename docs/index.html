@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataForge — German Data Job Market</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0f1117; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+    #root { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+    .header { margin-bottom: 2rem; }
+    .header h1 { font-size: 1.6rem; font-weight: 700; color: #f8fafc; }
+    .header p { color: #94a3b8; font-size: 0.85rem; margin-top: 0.3rem; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .kpi-card { background: #1e2130; border: 1px solid #2d3748; border-radius: 10px; padding: 1.25rem 1.5rem; }
+    .kpi-card .label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+    .kpi-card .value { font-size: 2rem; font-weight: 700; color: #f8fafc; }
+    .kpi-card .sub { font-size: 0.75rem; color: #64748b; margin-top: 0.2rem; }
+    .card { background: #1e2130; border: 1px solid #2d3748; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card h2 { font-size: 0.9rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem; }
+    .source-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+    .source-row .name { font-size: 0.85rem; color: #cbd5e1; width: 110px; flex-shrink: 0; }
+    .source-row .bar-wrap { flex: 1; background: #2d3748; border-radius: 4px; height: 8px; overflow: hidden; }
+    .source-row .bar { height: 100%; border-radius: 4px; background: #6366f1; transition: width 0.6s ease; }
+    .source-row .count { font-size: 0.8rem; color: #94a3b8; width: 50px; text-align: right; }
+    .status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: #64748b; margin-top: 1.5rem; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .error { color: #f87171; font-size: 0.85rem; padding: 1rem; background: #1e2130; border: 1px solid #7f1d1d; border-radius: 8px; }
+    .skeleton { background: linear-gradient(90deg, #1e2130 25%, #2d3748 50%, #1e2130 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+  // ─── CONFIGURE THIS AFTER terraform apply ───────────────────────────────────
+  const METRICS_API_URL = "https://hkoirzixbc4v4uevjkgyh25ji40pzslk.lambda-url.eu-central-1.on.aws/";
+  // e.g. "https://abcdefghij.lambda-url.eu-central-1.on.aws/"
+  // ────────────────────────────────────────────────────────────────────────────
+
+  const REFRESH_MS = 2 * 60 * 1000; // 2 minutes
+
+  const { useState, useEffect, useCallback } = React;
+  const { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } = Recharts;
+
+  function KpiCard({ label, value, sub }) {
+    return (
+      <div className="kpi-card">
+        <div className="label">{label}</div>
+        <div className="value">{value ?? <span className="skeleton" style={{display:'block',height:'2rem',width:'80px'}}/>}</div>
+        {sub && <div className="sub">{sub}</div>}
+      </div>
+    );
+  }
+
+  function SourceBars({ data }) {
+    if (!data) return null;
+    const entries = Object.entries(data).sort((a, b) => b[1] - a[1]);
+    const max = entries[0]?.[1] || 1;
+    const labels = { arbeitnow: "Arbeitnow", ba_api: "BA Jobsuche" };
+    return (
+      <div>
+        {entries.map(([src, count]) => (
+          <div className="source-row" key={src}>
+            <span className="name">{labels[src] ?? src}</span>
+            <div className="bar-wrap"><div className="bar" style={{width: `${(count/max)*100}%`}}/></div>
+            <span className="count">{count.toLocaleString()}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  function TrendChart({ data }) {
+    if (!data?.length) return null;
+    const fmt = (d) => d.slice(5); // "MM-DD"
+    return (
+      <ResponsiveContainer width="100%" height={200}>
+        <AreaChart data={data} margin={{top:4, right:8, left:-20, bottom:0}}>
+          <defs>
+            <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#2d3748"/>
+          <XAxis dataKey="date" tickFormatter={fmt} tick={{fill:'#64748b', fontSize:11}} tickLine={false} axisLine={false}/>
+          <YAxis tick={{fill:'#64748b', fontSize:11}} tickLine={false} axisLine={false}/>
+          <Tooltip
+            contentStyle={{background:'#1e2130', border:'1px solid #2d3748', borderRadius:'6px', fontSize:'0.8rem'}}
+            labelStyle={{color:'#94a3b8'}}
+            itemStyle={{color:'#a5b4fc'}}
+          />
+          <Area type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={2} fill="url(#grad)" dot={false} name="New Jobs"/>
+        </AreaChart>
+      </ResponsiveContainer>
+    );
+  }
+
+  function App() {
+    const [metrics, setMetrics] = useState(null);
+    const [error, setError]     = useState(null);
+    const [lastFetch, setLastFetch] = useState(null);
+
+    const fetchMetrics = useCallback(async () => {
+      try {
+        const res = await fetch(METRICS_API_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        setMetrics(data);
+        setError(null);
+        setLastFetch(new Date());
+      } catch (e) {
+        setError(e.message);
+      }
+    }, []);
+
+    useEffect(() => {
+      fetchMetrics();
+      const id = setInterval(fetchMetrics, REFRESH_MS);
+      return () => clearInterval(id);
+    }, [fetchMetrics]);
+
+    const fmtTime = (d) => d ? d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '—';
+
+    return (
+      <>
+        <div className="header">
+          <h1>🇩🇪 DataForge — German Data Job Market</h1>
+          <p>Live analytics from Arbeitnow + BA Jobsuche · Refreshes every 2 minutes</p>
+        </div>
+
+        {error && <div className="error">⚠ Could not load data: {error}. Check that METRICS_API_URL is set correctly.</div>}
+
+        <div className="kpi-grid">
+          <KpiCard label="Total Active Jobs"  value={metrics?.total_jobs?.toLocaleString()} />
+          <KpiCard label="New Today"          value={metrics?.new_today?.toLocaleString()} />
+          <KpiCard label="Arbeitnow"          value={metrics?.jobs_by_source?.arbeitnow?.toLocaleString()} sub="job board" />
+          <KpiCard label="BA Jobsuche"        value={metrics?.jobs_by_source?.ba_api?.toLocaleString()} sub="federal agency" />
+        </div>
+
+        <div className="card">
+          <h2>New Jobs Per Day — Last 30 Days</h2>
+          <TrendChart data={metrics?.trend} />
+        </div>
+
+        <div className="card">
+          <h2>Jobs by Source</h2>
+          <SourceBars data={metrics?.jobs_by_source} />
+        </div>
+
+        <div className="status">
+          <span className="dot"/>
+          <span>Last updated: {fmtTime(lastFetch)}</span>
+          <span style={{marginLeft:'auto'}}>Pipeline: Lambda → S3 Bronze → Silver → Gold</span>
+        </div>
+      </>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
