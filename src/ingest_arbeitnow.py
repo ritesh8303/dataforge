@@ -40,6 +40,10 @@ def lambda_handler(event, context):
         if 'slug' in df.columns:
             df.rename(columns={'slug': 'job_id'}, inplace=True)
 
+        # Keep apply URL
+        if 'url' not in df.columns:
+            df['url'] = ''
+
         # Add remote flag explicitly as bool
         if 'remote' in df.columns:
             df['remote'] = df['remote'].astype(bool)

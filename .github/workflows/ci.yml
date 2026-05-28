@@ -7,32 +7,29 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-
+  lint:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements-test.txt
-        
-    - name: Test with pytest
-      env:
-        PYTHONPATH: .
-      run: |
-        pytest tests/ -v \
-          --ignore=tests/test_lambda_handler.py \
-          --ignore=tests/test_process_data.py \
-          --ignore=tests/test_integration.py \
-          --ignore=tests/test_performance.py \
-          --ignore=tests/test_ba_model.py \
-          --ignore=tests/test_architecture_smoke.py \
-          --ignore=tests/test_e2e_pipeline.py
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install ruff && ruff check src/ analytics/ tests/
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-test.txt
+
+      - name: Run tests
+        env:
+          PYTHONPATH: .
+        run: pytest tests/test_scd_logic.py tests/test_architecture_smoke.py -v --tb=short

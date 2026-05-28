@@ -14,3 +14,21 @@ variable "dashboard_origin" {
   type        = string
   default     = "*"
 }
+
+variable "company_careers_config_s3_uri" {
+  description = "Optional S3 URI for the direct company-careers target registry JSON"
+  type        = string
+  default     = ""
+}
+
+variable "company_careers_config_mode" {
+  description = "Use append to add registry targets to defaults, or replace to use only the registry"
+  type        = string
+  default     = "append"
+}
+
+variable "company_careers_config_url" {
+  description = "Optional HTTP/HTTPS URL for the direct company-careers target registry JSON"
+  type        = string
+  default     = ""
+}

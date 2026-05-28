@@ -85,10 +85,33 @@ module "ba_ingestor" {
     BRONZE_BUCKET      = module.s3_bronze.bucket_id
     SSM_PARAMETER_NAME = aws_ssm_parameter.ba_api_keys.name
   }
-  layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
-  memory_size       = 512
-  timeout           = 300
-  enable_schedule   = true
+  layers          = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  memory_size     = 512
+  timeout         = 300
+  enable_schedule = true
+  alert_email     = var.alert_email
+}
+
+# Company Careers Direct Ingestor (Greenhouse + Lever + Workable + SmartRecruiters)
+module "company_ingestor" {
+  source           = "./modules/lambda"
+  function_name    = "dataforge-company-ingestor"
+  handler          = "ingest_company_careers.lambda_handler"
+  lambda_role_arn  = module.iam.lambda_role_arn
+  lambda_role_name = module.iam.lambda_role_name
+  source_dir       = "../src"
+  layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  memory_size      = 1024 # Higher memory for parallel thread pool
+  timeout          = 600  # 10 minutes — scrapes 200+ companies in parallel
+  env_vars = {
+    BRONZE_BUCKET                 = module.s3_bronze.bucket_id
+    COMPANY_CAREERS_CONFIG_S3_URI = var.company_careers_config_s3_uri
+    COMPANY_CAREERS_CONFIG_URL    = var.company_careers_config_url
+    COMPANY_CAREERS_CONFIG_MODE   = var.company_careers_config_mode
+  }
+  bronze_bucket_arn = module.s3_bronze.arn
+  enable_schedule   = true # Daily at 8AM UTC (same EventBridge schedule)
+  enable_alerts     = true
   alert_email       = var.alert_email
 }
 
@@ -102,11 +125,11 @@ module "transformer_lambda" {
   source_dir       = "../src"
   memory_size      = 512
   timeout          = 300
-  env_vars         = {
+  env_vars = {
     SILVER_PATH = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
     GOLD_BUCKET = module.s3_gold.bucket_id
   }
-  layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   bronze_bucket_arn = module.s3_bronze.arn
   enable_schedule   = true
   enable_alerts     = true

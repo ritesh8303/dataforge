@@ -6,7 +6,20 @@ resource "aws_s3_bucket" "this" {
 resource "aws_s3_bucket_versioning" "this" {
   bucket = aws_s3_bucket.this.id
   versioning_configuration {
+    status = "Suspended"
+  }
+}
+
+# Auto-delete objects older than 30 days to stay within free tier 5GB
+resource "aws_s3_bucket_lifecycle_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+  rule {
+    id     = "expire-old-objects"
     status = "Enabled"
+    filter {}
+    expiration {
+      days = 30
+    }
   }
 }
 

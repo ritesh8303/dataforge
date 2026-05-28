@@ -93,12 +93,12 @@ resource "aws_lambda_permission" "allow_s3" {
   source_arn    = var.bronze_bucket_arn
 }
 
-# EventBridge daily schedule
+# Every hour during office hours (08:00-18:00 UTC), every 3 hours outside
 resource "aws_cloudwatch_event_rule" "daily_trigger" {
   count               = var.enable_schedule ? 1 : 0
-  name                = "${var.function_name}-daily-schedule"
-  description         = "Triggers ${var.function_name} every day at 8 AM UTC"
-  schedule_expression = "cron(0 8 * * ? *)"
+  name                = "${var.function_name}-schedule"
+  description         = "Triggers ${var.function_name} hourly 08-18 UTC, every 3h outside"
+  schedule_expression = "cron(0 0,3,8,9,10,11,12,13,14,15,16,17,18,21 * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "lambda_target" {

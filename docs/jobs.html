@@ -132,9 +132,10 @@
     }
     .tag.remote { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.15); }
     .tag.source-ba { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border-color: rgba(59, 130, 246, 0.15); }
+    .tag.source-direct { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.15); }
     .tag.type { background: rgba(167, 139, 250, 0.12); color: #c084fc; border-color: rgba(167, 139, 250, 0.15); }
     
-    .tag:not(.remote):not(.source-ba):not(.type) {
+    .tag:not(.remote):not(.source-ba):not(.source-direct):not(.type) {
       background: rgba(30, 41, 59, 0.6); color: #94a3b8;
     }
 
@@ -194,7 +195,7 @@
 <div id="root">
   <div class="header">
     <h1>🔍 Find Jobs in Germany</h1>
-    <p>Search across Arbeitnow + BA Jobsuche · Updated up to 14× daily</p>
+    <p>Search across Arbeitnow + BA Jobsuche + direct company career feeds · Updated up to 14× daily</p>
   </div>
   <div class="nav">
     <a href="index.html">← Analytics Dashboard</a>
@@ -215,6 +216,7 @@
       <option value="">All sources</option>
       <option value="arbeitnow">Arbeitnow</option>
       <option value="ba_api">BA Jobsuche</option>
+      <option value="direct">Direct company feeds</option>
     </select>
     <select id="remote">
       <option value="">Remote &amp; On-site</option>
@@ -322,8 +324,13 @@
 
     list.innerHTML = slice.map(j => {
       const isRemote = j.is_remote === "True" || j.is_remote === true;
-      const sourceLabel = j.source === "ba_api" ? "BA Jobsuche" : "Arbeitnow";
-      const sourceClass = j.source === "ba_api" ? "source-ba" : "";
+      const isDirect = j.source === "direct";
+      const sourceLabel = j.source === "ba_api" ? "BA Jobsuche"
+        : isDirect ? `🏢 ${j.ats || 'Direct'}`
+        : "Arbeitnow";
+      const sourceClass = j.source === "ba_api" ? "source-ba"
+        : isDirect ? "source-direct"
+        : "";
       const url = j.job_url || j.url || "#";
 
       // Parse job_types CSV string into individual tags
@@ -343,11 +350,12 @@
         .map(t => `<span class="tag">${esc(t)}</span>`)
         .join('');
 
-      // Strip HTML from description and show first 160 chars (Arbeitnow only)
+      // Strip HTML from description and show snippet for arbeitnow + direct
       const rawDesc = j.description || '';
       const plainDesc = rawDesc.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-      const descSnippet = j.source === 'arbeitnow' && plainDesc.length > 10
-        ? `<div class="job-desc">${esc(plainDesc.slice(0, 160))}${plainDesc.length > 160 ? '\u2026' : ''}</div>`
+      const showDesc = (j.source === 'arbeitnow' || j.source === 'direct') && plainDesc.length > 10;
+      const descSnippet = showDesc
+        ? `<div class="job-desc">${esc(plainDesc.slice(0, 180))}${plainDesc.length > 180 ? '…' : ''}</div>`
         : '';
 
       return `

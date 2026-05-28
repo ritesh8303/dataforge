@@ -20,8 +20,9 @@ def lambda_handler(event, context):
         # 1. All active jobs
         cols = [c for c in [
             'job_id', 'title', 'company', 'location', 'zip_code', 'state',
-            'source', 'scd_start_date', 'remote', 'url', 'job_types',
-            'tags', 'description', 'start_date_raw', 'modified_at', 'ingested_at'
+            'source', 'ats', 'department', 'scd_start_date', 'remote', 'url',
+            'job_types', 'tags', 'description', 'salary', 'published_at',
+            'start_date_raw', 'modified_at', 'ingested_at'
         ] if c in current.columns]
         all_jobs = current[cols].copy()
         all_jobs['date_added'] = pd.to_datetime(all_jobs['scd_start_date']).dt.date.astype(str)
@@ -35,8 +36,9 @@ def lambda_handler(event, context):
         expired_raw = df[df['is_current'] == False].copy()
         exp_cols = [c for c in [
             'job_id', 'title', 'company', 'location', 'zip_code', 'state',
-            'source', 'scd_start_date', 'scd_end_date', 'remote', 'url', 'job_types',
-            'tags', 'start_date_raw', 'modified_at', 'ingested_at'
+            'source', 'ats', 'department', 'scd_start_date', 'scd_end_date',
+            'remote', 'url', 'job_types', 'tags', 'salary', 'published_at',
+            'start_date_raw', 'modified_at', 'ingested_at'
         ] if c in expired_raw.columns]
         expired_jobs = expired_raw[exp_cols].copy()
         expired_jobs['date_added']   = pd.to_datetime(expired_jobs['scd_start_date']).dt.date.astype(str)
@@ -61,9 +63,9 @@ def lambda_handler(event, context):
             .rename(columns={'location_clean': 'location'})
         )
 
-        # 4. Remote vs onsite (Arbeitnow only — BA API has no remote field)
+        # 4. Remote vs onsite (sources with an explicit remote signal)
         if 'remote' in current.columns:
-            remote_df = current[current['source'] == 'arbeitnow'].copy()
+            remote_df = current[current['source'].isin(['arbeitnow', 'direct'])].copy()
             remote_df['work_type'] = remote_df['remote'].apply(
                 lambda x: 'Remote' if x is True or str(x) == 'True' else 'On-site'
             )
