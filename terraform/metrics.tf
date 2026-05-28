@@ -10,7 +10,7 @@ module "metrics_lambda" {
   lambda_role_name = module.iam.lambda_role_name
   source_dir       = "../src"
   layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
-  memory_size      = 256
+  memory_size      = 1024
   timeout          = 30
   env_vars = {
     GOLD_BUCKET    = module.s3_gold.bucket_id
@@ -77,7 +77,7 @@ module "jobs_api_lambda" {
   lambda_role_name = module.iam.lambda_role_name
   source_dir       = "../src"
   layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
-  memory_size      = 256
+  memory_size      = 1024
   timeout          = 30
   env_vars = {
     GOLD_BUCKET    = module.s3_gold.bucket_id
