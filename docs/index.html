@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataForge — German Data & AI Job Market</title>
+  <title>DataForge — Labor Market Insights</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
@@ -11,90 +11,91 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: radial-gradient(circle at 50% 0%, #111424 0%, #060813 100%);
+      background: radial-gradient(circle at 50% 0%, #0d111d 0%, #080a10 100%);
       color: #f1f5f9;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       min-height: 100vh;
       line-height: 1.5;
     }
 
-    #root { max-width: 1340px; margin: 0 auto; padding: 2.5rem 2rem 5rem; }
+    #root { max-width: 1280px; margin: 0 auto; padding: 3rem 2rem 5rem; }
 
     /* ── Top bar ── */
     .topbar {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 3rem; flex-wrap: wrap; gap: 1.5rem;
+      margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1.5rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       padding-bottom: 1.5rem;
     }
     .topbar-left h1 {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.95rem; font-weight: 800;
-      background: linear-gradient(135deg, #fff 30%, #a5b4fc 100%);
+      font-size: 1.8rem; font-weight: 800;
+      background: linear-gradient(135deg, #fff 30%, #c7d2fe 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: -0.02em;
     }
-    .topbar-left p { color: #94a3b8; font-size: 0.88rem; margin-top: 0.4rem; font-weight: 400; }
-    .topbar-right { display: flex; align-items: center; gap: 1.25rem; }
+    .topbar-left p { color: #94a3b8; font-size: 0.85rem; margin-top: 0.3rem; font-weight: 400; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
     
     .nav-btn {
       background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
       color: #fff; text-decoration: none;
-      padding: 0.65rem 1.4rem; border-radius: 10px; font-size: 0.85rem;
+      padding: 0.6rem 1.25rem; border-radius: 10px; font-size: 0.82rem;
       font-weight: 600; white-space: nowrap;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
       font-family: 'Outfit', sans-serif;
       letter-spacing: 0.01em;
     }
     .nav-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
       background: linear-gradient(135deg, #818cf8 0%, #5850ec 100%);
     }
     .nav-btn:active { transform: translateY(0); }
 
     .live-badge {
       display: flex; align-items: center; gap: 0.5rem;
-      font-size: 0.78rem; color: #94a3b8;
-      background: rgba(30, 41, 59, 0.5);
-      padding: 0.4rem 0.9rem;
+      font-size: 0.75rem; color: #94a3b8;
+      background: rgba(30, 41, 59, 0.4);
+      padding: 0.35rem 0.8rem;
       border-radius: 99px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.04);
       font-weight: 500;
     }
     .live-dot {
-      width: 8px; height: 8px; border-radius: 50%;
+      width: 7px; height: 7px; border-radius: 50%;
       background: #10b981;
-      box-shadow: 0 0 8px #10b981;
+      box-shadow: 0 0 6px #10b981;
       animation: pulse 2s infinite; flex-shrink: 0;
     }
     @keyframes pulse {
-      0% { transform: scale(0.9); opacity: 0.6; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-      50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      0% { transform: scale(0.9); opacity: 0.6; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
       100% { transform: scale(0.9); opacity: 0.6; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
-    /* ── KPI row ── */
+    /* ── KPI Grid (Decluttered to exactly 5 key metrics) ── */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 1.25rem; margin-bottom: 2.5rem;
+      gap: 1.25rem; margin-bottom: 2.25rem;
     }
-    @media(max-width:1200px){ .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media(max-width:768px){ .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media(max-width:480px){ .kpi-grid { grid-template-columns: 1fr; } }
+    @media(max-width:1024px){ .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media(max-width:640px){ .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media(max-width:440px){ .kpi-grid { grid-template-columns: 1fr; } }
 
     .kpi-card {
-      background: rgba(17, 24, 39, 0.55);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(17, 24, 39, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-radius: 16px;
-      padding: 1.25rem 1.4rem;
+      padding: 1.15rem 1.25rem;
       position: relative; overflow: hidden;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
     .kpi-card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0;
@@ -102,138 +103,168 @@
       opacity: 0.8; transition: height 0.2s ease;
     }
     .kpi-card:hover {
-      transform: translateY(-4px);
-      background: rgba(17, 24, 39, 0.75);
-      border-color: rgba(255, 255, 255, 0.12);
-      box-shadow: 0 10px 25px -10px rgba(0, 0, 0, 0.5), 0 0 15px -3px var(--accent, rgba(99, 102, 241, 0.15));
+      transform: translateY(-3px);
+      background: rgba(17, 24, 39, 0.55);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.4), 0 0 12px -3px var(--accent, rgba(99, 102, 241, 0.12));
     }
-    .kpi-card:hover::before {
-      height: 5px;
-    }
+    .kpi-card:hover::before { height: 4px; }
+    
     .kpi-card .label {
-      font-size: 0.7rem; color: #94a3b8;
-      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.6rem;
+      font-size: 0.65rem; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem;
       font-weight: 600;
     }
     .kpi-card .value {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.9rem; font-weight: 700; color: #f8fafc; line-height: 1.1;
+      font-size: 1.7rem; font-weight: 700; color: #f8fafc; line-height: 1.1;
     }
-    .kpi-card .sub { font-size: 0.72rem; color: #64748b; margin-top: 0.45rem; font-weight: 500; }
+    .kpi-card .sub { font-size: 0.7rem; color: #64748b; margin-top: 0.4rem; font-weight: 500; }
+
+    /* ── Main Layout Grid ── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.1fr;
+      gap: 1.5rem; margin-bottom: 1.5rem;
+    }
+    @media(max-width: 1024px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
 
     /* ── Cards ── */
     .card {
-      background: rgba(17, 24, 39, 0.55);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 20px;
-      padding: 1.75rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: rgba(17, 24, 39, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 18px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1.5rem;
     }
+    .card:last-child { margin-bottom: 0; }
     .card:hover {
-      border-color: rgba(255, 255, 255, 0.1);
-      background: rgba(17, 24, 39, 0.65);
-      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.6);
+      border-color: rgba(255, 255, 255, 0.08);
+      background: rgba(17, 24, 39, 0.48);
+      box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.5);
     }
     .card-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 0.8rem; font-weight: 700; color: #94a3b8;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      margin-bottom: 1.5rem;
+      font-size: 0.75rem; font-weight: 700; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 1.25rem;
       display: flex; align-items: center; justify-content: space-between;
     }
 
-    /* ── Layout grids ── */
-    .row { display: grid; gap: 1.5rem; margin-bottom: 1.5rem; }
-    .row-1   { grid-template-columns: 1fr; }
-    .row-2   { grid-template-columns: 1fr 1fr; }
-    .row-3   { grid-template-columns: 1fr 1fr 1fr; }
-    .row-2-1 { grid-template-columns: 2fr 1fr; }
-    @media(max-width:960px){
-      .row-2, .row-3, .row-2-1 { grid-template-columns: 1fr; }
-    }
-
     /* ── Trend chart ── */
-    .chart-wrap { width: 100%; height: 240px; position: relative; }
+    .chart-wrap { width: 100%; height: 260px; position: relative; }
     canvas.trend { width: 100% !important; height: 100% !important; display: block; }
 
     /* ── Bar rows ── */
     .bar-row {
-      display: flex; align-items: center; gap: 1rem;
-      margin-bottom: 0.8rem;
+      display: flex; align-items: center; gap: 0.85rem;
+      margin-bottom: 0.75rem;
     }
     .bar-row:last-child { margin-bottom: 0; }
     .bar-name {
-      font-size: 0.8rem; color: #e2e8f0;
-      width: 130px; flex-shrink: 0;
+      font-size: 0.78rem; color: #e2e8f0;
+      width: 110px; flex-shrink: 0;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       font-weight: 500;
     }
     .bar-track {
-      flex: 1; background: rgba(31, 41, 55, 0.6); border-radius: 99px; height: 8px; overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.02);
+      flex: 1; background: rgba(31, 41, 55, 0.5); border-radius: 99px; height: 6px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.01);
     }
     .bar-fill {
       height: 100%; border-radius: 99px; transition: width 1s cubic-bezier(0.1, 1, 0.1, 1);
     }
     .bar-count {
       font-family: 'Outfit', sans-serif;
-      font-size: 0.78rem; color: #94a3b8; width: 45px; text-align: right; flex-shrink: 0;
+      font-size: 0.75rem; color: #64748b; width: 40px; text-align: right; flex-shrink: 0;
       font-weight: 600;
     }
 
-    /* ── Donut ── */
+    /* ── Donut (Remote Ratio) ── */
     .donut-card-inner {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 1.25rem; height: 100%;
-      padding: 0.5rem 0;
+      display: flex; align-items: center; justify-content: space-around;
+      gap: 1rem; width: 100%; padding: 0.25rem 0;
     }
-    .donut-ring { position: relative; width: 135px; height: 135px; flex-shrink: 0; }
-    .donut-ring canvas { width: 135px !important; height: 135px !important; display: block; }
+    .donut-ring { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
+    .donut-ring canvas { width: 120px !important; height: 120px !important; display: block; }
     .donut-center {
       position: absolute; inset: 0;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
     .donut-center .big {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.5rem; font-weight: 700; color: #f8fafc; line-height: 1;
+      font-size: 1.35rem; font-weight: 700; color: #f8fafc; line-height: 1;
     }
-    .donut-center .small { font-size: 0.65rem; color: #64748b; margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
-    .donut-legend { display: flex; flex-direction: column; gap: 0.65rem; width: 100%; }
+    .donut-center .small { font-size: 0.6rem; color: #64748b; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    .donut-legend { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
     .legend-row {
       display: flex; align-items: center; justify-content: space-between;
-      font-size: 0.8rem;
+      font-size: 0.76rem;
     }
-    .legend-left { display: flex; align-items: center; gap: 0.6rem; color: #cbd5e1; }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-left { display: flex; align-items: center; gap: 0.5rem; color: #cbd5e1; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .legend-val {
       font-family: 'Outfit', sans-serif;
-      color: #94a3b8; font-weight: 600; font-variant-numeric: tabular-nums;
+      color: #64748b; font-weight: 600; font-variant-numeric: tabular-nums;
     }
 
-    /* ── Skeleton ── */
+    /* ── Companies List ── */
+    .company-list { display: flex; flex-direction: column; gap: 0.65rem; }
+    .company-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.6rem 0.8rem; background: rgba(30, 41, 59, 0.25);
+      border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.02);
+      transition: all 0.2s ease;
+    }
+    .company-item:hover {
+      background: rgba(30, 41, 59, 0.4);
+      border-color: rgba(255, 255, 255, 0.05);
+      transform: translateX(2px);
+    }
+    .company-info { display: flex; align-items: center; gap: 0.65rem; min-width: 0; }
+    .company-rank {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem; font-weight: 700; color: #6366f1;
+      width: 18px; text-align: center;
+    }
+    .company-name {
+      font-size: 0.8rem; color: #e2e8f0; font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .company-count {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem; font-weight: 700; color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 0.2rem 0.6rem; border-radius: 6px;
+    }
+
+    /* ── Skeleton & Error ── */
     .skeleton {
-      background: linear-gradient(90deg, rgba(31, 41, 55, 0.4) 25%, rgba(55, 65, 81, 0.6) 50%, rgba(31, 41, 55, 0.4) 75%);
+      background: linear-gradient(90deg, rgba(31, 41, 55, 0.4) 25%, rgba(55, 65, 81, 0.5) 50%, rgba(31, 41, 55, 0.4) 75%);
       background-size: 200% 100%; animation: shimmer 1.5s infinite linear;
-      border-radius: 8px; display: inline-block; width: 85px; height: 1.9rem;
+      border-radius: 6px; display: inline-block; width: 75px; height: 1.6rem;
     }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    /* ── Error ── */
     .error {
-      color: #f87171; font-size: 0.88rem; padding: 1rem 1.25rem;
-      background: rgba(127, 29, 29, 0.25); border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #f87171; font-size: 0.85rem; padding: 0.8rem 1.15rem;
+      background: rgba(127, 29, 29, 0.2); border: 1px solid rgba(239, 68, 68, 0.35);
       border-radius: 12px; margin-bottom: 2rem;
-      backdrop-filter: blur(8px);
     }
 
     /* ── Footer ── */
     .footer {
       display: flex; align-items: center; justify-content: space-between;
-      margin-top: 3.5rem; font-size: 0.78rem; color: #64748b;
+      margin-top: 3.5rem; font-size: 0.75rem; color: #475569;
       flex-wrap: wrap; gap: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
       padding-top: 1.5rem;
     }
   </style>
@@ -244,11 +275,11 @@
   <!-- Top bar -->
   <div class="topbar">
     <div class="topbar-left">
-      <h1>🇩🇪 DataForge — German Data &amp; AI Job Market</h1>
-      <p>Live analytics · Arbeitnow + BA Jobsuche · Updated up to 14× daily</p>
+      <h1>DataForge Job Intelligence</h1>
+      <p>Aggregated analytics across Arbeitnow, BA Jobsuche, and direct career portals</p>
     </div>
     <div class="topbar-right">
-      <a class="nav-btn" href="jobs.html">🔍 Search &amp; Apply →</a>
+      <a class="nav-btn" href="jobs.html">🔍 Search Jobs →</a>
       <div class="live-badge">
         <span class="live-dot"></span>
         <span id="last-updated">—</span>
@@ -258,127 +289,95 @@
 
   <div id="error-box" class="error" style="display:none"></div>
 
-  <!-- KPI row -->
+  <!-- KPI Row (Clean 5-card row showing important insights) -->
   <div class="kpi-grid">
     <div class="kpi-card" style="--accent:#6366f1">
       <div class="label">Total Active Jobs</div>
       <div class="value" id="kpi-total"><span class="skeleton"></span></div>
-    </div>
-    <div class="kpi-card" style="--accent:#22c55e">
-      <div class="label">New Today</div>
-      <div class="value" id="kpi-today"><span class="skeleton"></span></div>
-    </div>
-    <div class="kpi-card" style="--accent:#6366f1">
-      <div class="label">Arbeitnow</div>
-      <div class="value" id="kpi-arbeitnow"><span class="skeleton"></span></div>
-      <div class="sub">job board</div>
-    </div>
-    <div class="kpi-card" style="--accent:#60a5fa">
-      <div class="label">BA Jobsuche</div>
-      <div class="value" id="kpi-ba"><span class="skeleton"></span></div>
-      <div class="sub">federal agency</div>
+      <div class="sub">aggregated database</div>
     </div>
     <div class="kpi-card" style="--accent:#10b981">
-      <div class="label">Remote Jobs</div>
+      <div class="label">New Today</div>
+      <div class="value" id="kpi-today"><span class="skeleton"></span></div>
+      <div class="sub">added last 24h</div>
+    </div>
+    <div class="kpi-card" style="--accent:#3b82f6">
+      <div class="label">Remote Openings</div>
       <div class="value" id="kpi-remote"><span class="skeleton"></span></div>
       <div class="sub">Arbeitnow + Direct</div>
     </div>
-    <div class="kpi-card" style="--accent:#f59e0b">
-      <div class="label">🔥 Top In-Demand Skill</div>
-      <div class="value" id="kpi-top-skill-count"><span class="skeleton"></span></div>
-      <div class="sub" id="kpi-top-skill">loading...</div>
-    </div>
-    <div class="kpi-card" style="--accent:#f43f5e">
-      <div class="label">Expired (History)</div>
-      <div class="value" id="kpi-expired"><span class="skeleton"></span></div>
-      <div class="sub">SCD tracked</div>
-    </div>
     <div class="kpi-card" style="--accent:#a78bfa">
-      <div class="label">🇬🇧 English Jobs</div>
+      <div class="label">English Jobs</div>
       <div class="value" id="kpi-english"><span class="skeleton"></span></div>
       <div class="sub">English descriptions</div>
     </div>
-    <div class="kpi-card" style="--accent:#34d399">
-      <div class="label">🏠 Homeoffice Mentioned</div>
-      <div class="value" id="kpi-homeoffice"><span class="skeleton"></span></div>
-      <div class="sub">in job description</div>
-    </div>
-    <div class="kpi-card" style="--accent:#fb923c">
-      <div class="label">🎁 Jobs with Benefits</div>
-      <div class="value" id="kpi-benefits"><span class="skeleton"></span></div>
-      <div class="sub">explicit benefits section</div>
-    </div>
-    <div class="kpi-card" style="--accent:#e879f9">
-      <div class="label">🔄 Jobs Updated</div>
-      <div class="value" id="kpi-updated"><span class="skeleton"></span></div>
-      <div class="sub">changed since last run</div>
+    <div class="kpi-card" style="--accent:#f59e0b">
+      <div class="label">🔥 Top Skill</div>
+      <div class="value" id="kpi-top-skill-count"><span class="skeleton"></span></div>
+      <div class="sub" id="kpi-top-skill">loading...</div>
     </div>
   </div>
 
-  <!-- Trend chart — full width -->
-  <div class="row row-1">
-    <div class="card">
-      <div class="card-title">New Jobs Per Day — Last 30 Days</div>
-      <div class="chart-wrap"><canvas id="trend-chart" class="trend"></canvas></div>
-    </div>
-  </div>
-
-  <!-- Top cities + Top companies + Skill demand -->
-  <div class="row row-3">
-    <div class="card">
-      <div class="card-title">Top 10 Cities</div>
-      <div id="top-locations"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Top 10 Companies Hiring</div>
-      <div id="top-companies"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">🔥 Real-Time Skill Demand</div>
-      <div style="font-size:0.68rem;color:#6b7280;margin-bottom:1rem">Keyword matches in titles &amp; descriptions · Arbeitnow full text · BA API titles only</div>
-      <div id="top-skills"></div>
-    </div>
-  </div>
-
-  <!-- Source bars + Remote donut + Status donut -->
-  <div class="row row-3">
-    <div class="card">
-      <div class="card-title">Jobs by Source</div>
-      <div id="source-bars"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Remote vs On-site</div>
-      <div style="font-size:0.65rem;color:#6b7280;margin-bottom:0.75rem">Arbeitnow jobs only · BA API has no remote field</div>
-      <div class="donut-card-inner">
-        <div class="donut-ring">
-          <canvas id="donut-remote"></canvas>
-          <div class="donut-center">
-            <span class="big" id="donut-remote-pct">—</span>
-            <span class="small">remote</span>
-          </div>
+  <!-- Main 2-Column Grid Layout -->
+  <div class="main-grid">
+    
+    <!-- Left Column (Visual Market Trends & Skills) -->
+    <div class="col-left">
+      
+      <!-- Trend Chart -->
+      <div class="card">
+        <div class="card-title">New Jobs Trend — Last 30 Days</div>
+        <div class="chart-wrap">
+          <canvas id="trend-chart" class="trend"></canvas>
         </div>
-        <div class="donut-legend" id="legend-remote"></div>
       </div>
+
+      <!-- Skills Demand Chart -->
+      <div class="card">
+        <div class="card-title">🔥 Real-Time Skill Demand (Top 8 Keywords)</div>
+        <div id="top-skills"></div>
+      </div>
+
     </div>
-    <div class="card">
-      <div class="card-title">Active vs Expired</div>
-      <div class="donut-card-inner">
-        <div class="donut-ring">
-          <canvas id="donut-status"></canvas>
-          <div class="donut-center">
-            <span class="big" id="donut-status-pct">—</span>
-            <span class="small">active</span>
+
+    <!-- Right Column (Sources, Distribution, and Top Employers) -->
+    <div class="col-right">
+
+      <!-- Remote Ratio Donut -->
+      <div class="card">
+        <div class="card-title">Remote vs On-site</div>
+        <div class="donut-card-inner">
+          <div class="donut-ring">
+            <canvas id="donut-remote"></canvas>
+            <div class="donut-center">
+              <span class="big" id="donut-remote-pct">—</span>
+              <span class="small">remote</span>
+            </div>
           </div>
+          <div class="donut-legend" id="legend-remote"></div>
         </div>
-        <div class="donut-legend" id="legend-status"></div>
       </div>
+
+      <!-- Jobs by Source -->
+      <div class="card">
+        <div class="card-title">Jobs by Source</div>
+        <div id="source-bars"></div>
+      </div>
+
+      <!-- Top Companies list -->
+      <div class="card">
+        <div class="card-title">Top 5 Hiring Companies</div>
+        <div class="company-list" id="top-companies"></div>
+      </div>
+
     </div>
+
   </div>
 
   <!-- Footer -->
   <div class="footer">
     <span>Pipeline: Lambda → S3 Bronze → Silver (SCD Type 2) → Gold → API Gateway</span>
-    <span>DataForge · eu-central-1 · $0/month</span>
+    <span>DataForge · eu-central-1 · $0/month serverless</span>
   </div>
 
 </div>
@@ -389,23 +388,21 @@
 
   let trendChartInstance = null;
   let remoteChartInstance = null;
-  let statusChartInstance = null;
 
   // ── Trend chart (Chart.js) ──────────────────────────────────────────────────
   function drawTrend(trend) {
     const canvas = document.getElementById("trend-chart");
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    const labels = trend.map(d => d.date.slice(5)); // Show MM-DD format
+    const labels = trend.map(d => d.date.slice(5)); // MM-DD
     const counts = trend.map(d => d.count);
 
     if (trendChartInstance) {
       trendChartInstance.destroy();
     }
 
-    // Modern neon gradient fill
     const grad = ctx.createLinearGradient(0, 0, 0, 240);
-    grad.addColorStop(0, "rgba(99, 102, 241, 0.3)");
+    grad.addColorStop(0, "rgba(99, 102, 241, 0.25)");
     grad.addColorStop(1, "rgba(99, 102, 241, 0.0)");
 
     trendChartInstance = new Chart(ctx, {
@@ -413,20 +410,19 @@
       data: {
         labels: labels,
         datasets: [{
-          label: 'New Jobs',
           data: counts,
           borderColor: '#6366f1',
-          borderWidth: 3,
+          borderWidth: 2.5,
           backgroundColor: grad,
           fill: true,
-          tension: 0.35, // Smooth curved lines
+          tension: 0.35,
           pointBackgroundColor: '#818cf8',
           pointBorderColor: '#060813',
-          pointHoverRadius: 7,
+          pointHoverRadius: 6,
           pointHoverBackgroundColor: '#6366f1',
           pointHoverBorderColor: '#fff',
-          pointRadius: 2.5,
-          pointHitRadius: 12
+          pointRadius: 2,
+          pointHitRadius: 10
         }]
       },
       options: {
@@ -436,16 +432,16 @@
           legend: { display: false },
           tooltip: {
             backgroundColor: 'rgba(15, 23, 42, 0.95)',
-            titleFont: { family: 'Outfit', size: 12, weight: 'bold' },
-            bodyFont: { family: 'Inter', size: 12 },
-            borderColor: 'rgba(99, 102, 241, 0.25)',
+            titleFont: { family: 'Outfit', size: 11, weight: 'bold' },
+            bodyFont: { family: 'Inter', size: 11 },
+            borderColor: 'rgba(99, 102, 241, 0.2)',
             borderWidth: 1,
-            padding: 10,
-            cornerRadius: 8,
+            padding: 8,
+            cornerRadius: 6,
             displayColors: false,
             callbacks: {
               label: function(context) {
-                return `🔥 ${context.parsed.y.toLocaleString()} new jobs added`;
+                return `🔥 ${context.parsed.y.toLocaleString()} new jobs`;
               }
             }
           }
@@ -454,16 +450,16 @@
           x: {
             grid: { display: false },
             ticks: {
-              color: '#64748b',
-              font: { family: 'Inter', size: 10 },
+              color: '#475569',
+              font: { family: 'Inter', size: 9 },
               maxTicksLimit: 8
             }
           },
           y: {
-            grid: { color: 'rgba(255, 255, 255, 0.04)' },
+            grid: { color: 'rgba(255, 255, 255, 0.03)' },
             ticks: {
-              color: '#64748b',
-              font: { family: 'Inter', size: 10 }
+              color: '#475569',
+              font: { family: 'Inter', size: 9 }
             }
           }
         }
@@ -474,7 +470,9 @@
   // ── Bar rows ───────────────────────────────────────────────────────────────
   function renderBars(id, items, nameKey, countKey, color) {
     const max = items[0]?.[countKey] || 1;
-    document.getElementById(id).innerHTML = items.map(item => `
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = items.map(item => `
       <div class="bar-row">
         <span class="bar-name" title="${esc(item[nameKey])}">${esc(item[nameKey])}</span>
         <div class="bar-track">
@@ -485,7 +483,7 @@
   }
 
   // ── Donut rendering (Chart.js) ─────────────────────────────────────────────
-  function renderDonut(canvasId, pctId, legendId, slices, pctLabel) {
+  function renderDonut(canvasId, pctId, legendId, slices) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -496,124 +494,119 @@
 
     const total = values.reduce((s, x) => s + x, 0);
     const pct = total ? Math.round((values[0] / total) * 100) : 0;
-    document.getElementById(pctId).textContent = pct + "%";
+    const pctEl = document.getElementById(pctId);
+    if (pctEl) pctEl.textContent = pct + "%";
 
-    if (canvasId === "donut-remote") {
-      if (remoteChartInstance) remoteChartInstance.destroy();
-    } else if (canvasId === "donut-status") {
-      if (statusChartInstance) statusChartInstance.destroy();
-    }
+    if (remoteChartInstance) remoteChartInstance.destroy();
 
-    const chartInstance = new Chart(ctx, {
+    remoteChartInstance = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: labels,
         datasets: [{
           data: values,
           backgroundColor: colors,
-          borderColor: 'rgba(15, 23, 42, 0.8)',
+          borderColor: 'rgba(13, 17, 29, 0.8)',
           borderWidth: 2,
-          hoverOffset: 4
+          hoverOffset: 3
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '72%', // Slim ring design
+        cutout: '76%',
         plugins: {
           legend: { display: false },
           tooltip: {
             backgroundColor: 'rgba(15, 23, 42, 0.95)',
-            titleFont: { family: 'Outfit', size: 11, weight: 'bold' },
-            bodyFont: { family: 'Inter', size: 11 },
-            borderColor: 'rgba(255, 255, 255, 0.08)',
+            titleFont: { family: 'Outfit', size: 10, weight: 'bold' },
+            bodyFont: { family: 'Inter', size: 10 },
+            borderColor: 'rgba(255, 255, 255, 0.05)',
             borderWidth: 1,
-            padding: 8,
-            cornerRadius: 6,
+            padding: 6,
+            cornerRadius: 5,
             displayColors: true
           }
         }
       }
     });
 
-    if (canvasId === "donut-remote") {
-      remoteChartInstance = chartInstance;
-    } else if (canvasId === "donut-status") {
-      statusChartInstance = chartInstance;
+    const legendEl = document.getElementById(legendId);
+    if (legendEl) {
+      legendEl.innerHTML = slices.map(s => `
+        <div class="legend-row">
+          <div class="legend-left">
+            <span class="legend-dot" style="background:${s.color}"></span>
+            <span>${esc(s.label)}</span>
+          </div>
+          <span class="legend-val">${s.value.toLocaleString()}</span>
+        </div>`).join("");
     }
-
-    document.getElementById(legendId).innerHTML = slices.map(s => `
-      <div class="legend-row">
-        <div class="legend-left">
-          <span class="legend-dot" style="background:${s.color}"></span>
-          <span>${esc(s.label)}</span>
-        </div>
-        <span class="legend-val">${s.value.toLocaleString()}</span>
-      </div>`).join("");
   }
 
   // ── Render all ─────────────────────────────────────────────────────────────
   function render(data) {
     const rv = data.remote_vs_onsite  || {};
-    const av = data.active_vs_expired || {};
 
-    document.getElementById("kpi-total").textContent     = (data.total_jobs || 0).toLocaleString();
-    document.getElementById("kpi-today").textContent     = (data.new_today  || 0).toLocaleString();
-    document.getElementById("kpi-arbeitnow").textContent = (data.jobs_by_source?.arbeitnow ?? 0).toLocaleString();
-    document.getElementById("kpi-ba").textContent        = (data.jobs_by_source?.ba_api    ?? 0).toLocaleString();
-    document.getElementById("kpi-remote").textContent    = (rv["Remote"]  || 0).toLocaleString();
-    document.getElementById("kpi-expired").textContent   = (av["Expired"] || 0).toLocaleString();
+    const setEl = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
 
-    // Description-derived KPIs (Arbeitnow only — real data from job descriptions)
+    setEl("kpi-total", (data.total_jobs || 0).toLocaleString());
+    setEl("kpi-today", (data.new_today  || 0).toLocaleString());
+    setEl("kpi-remote", (rv["Remote"]  || 0).toLocaleString());
+
     const di = data.description_insights || {};
-    document.getElementById("kpi-english").textContent   = (di.english_jobs         || 0).toLocaleString();
-    document.getElementById("kpi-homeoffice").textContent = (di.homeoffice_mentioned || 0).toLocaleString();
-    document.getElementById("kpi-benefits").textContent  = (di.jobs_with_benefits   || 0).toLocaleString();
+    setEl("kpi-english", (di.english_jobs || 0).toLocaleString());
 
-    // Pipeline stats KPI — real SCD counts from transformer
-    const ps = data.pipeline_stats || {};
-    document.getElementById("kpi-updated").textContent = (ps.updated_jobs || 0).toLocaleString();
-
-    // Top skill KPI
     if (data.top_skills?.length) {
-      document.getElementById("kpi-top-skill-count").textContent = data.top_skills[0].count.toLocaleString() + " postings";
-      document.getElementById("kpi-top-skill").textContent       = "#1: " + data.top_skills[0].skill;
+      setEl("kpi-top-skill-count", data.top_skills[0].count.toLocaleString() + " postings");
+      setEl("kpi-top-skill", "#1: " + data.top_skills[0].skill);
     }
-    document.getElementById("last-updated").textContent  =
-      "Updated " + new Date(data.last_updated).toLocaleString([], {dateStyle:"medium", timeStyle:"short"});
+    
+    setEl("last-updated", "Updated " + new Date(data.last_updated).toLocaleString([], {dateStyle:"medium", timeStyle:"short"}));
 
-    if (data.trend?.length)
+    if (data.trend?.length) {
       drawTrend(data.trend);
+    }
 
-    if (data.top_locations?.length)
-      renderBars("top-locations", data.top_locations, "location", "count", "#6366f1");
+    if (data.top_skills?.length) {
+      renderBars("top-skills", data.top_skills.slice(0, 8), "skill", "count", "#f59e0b");
+    }
 
-    if (data.top_companies?.length)
-      renderBars("top-companies", data.top_companies, "company", "count", "#10b981");
-
-    if (data.top_skills?.length)
-      renderBars("top-skills", data.top_skills, "skill", "count", "#f59e0b");
+    // Top Companies as interactive List Items
+    const compEl = document.getElementById("top-companies");
+    if (compEl && data.top_companies?.length) {
+      compEl.innerHTML = data.top_companies.slice(0, 5).map((c, i) => `
+        <div class="company-item">
+          <div class="company-info">
+            <span class="company-rank">#${i+1}</span>
+            <span class="company-name" title="${esc(c.company)}">${esc(c.company)}</span>
+          </div>
+          <span class="company-count">${c.count.toLocaleString()} jobs</span>
+        </div>
+      `).join("");
+    }
 
     // Source bars
     const srcEntries = Object.entries(data.jobs_by_source || {}).sort((a,b) => b[1]-a[1]);
     const srcMax = srcEntries[0]?.[1] || 1;
-    document.getElementById("source-bars").innerHTML = srcEntries.map(([src, count]) => `
-      <div class="bar-row">
-        <span class="bar-name">${SOURCE_LABELS[src] ?? src}</span>
-        <div class="bar-track">
-          <div class="bar-fill" style="width:${(count/srcMax)*100}%;background:#6366f1"></div>
-        </div>
-        <span class="bar-count">${count.toLocaleString()}</span>
-      </div>`).join("");
+    const srcBarsEl = document.getElementById("source-bars");
+    if (srcBarsEl) {
+      srcBarsEl.innerHTML = srcEntries.map(([src, count]) => `
+        <div class="bar-row">
+          <span class="bar-name">${SOURCE_LABELS[src] ?? src}</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${(count/srcMax)*100}%;background:#6366f1"></div>
+          </div>
+          <span class="bar-count">${count.toLocaleString()}</span>
+        </div>`).join("");
+    }
 
     renderDonut("donut-remote", "donut-remote-pct", "legend-remote", [
-      { value: rv["Remote"]  || 0, color: "#6366f1", label: "Remote"  },
-      { value: rv["On-site"] || 0, color: "#1f2937", label: "On-site" },
-    ]);
-
-    renderDonut("donut-status", "donut-status-pct", "legend-status", [
-      { value: av["Active"]  || 0, color: "#10b981", label: "Active"  },
-      { value: av["Expired"] || 0, color: "#f43f5e", label: "Expired" },
+      { value: rv["Remote"]  || 0, color: "#3b82f6", label: "Remote"  },
+      { value: rv["On-site"] || 0, color: "#1e293b", label: "On-site" },
     ]);
   }
 
