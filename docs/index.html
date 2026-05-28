@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DataForge — German Data & AI Job Market</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
@@ -386,69 +387,88 @@
   const REFRESH_MS = 2 * 60 * 1000;
   const SOURCE_LABELS = { arbeitnow: "Arbeitnow", ba_api: "BA Jobsuche" };
 
-  // ── Trend chart ────────────────────────────────────────────────────────────
+  let trendChartInstance = null;
+  let remoteChartInstance = null;
+  let statusChartInstance = null;
+
+  // ── Trend chart (Chart.js) ──────────────────────────────────────────────────
   function drawTrend(trend) {
     const canvas = document.getElementById("trend-chart");
-    const ctx    = canvas.getContext("2d");
-    const dpr    = window.devicePixelRatio || 1;
-    const rect   = canvas.parentElement.getBoundingClientRect();
-    canvas.width  = rect.width  * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
-    const W = rect.width, H = rect.height;
-    const pad = { top: 12, right: 12, bottom: 32, left: 46 };
-    const cW = W - pad.left - pad.right;
-    const cH = H - pad.top  - pad.bottom;
-    ctx.clearRect(0, 0, W, H);
-    const maxVal = Math.max(...trend.map(d => d.count), 1);
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const labels = trend.map(d => d.date.slice(5)); // Show MM-DD format
+    const counts = trend.map(d => d.count);
 
-    // Grid
-    [0, 0.25, 0.5, 0.75, 1].forEach(t => {
-      const y = pad.top + cH * (1 - t);
-      ctx.strokeStyle = "#1f2937"; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
-      ctx.fillStyle = "#4b5563"; ctx.font = "10px system-ui"; ctx.textAlign = "right";
-      ctx.fillText(Math.round(t * maxVal), pad.left - 8, y + 3.5);
-    });
-
-    // X labels
-    const step = Math.ceil(trend.length / 7);
-    trend.forEach((d, i) => {
-      if (i % step !== 0) return;
-      const x = pad.left + (i / (trend.length - 1)) * cW;
-      ctx.fillStyle = "#4b5563"; ctx.font = "10px system-ui"; ctx.textAlign = "center";
-      ctx.fillText(d.date.slice(5), x, H - 8);
-    });
-
-    // Gradient fill
-    const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + cH);
-    grad.addColorStop(0, "rgba(99,102,241,0.25)");
-    grad.addColorStop(1, "rgba(99,102,241,0)");
-
-    const pts = trend.map((d, i) => ({
-      x: pad.left + (i / (trend.length - 1)) * cW,
-      y: pad.top  + cH * (1 - d.count / maxVal)
-    }));
-
-    // Smooth curve
-    ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) {
-      const mx = (pts[i-1].x + pts[i].x) / 2;
-      ctx.bezierCurveTo(mx, pts[i-1].y, mx, pts[i].y, pts[i].x, pts[i].y);
+    if (trendChartInstance) {
+      trendChartInstance.destroy();
     }
-    ctx.lineTo(pts[pts.length-1].x, pad.top + cH);
-    ctx.lineTo(pts[0].x, pad.top + cH);
-    ctx.closePath();
-    ctx.fillStyle = grad; ctx.fill();
 
-    ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) {
-      const mx = (pts[i-1].x + pts[i].x) / 2;
-      ctx.bezierCurveTo(mx, pts[i-1].y, mx, pts[i].y, pts[i].x, pts[i].y);
-    }
-    ctx.strokeStyle = "#6366f1"; ctx.lineWidth = 2.5; ctx.stroke();
+    // Modern neon gradient fill
+    const grad = ctx.createLinearGradient(0, 0, 0, 240);
+    grad.addColorStop(0, "rgba(99, 102, 241, 0.3)");
+    grad.addColorStop(1, "rgba(99, 102, 241, 0.0)");
+
+    trendChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'New Jobs',
+          data: counts,
+          borderColor: '#6366f1',
+          borderWidth: 3,
+          backgroundColor: grad,
+          fill: true,
+          tension: 0.35, // Smooth curved lines
+          pointBackgroundColor: '#818cf8',
+          pointBorderColor: '#060813',
+          pointHoverRadius: 7,
+          pointHoverBackgroundColor: '#6366f1',
+          pointHoverBorderColor: '#fff',
+          pointRadius: 2.5,
+          pointHitRadius: 12
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            titleFont: { family: 'Outfit', size: 12, weight: 'bold' },
+            bodyFont: { family: 'Inter', size: 12 },
+            borderColor: 'rgba(99, 102, 241, 0.25)',
+            borderWidth: 1,
+            padding: 10,
+            cornerRadius: 8,
+            displayColors: false,
+            callbacks: {
+              label: function(context) {
+                return `🔥 ${context.parsed.y.toLocaleString()} new jobs added`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: {
+              color: '#64748b',
+              font: { family: 'Inter', size: 10 },
+              maxTicksLimit: 8
+            }
+          },
+          y: {
+            grid: { color: 'rgba(255, 255, 255, 0.04)' },
+            ticks: {
+              color: '#64748b',
+              font: { family: 'Inter', size: 10 }
+            }
+          }
+        }
+      }
+    });
   }
 
   // ── Bar rows ───────────────────────────────────────────────────────────────
@@ -464,37 +484,64 @@
       </div>`).join("");
   }
 
-  // ── Donut ──────────────────────────────────────────────────────────────────
-  function drawDonut(canvasId, slices) {
+  // ── Donut rendering (Chart.js) ─────────────────────────────────────────────
+  function renderDonut(canvasId, pctId, legendId, slices, pctLabel) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
-    const dpr = window.devicePixelRatio || 1;
-    const size = 130;
-    canvas.width  = size * dpr;
-    canvas.height = size * dpr;
     const ctx = canvas.getContext("2d");
-    ctx.scale(dpr, dpr);
-    const cx = size/2, cy = size/2, r = 56, inner = 36;
-    const total = slices.reduce((s, x) => s + x.value, 0);
-    if (!total) return;
-    let angle = -Math.PI / 2;
-    slices.forEach(s => {
-      const sweep = (s.value / total) * 2 * Math.PI;
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, angle, angle + sweep);
-      ctx.arc(cx, cy, inner, angle + sweep, angle, true);
-      ctx.closePath();
-      ctx.fillStyle = s.color;
-      ctx.fill();
-      angle += sweep;
-    });
-  }
 
-  function renderDonut(canvasId, pctId, legendId, slices, pctLabel) {
-    drawDonut(canvasId, slices);
-    const total = slices.reduce((s, x) => s + x.value, 0);
-    const pct = total ? Math.round((slices[0].value / total) * 100) : 0;
+    const labels = slices.map(s => s.label);
+    const values = slices.map(s => s.value);
+    const colors = slices.map(s => s.color);
+
+    const total = values.reduce((s, x) => s + x, 0);
+    const pct = total ? Math.round((values[0] / total) * 100) : 0;
     document.getElementById(pctId).textContent = pct + "%";
+
+    if (canvasId === "donut-remote") {
+      if (remoteChartInstance) remoteChartInstance.destroy();
+    } else if (canvasId === "donut-status") {
+      if (statusChartInstance) statusChartInstance.destroy();
+    }
+
+    const chartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: colors,
+          borderColor: 'rgba(15, 23, 42, 0.8)',
+          borderWidth: 2,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '72%', // Slim ring design
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            titleFont: { family: 'Outfit', size: 11, weight: 'bold' },
+            bodyFont: { family: 'Inter', size: 11 },
+            borderColor: 'rgba(255, 255, 255, 0.08)',
+            borderWidth: 1,
+            padding: 8,
+            cornerRadius: 6,
+            displayColors: true
+          }
+        }
+      }
+    });
+
+    if (canvasId === "donut-remote") {
+      remoteChartInstance = chartInstance;
+    } else if (canvasId === "donut-status") {
+      statusChartInstance = chartInstance;
+    }
+
     document.getElementById(legendId).innerHTML = slices.map(s => `
       <div class="legend-row">
         <div class="legend-left">
