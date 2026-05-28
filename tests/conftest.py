@@ -17,10 +17,8 @@ for k in _to_remove:
     del sys.modules[k]
 
 import pytest
-import json
 import boto3
 from moto import mock_aws
-from io import BytesIO
 
 @pytest.fixture
 def sample_input_data():
@@ -41,7 +39,6 @@ def sample_csv_content():
 @pytest.fixture
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
-    import os
     os.environ['AWS_ACCESS_KEY_ID'] = 'testing'
     os.environ['AWS_SECRET_ACCESS_KEY'] = 'testing'
     os.environ['AWS_SECURITY_TOKEN'] = 'testing'

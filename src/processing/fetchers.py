@@ -1,4 +1,3 @@
-import os
 import requests
 from typing import Any, Dict
 from .typing_inspection.arbeitnow import validate_api_response as validate_arbeitnow

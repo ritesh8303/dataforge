@@ -1,0 +1,28 @@
+[tool.ruff]
+line-length = 120
+exclude = [
+    ".git",
+    ".pytest_cache",
+    ".venv",
+    "src/pydantic",
+    "src/pydantic_core",
+    "src/requests",
+    "src/urllib3",
+    "src/idna",
+    "src/certifi",
+    "src/charset_normalizer",
+    "src/annotated_types",
+    "src/typing_extensions.py",
+    "src/typing_inspection",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = [
+    "E402", # Module level import not at top of file (intentional in tests for sys.path)
+    "E712", # Avoid equality comparisons to True/False (common in pandas filter syntax)
+    "E501", # Line too long
+    "W291", # Trailing whitespace
+    "W293", # Blank line contains whitespace
+    "W292", # No newline at end of file
+]

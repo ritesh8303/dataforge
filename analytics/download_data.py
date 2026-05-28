@@ -1,5 +1,4 @@
 import awswrangler as wr
-import pandas as pd
 
 print("Reading Silver data from S3...")
 df = wr.s3.read_parquet(

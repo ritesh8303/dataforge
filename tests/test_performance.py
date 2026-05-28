@@ -1,6 +1,4 @@
-import pytest
 import time
-import pandas as pd
 from src.process_data import ProcessDataEngine
 
 class TestPerformance:

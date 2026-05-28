@@ -1,10 +1,7 @@
-import pytest
 import json
 import boto3
 from moto import mock_aws
-from io import BytesIO
 from src.lambda_function import lambda_handler
-from src.process_data import ProcessDataEngine
 
 class TestIntegration:
     

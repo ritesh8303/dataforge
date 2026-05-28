@@ -6,7 +6,6 @@ import sys
 import json
 import boto3
 import pandas as pd
-import awswrangler as wr
 from datetime import datetime, timezone
 
 sys.path.insert(0, 'src')

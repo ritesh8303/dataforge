@@ -1,5 +1,4 @@
 import awswrangler as wr
-import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 

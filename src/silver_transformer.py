@@ -4,7 +4,6 @@ import awswrangler as wr
 from datetime import datetime, timezone
 from urllib.parse import unquote_plus
 import os
-import json
 
 
 def lambda_handler(event, context):

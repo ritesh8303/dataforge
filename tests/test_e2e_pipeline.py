@@ -3,7 +3,6 @@ End-to-end integration test for the DataForge pipeline.
 Tests Bronze ingestion → Silver transformation → Gold analytics.
 """
 import boto3
-import time
 import json
 
 def test_pipeline_e2e():
@@ -115,7 +114,7 @@ def test_pipeline_e2e():
         if len(enabled) != 3:
             print(f"   ❌ FAILED: Expected 3 enabled schedules, found {len(enabled)}")
             return False
-        print(f"   ✅ All 3 daily schedules enabled (8AM UTC)")
+        print("   ✅ All 3 daily schedules enabled (8AM UTC)")
     except Exception as e:
         print(f"   ❌ FAILED: {e}")
         return False
@@ -135,7 +134,7 @@ def test_pipeline_e2e():
         if suffix != '.parquet':
             print(f"   ❌ FAILED: Wrong suffix '{suffix}', expected '.parquet'")
             return False
-        print(f"   ✅ S3 trigger configured correctly (.parquet → transformer)")
+        print("   ✅ S3 trigger configured correctly (.parquet → transformer)")
     except Exception as e:
         print(f"   ❌ FAILED: {e}")
         return False
