@@ -1,0 +1,8 @@
+# Copy this to terraform.tfvars and fill in your values
+# terraform.tfvars is gitignored — never commit real values
+alert_email = "your-email@example.com"
+environment = "dev"
+
+# Optional: point the direct careers ingestor at a large registry.
+# company_careers_config_s3_uri = "s3://dataforge-config/company-careers.json"
+# company_careers_config_mode   = "append" # or "replace"
