@@ -5,40 +5,189 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DataForge — Find Jobs in Germany</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0f1117; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
-    #root { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
-    .header { margin-bottom: 1.5rem; }
-    .header h1 { font-size: 1.5rem; font-weight: 700; color: #f8fafc; }
-    .header p { color: #94a3b8; font-size: 0.85rem; margin-top: 0.3rem; }
-    .nav { display: flex; gap: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; }
-    .nav a { color: #6366f1; text-decoration: none; }
-    .nav a:hover { text-decoration: underline; }
-    .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
-    @media(min-width:640px){ .filters { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; } }
-    input, select { background: #1e2130; border: 1px solid #2d3748; border-radius: 8px; color: #e2e8f0; padding: 0.6rem 0.85rem; font-size: 0.85rem; width: 100%; outline: none; }
-    input:focus, select:focus { border-color: #6366f1; }
-    select option { background: #1e2130; }
-    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.8rem; color: #64748b; }
-    .job-list { display: flex; flex-direction: column; gap: 0.6rem; }
-    .job-card { background: #1e2130; border: 1px solid #2d3748; border-radius: 10px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; transition: border-color 0.15s; }
-    .job-card:hover { border-color: #6366f1; }
+    
+    body {
+      background: radial-gradient(circle at 50% 0%, #111424 0%, #060813 100%);
+      color: #f1f5f9;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    #root { max-width: 1140px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+
+    /* ── Header ── */
+    .header {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 1.5rem;
+    }
+    .header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem; font-weight: 800;
+      background: linear-gradient(135deg, #fff 30%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+    .header p { color: #94a3b8; font-size: 0.9rem; margin-top: 0.4rem; }
+
+    .nav { display: flex; gap: 1rem; margin-bottom: 2rem; font-size: 0.85rem; }
+    .nav a {
+      color: #818cf8; text-decoration: none; font-weight: 600;
+      transition: color 0.15s ease;
+      display: flex; align-items: center; gap: 0.25rem;
+    }
+    .nav a:hover { color: #6366f1; text-decoration: none; }
+
+    /* ── Filters ── */
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem; margin-bottom: 1.75rem;
+      background: rgba(17, 24, 39, 0.35);
+      padding: 1rem; border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    @media(min-width:768px){ .filters { grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 1.25fr; } }
+
+    input, select {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      color: #f1f5f9;
+      padding: 0.7rem 0.95rem;
+      font-size: 0.85rem;
+      width: 100%;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    input::placeholder { color: #64748b; }
+    input:focus, select:focus {
+      border-color: #6366f1;
+      background: rgba(30, 41, 59, 0.7);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+    select option { background: #0f111a; color: #f1f5f9; }
+
+    .results-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.25rem; font-size: 0.85rem; color: #94a3b8;
+      font-weight: 500;
+    }
+    #result-count { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; color: #fff; }
+
+    /* ── Job List ── */
+    .job-list { display: flex; flex-direction: column; gap: 0.85rem; }
+    
+    .job-card {
+      background: rgba(17, 24, 39, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 1.3rem 1.6rem;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 1.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    
+    @keyframes fadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .job-card:hover {
+      border-color: rgba(99, 102, 241, 0.35);
+      background: rgba(17, 24, 39, 0.65);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px -10px rgba(0, 0, 0, 0.5), 0 0 10px -2px rgba(99, 102, 241, 0.1);
+    }
+    
     .job-info { flex: 1; min-width: 0; }
-    .job-title { font-size: 0.9rem; font-weight: 600; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .job-company { font-size: 0.82rem; color: #94a3b8; margin-top: 0.2rem; }
-    .job-meta { font-size: 0.78rem; color: #64748b; margin-top: 0.4rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
-    .tag { background: #2d3748; border-radius: 4px; padding: 0.15rem 0.5rem; font-size: 0.72rem; color: #94a3b8; }
-    .tag.remote { background: #1e3a2f; color: #4ade80; }
-    .tag.source-ba { background: #1e2a3a; color: #60a5fa; }
-    .tag.type { background: #2d2040; color: #c084fc; }
-    .apply-btn { flex-shrink: 0; background: #6366f1; color: #fff; border: none; border-radius: 7px; padding: 0.5rem 1.1rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; display: inline-block; }
-    .apply-btn:hover { background: #4f46e5; }
-    .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; flex-wrap: wrap; }
-    .page-btn { background: #1e2130; border: 1px solid #2d3748; border-radius: 6px; color: #94a3b8; padding: 0.4rem 0.75rem; font-size: 0.8rem; cursor: pointer; }
-    .page-btn.active { background: #6366f1; border-color: #6366f1; color: #fff; }
-    .page-btn:hover:not(.active) { border-color: #6366f1; color: #e2e8f0; }
-    .job-desc { font-size: 0.75rem; color: #64748b; margin-top: 0.4rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .error { color: #f87171; font-size: 0.85rem; padding: 1rem; background: #1e2130; border: 1px solid #7f1d1d; border-radius: 8px; margin-bottom: 1rem; }
+    .job-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem; font-weight: 600; color: #f8fafc;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .job-company { font-size: 0.88rem; color: #94a3b8; margin-top: 0.25rem; font-weight: 500; }
+    
+    .job-meta {
+      font-size: 0.78rem; color: #64748b; margin-top: 0.6rem;
+      display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+    }
+    .job-meta span:first-child { color: #cbd5e1; font-weight: 500; }
+
+    /* ── Tags ── */
+    .tag {
+      border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.01em; border: 1px solid rgba(255, 255, 255, 0.02);
+    }
+    .tag.remote { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.15); }
+    .tag.source-ba { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border-color: rgba(59, 130, 246, 0.15); }
+    .tag.type { background: rgba(167, 139, 250, 0.12); color: #c084fc; border-color: rgba(167, 139, 250, 0.15); }
+    
+    .tag:not(.remote):not(.source-ba):not(.type) {
+      background: rgba(30, 41, 59, 0.6); color: #94a3b8;
+    }
+
+    /* ── Buttons ── */
+    .apply-btn {
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 0.6rem 1.25rem; font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; white-space: nowrap;
+      display: inline-block; transition: all 0.2s ease;
+      font-family: 'Outfit', sans-serif;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    }
+    .apply-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+      background: linear-gradient(135deg, #818cf8 0%, #5850ec 100%);
+    }
+
+    /* ── Pagination ── */
+    .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem; flex-wrap: wrap; }
+    .page-btn {
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px; color: #94a3b8;
+      padding: 0.45rem 0.85rem; font-size: 0.82rem; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .page-btn.active {
+      background: #6366f1; border-color: #6366f1; color: #fff;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+    }
+    .page-btn:hover:not(.active) {
+      border-color: rgba(99, 102, 241, 0.5);
+      color: #f1f5f9;
+      background: rgba(30, 41, 59, 0.7);
+    }
+
+    .job-desc {
+      font-size: 0.78rem; color: #94a3b8; margin-top: 0.6rem; line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      border-left: 2px solid rgba(99, 102, 241, 0.2);
+      padding-left: 0.6rem;
+    }
+    .loading { font-size: 0.9rem; text-align: center; color: #64748b; padding: 3rem 0; font-weight: 500; }
+
+    .error {
+      color: #f87171; font-size: 0.88rem; padding: 1rem 1.25rem;
+      background: rgba(127, 29, 29, 0.25); border: 1px solid rgba(239, 68, 68, 0.45);
+      border-radius: 12px; margin-bottom: 2rem;
+      backdrop-filter: blur(8px);
+    }
   </style>
 </head>
 <body>
@@ -71,6 +220,12 @@
       <option value="">Remote &amp; On-site</option>
       <option value="true">Remote only</option>
       <option value="false">On-site only</option>
+    </select>
+    <select id="sort_order">
+      <option value="newest">Sort: Newest first</option>
+      <option value="oldest">Sort: Oldest first</option>
+      <option value="title_asc">Sort: A-Z (Title)</option>
+      <option value="company_asc">Sort: A-Z (Company)</option>
     </select>
   </div>
 
@@ -135,6 +290,18 @@
       if (location && !loc.includes(location)) return false;
       return true;
     });
+
+    // Apply client-side sorting based on select choice
+    const sortVal = document.getElementById("sort_order").value;
+    if (sortVal === "newest") {
+      filtered.sort((a, b) => (b.date_added || "").localeCompare(a.date_added || ""));
+    } else if (sortVal === "oldest") {
+      filtered.sort((a, b) => (a.date_added || "").localeCompare(b.date_added || ""));
+    } else if (sortVal === "title_asc") {
+      filtered.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    } else if (sortVal === "company_asc") {
+      filtered.sort((a, b) => (a.company || "").localeCompare(b.company || ""));
+    }
 
     page = 1;
     document.getElementById("result-count").textContent =
@@ -233,6 +400,7 @@
   ["source","remote","job_type"].forEach(id => {
     document.getElementById(id).addEventListener("change", loadJobs);
   });
+  document.getElementById("sort_order").addEventListener("change", applyFilters);
 
   loadJobs();
 </script>
