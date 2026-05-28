@@ -793,6 +793,83 @@ def _fetch_one(entry: dict[str, Any]) -> tuple[str, list[dict[str, Any]]]:
         return label, []
 
 
+def _is_eu_job(job: dict[str, Any]) -> bool:
+    loc = str(job.get("location") or "").strip().lower()
+    title = str(job.get("title") or "").strip().lower()
+    
+    # 1. Blocklist of multi-word non-EU phrases
+    non_eu_phrases = {
+        "united kingdom", "united states", "new york", "san francisco", "los angeles",
+        "south africa", "new zealand", "mountain view", "palo alto", "redwood city",
+        "menlo park", "tel aviv", "buenos aires", "cape canaveral", "ho chi minh"
+    }
+    if any(phrase in loc for phrase in non_eu_phrases) or any(phrase in title for phrase in non_eu_phrases):
+        return False
+        
+    # Extract standalone words
+    loc_words = set(re.findall(r"\b[a-z]+\b", loc))
+    title_words = set(re.findall(r"\b[a-z]+\b", title))
+    combined_words = loc_words.union(title_words)
+    
+    # Standalone non-EU country names, US states, and major global tech hub city names
+    non_eu_words = {
+        "uk", "london", "switzerland", "zurich", "zürich", "geneva", "genf",
+        "norway", "oslo", "iceland", "usa", "us", "america", "canada", "toronto",
+        "vancouver", "australia", "sydney", "melbourne", "singapore", "sg", "japan", "tokyo",
+        "india", "bangalore", "bengaluru", "china", "shanghai", "suzhou", "wuxi", "cn",
+        "brazil", "mexico", "ukraine", "russia", "israel", "boston", "seattle",
+        "austin", "texas", "tx", "california", "ca", "chicago", "denver", "atlanta",
+        "miami", "hawthorne", "bastrop", "redmond", "wa", "starbase", "saddleback",
+        "capitol", "sunnyvale", "woodinville", "fl", "egypt", "maadi", "eg", "dubai",
+        "ae", "vietnam", "vn", "argentina", "ar", "latam"
+    }
+    if not non_eu_words.isdisjoint(combined_words):
+        return False
+        
+    eu_countries = {
+        "germany", "deutschland", "france", "spain", "españa", "espana", "italy", "italia",
+        "netherlands", "nederland", "holland", "belgium", "belgique", "belgië", "austria",
+        "österreich", "oesterreich", "poland", "polska", "ireland", "sweden", "sverige",
+        "portugal", "denmark", "danmark", "finland", "suomi", "czechia", "czech republic",
+        "ceska", "romania", "hungary", "ungarn", "bulgaria", "croatia", "hrvatska", "slovakia",
+        "slovensko", "slovenia", "lithuania", "latvia", "estonia", "cyprus", "luxembourg",
+        "malta", "greece", "hellas"
+    }
+    
+    if any(country in loc for country in eu_countries) or any(country in title for country in eu_countries):
+        return True
+        
+    eu_keywords = {"eu", "european", "union", "europe", "emea"}
+    if not eu_keywords.isdisjoint(combined_words):
+        return True
+        
+    eu_cities = {
+        "berlin", "munich", "münchen", "frankfurt", "hamburg", "cologne", "köln", "stuttgart",
+        "düsseldorf", "duesseldorf", "karlsruhe", "heidelberg", "leipzig", "dresden", "bonn",
+        "nuremberg", "nürnberg", "bremen", "hannover", "hanover", "madrid", "barcelona", "paris",
+        "vienna", "wien", "amsterdam", "milan", "milano", "rome", "roma", "dublin", "brussels",
+        "bruxelles", "brussel", "stockholm", "lisbon", "lisboa", "warsaw", "warszawa", "prague",
+        "praha", "budapest", "copenhagen", "københavn", "helsinki", "athens", "sofia", "zagreb",
+        "bratislava", "tallinn", "riga", "vilnius", "valletta", "nicosia", "malaga", "málaga",
+        "valencia", "seville", "sevilla", "lyon", "marseille", "toulouse", "bordeaux", "nice",
+        "porto", "utrecht", "rotterdam", "hague", "den haag", "antwerp", "antwerpen", "ghent",
+        "liege", "liège", "gothenburg", "göteborg", "malmo", "malmö", "uppsala", "krakow", "kraków",
+        "wroclaw", "wrocław", "gdansk", "gdańsk", "poznan", "poznań", "graz", "linz", "salzburg",
+        "innsbruck", "tallin"
+    }
+    if not eu_cities.isdisjoint(combined_words):
+        return True
+        
+    eu_codes = {
+        "de", "fr", "es", "nl", "pl", "ie", "se", "fi", "dk", "at", "be", "pt", "it", "ro",
+        "hu", "bg", "hr", "cz", "sk", "si", "lt", "lv", "ee", "cy", "lu", "mt", "gr"
+    }
+    if not eu_codes.isdisjoint(combined_words):
+        return True
+        
+    return False
+
+
 def collect_company_jobs(targets: list[dict[str, Any]]) -> list[dict[str, Any]]:
     all_jobs: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
@@ -804,8 +881,9 @@ def collect_company_jobs(targets: list[dict[str, Any]]) -> list[dict[str, Any]]:
             for job in jobs:  # type: ignore
                 job_id = job.get("job_id", "")
                 if job_id and job_id not in seen_ids and job.get("title"):
-                    seen_ids.add(job_id)
-                    all_jobs.append(job)
+                    if _is_eu_job(job):
+                        seen_ids.add(job_id)
+                        all_jobs.append(job)
     return all_jobs
 
 
