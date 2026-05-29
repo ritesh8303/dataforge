@@ -36,7 +36,7 @@ def test_scd_first_run():
 
         assert len(result_df) == 2
         assert result_df['is_current'].all()
-        assert set(result_df['job_id']) == {'job_001', 'job_002'}
+        assert set(result_df['job_id']) == {'sem_dataforge_data-engineer_berlin', 'sem_dataforge_senior-data-engineer_berlin'}
 
 
 def test_scd_unchanged_record():
@@ -57,13 +57,13 @@ def test_scd_unchanged_record():
 
         current = result_df[result_df['is_current']]
         assert len(current) == 1
-        assert current.iloc[0]['job_id'] == 'job_001'
+        assert current.iloc[0]['job_id'] == 'sem_dataforge_data-engineer_berlin'
 
 
 def test_scd_updated_record():
-    """Job title changes — old record expired, new version inserted."""
-    old_bronze = pd.DataFrame([_make_bronze_row('job_001', 'Data Engineer')])
-    new_bronze = pd.DataFrame([_make_bronze_row('job_001', 'Senior Data Engineer')])
+    """Job source changes — old record expired, new version inserted under same semantic key."""
+    old_bronze = pd.DataFrame([_make_bronze_row('job_001', 'Data Engineer', source='arbeitnow')])
+    new_bronze = pd.DataFrame([_make_bronze_row('job_001', 'Data Engineer', source='ba_api')])
 
     with patch('src.silver_transformer.wr.s3.read_parquet', side_effect=_NoFilesFound), \
          patch('src.silver_transformer.wr.s3.to_parquet') as mock_write:
@@ -81,8 +81,8 @@ def test_scd_updated_record():
         current = result_df[result_df['is_current']]
         assert len(expired) == 1
         assert len(current) == 1
-        assert expired.iloc[0]['title'] == 'Data Engineer'
-        assert current.iloc[0]['title'] == 'Senior Data Engineer'
+        assert expired.iloc[0]['source'] == 'arbeitnow'
+        assert current.iloc[0]['source'] == 'ba_api'
         assert pd.notna(expired.iloc[0]['scd_end_date'])
 
 
@@ -105,7 +105,7 @@ def test_scd_new_job_added():
 
         current = result_df[result_df['is_current']]
         assert len(current) == 2
-        assert set(current['job_id']) == {'job_001', 'job_002'}
+        assert set(current['job_id']) == {'sem_dataforge_data-engineer_berlin', 'sem_dataforge_ml-engineer_berlin'}
 
 
 def test_scd_missing_job_id_raises():

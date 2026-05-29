@@ -2,23 +2,125 @@ import hashlib
 import pandas as pd
 import awswrangler as wr
 from datetime import datetime, timezone
-from urllib.parse import unquote_plus
 import os
+import re
+
+
+def slugify(text):
+    if pd.isna(text) or not text:
+        return ""
+    # Convert to lowercase and strip whitespace
+    text = str(text).lower().strip()
+    # Remove HTML / common tags
+    text = re.sub(r'\(m/w/d\)|\(f/m/d\)|\(w/m/d\)|\(m/f/d\)', '', text)
+    text = re.sub(r'\(senior\)|\(junior\)|\(lead\)|\(principal\)', '', text)
+    # Remove common company suffixes
+    text = re.sub(r'\bgmbh\b|\binc\b|\bcorp\b|\bco\b|\bltd\b|\bag\b|\bse\b', '', text)
+    # Keep only alphanumeric and spaces
+    text = re.sub(r'[^a-z0-9\s]', ' ', text)
+    # Collapse multiple spaces into one, then join with hyphens
+    words = text.split()
+    return "-".join(words)
+
+
+def validate_jobs(df):
+    """Filter out rows that don't meet core data contracts."""
+    initial_count = len(df)
+    valid_mask = (
+        df['title'].notna() & (df['title'].str.strip() != '') &
+        df['company'].notna() & (df['company'].str.strip() != '') &
+        df['url'].notna() & (df['url'].str.strip() != '')
+    )
+    df_valid = df[valid_mask].copy()
+    dropped = initial_count - len(df_valid)
+    if dropped > 0:
+        print(f"Dropped {dropped} invalid jobs failing schema checks.")
+    return df_valid
+
+
+def deduplicate_bronze(df):
+    """Consolidate duplicate postings within incoming bronze data using semantic matching."""
+    if df.empty:
+        return df
+
+    # Create semantic key
+    df['semantic_key'] = df.apply(
+        lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}",
+        axis=1
+    )
+
+    # Prioritize sources: direct > arbeitnow > ba_api
+    source_priority = {'direct': 0, 'arbeitnow': 1, 'ba_api': 2}
+    df['priority'] = df['source'].map(lambda s: source_priority.get(s, 9))
+    
+    # Calculate description length to keep the most detailed posting
+    df['desc_len'] = df['description'].fillna('').astype(str).str.len()
+    
+    # Sort by priority, then description length
+    df = df.sort_values(by=['priority', 'desc_len'], ascending=[True, False])
+    
+    # Drop duplicate semantic keys, keeping the highest quality source
+    df_dedup = df.drop_duplicates(subset=['semantic_key'], keep='first').copy()
+    
+    # Override job_id with the semantic key for cross-source persistence matching
+    df_dedup['job_id'] = df_dedup['semantic_key']
+    
+    # Drop temporary columns
+    df_dedup.drop(columns=['semantic_key', 'priority', 'desc_len'], inplace=True)
+    return df_dedup
 
 
 def lambda_handler(event, context):
     silver_path = os.environ.get('SILVER_PATH')
     gold_bucket = os.environ.get('GOLD_BUCKET')
+    bronze_bucket = os.environ.get('BRONZE_BUCKET')
 
     if not silver_path:
         raise ValueError("SILVER_PATH environment variable is not set.")
+    if not bronze_bucket:
+        raise ValueError("BRONZE_BUCKET environment variable is not set.")
 
-    for record in event.get('Records', []):
-        bucket = record['s3']['bucket']['name']
-        key = unquote_plus(record['s3']['object']['key'])
-        print(f"Detected new data in Bronze: s3://{bucket}/{key}")
-        bronze_df = wr.s3.read_parquet(path=f"s3://{bucket}/{key}")
-        process_scd_type_2(bronze_df, silver_path, gold_bucket)
+    # Determine execution date partition
+    today_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    if isinstance(event, dict) and event.get('date'):
+        today_str = event['date']
+        print(f"Manual date override detected: running for date {today_str}")
+
+    paths = [
+        f"s3://{bronze_bucket}/arbeitnow/ingested_at={today_str}/jobs.parquet",
+        f"s3://{bronze_bucket}/ba_api/ingested_at={today_str}/jobs.parquet",
+        f"s3://{bronze_bucket}/direct_careers/ingested_at={today_str}/jobs.parquet"
+    ]
+
+    dfs = []
+    for path in paths:
+        try:
+            if wr.s3.does_object_exist(path):
+                df = wr.s3.read_parquet(path=path)
+                if not df.empty:
+                    dfs.append(df)
+                    print(f"Successfully loaded {len(df)} jobs from {path}")
+        except Exception as e:
+            print(f"Warning: Failed to read {path}: {str(e)}")
+
+    if not dfs:
+        print(f"No new Bronze files found for date {today_str}. Exiting.")
+        return {"statusCode": 200, "body": f"No Bronze files found for date {today_str}."}
+
+    bronze_df = pd.concat(dfs, ignore_index=True)
+    
+    # Validate schemas
+    bronze_df = validate_jobs(bronze_df)
+    
+    # Deduplicate semantically
+    bronze_df = deduplicate_bronze(bronze_df)
+    
+    if bronze_df.empty:
+        print("No valid jobs left after validation and deduplication. Exiting.")
+        return {"statusCode": 200, "body": "No valid jobs to process."}
+
+    process_scd_type_2(bronze_df, silver_path, gold_bucket)
+    return {"statusCode": 200, "body": "Silver transformer execution completed."}
 
 
 def generate_hash(df, cols):
@@ -49,6 +151,14 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
             "Ensure ingestors rename slug/refnr to job_id before writing."
         )
 
+    # Ensure bronze_df job_ids are migrated to semantic IDs if they aren't already
+    is_old_bronze = ~bronze_df['job_id'].astype(str).str.startswith('sem_')
+    if is_old_bronze.any():
+        bronze_df.loc[is_old_bronze, 'job_id'] = bronze_df.loc[is_old_bronze].apply(
+            lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}",
+            axis=1
+        )
+
     # 1. Prepare incoming Bronze data
     bronze_df = bronze_df.copy()
     bronze_df['hash_key'] = generate_hash(bronze_df, attr_cols)
@@ -64,6 +174,14 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
         silver_df = wr.s3.read_parquet(path=silver_path, dataset=True)
         silver_exists = True
         print(f"Loaded {len(silver_df)} existing Silver records.")
+        if not silver_df.empty and 'job_id' in silver_df.columns:
+            is_old = ~silver_df['job_id'].astype(str).str.startswith('sem_')
+            if is_old.any():
+                print(f"Migrating {is_old.sum()} old Silver job IDs to semantic IDs...")
+                silver_df.loc[is_old, 'job_id'] = silver_df.loc[is_old].apply(
+                    lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}",
+                    axis=1
+                )
     except wr.exceptions.NoFilesFound:
         # Expected on first run — Silver bucket is empty
         print("Silver layer is empty. Performing initial load.")

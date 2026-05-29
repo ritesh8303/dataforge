@@ -126,12 +126,14 @@ module "transformer_lambda" {
   memory_size      = 512
   timeout          = 300
   env_vars = {
-    SILVER_PATH = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
-    GOLD_BUCKET = module.s3_gold.bucket_id
+    SILVER_PATH   = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
+    GOLD_BUCKET   = module.s3_gold.bucket_id
+    BRONZE_BUCKET = module.s3_bronze.bucket_id
   }
   layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   bronze_bucket_arn = module.s3_bronze.arn
   enable_schedule   = true
+  schedule_expression = "cron(30 0,3,8,9,10,11,12,13,14,15,16,17,18,21 * * ? *)"
   enable_alerts     = true
   alert_email       = var.alert_email
 }
@@ -158,16 +160,6 @@ module "gold_lambda" {
 
 # --- 4. AUTOMATION & TRIGGERS ---
 
-# Bronze .parquet upload → transformer
-resource "aws_s3_bucket_notification" "on_bronze_upload" {
-  bucket = module.s3_bronze.bucket_id
-  lambda_function {
-    lambda_function_arn = module.transformer_lambda.lambda_function_arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_suffix       = ".parquet"
-  }
-  depends_on = [module.transformer_lambda]
-}
 
 # Silver .parquet write → gold generator
 resource "aws_s3_bucket_notification" "on_silver_upload" {

@@ -284,19 +284,6 @@
     }
   }
 
-  function isEnglishJob(j) {
-    const text = ((j.title || "") + " " + (j.description || "")).toLowerCase();
-    const englishWords = /\b(the|and|for|with|you|our|your|we|are|team|role|experience|skills|requirements|responsibilities|software|engineer|developer|data|management|design|is)\b/g;
-    const germanWords = /\b(und|die|der|mit|wir|sie|für|eine|ist|sind|das|arbeitszeit|aufgaben|profil|wir bieten|qualifikation|erfahrung|kenntnisse|mitarbeit|bereich|stelle|stelleanzeige)\b/g;
-    const enCount = (text.match(englishWords) || []).length;
-    const deCount = (text.match(germanWords) || []).length;
-    if (enCount === 0 && deCount === 0) {
-      const enTitleKeywords = /\b(engineer|developer|manager|specialist|lead|analyst|designer|architect|coordinator|consultant|expert)\b/g;
-      return enTitleKeywords.test(text);
-    }
-    return enCount >= deCount;
-  }
-
   function applyFilters() {
     const search   = document.getElementById("search").value.toLowerCase().trim();
     const location = document.getElementById("location").value.toLowerCase().trim();
@@ -308,7 +295,7 @@
       const loc     = (j.location || "").toLowerCase();
       if (search   && !title.includes(search) && !company.includes(search) && !loc.includes(search)) return false;
       if (location && !loc.includes(location)) return false;
-      if (language === "en" && !isEnglishJob(j)) return false;
+      if (language === "en" && j.is_english !== "True" && j.is_english !== true) return false;
       return true;
     });
 

@@ -6,13 +6,13 @@ from pathlib import Path
 # These are Linux binaries and must NOT be imported during testing.
 # We remove src/ from sys.path and purge any already-imported src/ modules
 # so tests use the system-installed packages from requirements-test.txt instead.
-_src = str(Path(__file__).resolve().parents[1] / "src")
-if _src in sys.path:
-    sys.path.remove(_src)
+import os
+_src_normalized = os.path.normcase(os.path.abspath(Path(__file__).resolve().parents[1] / "src"))
+sys.path = [p for p in sys.path if os.path.normcase(os.path.abspath(p)) != _src_normalized]
 
 # Purge any src/-based modules already cached
 _to_remove = [k for k, v in sys.modules.items()
-              if hasattr(v, '__file__') and v.__file__ and _src in str(v.__file__)]
+              if hasattr(v, '__file__') and v.__file__ and os.path.normcase(os.path.abspath(v.__file__)).startswith(_src_normalized)]
 for k in _to_remove:
     del sys.modules[k]
 

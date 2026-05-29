@@ -6,15 +6,19 @@ class ArbeitnowFetcher:
     """Fetcher for the Arbeitnow public job board API."""
 
     API_URL = "https://www.arbeitnow.com/api/job-board-api"
-    MAX_PAGES = 10
+    MAX_PAGES = 2
 
     def fetch_jobs(self) -> Dict[str, Any]:
         print("Fetching data from Arbeitnow API...")
         all_jobs = []
         page = 1
 
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "application/json"
+        }
         while page <= self.MAX_PAGES:
-            response = requests.get(self.API_URL, params={"page": page}, timeout=10)
+            response = requests.get(self.API_URL, params={"page": page}, headers=headers, timeout=10)
             response.raise_for_status()
             raw_data = response.json()
             validated = validate_arbeitnow(raw_data)

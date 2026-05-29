@@ -2,6 +2,35 @@ import os
 import json
 import pandas as pd
 import awswrangler as wr
+import re
+
+
+def detect_is_english(row):
+    title = str(row.get('title', '')).lower()
+    description = str(row.get('description', '')).lower()
+    text = title + " " + description
+    
+    english_words = re.findall(
+        r'\b(the|and|for|with|you|our|your|we|are|team|role|experience|skills|requirements|responsibilities|software|engineer|developer|data|management|design|is)\b', 
+        text
+    )
+    german_words = re.findall(
+        r'\b(und|die|der|mit|wir|sie|für|eine|ist|sind|das|arbeitszeit|aufgaben|profil|wir bieten|qualifikation|erfahrung|kenntnisse|mitarbeit|bereich|stelle|stelleanzeige)\b', 
+        text
+    )
+    
+    en_count = len(english_words)
+    de_count = len(german_words)
+    
+    if en_count == 0 and de_count == 0:
+        en_title_keywords = re.search(
+            r'\b(engineer|developer|manager|specialist|lead|analyst|designer|architect|coordinator|consultant|expert)\b', 
+            text
+        )
+        return bool(en_title_keywords)
+        
+    return en_count >= de_count
+
 
 
 def lambda_handler(event, context):
@@ -14,6 +43,10 @@ def lambda_handler(event, context):
 
         print("Reading Silver data...")
         df = wr.s3.read_parquet(path=silver_path, dataset=True)
+        
+        # Calculate is_english backend field
+        df['is_english'] = df.apply(detect_is_english, axis=1)
+
         current = df[df['is_current'] == True].copy().reset_index(drop=True)
         print(f"Total active jobs: {len(current)}")
 
@@ -22,7 +55,7 @@ def lambda_handler(event, context):
             'job_id', 'title', 'company', 'location', 'zip_code', 'state',
             'source', 'ats', 'department', 'scd_start_date', 'remote', 'url',
             'job_types', 'tags', 'description', 'salary', 'published_at',
-            'start_date_raw', 'modified_at', 'ingested_at'
+            'start_date_raw', 'modified_at', 'ingested_at', 'is_english'
         ] if c in current.columns]
         all_jobs = current[cols].copy()
         if 'description' in all_jobs.columns:
@@ -40,7 +73,7 @@ def lambda_handler(event, context):
             'job_id', 'title', 'company', 'location', 'zip_code', 'state',
             'source', 'ats', 'department', 'scd_start_date', 'scd_end_date',
             'remote', 'url', 'job_types', 'tags', 'salary', 'published_at',
-            'start_date_raw', 'modified_at', 'ingested_at'
+            'start_date_raw', 'modified_at', 'ingested_at', 'is_english'
         ] if c in expired_raw.columns]
         expired_jobs = expired_raw[exp_cols].copy()
         expired_jobs['date_added']   = pd.to_datetime(expired_jobs['scd_start_date']).dt.date.astype(str)

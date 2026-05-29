@@ -52,6 +52,11 @@ resource "aws_apigatewayv2_stage" "metrics" {
   api_id      = aws_apigatewayv2_api.metrics.id
   name        = "$default"
   auto_deploy = true
+
+  default_route_settings {
+    throttling_burst_limit = 5
+    throttling_rate_limit  = 3
+  }
 }
 
 resource "aws_lambda_permission" "apigw_metrics" {
@@ -118,6 +123,11 @@ resource "aws_apigatewayv2_stage" "jobs" {
   api_id      = aws_apigatewayv2_api.jobs.id
   name        = "$default"
   auto_deploy = true
+
+  default_route_settings {
+    throttling_burst_limit = 5
+    throttling_rate_limit  = 3
+  }
 }
 
 resource "aws_lambda_permission" "apigw_jobs" {

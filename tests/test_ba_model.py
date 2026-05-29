@@ -4,7 +4,7 @@ from pathlib import Path
 # Ensuring the 'src' directory is in the path
 SRC_DIR = Path(__file__).resolve().parents[1] / "src"
 if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
+    sys.path.append(str(SRC_DIR))
 
 from processing.typing_inspection.ba_api import validate_ba_response
 

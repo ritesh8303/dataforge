@@ -49,16 +49,10 @@ def test_pipeline_e2e():
         print(f"   ❌ FAILED: {e}")
         return False
     
-    # Step 3: Manually trigger transformer (S3 event simulation)
+    # Step 3: Trigger transformer via date event
     print("\n3. Testing Silver transformer...")
-    event = {
-        'Records': [{
-            's3': {
-                'bucket': {'name': 'dataforge-bronze-dev-eu-central-1'},
-                'object': {'key': bronze_key}
-            }
-        }]
-    }
+    date_str = bronze_key.split('ingested_at=')[1].split('/')[0]
+    event = {'date': date_str}
     
     response = lambda_client.invoke(
         FunctionName='dataforge-transformer',
@@ -111,30 +105,25 @@ def test_pipeline_e2e():
     try:
         rules = events_client.list_rules(NamePrefix='dataforge')
         enabled = [r for r in rules['Rules'] if r['State'] == 'ENABLED']
-        if len(enabled) != 3:
-            print(f"   ❌ FAILED: Expected 3 enabled schedules, found {len(enabled)}")
+        if len(enabled) != 4:
+            print(f"   ❌ FAILED: Expected 4 enabled schedules, found {len(enabled)}")
             return False
-        print("   ✅ All 3 daily schedules enabled (8AM UTC)")
+        print("   ✅ All 4 schedules enabled (including scheduled transformer)")
     except Exception as e:
         print(f"   ❌ FAILED: {e}")
         return False
     
-    # Step 7: Verify S3 trigger
+    # Step 7: Verify S3 trigger has been removed
     print("\n7. Checking S3 trigger configuration...")
     try:
         config = s3_client.get_bucket_notification_configuration(
             Bucket='dataforge-bronze-dev-eu-central-1'
         )
         lambdas = config.get('LambdaFunctionConfigurations', [])
-        if not lambdas:
-            print("   ❌ FAILED: No Lambda triggers configured")
+        if lambdas:
+            print("   ❌ FAILED: S3 bucket notification trigger was not removed")
             return False
-        trigger = lambdas[0]
-        suffix = trigger['Filter']['Key']['FilterRules'][0]['Value']
-        if suffix != '.parquet':
-            print(f"   ❌ FAILED: Wrong suffix '{suffix}', expected '.parquet'")
-            return False
-        print("   ✅ S3 trigger configured correctly (.parquet → transformer)")
+        print("   ✅ S3 trigger successfully removed from Bronze bucket")
     except Exception as e:
         print(f"   ❌ FAILED: {e}")
         return False

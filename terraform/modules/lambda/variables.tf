@@ -40,3 +40,8 @@ variable "alert_email" {
   description = "Email address for SNS alerts"
   default     = "your-email@example.com"
 }
+
+variable "schedule_expression" {
+  type    = string
+  default = "cron(0 0,3,8,9,10,11,12,13,14,15,16,17,18,21 * * ? *)"
+}

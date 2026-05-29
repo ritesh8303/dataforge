@@ -17,20 +17,14 @@ def lambda_handler(event, context):
             raise ValueError("BRONZE_BUCKET environment variable is not set.")
         fetcher = BAFetcher()
         queries = [
-            # Data & Analytics
-            "Data Engineer", "Data Scientist", "Data Analyst",
-            "Analytics Engineer", "Data Architect", "Business Intelligence",
-            "Data Platform", "Data Mesh", "Data Governance",
-            # Machine Learning & AI
-            "Machine Learning", "MLOps", "LLM Engineer",
-            "AI Engineer", "Artificial Intelligence", "Deep Learning",
-            "Computer Vision", "NLP Engineer", "Prompt Engineer",
-            "Generative AI", "AI Product Manager",
-            # Cloud & Infrastructure
-            "Cloud Engineer", "DevOps", "Platform Engineer",
-            "Site Reliability", "DataOps",
-            # Software Engineering
-            "Backend Engineer", "Software Engineer",
+            "Data Engineer",
+            "Data Scientist",
+            "Data Analyst",
+            "Business Intelligence",
+            "Machine Learning",
+            "DevOps",
+            "Software Engineer",
+            "Platform Engineer",
         ]
         all_jobs = []
         seen_ids = set()
