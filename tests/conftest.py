@@ -6,7 +6,6 @@ from pathlib import Path
 # These are Linux binaries and must NOT be imported during testing.
 # We remove src/ from sys.path and purge any already-imported src/ modules
 # so tests use the system-installed packages from requirements-test.txt instead.
-import os
 _src_normalized = os.path.normcase(os.path.abspath(Path(__file__).resolve().parents[1] / "src"))
 sys.path = [p for p in sys.path if os.path.normcase(os.path.abspath(p)) != _src_normalized]
 
