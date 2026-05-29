@@ -54,7 +54,7 @@
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
-    @media(min-width:768px){ .filters { grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 1.25fr; } }
+    @media(min-width:768px){ .filters { grid-template-columns: 2fr 1.25fr 1fr 1fr 1fr 1fr 1.25fr; } }
 
     input, select {
       background: rgba(30, 41, 59, 0.5);
@@ -223,6 +223,10 @@
       <option value="true">Remote only</option>
       <option value="false">On-site only</option>
     </select>
+    <select id="language">
+      <option value="">All languages</option>
+      <option value="en">English only</option>
+    </select>
     <select id="sort_order">
       <option value="newest">Sort: Newest first</option>
       <option value="oldest">Sort: Oldest first</option>
@@ -280,9 +284,23 @@
     }
   }
 
+  function isEnglishJob(j) {
+    const text = ((j.title || "") + " " + (j.description || "")).toLowerCase();
+    const englishWords = /\b(the|and|for|with|you|our|your|we|are|team|role|experience|skills|requirements|responsibilities|software|engineer|developer|data|management|design|is)\b/g;
+    const germanWords = /\b(und|die|der|mit|wir|sie|für|eine|ist|sind|das|arbeitszeit|aufgaben|profil|wir bieten|qualifikation|erfahrung|kenntnisse|mitarbeit|bereich|stelle|stelleanzeige)\b/g;
+    const enCount = (text.match(englishWords) || []).length;
+    const deCount = (text.match(germanWords) || []).length;
+    if (enCount === 0 && deCount === 0) {
+      const enTitleKeywords = /\b(engineer|developer|manager|specialist|lead|analyst|designer|architect|coordinator|consultant|expert)\b/g;
+      return enTitleKeywords.test(text);
+    }
+    return enCount >= deCount;
+  }
+
   function applyFilters() {
     const search   = document.getElementById("search").value.toLowerCase().trim();
     const location = document.getElementById("location").value.toLowerCase().trim();
+    const language = document.getElementById("language").value;
 
     filtered = allJobs.filter(j => {
       const title   = (j.title    || "").toLowerCase();
@@ -290,6 +308,7 @@
       const loc     = (j.location || "").toLowerCase();
       if (search   && !title.includes(search) && !company.includes(search) && !loc.includes(search)) return false;
       if (location && !loc.includes(location)) return false;
+      if (language === "en" && !isEnglishJob(j)) return false;
       return true;
     });
 
@@ -408,7 +427,9 @@
   ["source","remote","job_type"].forEach(id => {
     document.getElementById(id).addEventListener("change", loadJobs);
   });
-  document.getElementById("sort_order").addEventListener("change", applyFilters);
+  ["sort_order", "language"].forEach(id => {
+    document.getElementById(id).addEventListener("change", applyFilters);
+  });
 
   loadJobs();
 </script>
