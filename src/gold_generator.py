@@ -43,6 +43,25 @@ def lambda_handler(event, context):
 
         print("Reading Silver data...")
         df = wr.s3.read_parquet(path=silver_path, dataset=True)
+
+        # Filter for Data Science, MLOps, AI Engineering, Forward Deployed, and AI-centric roles
+        def is_target_job(row):
+            title = str(row.get('title', '')).lower()
+            tags = str(row.get('tags', '')).lower()
+            description = str(row.get('description', '')).lower()
+            combined = title + " " + tags + " " + description
+            
+            patterns = [
+                r'\bdata scientist\b', r'\bdata science\b',
+                r'\bmachine learning\b', r'\bml\b', r'\bmlops\b',
+                r'\bai engineer\b', r'\bai developer\b', r'\bai architect\b',
+                r'\bartificial intelligence\b', r'\bgenerative ai\b', r'\bgenai\b',
+                r'\bllm\b', r'\bnlp\b', r'\bcomputer vision\b',
+                r'\bforward deployed\b', r'\bdeep learning\b'
+            ]
+            return any(re.search(pat, combined) for pat in patterns)
+            
+        df = df[df.apply(is_target_job, axis=1)].copy().reset_index(drop=True)
         
         # Calculate is_english backend field
         df['is_english'] = df.apply(detect_is_english, axis=1)
@@ -127,7 +146,6 @@ def lambda_handler(event, context):
         active_vs_expired = df.groupby('status').size().reset_index(name='job_count')
 
         # 8. Top skills from tags (Arbeitnow) + title keywords (both sources)
-        import re
         from collections import Counter
         import html
 

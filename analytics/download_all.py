@@ -19,8 +19,8 @@ print(f"Saved {len(all_jobs)} rows to analytics/all_jobs.csv")
 
 # Save full history (including expired)
 history = df[[c for c in ["job_id", "title", "company", "location", "source", "scd_start_date", "scd_end_date", "is_current", "hash_key"] if c in df.columns]].copy()
-history["scd_start_date"] = pd.to_datetime(history["scd_start_date"]).dt.date.astype(str)
-history["scd_end_date"] = pd.to_datetime(history["scd_end_date"]).dt.date.astype(str)
+history["scd_start_date"] = pd.to_datetime(history["scd_start_date"], errors='coerce').dt.date.astype(str)
+history["scd_end_date"] = pd.to_datetime(history["scd_end_date"], errors='coerce').dt.date.astype(str)
 history.to_csv("analytics/full_history.csv", index=False, encoding="utf-8-sig")
 print(f"Saved {len(history)} rows to analytics/full_history.csv")
 
