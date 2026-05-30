@@ -1,15 +1,13 @@
-import awswrangler as wr
+import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-GOLD_BUCKET = "s3://dataforge-gold-dev-eu-central-1"
-
-print("Reading Gold layer from S3...")
-df_loc       = wr.s3.read_csv(f"{GOLD_BUCKET}/top_locations.csv")
-df_source    = wr.s3.read_csv(f"{GOLD_BUCKET}/jobs_by_source.csv")
-df_remote    = wr.s3.read_csv(f"{GOLD_BUCKET}/remote_vs_onsite.csv")
-df_trend     = wr.s3.read_csv(f"{GOLD_BUCKET}/jobs_trend.csv")
-df_companies = wr.s3.read_csv(f"{GOLD_BUCKET}/top_companies.csv")
+print("Reading Gold layer from local CSV files...")
+df_loc       = pd.read_csv("analytics/top_locations.csv")
+df_source    = pd.read_csv("analytics/jobs_by_source.csv")
+df_remote    = pd.read_csv("analytics/remote_vs_onsite.csv")
+df_trend     = pd.read_csv("analytics/jobs_trend.csv")
+df_companies = pd.read_csv("analytics/top_companies.csv")
 
 fig = plt.figure(figsize=(18, 14))
 fig.suptitle("German Data Job Market Dashboard", fontsize=18, fontweight="bold", y=0.98)
