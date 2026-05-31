@@ -63,6 +63,26 @@ def lambda_handler(event, context):
             if any(re.search(pat, combined) for pat in [r'\bforward deployed\b', r'\bfde\b']):
                 system_tags.append('Forward Deployed')
                 
+            # Experience / role type tags
+            # Junior / Entry Level
+            is_junior = any(re.search(pat, combined) for pat in [r'\bjunior\b', r'\bentry-level\b', r'\bentry level\b', r'\bfresher\b', r'\btrainee\b', r'\bberufseinsteiger\b', r'\babsolvent\b', r'\bstarter\b', r'\bbeginner\b', r'\beinsteiger\b'])
+            # Exclude junior tag if title contains senior/lead/director keywords
+            is_senior_title = any(re.search(pat, title) for pat in [r'\bsenior\b', r'\blead\b', r'\bprincipal\b', r'\bdirector\b', r'\bhead\b'])
+            if is_junior and not is_senior_title:
+                system_tags.append('Junior / Entry Level')
+                
+            # Working Student
+            if any(re.search(pat, combined) for pat in [r'\bwerkstudent\b', r'\bwerkstudenten\b', r'\bwerkstudententätigkeit\b', r'\bworking student\b', r'\bworking-student\b']):
+                system_tags.append('Working Student')
+                
+            # Internship
+            if any(re.search(pat, combined) for pat in [r'\binternship\b', r'\bintern\b', r'\bpraktikum\b', r'\bpraktikant\b', r'\bpraktikantin\b', r'\bpraktikanten\b']):
+                system_tags.append('Internship')
+                
+            # Master Thesis
+            if any(re.search(pat, combined) for pat in [r'\bmaster thesis\b', r'\bmaster-thesis\b', r'\bmasterarbeit\b', r'\babschlussarbeit\b', r'\bbachelor thesis\b', r'\bbachelorarbeit\b', r'\bbachelor-thesis\b']):
+                system_tags.append('Master Thesis')
+                
             original_tags = str(row.get('tags', ''))
             if original_tags and original_tags not in {'nan', '<NA>', 'None', ''}:
                 cleaned_original = [t.strip() for t in original_tags.split(',') if t.strip() and t.strip() not in {'nan', '<NA>', 'None', ''}]

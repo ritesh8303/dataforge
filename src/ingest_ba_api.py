@@ -32,6 +32,14 @@ def lambda_handler(event, context):
             "Platform Engineer",
             "Cloud Architect",
             "SRE",
+            "Werkstudent Data",
+            "Werkstudent Software",
+            "Praktikum Data",
+            "Praktikum Software",
+            "Junior Data Engineer",
+            "Junior Data Scientist",
+            "Junior Software Engineer",
+            "Trainee IT",
         ]
         all_jobs = []
         seen_ids = set()
