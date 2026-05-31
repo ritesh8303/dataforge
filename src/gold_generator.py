@@ -44,24 +44,34 @@ def lambda_handler(event, context):
         print("Reading Silver data...")
         df = wr.s3.read_parquet(path=silver_path, dataset=True)
 
-        # Filter for Data Science, MLOps, AI Engineering, Forward Deployed, and AI-centric roles
-        def is_target_job(row):
+        # Automatically enrich tags with semantic categories
+        def enrich_tags(row):
             title = str(row.get('title', '')).lower()
             tags = str(row.get('tags', '')).lower()
             description = str(row.get('description', '')).lower()
             combined = title + " " + tags + " " + description
             
-            patterns = [
-                r'\bdata scientist\b', r'\bdata science\b',
-                r'\bmachine learning\b', r'\bml\b', r'\bmlops\b',
-                r'\bai engineer\b', r'\bai developer\b', r'\bai architect\b',
-                r'\bartificial intelligence\b', r'\bgenerative ai\b', r'\bgenai\b',
-                r'\bllm\b', r'\bnlp\b', r'\bcomputer vision\b',
-                r'\bforward deployed\b', r'\bdeep learning\b'
-            ]
-            return any(re.search(pat, combined) for pat in patterns)
-            
-        df = df[df.apply(is_target_job, axis=1)].copy().reset_index(drop=True)
+            system_tags = []
+            if any(re.search(pat, combined) for pat in [r'\bdata scientist\b', r'\bdata science\b', r'\bmachine learning\b', r'\bml\b', r'\bmlops\b', r'\bai engineer\b', r'\bai developer\b', r'\bai architect\b', r'\bartificial intelligence\b', r'\bgenerative ai\b', r'\bgenai\b', r'\bllm\b', r'\bnlp\b', r'\bcomputer vision\b', r'\bdeep learning\b', r'\bdeep-learning\b', r'\bagentic\b']):
+                system_tags.append('AI / ML')
+            if any(re.search(pat, combined) for pat in [r'\bdata engineer\b', r'\betl\b', r'\belt\b', r'\bdata pipeline\b', r'\bdbt\b', r'\bdatabricks\b', r'\bsnowflake\b']):
+                system_tags.append('Data Engineering')
+            if any(re.search(pat, combined) for pat in [r'\bdevops\b', r'\bplatform engineer\b', r'\bcloud engineer\b', r'\bsre\b', r'\bsite reliability\b', r'\bkubernetes\b', r'\bterraform\b', r'\baws\b', r'\bazure\b', r'\bgcp\b', r'\bcloud architect\b']):
+                system_tags.append('Cloud / DevOps')
+            if any(re.search(pat, combined) for pat in [r'\bdata analyst\b', r'\banalytics\b', r'\bbusiness intelligence\b', r'\bbi\b', r'\btableau\b', r'\bpower bi\b']):
+                system_tags.append('Analytics / BI')
+            if any(re.search(pat, combined) for pat in [r'\bforward deployed\b', r'\bfde\b']):
+                system_tags.append('Forward Deployed')
+                
+            original_tags = str(row.get('tags', ''))
+            if original_tags and original_tags not in {'nan', '<NA>', 'None', ''}:
+                cleaned_original = [t.strip() for t in original_tags.split(',') if t.strip() and t.strip() not in {'nan', '<NA>', 'None', ''}]
+                return ",".join(system_tags + cleaned_original)
+            else:
+                return ",".join(system_tags)
+
+        # Apply tag enrichment
+        df['tags'] = df.apply(enrich_tags, axis=1)
         
         # Calculate is_english backend field
         df['is_english'] = df.apply(detect_is_english, axis=1)
