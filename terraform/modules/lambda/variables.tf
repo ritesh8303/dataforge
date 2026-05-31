@@ -43,5 +43,5 @@ variable "alert_email" {
 
 variable "schedule_expression" {
   type    = string
-  default = "cron(0 0,3,8,9,10,11,12,13,14,15,16,17,18,21 * * ? *)"
+  default = "cron(0 7,12,16 * * ? *)"
 }

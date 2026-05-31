@@ -133,7 +133,7 @@ module "transformer_lambda" {
   layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   bronze_bucket_arn = module.s3_bronze.arn
   enable_schedule   = true
-  schedule_expression = "cron(30 0,3,8,9,10,11,12,13,14,15,16,17,18,21 * * ? *)"
+  schedule_expression = "cron(30 7,12,16 * * ? *)"
   enable_alerts     = true
   alert_email       = var.alert_email
 }
