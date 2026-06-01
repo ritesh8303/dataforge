@@ -133,9 +133,11 @@
     .tag.remote { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.15); }
     .tag.source-ba { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border-color: rgba(59, 130, 246, 0.15); }
     .tag.source-direct { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.15); }
+    .tag.source-hn { background: rgba(249, 115, 22, 0.15); color: #fdba74; border-color: rgba(249, 115, 22, 0.25); }
+    .tag.source-bsj { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; border-color: rgba(20, 184, 166, 0.25); }
     .tag.type { background: rgba(167, 139, 250, 0.12); color: #c084fc; border-color: rgba(167, 139, 250, 0.15); }
     
-    .tag:not(.remote):not(.source-ba):not(.source-direct):not(.type) {
+    .tag:not(.remote):not(.source-ba):not(.source-direct):not(.source-hn):not(.source-bsj):not(.type) {
       background: rgba(30, 41, 59, 0.6); color: #94a3b8;
     }
     .tag.exp-junior { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.25); }
@@ -198,6 +200,291 @@
       border-radius: 12px; margin-bottom: 2rem;
       backdrop-filter: blur(8px);
     }
+
+    /* ── Resume Matcher Styles ── */
+    .matcher-panel {
+      background: rgba(17, 24, 39, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .matcher-header {
+      padding: 1.15rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      background: rgba(30, 41, 59, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+      user-select: none;
+    }
+    .matcher-header:hover {
+      background: rgba(30, 41, 59, 0.3);
+    }
+    .matcher-header h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #fff 40%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .toggle-icon {
+      color: #94a3b8;
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+    }
+    .matcher-body {
+      padding: 1.5rem;
+      transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+      max-height: 800px;
+    }
+    .matcher-body.collapsed {
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      overflow: hidden;
+    }
+    .matcher-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+    }
+    @media(max-width: 768px) {
+      .matcher-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .matcher-input-col, .matcher-config-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .matcher-input-col label, .input-group label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #resume-text {
+      width: 100%;
+      height: 120px;
+      background: rgba(30, 41, 59, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      color: #f1f5f9;
+      padding: 0.75rem;
+      font-size: 0.85rem;
+      font-family: inherit;
+      resize: vertical;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    #resume-text:focus {
+      border-color: #6366f1;
+      background: rgba(30, 41, 59, 0.50);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+    .match-btn {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+      margin-top: auto;
+    }
+    .match-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+      background: linear-gradient(135deg, #818cf8 0%, #5850ec 100%);
+    }
+    .clear-btn {
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 10px;
+      padding: 0.6rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .clear-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+    .detected-skills-box {
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .detected-skills-title {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-bottom: 0.65rem;
+    }
+    .detected-skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .skill-tag {
+      background: rgba(99, 102, 241, 0.12);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 6px;
+      padding: 0.18rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 500;
+      cursor: default;
+    }
+    
+    /* ── Match Score Badge & Analysis Panel ── */
+    .match-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      padding: 0.5rem 0.85rem;
+      text-align: center;
+      min-width: 85px;
+      font-family: 'Outfit', sans-serif;
+    }
+    .match-badge.high {
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .match-badge.med {
+      background: rgba(245, 158, 11, 0.12);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .match-badge.low {
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .match-badge-pct {
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+    .match-badge-lbl {
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.85;
+    }
+    
+    /* Analysis Collapsible Row */
+    .fit-analysis-toggle {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: #94a3b8;
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.75rem;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .fit-analysis-toggle:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      background: rgba(99, 102, 241, 0.05);
+    }
+    .fit-analysis-panel {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(30, 41, 59, 0.2);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .analysis-section {
+      margin-bottom: 0.85rem;
+    }
+    .analysis-section:last-child {
+      margin-bottom: 0;
+    }
+    .analysis-section-title {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+    .analysis-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .analysis-tag {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 5px;
+    }
+    .analysis-tag.match {
+      background: rgba(16, 185, 129, 0.1);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+    .analysis-tag.gap {
+      background: rgba(239, 68, 68, 0.08);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.15);
+    }
+    .analysis-text {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      line-height: 1.4;
+      border-left: 2px solid #6366f1;
+      padding-left: 0.6rem;
+      margin-top: 0.25rem;
+    }
+
+    @media(max-width: 640px) {
+      .job-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+      .job-card > div:last-child {
+        flex-direction: row !important;
+        justify-content: space-between;
+        align-items: center !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+        padding-top: 0.75rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -209,6 +496,41 @@
   <div class="nav">
     <a href="index.html">← Analytics Dashboard</a>
   </div>
+
+  <!-- Resume Matcher Panel -->
+  <div class="matcher-panel" id="matcher-panel">
+    <div class="matcher-header" onclick="toggleMatcher()">
+      <h3>⚡ AI Resume Matcher & Skill Gap Analyzer</h3>
+      <span class="toggle-icon" id="matcher-toggle-icon">▲</span>
+    </div>
+    <div class="matcher-body" id="matcher-body">
+      <div class="matcher-grid">
+        <div class="matcher-input-col">
+          <label for="resume-text">Paste Resume Text</label>
+          <textarea id="resume-text" placeholder="Paste your resume, skills profile, or experience history here..."></textarea>
+        </div>
+        <div class="matcher-config-col">
+          <div class="input-group">
+            <label for="user-seniority">Target Seniority Level</label>
+            <select id="user-seniority">
+              <option value="mid">Mid-level (2-5 yrs)</option>
+              <option value="junior">Junior / Entry level (0-2 yrs)</option>
+              <option value="senior">Senior (5+ yrs)</option>
+              <option value="lead">Lead / Principal (8+ yrs)</option>
+            </select>
+          </div>
+          <button class="match-btn" id="match-btn" onclick="runMatching()">⚡ Scan & Match Jobs</button>
+          <button class="clear-btn" id="clear-btn" onclick="clearMatching()" style="display:none">Clear Match</button>
+        </div>
+      </div>
+      
+      <div class="detected-skills-box" id="detected-skills-box" style="display:none">
+        <div class="detected-skills-title">We detected these skills on your resume:</div>
+        <div class="detected-skills-list" id="detected-skills-list"></div>
+      </div>
+    </div>
+  </div>
+
   <div id="error-box" class="error" style="display:none"></div>
   <div class="filters">
     <input id="search"   type="text" placeholder="Title, company, or keyword..." />
@@ -226,6 +548,8 @@
       <option value="arbeitnow">Arbeitnow</option>
       <option value="ba_api">BA Jobsuche</option>
       <option value="direct">Direct company feeds</option>
+      <option value="hacker_news">Hacker News / YC</option>
+      <option value="berlin_startups">Berlin Startup Jobs</option>
     </select>
     <select id="remote">
       <option value="">Remote &amp; On-site</option>
@@ -244,6 +568,7 @@
       <option value="Master Thesis">Master Thesis</option>
     </select>
     <select id="sort_order">
+      <option id="sort-match-option" value="match_desc" style="display:none">Sort: Best Match Score</option>
       <option value="newest">Sort: Newest first</option>
       <option value="oldest">Sort: Oldest first</option>
       <option value="title_asc">Sort: A-Z (Title)</option>
@@ -270,9 +595,256 @@
   let filtered = [];
   let page = 1;
 
+  // Matching engine state
+  let userSkills = [];
+  let userSeniority = "mid";
+  let hasResumeMatched = false;
+  const activeAnalysisIds = new Set();
+
   const TYPE_LABELS = {
     full_time: "Full-time", part_time: "Part-time",
     internship: "Internship", freelance: "Freelance", temporary: "Temporary"
+  };
+
+  const CANONICAL_SKILL_MAP = {
+    "python": "Python",
+    "sql": "SQL",
+    "java": "Java",
+    "scala": "Scala",
+    "go": "Go",
+    "golang": "Go",
+    "typescript": "TypeScript",
+    "javascript": "JavaScript",
+    "c++": "C++",
+    "rust": "Rust",
+    "spark": "Spark",
+    "pyspark": "Spark",
+    "kafka": "Kafka",
+    "airflow": "Airflow",
+    "dbt": "dbt",
+    "pandas": "Pandas",
+    "numpy": "NumPy",
+    "hadoop": "Hadoop",
+    "hive": "Hive",
+    "flink": "Flink",
+    "databricks": "Databricks",
+    "snowflake": "Snowflake",
+    "bigquery": "BigQuery",
+    "redshift": "Redshift",
+    "etl": "ETL",
+    "elt": "ELT",
+    "aws": "AWS",
+    "amazon web services": "AWS",
+    "azure": "Azure",
+    "gcp": "GCP",
+    "google cloud": "GCP",
+    "kubernetes": "Kubernetes",
+    "docker": "Docker",
+    "terraform": "Terraform",
+    "devops": "DevOps",
+    "postgres": "PostgreSQL",
+    "postgresql": "PostgreSQL",
+    "mysql": "MySQL",
+    "mongodb": "MongoDB",
+    "redis": "Redis",
+    "elasticsearch": "Elasticsearch",
+    "duckdb": "DuckDB",
+    "machine learning": "Machine Learning",
+    "deep learning": "Deep Learning",
+    "llm": "LLM",
+    "nlp": "NLP",
+    "pytorch": "PyTorch",
+    "tensorflow": "TensorFlow",
+    "scikit-learn": "Scikit-Learn",
+    "scikit": "Scikit-Learn",
+    "mlflow": "MLflow",
+    "hugging face": "Hugging Face",
+    "openai": "OpenAI",
+    "generative ai": "Generative AI",
+    "genai": "Generative AI",
+    "rag": "RAG",
+    "langchain": "LangChain",
+    "artificial intelligence": "AI / ML",
+    "power bi": "Power BI",
+    "tableau": "Tableau",
+    "looker": "Looker",
+    "excel": "Excel",
+    "grafana": "Grafana",
+    "analytics": "Analytics",
+    "business intelligence": "BI"
+  };
+
+  function extractSkills(text) {
+    if (!text) return [];
+    const textLower = text.toLowerCase();
+    const skills = new Set();
+    for (const [kw, canonical] of Object.entries(CANONICAL_SKILL_MAP)) {
+      const hasBoundaries = /^[a-z0-9]+$/i.test(kw);
+      let isMatched = false;
+      if (hasBoundaries) {
+        const escapedKw = kw.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        isMatched = new RegExp(`\\b${escapedKw}\\b`, 'i').test(textLower);
+      } else {
+        isMatched = textLower.includes(kw);
+      }
+      if (isMatched) {
+        skills.add(canonical);
+      }
+    }
+    return Array.from(skills);
+  }
+
+  function detectSeniority(titleText) {
+    const text = titleText.toLowerCase();
+    if (text.includes("lead") || text.includes("principal") || text.includes("director") || text.includes("head") || text.includes("manager")) {
+      return "lead";
+    }
+    if (text.includes("senior") || text.includes("sr") || text.includes("experienced")) {
+      return "senior";
+    }
+    if (text.includes("junior") || text.includes("jr") || text.includes("entry") || text.includes("intern") || text.includes("student") || text.includes("werkstudent") || text.includes("praktikum")) {
+      return "junior";
+    }
+    return "mid";
+  }
+
+  function calculateJobMatch(j) {
+    // 1. Skill Match (60%)
+    const jobText = `${j.title || ''} ${j.tags || ''} ${j.description || ''}`;
+    const jobSkills = extractSkills(jobText);
+    
+    let skillScore = 0;
+    let matchedSkills = [];
+    let missingSkills = [];
+    
+    if (jobSkills.length > 0) {
+      matchedSkills = jobSkills.filter(s => userSkills.includes(s));
+      missingSkills = jobSkills.filter(s => !userSkills.includes(s));
+      skillScore = (matchedSkills.length / jobSkills.length) * 100;
+    }
+    
+    // 2. Seniority Match (20%)
+    const jobSeniority = detectSeniority(j.title || '');
+    let seniorityScore = 100;
+    if (userSeniority !== jobSeniority) {
+      const levels = ["junior", "mid", "senior", "lead"];
+      const userIdx = levels.indexOf(userSeniority);
+      const jobIdx = levels.indexOf(jobSeniority);
+      const diff = Math.abs(userIdx - jobIdx);
+      if (diff === 1) seniorityScore = 60;
+      else if (diff >= 2) seniorityScore = 20;
+    }
+    
+    // 3. Domain Match (20%)
+    const title = (j.title || '').toLowerCase();
+    let domainScore = 0;
+    const titleKeywords = ["engineer", "scientist", "analyst", "developer", "architect", "consultant"];
+    const matchedDomainWords = titleKeywords.filter(w => title.includes(w));
+    
+    if (matchedDomainWords.length === 0) {
+      domainScore = 100;
+    } else {
+      const resumeLower = (document.getElementById("resume-text").value || "").toLowerCase();
+      const hasWordInResume = matchedDomainWords.some(w => resumeLower.includes(w));
+      if (hasWordInResume) {
+        domainScore = 100;
+      } else {
+        domainScore = 40;
+      }
+    }
+    
+    const totalScore = Math.round((skillScore * 0.60) + (seniorityScore * 0.20) + (domainScore * 0.20));
+    return {
+      score: totalScore,
+      matchedSkills: matchedSkills,
+      missingSkills: missingSkills,
+      jobSkills: jobSkills
+    };
+  }
+
+  window.toggleMatcher = function() {
+    const body = document.getElementById("matcher-body");
+    const icon = document.getElementById("matcher-toggle-icon");
+    if (body.classList.contains("collapsed")) {
+      body.classList.remove("collapsed");
+      icon.style.transform = "rotate(0deg)";
+    } else {
+      body.classList.add("collapsed");
+      icon.style.transform = "rotate(180deg)";
+    }
+  };
+
+  window.runMatching = function() {
+    const resumeText = document.getElementById("resume-text").value.trim();
+    if (!resumeText) {
+      alert("Please paste some resume text or list of skills first!");
+      return;
+    }
+    
+    userSkills = extractSkills(resumeText);
+    userSeniority = document.getElementById("user-seniority").value;
+    hasResumeMatched = true;
+    
+    const skillsListEl = document.getElementById("detected-skills-list");
+    const skillsBoxEl = document.getElementById("detected-skills-box");
+    
+    if (userSkills.length > 0) {
+      skillsListEl.innerHTML = userSkills.map(s => `<span class="skill-tag">${s}</span>`).join("");
+      skillsBoxEl.style.display = "block";
+    } else {
+      skillsListEl.innerHTML = `<span style="color:#94a3b8;font-size:0.8rem">No common technical skills detected. Try adding some keywords (e.g. Python, SQL, AWS) to your text.</span>`;
+      skillsBoxEl.style.display = "block";
+    }
+    
+    // Calculate match details for all jobs
+    allJobs.forEach(j => {
+      j.matchDetails = calculateJobMatch(j);
+    });
+    
+    // Show match sort option and select it
+    const matchOpt = document.getElementById("sort-match-option");
+    if (matchOpt) {
+      matchOpt.style.display = "block";
+    }
+    document.getElementById("sort_order").value = "match_desc";
+    document.getElementById("clear-btn").style.display = "inline-block";
+    
+    applyFilters();
+  };
+
+  window.clearMatching = function() {
+    document.getElementById("resume-text").value = "";
+    document.getElementById("detected-skills-box").style.display = "none";
+    document.getElementById("clear-btn").style.display = "none";
+    
+    const matchOpt = document.getElementById("sort-match-option");
+    if (matchOpt) {
+      matchOpt.style.display = "none";
+    }
+    
+    hasResumeMatched = false;
+    allJobs.forEach(j => {
+      delete j.matchDetails;
+    });
+    
+    document.getElementById("sort_order").value = "newest";
+    applyFilters();
+  };
+
+  window.toggleAnalysis = function(jobId, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const panel = document.getElementById(`analysis-${jobId}`);
+    const btn = event.currentTarget;
+    if (activeAnalysisIds.has(jobId)) {
+      activeAnalysisIds.delete(jobId);
+      if (panel) panel.style.display = "none";
+      btn.innerText = "View Fit Analysis ▼";
+    } else {
+      activeAnalysisIds.add(jobId);
+      if (panel) panel.style.display = "block";
+      btn.innerText = "Hide Fit Analysis ▲";
+    }
   };
 
   async function loadJobs() {
@@ -292,6 +864,14 @@
       allJobs = data.jobs || [];
       document.getElementById("last-updated").textContent =
         `${(data.kpis?.total || allJobs.length).toLocaleString()} total jobs`;
+      
+      // Re-run matching on load if user had matching active
+      if (hasResumeMatched) {
+        allJobs.forEach(j => {
+          j.matchDetails = calculateJobMatch(j);
+        });
+      }
+      
       applyFilters();
     } catch(e) {
       document.getElementById("error-box").style.display = "block";
@@ -321,7 +901,14 @@
 
     // Apply client-side sorting based on select choice
     const sortVal = document.getElementById("sort_order").value;
-    if (sortVal === "newest") {
+    if (sortVal === "match_desc" && hasResumeMatched) {
+      filtered.sort((a, b) => {
+        const scoreA = a.matchDetails ? a.matchDetails.score : 0;
+        const scoreB = b.matchDetails ? b.matchDetails.score : 0;
+        if (scoreB !== scoreA) return scoreB - scoreA;
+        return (b.date_added || "").localeCompare(a.date_added || "");
+      });
+    } else if (sortVal === "newest") {
       filtered.sort((a, b) => (b.date_added || "").localeCompare(a.date_added || ""));
     } else if (sortVal === "oldest") {
       filtered.sort((a, b) => (a.date_added || "").localeCompare(b.date_added || ""));
@@ -352,9 +939,13 @@
       const isRemote = j.is_remote === "True" || j.is_remote === true;
       const isDirect = j.source === "direct";
       const sourceLabel = j.source === "ba_api" ? "BA Jobsuche"
+        : j.source === "hacker_news" ? "Hacker News / YC"
+        : j.source === "berlin_startups" ? "Berlin Startup Jobs"
         : isDirect ? `🏢 ${j.ats || 'Direct'}`
         : "Arbeitnow";
       const sourceClass = j.source === "ba_api" ? "source-ba"
+        : j.source === "hacker_news" ? "source-hn"
+        : j.source === "berlin_startups" ? "source-bsj"
         : isDirect ? "source-direct"
         : "";
       const url = j.job_url || j.url || "#";
@@ -397,24 +988,93 @@
         ? `<div class="job-desc">${esc(plainDesc.slice(0, 180))}${plainDesc.length > 180 ? '…' : ''}</div>`
         : '';
 
+      // Match Score details rendering
+      let matchBadgeHtml = "";
+      let analysisHtml = "";
+      if (hasResumeMatched && j.matchDetails) {
+        const score = j.matchDetails.score;
+        let scoreClass = "low";
+        if (score >= 75) scoreClass = "high";
+        else if (score >= 40) scoreClass = "med";
+        
+        matchBadgeHtml = `
+          <div class="match-badge ${scoreClass}">
+            <span class="match-badge-pct">${score}%</span>
+            <span class="match-badge-lbl">Fit Match</span>
+          </div>
+        `;
+        
+        const isExpanded = activeAnalysisIds.has(j.job_id);
+        const toggleText = isExpanded ? "Hide Fit Analysis ▲" : "View Fit Analysis ▼";
+        
+        let matchTagsHtml = j.matchDetails.matchedSkills.map(s => `<span class="analysis-tag match">${s}</span>`).join("");
+        if (matchTagsHtml === "") matchTagsHtml = `<span style="color:#64748b;font-size:0.7rem">None</span>`;
+        
+        let gapTagsHtml = j.matchDetails.missingSkills.map(s => `<span class="analysis-tag gap">${s}</span>`).join("");
+        if (gapTagsHtml === "") gapTagsHtml = `<span style="color:#64748b;font-size:0.7rem">None (100% skill match!)</span>`;
+        
+        let adviceText = "";
+        if (score >= 80) {
+          adviceText = "This role is an excellent fit! You match almost all requirements. Emphasize your overlapping skills in your application.";
+        } else if (score >= 50) {
+          if (j.matchDetails.missingSkills.length > 0) {
+            const missingStr = j.matchDetails.missingSkills.slice(0, 3).join(" and ");
+            adviceText = `Good fit with some skill gaps. Focus on gaining experience with <strong>${missingStr}</strong> to strengthen your profile.`;
+          } else {
+            adviceText = "Skills match well, but check if the seniority level or job domain aligns with your expectations.";
+          }
+        } else {
+          if (j.matchDetails.missingSkills.length > 0) {
+            const missingStr = j.matchDetails.missingSkills.slice(0, 4).join(", ");
+            adviceText = `Low match. This role expects skills in <strong>${missingStr}</strong>. Consider bridging these gaps before applying.`;
+          } else {
+            adviceText = "Low match. This job listing does not specify detailed technical skills. Check if your background matches the title and responsibilities.";
+          }
+        }
+        
+        analysisHtml = `
+          <button class="fit-analysis-toggle" onclick="toggleAnalysis('${j.job_id}', event)">
+            ${toggleText}
+          </button>
+          <div class="fit-analysis-panel" id="analysis-${j.job_id}" style="display: ${isExpanded ? 'block' : 'none'}">
+            <div class="analysis-section">
+              <div class="analysis-section-title">Matching Skills</div>
+              <div class="analysis-tags">${matchTagsHtml}</div>
+            </div>
+            <div class="analysis-section">
+              <div class="analysis-section-title">Missing Skills (Gaps)</div>
+              <div class="analysis-tags">${gapTagsHtml}</div>
+            </div>
+            <div class="analysis-section" style="margin-top:0.6rem">
+              <div class="analysis-section-title">⚡ Career Roadmap Advice</div>
+              <div class="analysis-text">${adviceText}</div>
+            </div>
+          </div>
+        `;
+      }
+
       return `
-        <div class="job-card">
+        <div class="job-card" id="job-card-${j.job_id}">
           <div class="job-info">
             <div class="job-title" title="${esc(j.title)}">${esc(j.title)}</div>
             <div class="job-company">${esc(j.company || '\u2014')}</div>
             <div class="job-meta">
-              <span>\ud83d\udccd ${esc((j.location || '\u2014').split(',')[0].trim())}</span>
+              <span>📍 ${esc((j.location || '\u2014').split(',')[0].trim())}</span>
               <span class="tag ${sourceClass}">${sourceLabel}</span>
-              ${isRemote ? '<span class="tag remote">\ud83c\udf10 Remote</span>' : ''}
+              ${isRemote ? '<span class="tag remote">🌐 Remote</span>' : ''}
               ${typeTags}
               ${tagChips}
               <span>${j.date_added || ''}</span>
             </div>
             ${descSnippet}
+            ${analysisHtml}
           </div>
-          <a class="apply-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
-            Apply \u2192
-          </a>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.75rem; justify-content:center;">
+            ${matchBadgeHtml}
+            <a class="apply-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
+              Apply →
+            </a>
+          </div>
         </div>`;
     }).join("");
 

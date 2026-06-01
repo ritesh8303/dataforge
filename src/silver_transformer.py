@@ -49,8 +49,8 @@ def deduplicate_bronze(df):
         axis=1
     )
 
-    # Prioritize sources: direct > arbeitnow > ba_api
-    source_priority = {'direct': 0, 'arbeitnow': 1, 'ba_api': 2}
+    # Prioritize sources: direct > arbeitnow > berlin_startups > hacker_news > ba_api
+    source_priority = {'direct': 0, 'arbeitnow': 1, 'berlin_startups': 2, 'hacker_news': 3, 'ba_api': 4}
     df['priority'] = df['source'].map(lambda s: source_priority.get(s, 9))
     
     # Calculate description length to keep the most detailed posting
@@ -89,7 +89,9 @@ def lambda_handler(event, context):
     paths = [
         f"s3://{bronze_bucket}/arbeitnow/ingested_at={today_str}/jobs.parquet",
         f"s3://{bronze_bucket}/ba_api/ingested_at={today_str}/jobs.parquet",
-        f"s3://{bronze_bucket}/direct_careers/ingested_at={today_str}/jobs.parquet"
+        f"s3://{bronze_bucket}/direct_careers/ingested_at={today_str}/jobs.parquet",
+        f"s3://{bronze_bucket}/hacker_news/ingested_at={today_str}/jobs.parquet",
+        f"s3://{bronze_bucket}/berlin_startups/ingested_at={today_str}/jobs.parquet"
     ]
 
     dfs = []
@@ -127,8 +129,8 @@ def generate_hash(df, cols):
     """Creates a SHA256 hash of specific columns to detect attribute changes."""
     # Only hash columns that actually exist in the dataframe
     existing_cols = [c for c in cols if c in df.columns]
-    return df[existing_cols].astype(str).apply(
-        lambda x: hashlib.sha256("".join(x).encode()).hexdigest(), axis=1
+    return df[existing_cols].apply(
+        lambda x: hashlib.sha256("".join(str(val) for val in x).encode()).hexdigest(), axis=1
     )
 
 
