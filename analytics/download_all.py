@@ -63,7 +63,7 @@ try:
 
     print("\nAll files saved to analytics/ folder.")
     print("Open them directly in Excel.")
-except Exception as e:
+except Exception:
     print("\nERROR: Failed to run download_all.py from S3!", file=sys.stderr)
     traceback.print_exc()
     sys.exit(1)

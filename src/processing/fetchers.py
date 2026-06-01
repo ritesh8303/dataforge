@@ -1,7 +1,6 @@
 import requests
 import re
 import hashlib
-from datetime import datetime, timezone
 from typing import Any, Dict
 from .typing_inspection.arbeitnow import validate_api_response as validate_arbeitnow
 
@@ -213,7 +212,7 @@ class HackerNewsFetcher:
                             # Clean HTML tags and decode basic entities
                             plain_text = re.sub(r'<[^>]+>', ' ', text).replace('&quot;', '"').replace('&#x2F;', '/').replace('&amp;', '&').strip()
                             
-                            lines = [l.strip() for l in plain_text.split('\n') if l.strip()]
+                            lines = [line.strip() for line in plain_text.split('\n') if line.strip()]
                             if not lines:
                                 continue
                             first_line = lines[0]
