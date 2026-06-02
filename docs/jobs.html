@@ -588,6 +588,8 @@
 </div>
 
 <script>
+  // Swap for local testing:
+  // const JOBS_API_URL = "http://localhost:8000/";
   const JOBS_API_URL = "https://2amv4immb0.execute-api.eu-central-1.amazonaws.com/";
   const PAGE_SIZE = 25;
 
@@ -890,9 +892,9 @@
       const title   = (j.title    || "").toLowerCase();
       const company = (j.company  || "").toLowerCase();
       const loc     = (j.location || "").toLowerCase();
-      const tags    = (j.tags     || "");
+      const tags    = (j.tags     || "").toLowerCase();
 
-      if (search   && !title.includes(search) && !company.includes(search) && !loc.includes(search)) return false;
+      if (search   && !title.includes(search) && !company.includes(search) && !loc.includes(search) && !tags.includes(search)) return false;
       if (location && !loc.includes(location)) return false;
       if (language === "en" && j.is_english !== "True" && j.is_english !== true) return false;
       if (expLevel && !tags.includes(expLevel)) return false;

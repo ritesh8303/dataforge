@@ -42,14 +42,15 @@ def lambda_handler(event, context):
 
     # Support both API GW v1 (queryStringParameters) and v2 (same key)
     params = event.get('queryStringParameters') or {}
-    search    = (params.get('search') or '').lower().strip()
-    source    = (params.get('source') or '').lower().strip()
-    remote    = (params.get('remote') or '').lower().strip()
-    job_type  = (params.get('job_type') or '').lower().strip()
-    location  = (params.get('location') or '').lower().strip()
-    sort      = (params.get('sort') or 'newest').lower().strip()  # newest | oldest
-    status    = (params.get('status') or 'active').lower().strip()  # active | expired
-    limit     = min(int(params.get('limit', 500)), 5000)
+    search      = (params.get('search') or '').lower().strip()
+    source      = (params.get('source') or '').lower().strip()
+    remote      = (params.get('remote') or '').lower().strip()
+    job_type    = (params.get('job_type') or '').lower().strip()
+    location    = (params.get('location') or '').lower().strip()
+    experience  = (params.get('experience') or '').lower().strip()
+    sort        = (params.get('sort') or 'newest').lower().strip()  # newest | oldest
+    status      = (params.get('status') or 'active').lower().strip()  # active | expired
+    limit       = min(int(params.get('limit', 500)), 5000)
 
     cache_key = status
     now = time.time()
@@ -67,6 +68,7 @@ def lambda_handler(event, context):
         jobs = [j for j in jobs if
                 search in j.get('title', '').lower() or
                 search in j.get('company', '').lower() or
+                search in j.get('tags', '').lower() or
                 search in j.get('location', '').lower()]
     if location:
         jobs = [j for j in jobs if location in j.get('location', '').lower()]
@@ -78,6 +80,15 @@ def lambda_handler(event, context):
         jobs = [j for j in jobs if j.get('is_remote', '').lower() != 'true']
     if job_type:
         jobs = [j for j in jobs if job_type in j.get('job_types', '').lower()]
+    if experience:
+        if experience in ('junior', 'entry', 'entry-level', 'entry_level'):
+            jobs = [j for j in jobs if 'junior / entry level' in j.get('tags', '').lower()]
+        elif experience in ('student', 'werkstudent', 'working_student', 'working-student'):
+            jobs = [j for j in jobs if 'working student' in j.get('tags', '').lower()]
+        elif experience in ('intern', 'internship', 'praktikum'):
+            jobs = [j for j in jobs if 'internship' in j.get('tags', '').lower()]
+        elif experience in ('thesis', 'masterarbeit', 'bachelorarbeit', 'abschlussarbeit'):
+            jobs = [j for j in jobs if 'master thesis' in j.get('tags', '').lower()]
 
     # Sort by date
     reverse = (sort != 'oldest')
