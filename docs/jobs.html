@@ -897,7 +897,7 @@
       if (search   && !title.includes(search) && !company.includes(search) && !loc.includes(search) && !tags.includes(search)) return false;
       if (location && !loc.includes(location)) return false;
       if (language === "en" && j.is_english !== "True" && j.is_english !== true) return false;
-      if (expLevel && !tags.includes(expLevel)) return false;
+      if (expLevel && !tags.includes(expLevel.toLowerCase())) return false;
       return true;
     });
 
