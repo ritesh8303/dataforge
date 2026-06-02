@@ -105,10 +105,10 @@ def test_pipeline_e2e():
     try:
         rules = events_client.list_rules(NamePrefix='dataforge')
         enabled = [r for r in rules['Rules'] if r['State'] == 'ENABLED']
-        if len(enabled) != 4:
-            print(f"   ❌ FAILED: Expected 4 enabled schedules, found {len(enabled)}")
+        if len(enabled) != 5:
+            print(f"   ❌ FAILED: Expected 5 enabled schedules, found {len(enabled)}")
             return False
-        print("   ✅ All 4 schedules enabled (including scheduled transformer)")
+        print("   ✅ All 5 schedules enabled (including scheduled transformer and Apify ingestor)")
     except Exception as e:
         print(f"   ❌ FAILED: {e}")
         return False

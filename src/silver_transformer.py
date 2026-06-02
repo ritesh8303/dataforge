@@ -86,13 +86,21 @@ def lambda_handler(event, context):
         today_str = event['date']
         print(f"Manual date override detected: running for date {today_str}")
 
-    paths = [
-        f"s3://{bronze_bucket}/arbeitnow/ingested_at={today_str}/jobs.parquet",
-        f"s3://{bronze_bucket}/ba_api/ingested_at={today_str}/jobs.parquet",
-        f"s3://{bronze_bucket}/direct_careers/ingested_at={today_str}/jobs.parquet",
-        f"s3://{bronze_bucket}/hacker_news/ingested_at={today_str}/jobs.parquet",
-        f"s3://{bronze_bucket}/berlin_startups/ingested_at={today_str}/jobs.parquet"
-    ]
+    print(f"Searching for Bronze files matching partition ingested_at={today_str}...")
+    try:
+        all_bronze_files = wr.s3.list_objects(path=f"s3://{bronze_bucket}/")
+        # Filter for files that belong to the active partition
+        paths = [f for f in all_bronze_files if f"ingested_at={today_str}" in f and f.endswith(".parquet")]
+        print(f"Found {len(paths)} Bronze files for date {today_str}: {paths}")
+    except Exception as e:
+        print(f"Error listing Bronze bucket objects, falling back to default paths: {str(e)}")
+        paths = [
+            f"s3://{bronze_bucket}/arbeitnow/ingested_at={today_str}/jobs.parquet",
+            f"s3://{bronze_bucket}/ba_api/ingested_at={today_str}/jobs.parquet",
+            f"s3://{bronze_bucket}/direct_careers/ingested_at={today_str}/jobs.parquet",
+            f"s3://{bronze_bucket}/hacker_news/ingested_at={today_str}/jobs.parquet",
+            f"s3://{bronze_bucket}/berlin_startups/ingested_at={today_str}/jobs.parquet"
+        ]
 
     dfs = []
     for path in paths:
@@ -100,6 +108,9 @@ def lambda_handler(event, context):
             if wr.s3.does_object_exist(path):
                 df = wr.s3.read_parquet(path=path)
                 if not df.empty:
+                    # Fill missing columns from older schemas if necessary
+                    if 'published_at' not in df.columns:
+                        df['published_at'] = ''
                     dfs.append(df)
                     print(f"Successfully loaded {len(df)} jobs from {path}")
         except Exception as e:
