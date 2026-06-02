@@ -42,12 +42,34 @@ def normalize_job_item(item, source_name):
     """
     Normalize varying Apify LinkedIn/Indeed scraper formats to unified schema.
     """
-    # Handle fields that could be lists or strings
+    # 1. Title
     title = item.get('title') or item.get('positionName') or item.get('jobTitle') or ''
-    company = item.get('companyName') or item.get('company') or item.get('company_name') or ''
-    location = item.get('location') or item.get('locationName') or ''
+
+    # 2. Company
+    company_val = item.get('companyName') or item.get('company') or item.get('company_name')
+    if isinstance(company_val, dict):
+        company = company_val.get('name') or ''
+    elif not company_val and isinstance(item.get('employer'), dict):
+        company = item.get('employer', {}).get('name') or ''
+    else:
+        company = company_val or ''
+
+    # 3. Location
+    location_val = item.get('location') or item.get('locationName') or ''
+    if isinstance(location_val, dict):
+        location = location_val.get('cityName') or location_val.get('city') or location_val.get('countryName') or ''
+    else:
+        location = location_val or ''
+
+    # 4. URL
     url = item.get('url') or item.get('link') or item.get('jobUrl') or item.get('applyUrl') or ''
-    description = item.get('description') or item.get('descriptionHtml') or item.get('descriptionText') or ''
+
+    # 5. Description
+    desc_val = item.get('description') or item.get('descriptionHtml') or item.get('descriptionText') or ''
+    if isinstance(desc_val, dict):
+        description = desc_val.get('text') or desc_val.get('html') or ''
+    else:
+        description = desc_val or ''
     
     # Try to extract a clean job ID
     job_id = item.get('id') or item.get('jobId') or item.get('job_id')
