@@ -544,14 +544,6 @@
   <div class="filters">
     <input id="search"   type="text" placeholder="Title, company, or keyword..." />
     <input id="location" type="text" placeholder="City (e.g. Berlin)" />
-    <select id="job_type">
-      <option value="">All types</option>
-      <option value="full_time">Full-time</option>
-      <option value="part_time">Part-time</option>
-      <option value="internship">Internship</option>
-      <option value="freelance">Freelance</option>
-      <option value="temporary">Temporary</option>
-    </select>
     <select id="source">
       <option value="">All sources</option>
       <option value="arbeitnow">Arbeitnow</option>
@@ -576,13 +568,6 @@
       <option value="Working Student">Working Student</option>
       <option value="Internship">Internship</option>
       <option value="Master Thesis">Master Thesis</option>
-    </select>
-    <select id="sort_order">
-      <option id="sort-match-option" value="match_desc" style="display:none">Sort: Best Match Score</option>
-      <option value="newest">Sort: Newest first</option>
-      <option value="oldest">Sort: Oldest first</option>
-      <option value="title_asc">Sort: A-Z (Title)</option>
-      <option value="company_asc">Sort: A-Z (Company)</option>
     </select>
   </div>
 
@@ -813,14 +798,7 @@
       j.matchDetails = calculateJobMatch(j);
     });
     
-    // Show match sort option and select it
-    const matchOpt = document.getElementById("sort-match-option");
-    if (matchOpt) {
-      matchOpt.style.display = "block";
-    }
-    document.getElementById("sort_order").value = "match_desc";
     document.getElementById("clear-btn").style.display = "inline-block";
-    
     applyFilters();
   };
 
@@ -829,17 +807,11 @@
     document.getElementById("detected-skills-box").style.display = "none";
     document.getElementById("clear-btn").style.display = "none";
     
-    const matchOpt = document.getElementById("sort-match-option");
-    if (matchOpt) {
-      matchOpt.style.display = "none";
-    }
-    
     hasResumeMatched = false;
     allJobs.forEach(j => {
       delete j.matchDetails;
     });
     
-    document.getElementById("sort_order").value = "newest";
     applyFilters();
   };
 
@@ -873,13 +845,11 @@
     const source      = document.getElementById("source").value;
     const workStyle   = document.getElementById("work_style").value;
     const languageReq = document.getElementById("language").value;
-    const job_type    = document.getElementById("job_type").value;
 
     const params = new URLSearchParams({ limit: 1000, sort: 'newest', status: 'active' });
     if (source)      params.set("source",       source);
     if (workStyle)   params.set("work_style",   workStyle);
     if (languageReq) params.set("language_req", languageReq === "en" ? "english_only" : "");
-    if (job_type)    params.set("job_type",     job_type);
 
     try {
       const res = await fetch(`${JOBS_API_URL}?${params}`);
@@ -944,23 +914,16 @@
       return true;
     });
 
-    // Apply client-side sorting based on select choice
-    const sortVal = document.getElementById("sort_order").value;
-    if (sortVal === "match_desc" && hasResumeMatched) {
+    // Apply client-side sorting: Sort by Match Score if active, otherwise default to newest first
+    if (hasResumeMatched) {
       filtered.sort((a, b) => {
         const scoreA = a.matchDetails ? a.matchDetails.score : 0;
         const scoreB = b.matchDetails ? b.matchDetails.score : 0;
         if (scoreB !== scoreA) return scoreB - scoreA;
         return (b.date_added || "").localeCompare(a.date_added || "");
       });
-    } else if (sortVal === "newest") {
+    } else {
       filtered.sort((a, b) => (b.date_added || "").localeCompare(a.date_added || ""));
-    } else if (sortVal === "oldest") {
-      filtered.sort((a, b) => (a.date_added || "").localeCompare(b.date_added || ""));
-    } else if (sortVal === "title_asc") {
-      filtered.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-    } else if (sortVal === "company_asc") {
-      filtered.sort((a, b) => (a.company || "").localeCompare(b.company || ""));
     }
 
     page = 1;
@@ -1174,10 +1137,10 @@
   ["search","location"].forEach(id => {
     document.getElementById(id).addEventListener("input", applyFilters);
   });
-  ["source","work_style","job_type","language"].forEach(id => {
+  ["source","work_style","language"].forEach(id => {
     document.getElementById(id).addEventListener("change", loadJobs);
   });
-  ["sort_order", "experience_level"].forEach(id => {
+  ["experience_level"].forEach(id => {
     document.getElementById(id).addEventListener("change", applyFilters);
   });
 

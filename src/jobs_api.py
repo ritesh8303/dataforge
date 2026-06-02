@@ -92,9 +92,18 @@ def lambda_handler(event, context):
         elif experience in ('thesis', 'masterarbeit', 'bachelorarbeit', 'abschlussarbeit'):
             jobs = [j for j in jobs if 'master thesis' in j.get('tags', '').lower()]
     if language_req:
-        jobs = [j for j in jobs if j.get('language_requirement', '').lower() == language_req]
+        jobs = [j for j in jobs if j.get('language_requirement', '').lower() == language_req or (
+            # Fallback for legacy CSV data in S3
+            not j.get('language_requirement') and language_req == 'english_only' and (j.get('is_english', '').lower() == 'true' or j.get('is_english') is True)
+        )]
     if work_style:
-        jobs = [j for j in jobs if j.get('work_style', '').lower() == work_style]
+        jobs = [j for j in jobs if j.get('work_style', '').lower() == work_style or (
+            # Fallback for legacy CSV data in S3
+            not j.get('work_style') and (
+                (work_style == 'remote' and j.get('is_remote', '').lower() == 'true') or
+                (work_style == 'onsite' and j.get('is_remote', '').lower() != 'true')
+            )
+        )]
 
     # Sort by date
     reverse = (sort != 'oldest')
