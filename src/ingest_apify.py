@@ -46,7 +46,7 @@ def normalize_job_item(item, source_name):
     title = item.get('title') or item.get('positionName') or item.get('jobTitle') or ''
     company = item.get('companyName') or item.get('company') or item.get('company_name') or ''
     location = item.get('location') or item.get('locationName') or ''
-    url = item.get('url') or item.get('jobUrl') or item.get('applyUrl') or ''
+    url = item.get('url') or item.get('link') or item.get('jobUrl') or item.get('applyUrl') or ''
     description = item.get('description') or item.get('descriptionHtml') or item.get('descriptionText') or ''
     
     # Try to extract a clean job ID
