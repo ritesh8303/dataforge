@@ -38,6 +38,9 @@ def get_apify_credentials():
     return None, None
 
 
+from processing.eu_filter import is_in_eu
+
+
 def normalize_job_item(item, source_name):
     """
     Normalize varying Apify LinkedIn/Indeed scraper formats to unified schema.
@@ -60,6 +63,10 @@ def normalize_job_item(item, source_name):
         location = location_val.get('cityName') or location_val.get('city') or location_val.get('countryName') or ''
     else:
         location = location_val or ''
+
+    # Strict European Union filtering
+    if not is_in_eu(location, item):
+        return None
 
     # 4. URL
     url = item.get('url') or item.get('link') or item.get('jobUrl') or item.get('applyUrl') or ''

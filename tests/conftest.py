@@ -8,6 +8,7 @@ from pathlib import Path
 # so tests use the system-installed packages from requirements-test.txt instead.
 _src_normalized = os.path.normcase(os.path.abspath(Path(__file__).resolve().parents[1] / "src"))
 sys.path = [p for p in sys.path if os.path.normcase(os.path.abspath(p)) != _src_normalized]
+sys.path.append(_src_normalized)
 
 # Purge any src/-based modules already cached
 _to_remove = [k for k, v in sys.modules.items()

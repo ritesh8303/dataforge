@@ -4,6 +4,7 @@ import awswrangler as wr
 from datetime import datetime, timezone
 import os
 import re
+from processing.eu_filter import is_in_eu
 
 
 def slugify(text):
@@ -124,6 +125,23 @@ def lambda_handler(event, context):
     
     # Validate schemas
     bronze_df = validate_jobs(bronze_df)
+    
+    # Filter for EU-only jobs (safety gate)
+    # Sources 'ba_api', 'arbeitnow', and 'berlin_startups' are inherently EU-only.
+    # Other sources ('direct', 'hacker_news', 'apify') are filtered.
+    if not bronze_df.empty:
+        initial_len = len(bronze_df)
+        def row_is_in_eu(r):
+            source = r.get('source', '')
+            if source in ('ba_api', 'arbeitnow', 'berlin_startups'):
+                return True
+            return is_in_eu(
+                location_str=r.get('location', ''),
+                title_str=r.get('title', ''),
+                description_str=r.get('description', '')
+            )
+        bronze_df = bronze_df[bronze_df.apply(row_is_in_eu, axis=1)].copy()
+        print(f"EU safety gate filtering: kept {len(bronze_df)} out of {initial_len} jobs.")
     
     # Deduplicate semantically
     bronze_df = deduplicate_bronze(bronze_df)

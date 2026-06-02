@@ -3,6 +3,7 @@ import re
 import hashlib
 from typing import Any, Dict
 from .typing_inspection.arbeitnow import validate_api_response as validate_arbeitnow
+from .eu_filter import is_in_eu
 
 class ArbeitnowFetcher:
     """Fetcher for the Arbeitnow public job board API."""
@@ -161,6 +162,10 @@ class HackerNewsFetcher:
                         if yc_batch:
                             tags_list.append(yc_batch)
                         
+                        # Filter for EU only
+                        if not is_in_eu(location_str=location, title_str=title, description_str=title_text):
+                            continue
+
                         jobs.append({
                             'job_id': f"hn_job_{story_id}",
                             'title': title,
@@ -217,17 +222,15 @@ class HackerNewsFetcher:
                                 continue
                             first_line = lines[0]
                             
-                            text_lower = plain_text.lower()
-                            # Filter for jobs relevant to Germany, Europe, or Remote
-                            is_relevant = any(w in text_lower for w in ['germany', 'berlin', 'munich', 'hamburg', 'frankfurt', 'europe', 'remote', 'worldwide', 'eu'])
-                            if not is_relevant:
-                                continue
-                            
                             parts = [p.strip() for p in re.split(r'[|;\-]', first_line)]
                             if len(parts) >= 2:
                                 company = parts[0]
                                 title = parts[1]
                                 location = parts[2] if len(parts) > 2 else "Remote"
+                                
+                                # Filter for EU only
+                                if not is_in_eu(location_str=location, title_str=title, description_str=plain_text):
+                                    continue
                                 
                                 links = re.findall(r'href="([^"]+)"', text)
                                 apply_url = links[0] if links else f"https://news.ycombinator.com/item?id={comment_id}"
