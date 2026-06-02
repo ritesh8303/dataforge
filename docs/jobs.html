@@ -7,97 +7,371 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080a10;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 99px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
     body {
-      background: radial-gradient(circle at 50% 0%, #111424 0%, #060813 100%);
+      background: radial-gradient(circle at 50% 0%, #0d1224 0%, #05070f 100%);
       color: #f1f5f9;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       min-height: 100vh;
-      line-height: 1.5;
+      line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    #root { max-width: 1140px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+    #root {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 5rem;
+    }
 
     /* ── Header ── */
     .header {
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       padding-bottom: 1.5rem;
     }
+    
     .header h1 {
       font-family: 'Outfit', sans-serif;
-      font-size: 2.2rem; font-weight: 800;
-      background: linear-gradient(135deg, #fff 30%, #a5b4fc 100%);
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: -0.02em;
     }
-    .header p { color: #94a3b8; font-size: 0.9rem; margin-top: 0.4rem; }
-
-    .nav { display: flex; gap: 1rem; margin-bottom: 2rem; font-size: 0.85rem; }
-    .nav a {
-      color: #818cf8; text-decoration: none; font-weight: 600;
-      transition: color 0.15s ease;
-      display: flex; align-items: center; gap: 0.25rem;
+    
+    .header p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-top: 0.4rem;
     }
-    .nav a:hover { color: #6366f1; text-decoration: none; }
 
-    /* ── Filters ── */
+    .nav {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      font-size: 0.85rem;
+    }
+    
+    .nav a {
+      color: #818cf8;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .nav a:hover {
+      color: #6366f1;
+      transform: translateX(-2px);
+    }
+
+    /* ── Resume Matcher ── */
+    .matcher-panel {
+      background: rgba(17, 24, 39, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .matcher-header {
+      padding: 1.25rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      background: rgba(30, 41, 59, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      user-select: none;
+    }
+    
+    .matcher-header:hover {
+      background: rgba(30, 41, 59, 0.35);
+    }
+    
+    .matcher-header h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, #ffffff 40%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .toggle-icon {
+      color: #94a3b8;
+      font-size: 0.8rem;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .matcher-body {
+      padding: 1.75rem;
+      transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+      max-height: 900px;
+    }
+    
+    .matcher-body.collapsed {
+      max-height: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      overflow: hidden;
+    }
+    
+    .matcher-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.75rem;
+    }
+    @media(max-width: 768px) {
+      .matcher-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+    }
+    
+    .matcher-input-col, .matcher-config-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    
+    .matcher-input-col label, .input-group label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.25rem;
+    }
+    
+    #resume-text {
+      width: 100%;
+      height: 130px;
+      background: rgba(30, 41, 59, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      color: #f1f5f9;
+      padding: 0.85rem;
+      font-size: 0.85rem;
+      font-family: inherit;
+      resize: vertical;
+      outline: none;
+      transition: all 0.25s ease;
+      line-height: 1.5;
+    }
+    
+    #resume-text:focus {
+      border-color: #6366f1;
+      background: rgba(30, 41, 59, 0.5);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    }
+    
+    .match-btn {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+      margin-top: auto;
+    }
+    
+    .match-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+      background: linear-gradient(135deg, #818cf8 0%, #5850ec 100%);
+    }
+    
+    .clear-btn {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 12px;
+      padding: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-family: 'Outfit', sans-serif;
+    }
+    
+    .clear-btn:hover {
+      background: rgba(239, 68, 68, 0.25);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+    
+    .detected-skills-box {
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .detected-skills-title {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      font-weight: 600;
+      margin-bottom: 0.85rem;
+    }
+    
+    .detected-skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .skill-tag {
+      background: rgba(99, 102, 241, 0.15);
+      color: #c7d2fe;
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: default;
+    }
+
+    /* ── Filters Grid (Polished for 6 Columns) ── */
     .filters {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.85rem; margin-bottom: 1.75rem;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.85rem;
+      margin-bottom: 2rem;
       background: rgba(17, 24, 39, 0.35);
-      padding: 1rem; border-radius: 16px;
+      padding: 1.25rem;
+      border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
-    @media(min-width:768px){ .filters { grid-template-columns: 2fr 1.25fr 1fr 1fr 1fr 1fr 1fr 1.25fr; } }
+    
+    @media(max-width: 1024px) {
+      .filters {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media(max-width: 640px) {
+      .filters {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        padding: 1rem;
+      }
+    }
+    @media(max-width: 440px) {
+      .filters {
+        grid-template-columns: 1fr;
+      }
+    }
 
     input, select {
-      background: rgba(30, 41, 59, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
+      background: rgba(30, 41, 59, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
       color: #f1f5f9;
-      padding: 0.7rem 0.95rem;
+      padding: 0.75rem 1rem;
       font-size: 0.85rem;
       width: 100%;
       outline: none;
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    input::placeholder { color: #64748b; }
+    
+    input::placeholder {
+      color: #64748b;
+    }
+    
     input:focus, select:focus {
       border-color: #6366f1;
-      background: rgba(30, 41, 59, 0.7);
+      background: rgba(30, 41, 59, 0.65);
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
     }
-    select option { background: #0f111a; color: #f1f5f9; }
+    
+    select option {
+      background: #0b0d19;
+      color: #f1f5f9;
+    }
 
     .results-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 1.25rem; font-size: 0.85rem; color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      color: #94a3b8;
       font-weight: 500;
+      padding: 0 0.5rem;
     }
-    #result-count { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; color: #fff; }
+    
+    #result-count {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    
+    #last-updated {
+      font-size: 0.78rem;
+      color: #64748b;
+    }
 
     /* ── Job List ── */
-    .job-list { display: flex; flex-direction: column; gap: 0.85rem; }
+    .job-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
     
     .job-card {
-      background: rgba(17, 24, 39, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      padding: 1.3rem 1.6rem;
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 1.5rem;
+      background: rgba(17, 24, 39, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 20px;
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(15px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
     @keyframes fadeIn {
@@ -105,43 +379,75 @@
     }
 
     .job-card:hover {
-      border-color: rgba(99, 102, 241, 0.35);
-      background: rgba(17, 24, 39, 0.65);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px -10px rgba(0, 0, 0, 0.5), 0 0 10px -2px rgba(99, 102, 241, 0.1);
+      border-color: rgba(99, 102, 241, 0.3);
+      background: rgba(17, 24, 39, 0.55);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.4), 0 0 15px -3px rgba(99, 102, 241, 0.15);
     }
     
-    .job-info { flex: 1; min-width: 0; }
+    .job-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
     .job-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.05rem; font-weight: 600; color: #f8fafc;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: -0.01em;
     }
-    .job-company { font-size: 0.88rem; color: #94a3b8; margin-top: 0.25rem; font-weight: 500; }
+    
+    .job-company {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-top: 0.3rem;
+      font-weight: 500;
+    }
     
     .job-meta {
-      font-size: 0.78rem; color: #64748b; margin-top: 0.6rem;
-      display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+      font-size: 0.78rem;
+      color: #64748b;
+      margin-top: 0.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
     }
-    .job-meta span:first-child { color: #cbd5e1; font-weight: 500; }
+    
+    .job-meta span:first-child {
+      color: #cbd5e1;
+      font-weight: 500;
+    }
 
-    /* ── Tags ── */
+    /* ── Tags (Styling Upgrades) ── */
     .tag {
-      border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.72rem; font-weight: 600;
-      letter-spacing: 0.01em; border: 1px solid rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      border: 1px solid rgba(255, 255, 255, 0.03);
     }
-    .tag.remote { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.15); }
-    .tag.source-ba { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border-color: rgba(59, 130, 246, 0.15); }
-    .tag.source-direct { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.15); }
+    
+    .tag.remote { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.2); }
+    .tag.source-ba { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border-color: rgba(59, 130, 246, 0.2); }
+    .tag.source-direct { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.2); }
     .tag.source-hn { background: rgba(249, 115, 22, 0.15); color: #fdba74; border-color: rgba(249, 115, 22, 0.25); }
     .tag.source-bsj { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; border-color: rgba(20, 184, 166, 0.25); }
     .tag.source-linkedin { background: rgba(10, 102, 194, 0.15); color: #70b5ff; border-color: rgba(10, 102, 194, 0.25); }
     .tag.source-indeed { background: rgba(37, 87, 167, 0.15); color: #79abf7; border-color: rgba(37, 87, 167, 0.25); }
-    .tag.type { background: rgba(167, 139, 250, 0.12); color: #c084fc; border-color: rgba(167, 139, 250, 0.15); }
+    .tag.type { background: rgba(167, 139, 250, 0.12); color: #c084fc; border-color: rgba(167, 139, 250, 0.2); }
     
     .tag:not(.remote):not(.source-ba):not(.source-direct):not(.source-hn):not(.source-bsj):not(.type) {
-      background: rgba(30, 41, 59, 0.6); color: #94a3b8;
+      background: rgba(30, 41, 59, 0.5);
+      color: #cbd5e1;
+      border-color: rgba(255, 255, 255, 0.05);
     }
+    
     .tag.exp-junior { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.25); }
     .tag.exp-student { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.25); }
     .tag.exp-intern { background: rgba(236, 72, 153, 0.15); color: #f472b6; border-color: rgba(236, 72, 153, 0.25); }
@@ -158,214 +464,123 @@
     .tag.work-hybrid { background: rgba(99, 102, 241, 0.12); color: #818cf8; border-color: rgba(99, 102, 241, 0.18); }
     .tag.work-onsite { background: rgba(100, 116, 139, 0.12); color: #94a3b8; border-color: rgba(100, 116, 139, 0.18); }
     
-    .tag.clickable { cursor: pointer; transition: all 0.15s ease; }
-    .tag.clickable:hover { border-color: rgba(99, 102, 241, 0.5); background: rgba(99, 102, 241, 0.2); color: #fff; }
+    .tag.clickable { cursor: pointer; transition: all 0.2s ease; }
+    .tag.clickable:hover { border-color: rgba(99, 102, 241, 0.5); background: rgba(99, 102, 241, 0.2); color: #ffffff; }
 
-    /* ── Buttons ── */
-    .apply-btn {
+    /* ── Action Buttons & Container ── */
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.85rem;
+      justify-content: center;
       flex-shrink: 0;
+      width: 140px; /* Set solid space to prevent congestion */
+    }
+    
+    @media(max-width: 640px) {
+      .btn-container {
+        width: 100%;
+        flex-direction: row !important;
+        justify-content: space-between;
+        align-items: center !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding-top: 1rem;
+        margin-top: 0.5rem;
+      }
+    }
+
+    .apply-btn {
+      width: 100%;
+      text-align: center;
       background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      color: #fff; border: none; border-radius: 10px;
-      padding: 0.6rem 1.25rem; font-size: 0.82rem; font-weight: 600;
-      cursor: pointer; text-decoration: none; white-space: nowrap;
-      display: inline-block; transition: all 0.2s ease;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 0.65rem 1.25rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      display: inline-block;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       font-family: 'Outfit', sans-serif;
       box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
     }
+    
     .apply-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45);
       background: linear-gradient(135deg, #818cf8 0%, #5850ec 100%);
     }
 
     /* ── Pagination ── */
-    .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem; flex-wrap: wrap; }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+    }
+    
     .page-btn {
       background: rgba(30, 41, 59, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 8px; color: #94a3b8;
-      padding: 0.45rem 0.85rem; font-size: 0.82rem; cursor: pointer;
-      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      color: #94a3b8;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
     }
+    
     .page-btn.active {
-      background: #6366f1; border-color: #6366f1; color: #fff;
-      box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+      background: #6366f1;
+      border-color: #6366f1;
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.35);
     }
+    
     .page-btn:hover:not(.active) {
       border-color: rgba(99, 102, 241, 0.5);
       color: #f1f5f9;
-      background: rgba(30, 41, 59, 0.7);
+      background: rgba(30, 41, 59, 0.75);
     }
 
     .job-desc {
-      font-size: 0.78rem; color: #94a3b8; margin-top: 0.6rem; line-height: 1.5;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-      border-left: 2px solid rgba(99, 102, 241, 0.2);
-      padding-left: 0.6rem;
-    }
-    .loading { font-size: 0.9rem; text-align: center; color: #64748b; padding: 3rem 0; font-weight: 500; }
-
-    .error {
-      color: #f87171; font-size: 0.88rem; padding: 1rem 1.25rem;
-      background: rgba(127, 29, 29, 0.25); border: 1px solid rgba(239, 68, 68, 0.45);
-      border-radius: 12px; margin-bottom: 2rem;
-      backdrop-filter: blur(8px);
-    }
-
-    /* ── Resume Matcher Styles ── */
-    .matcher-panel {
-      background: rgba(17, 24, 39, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      margin-bottom: 1.5rem;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      font-size: 0.82rem;
+      color: #94a3b8;
+      margin-top: 0.75rem;
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      transition: all 0.3s ease;
-    }
-    .matcher-header {
-      padding: 1.15rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      background: rgba(30, 41, 59, 0.2);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-      user-select: none;
-    }
-    .matcher-header:hover {
-      background: rgba(30, 41, 59, 0.3);
-    }
-    .matcher-header h3 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: linear-gradient(135deg, #fff 40%, #c7d2fe 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .toggle-icon {
-      color: #94a3b8;
-      font-size: 0.8rem;
-      transition: transform 0.3s ease;
-    }
-    .matcher-body {
-      padding: 1.5rem;
-      transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-      max-height: 800px;
-    }
-    .matcher-body.collapsed {
-      max-height: 0;
-      padding-top: 0;
-      padding-bottom: 0;
-      overflow: hidden;
-    }
-    .matcher-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 1.5rem;
-    }
-    @media(max-width: 768px) {
-      .matcher-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    .matcher-input-col, .matcher-config-col {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    .matcher-input-col label, .input-group label {
-      font-size: 0.75rem;
-      color: #94a3b8;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    #resume-text {
-      width: 100%;
-      height: 120px;
-      background: rgba(30, 41, 59, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
-      color: #f1f5f9;
-      padding: 0.75rem;
-      font-size: 0.85rem;
-      font-family: inherit;
-      resize: vertical;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-    #resume-text:focus {
-      border-color: #6366f1;
-      background: rgba(30, 41, 59, 0.50);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-    }
-    .match-btn {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 0.8rem 1.5rem;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: 'Outfit', sans-serif;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-      margin-top: auto;
-    }
-    .match-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
-      background: linear-gradient(135deg, #818cf8 0%, #5850ec 100%);
-    }
-    .clear-btn {
-      background: rgba(239, 68, 68, 0.1);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      border-radius: 10px;
-      padding: 0.6rem;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .clear-btn:hover {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
-    }
-    .detected-skills-box {
-      margin-top: 1.25rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .detected-skills-title {
-      font-size: 0.78rem;
-      color: #94a3b8;
-      font-weight: 600;
-      margin-bottom: 0.65rem;
-    }
-    .detected-skills-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-    }
-    .skill-tag {
-      background: rgba(99, 102, 241, 0.12);
-      color: #a5b4fc;
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      border-radius: 6px;
-      padding: 0.18rem 0.55rem;
-      font-size: 0.72rem;
-      font-weight: 500;
-      cursor: default;
+      border-left: 2px solid rgba(99, 102, 241, 0.3);
+      padding-left: 0.75rem;
     }
     
+    .loading {
+      font-size: 0.95rem;
+      text-align: center;
+      color: #64748b;
+      padding: 4rem 0;
+      font-weight: 500;
+    }
+
+    .error {
+      color: #f87171;
+      font-size: 0.88rem;
+      padding: 1.15rem 1.5rem;
+      background: rgba(127, 29, 29, 0.25);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.1);
+    }
+
     /* ── Match Score Badge & Analysis Panel ── */
     .match-badge {
       display: flex;
@@ -373,33 +588,39 @@
       align-items: center;
       justify-content: center;
       border-radius: 10px;
-      padding: 0.5rem 0.85rem;
+      padding: 0.4rem 0.85rem;
       text-align: center;
-      min-width: 85px;
+      width: 100%; /* Spans width of btn-container */
       font-family: 'Outfit', sans-serif;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
+    
     .match-badge.high {
       background: rgba(16, 185, 129, 0.12);
       color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-color: rgba(16, 185, 129, 0.25);
     }
+    
     .match-badge.med {
       background: rgba(245, 158, 11, 0.12);
       color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-color: rgba(245, 158, 11, 0.25);
     }
+    
     .match-badge.low {
       background: rgba(239, 68, 68, 0.1);
       color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.2);
     }
+    
     .match-badge-pct {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       font-weight: 800;
     }
+    
     .match-badge-lbl {
       font-size: 0.6rem;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       opacity: 0.85;
@@ -407,94 +628,91 @@
     
     /* Analysis Collapsible Row */
     .fit-analysis-toggle {
-      background: transparent;
+      background: rgba(30, 41, 59, 0.25);
       border: 1px solid rgba(255, 255, 255, 0.06);
-      color: #94a3b8;
+      color: #cbd5e1;
       border-radius: 8px;
-      padding: 0.35rem 0.75rem;
+      padding: 0.4rem 0.85rem;
       font-size: 0.72rem;
       font-weight: 600;
       cursor: pointer;
-      margin-top: 0.75rem;
+      margin-top: 0.85rem;
       transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
+      font-family: 'Outfit', sans-serif;
     }
+    
     .fit-analysis-toggle:hover {
-      border-color: rgba(99, 102, 241, 0.3);
-      color: #a5b4fc;
-      background: rgba(99, 102, 241, 0.05);
+      border-color: rgba(99, 102, 241, 0.4);
+      color: #ffffff;
+      background: rgba(99, 102, 241, 0.1);
     }
+    
     .fit-analysis-panel {
       margin-top: 1rem;
-      padding: 1rem;
+      padding: 1.25rem;
       background: rgba(30, 41, 59, 0.2);
-      border-radius: 12px;
+      border-radius: 16px;
       border: 1px solid rgba(255, 255, 255, 0.03);
       animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+    
     @keyframes slideDown {
       from { opacity: 0; transform: translateY(-8px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    
     .analysis-section {
       margin-bottom: 0.85rem;
     }
+    
     .analysis-section:last-child {
       margin-bottom: 0;
     }
+    
     .analysis-section-title {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       color: #94a3b8;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
     }
+    
     .analysis-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 0.35rem;
     }
+    
     .analysis-tag {
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      padding: 0.15rem 0.5rem;
-      border-radius: 5px;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
     }
+    
     .analysis-tag.match {
       background: rgba(16, 185, 129, 0.1);
       color: #34d399;
       border: 1px solid rgba(16, 185, 129, 0.15);
     }
+    
     .analysis-tag.gap {
       background: rgba(239, 68, 68, 0.08);
       color: #f87171;
       border: 1px solid rgba(239, 68, 68, 0.15);
     }
+    
     .analysis-text {
-      font-size: 0.75rem;
-      color: #cbd5e1;
-      line-height: 1.4;
+      font-size: 0.78rem;
+      color: #e2e8f0;
+      line-height: 1.5;
       border-left: 2px solid #6366f1;
-      padding-left: 0.6rem;
-      margin-top: 0.25rem;
-    }
-
-    @media(max-width: 640px) {
-      .job-card {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1rem;
-      }
-      .job-card > div:last-child {
-        flex-direction: row !important;
-        justify-content: space-between;
-        align-items: center !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.04);
-        padding-top: 0.75rem;
-      }
+      padding-left: 0.75rem;
+      margin-top: 0.3rem;
     }
   </style>
 </head>
@@ -502,7 +720,7 @@
 <div id="root">
   <div class="header">
     <h1>🔍 Find Jobs in Europe</h1>
-    <p>Search across Arbeitnow + BA Jobsuche + direct company career feeds · Updated up to 14× daily</p>
+    <p>Search across Arbeitnow + BA Jobsuche + direct company career feeds · Updated daily</p>
   </div>
   <div class="nav">
     <a href="index.html">← Analytics Dashboard</a>
@@ -543,6 +761,8 @@
   </div>
 
   <div id="error-box" class="error" style="display:none"></div>
+  
+  <!-- 6-column Filters row -->
   <div class="filters">
     <input id="search"   type="text" placeholder="Title, company, or keyword..." />
     <input id="location" type="text" placeholder="City (e.g. Berlin)" />
@@ -587,8 +807,6 @@
 </div>
 
 <script>
-  // Swap for local testing:
-  // const JOBS_API_URL = "http://localhost:8000/";
   const JOBS_API_URL = "https://2amv4immb0.execute-api.eu-central-1.amazonaws.com/";
   const PAGE_SIZE = 25;
 
@@ -797,7 +1015,6 @@
       skillsBoxEl.style.display = "block";
     }
     
-    // Calculate match details for all jobs
     allJobs.forEach(j => {
       j.matchDetails = calculateJobMatch(j);
     });
@@ -863,7 +1080,6 @@
       document.getElementById("last-updated").textContent =
         `${(data.kpis?.total || allJobs.length).toLocaleString()} total jobs`;
       
-      // Re-run matching on load if user had matching active
       if (hasResumeMatched) {
         allJobs.forEach(j => {
           j.matchDetails = calculateJobMatch(j);
@@ -894,7 +1110,6 @@
       if (search   && !title.includes(search) && !company.includes(search) && !loc.includes(search) && !tags.includes(search)) return false;
       if (location && !loc.includes(location)) return false;
       
-      // Filter by language
       if (language === "en") {
         if (j.language_requirement) {
           if (j.language_requirement !== "english_only") return false;
@@ -903,7 +1118,6 @@
         }
       }
       
-      // Filter by work style
       if (workStyle) {
         if (j.work_style) {
           if (j.work_style !== workStyle) return false;
@@ -918,7 +1132,6 @@
       return true;
     });
 
-    // Apply client-side sorting: Sort by Match Score if active, otherwise default to newest first
     if (hasResumeMatched) {
       filtered.sort((a, b) => {
         const scoreA = a.matchDetails ? a.matchDetails.score : 0;
@@ -989,7 +1202,6 @@
 
       const directBadge = isDirect ? `<span class="tag direct-apply">⚡ Direct Apply</span>` : "";
 
-      // Parse job_types CSV string into individual tags
       const typeTags = (j.job_types || "")
         .split(",")
         .map(t => t.trim())
@@ -997,7 +1209,6 @@
         .map(t => `<span class="tag type">${esc(TYPE_LABELS[t] || t)}</span>`)
         .join("");
 
-      // Tags chips (Arbeitnow real category tags)
       const tagChips = (j.tags || '')
         .split(',')
         .map(t => t.trim())
@@ -1019,7 +1230,6 @@
         })
         .join('');
 
-      // Strip HTML from description and show snippet for arbeitnow + direct
       const rawDesc = j.description || '';
       const plainDesc = rawDesc.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
       const showDesc = (j.source === 'arbeitnow' || j.source === 'direct') && plainDesc.length > 10;
@@ -1027,7 +1237,6 @@
         ? `<div class="job-desc">${esc(plainDesc.slice(0, 180))}${plainDesc.length > 180 ? '…' : ''}</div>`
         : '';
 
-      // Match Score details rendering
       let matchBadgeHtml = "";
       let analysisHtml = "";
       if (hasResumeMatched && j.matchDetails) {
@@ -1110,7 +1319,7 @@
             ${descSnippet}
             ${analysisHtml}
           </div>
-          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.75rem; justify-content:center;">
+          <div class="btn-container">
             ${matchBadgeHtml}
             <a class="apply-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
               Apply →
