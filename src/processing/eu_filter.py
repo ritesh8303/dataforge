@@ -57,7 +57,6 @@ def is_in_eu(location_str, title_str="", description_str="", item=None):
 
     loc = str(location_str or "").strip().lower()
     title = str(title_str or "").strip().lower()
-    desc = str(description_str or "").strip().lower()
 
     # 2. Blocklist of multi-word non-EU phrases (UK, US, Canada, etc.)
     non_eu_phrases = {
@@ -73,32 +72,37 @@ def is_in_eu(location_str, title_str="", description_str="", item=None):
     title_words = set(re.findall(r"\b[a-z]+\b", title))
     combined_words = loc_words.union(title_words)
 
-    # 3. Standalone non-EU words (UK, Switzerland, US, etc., and US State abbreviations)
-    non_eu_words = {
+    # 3. Standalone general non-EU words (checked against both location and title)
+    non_eu_general = {
         "uk", "london", "switzerland", "zurich", "zürich", "geneva", "genf",
         "norway", "oslo", "iceland", "usa", "us", "america", "canada", "toronto",
         "vancouver", "australia", "sydney", "melbourne", "singapore", "sg", "japan", "tokyo",
         "india", "bangalore", "bengaluru", "china", "shanghai", "suzhou", "wuxi", "cn",
         "brazil", "mexico", "ukraine", "russia", "israel", "boston", "seattle",
-        "austin", "texas", "tx", "california", "ca", "chicago", "denver", "atlanta",
+        "austin", "texas", "california", "chicago", "denver", "atlanta",
         "miami", "hawthorne", "bastrop", "redmond", "wa", "starbase", "saddleback",
-        "capitol", "sunnyvale", "woodinville", "fl", "egypt", "maadi", "eg", "dubai",
-        "ae", "vietnam", "vn", "argentina", "ar", "latam",
-        # US State abbreviations (except 'de' Delaware / Germany and 'mt' Montana / Malta)
-        "al", "ak", "az", "ar", "co", "ct", "ga", "hi", "id", "il", "in", "ia", "ks", "ky", 
+        "capitol", "sunnyvale", "woodinville", "egypt", "maadi", "eg", "dubai",
+        "ae", "vietnam", "vn", "argentina", "ar", "latam"
+    }
+    if not non_eu_general.isdisjoint(combined_words):
+        return False
+
+    # 4. US State abbreviations (checked ONLY against location words to avoid title collisions)
+    us_state_codes = {
+        "al", "ak", "az", "ar", "co", "ct", "fl", "ga", "hi", "id", "il", "in", "ia", "ks", "ky", 
         "la", "me", "md", "ma", "mi", "mn", "ms", "mo", "ne", "nv", "nh", "nj", "nm", "ny", 
         "nc", "nd", "oh", "ok", "or", "pa", "ri", "sc", "sd", "tn", "tx", "ut", "vt", "va", 
         "wa", "wv", "wi", "wy"
     }
-    if not non_eu_words.isdisjoint(combined_words):
+    if not us_state_codes.isdisjoint(loc_words):
         return False
 
-    # 4. Check explicit EU country names
+    # 5. Check explicit EU country names
     for country in EU_COUNTRIES:
         if len(country) > 2 and (country in loc or country in title):
             return True
 
-    # 5. Check for explicit EU country ISO codes in location words only (to avoid 'it', 'hr', 'pt' false positives in title)
+    # 6. Check for explicit EU country ISO codes in location words only
     two_letter_eu_codes = {
         'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gr', 'hr', 'hu', 
         'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'pt', 'ro', 'se', 'si', 'sk'
@@ -106,12 +110,12 @@ def is_in_eu(location_str, title_str="", description_str="", item=None):
     if not two_letter_eu_codes.isdisjoint(loc_words):
         return True
 
-    # 6. Check for known EU cities
+    # 7. Check for known EU cities
     for city in EU_CITIES:
         if city in loc:
             return True
 
-    # 7. Check for general EU keywords
+    # 8. Check for general EU keywords
     eu_keywords = {"eu", "european", "union", "europe", "emea"}
     if not eu_keywords.isdisjoint(combined_words):
         return True

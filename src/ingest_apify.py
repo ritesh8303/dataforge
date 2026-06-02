@@ -65,7 +65,7 @@ def normalize_job_item(item, source_name):
         location = location_val or ''
 
     # Strict European Union filtering
-    if not is_in_eu(location, item):
+    if not is_in_eu(location_str=location, title_str=title, item=item):
         return None
 
     # 4. URL
