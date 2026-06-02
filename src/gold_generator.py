@@ -32,6 +32,51 @@ def detect_is_english(row):
     return en_count >= de_count
 
 
+def detect_language_requirement(row):
+    is_english = bool(row.get('is_english', True))
+    if not is_english:
+        return 'german_required'
+
+    # If text is in English, scan for German requirements
+    title = str(row.get('title', '')).lower()
+    description = str(row.get('description', '')).lower()
+    text = title + " " + description
+
+    # German requirement pattern
+    german_req_pattern = re.compile(
+        r'\b(german\s+skills|german\s+language|fluent\s+german|speak\s+german|german\s+level|deutsch\s+sprechen|b2|c1|c2|deutschkenntnisse|deutsch\s+auf|knowledge\s+of\s+german)\b',
+        re.IGNORECASE
+    )
+
+    if german_req_pattern.search(text):
+        return 'german_required'
+    return 'english_only'
+
+
+def detect_work_style(row):
+    # Check if remote is marked
+    is_remote_val = row.get('remote')
+    is_remote = False
+    if is_remote_val is True or str(is_remote_val).lower() == 'true':
+        is_remote = True
+
+    title = str(row.get('title', '')).lower()
+    description = str(row.get('description', '')).lower()
+    text = title + " " + description
+
+    # Check for hybrid keywords
+    is_hybrid = False
+    if any(k in text for k in ['hybrid', 'home office', 'home-office', 'mobiles arbeiten', 'days in office', 'days a week in']):
+        is_hybrid = True
+
+    if is_hybrid:
+        return 'hybrid'
+    elif is_remote:
+        return 'remote'
+    else:
+        return 'onsite'
+
+
 
 def lambda_handler(event, context):
     silver_path = os.environ.get('SILVER_PATH')
@@ -95,6 +140,8 @@ def lambda_handler(event, context):
         
         # Calculate is_english backend field
         df['is_english'] = df.apply(detect_is_english, axis=1)
+        df['language_requirement'] = df.apply(detect_language_requirement, axis=1)
+        df['work_style'] = df.apply(detect_work_style, axis=1)
 
         current = df[df['is_current'] == True].copy().reset_index(drop=True)
         print(f"Total active jobs: {len(current)}")
@@ -104,7 +151,8 @@ def lambda_handler(event, context):
             'job_id', 'title', 'company', 'location', 'zip_code', 'state',
             'source', 'ats', 'department', 'scd_start_date', 'remote', 'url',
             'job_types', 'tags', 'description', 'salary', 'published_at',
-            'start_date_raw', 'modified_at', 'ingested_at', 'is_english'
+            'start_date_raw', 'modified_at', 'ingested_at', 'is_english',
+            'work_style', 'language_requirement'
         ] if c in current.columns]
         all_jobs = current[cols].copy()
         if 'description' in all_jobs.columns:
@@ -122,7 +170,8 @@ def lambda_handler(event, context):
             'job_id', 'title', 'company', 'location', 'zip_code', 'state',
             'source', 'ats', 'department', 'scd_start_date', 'scd_end_date',
             'remote', 'url', 'job_types', 'tags', 'salary', 'published_at',
-            'start_date_raw', 'modified_at', 'ingested_at', 'is_english'
+            'start_date_raw', 'modified_at', 'ingested_at', 'is_english',
+            'work_style', 'language_requirement'
         ] if c in expired_raw.columns]
         expired_jobs = expired_raw[exp_cols].copy()
         expired_jobs['date_added']   = pd.to_datetime(expired_jobs['scd_start_date']).dt.date.astype(str)

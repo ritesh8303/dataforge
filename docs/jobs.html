@@ -149,6 +149,15 @@
     .tag.cat-devops { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.25); }
     .tag.cat-analytics { background: rgba(34, 197, 94, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.25); }
     .tag.cat-fd { background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.25); }
+    .tag.direct-apply { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.25); }
+    .tag.lang-en { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border-color: rgba(59, 130, 246, 0.18); }
+    .tag.lang-de { background: rgba(239, 68, 68, 0.12); color: #f87171; border-color: rgba(239, 68, 68, 0.18); }
+    .tag.work-remote { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.18); }
+    .tag.work-hybrid { background: rgba(99, 102, 241, 0.12); color: #818cf8; border-color: rgba(99, 102, 241, 0.18); }
+    .tag.work-onsite { background: rgba(100, 116, 139, 0.12); color: #94a3b8; border-color: rgba(100, 116, 139, 0.18); }
+    
+    .tag.clickable { cursor: pointer; transition: all 0.15s ease; }
+    .tag.clickable:hover { border-color: rgba(99, 102, 241, 0.5); background: rgba(99, 102, 241, 0.2); color: #fff; }
 
     /* ── Buttons ── */
     .apply-btn {
@@ -551,14 +560,15 @@
       <option value="hacker_news">Hacker News / YC</option>
       <option value="berlin_startups">Berlin Startup Jobs</option>
     </select>
-    <select id="remote">
-      <option value="">Remote &amp; On-site</option>
-      <option value="true">Remote only</option>
-      <option value="false">On-site only</option>
+    <select id="work_style">
+      <option value="">All work styles</option>
+      <option value="remote">Remote only</option>
+      <option value="hybrid">Hybrid only</option>
+      <option value="onsite">On-site only</option>
     </select>
     <select id="language">
       <option value="">All languages</option>
-      <option value="en">English only</option>
+      <option value="en">English only (No German)</option>
     </select>
     <select id="experience_level">
       <option value="">All experience levels</option>
@@ -833,6 +843,16 @@
     applyFilters();
   };
 
+  window.filterByTag = function(tagName, event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    document.getElementById("search").value = tagName;
+    applyFilters();
+    document.querySelector(".results-header").scrollIntoView({ behavior: 'smooth' });
+  };
+
   window.toggleAnalysis = function(jobId, event) {
     event.preventDefault();
     event.stopPropagation();
@@ -850,14 +870,16 @@
   };
 
   async function loadJobs() {
-    const source   = document.getElementById("source").value;
-    const remote   = document.getElementById("remote").value;
-    const job_type = document.getElementById("job_type").value;
+    const source      = document.getElementById("source").value;
+    const workStyle   = document.getElementById("work_style").value;
+    const languageReq = document.getElementById("language").value;
+    const job_type    = document.getElementById("job_type").value;
 
     const params = new URLSearchParams({ limit: 1000, sort: 'newest', status: 'active' });
-    if (source)   params.set("source",   source);
-    if (remote)   params.set("remote",   remote);
-    if (job_type) params.set("job_type", job_type);
+    if (source)      params.set("source",       source);
+    if (workStyle)   params.set("work_style",   workStyle);
+    if (languageReq) params.set("language_req", languageReq === "en" ? "english_only" : "");
+    if (job_type)    params.set("job_type",     job_type);
 
     try {
       const res = await fetch(`${JOBS_API_URL}?${params}`);
@@ -883,10 +905,11 @@
   }
 
   function applyFilters() {
-    const search   = document.getElementById("search").value.toLowerCase().trim();
-    const location = document.getElementById("location").value.toLowerCase().trim();
-    const language = document.getElementById("language").value;
-    const expLevel = document.getElementById("experience_level").value;
+    const search    = document.getElementById("search").value.toLowerCase().trim();
+    const location  = document.getElementById("location").value.toLowerCase().trim();
+    const language  = document.getElementById("language").value;
+    const workStyle = document.getElementById("work_style").value;
+    const expLevel  = document.getElementById("experience_level").value;
 
     filtered = allJobs.filter(j => {
       const title   = (j.title    || "").toLowerCase();
@@ -896,7 +919,27 @@
 
       if (search   && !title.includes(search) && !company.includes(search) && !loc.includes(search) && !tags.includes(search)) return false;
       if (location && !loc.includes(location)) return false;
-      if (language === "en" && j.is_english !== "True" && j.is_english !== true) return false;
+      
+      // Filter by language
+      if (language === "en") {
+        if (j.language_requirement) {
+          if (j.language_requirement !== "english_only") return false;
+        } else {
+          if (j.is_english !== "True" && j.is_english !== true) return false;
+        }
+      }
+      
+      // Filter by work style
+      if (workStyle) {
+        if (j.work_style) {
+          if (j.work_style !== workStyle) return false;
+        } else {
+          const isRemote = j.is_remote === "True" || j.is_remote === true;
+          if (workStyle === "remote" && !isRemote) return false;
+          if (workStyle === "onsite" && isRemote) return false;
+        }
+      }
+      
       if (expLevel && !tags.includes(expLevel.toLowerCase())) return false;
       return true;
     });
@@ -952,6 +995,29 @@
         : "";
       const url = j.job_url || j.url || "#";
 
+      let workStyleBadge = "";
+      if (j.work_style) {
+        if (j.work_style === "remote") workStyleBadge = `<span class="tag work-remote">🌐 Remote</span>`;
+        else if (j.work_style === "hybrid") workStyleBadge = `<span class="tag work-hybrid">🏢 Hybrid</span>`;
+        else if (j.work_style === "onsite") workStyleBadge = `<span class="tag work-onsite">📍 On-site</span>`;
+      } else {
+        workStyleBadge = isRemote ? `<span class="tag work-remote">🌐 Remote</span>` : `<span class="tag work-onsite">📍 On-site</span>`;
+      }
+
+      let langReqBadge = "";
+      if (j.language_requirement) {
+        if (j.language_requirement === "english_only") {
+          langReqBadge = `<span class="tag lang-en">🇬🇧 English Only</span>`;
+        } else {
+          langReqBadge = `<span class="tag lang-de">🇩🇪 German Required</span>`;
+        }
+      } else {
+        const isEn = j.is_english === "True" || j.is_english === true;
+        langReqBadge = isEn ? `<span class="tag lang-en">🇬🇧 English Only</span>` : `<span class="tag lang-de">🇩🇪 German Required</span>`;
+      }
+
+      const directBadge = isDirect ? `<span class="tag direct-apply">⚡ Direct Apply</span>` : "";
+
       // Parse job_types CSV string into individual tags
       const typeTags = (j.job_types || "")
         .split(",")
@@ -965,20 +1031,20 @@
         .split(',')
         .map(t => t.trim())
         .filter(t => t && t !== 'nan' && t.length < 40)
-        .slice(0, 4)
+        .slice(0, 5)
         .map(t => {
-          let extraClass = '';
-          if (t === 'Junior / Entry Level') extraClass = 'exp-junior';
-          else if (t === 'Working Student') extraClass = 'exp-student';
-          else if (t === 'Internship') extraClass = 'exp-intern';
-          else if (t === 'Master Thesis') extraClass = 'exp-thesis';
-          else if (t === 'AI / ML') extraClass = 'cat-ai';
-          else if (t === 'Data Engineering') extraClass = 'cat-dataeng';
-          else if (t === 'Cloud / DevOps') extraClass = 'cat-devops';
-          else if (t === 'Analytics / BI') extraClass = 'cat-analytics';
-          else if (t === 'Forward Deployed') extraClass = 'cat-fd';
+          let extraClass = 'clickable';
+          if (t === 'Junior / Entry Level') extraClass += ' exp-junior';
+          else if (t === 'Working Student') extraClass += ' exp-student';
+          else if (t === 'Internship') extraClass += ' exp-intern';
+          else if (t === 'Master Thesis') extraClass += ' exp-thesis';
+          else if (t === 'AI / ML') extraClass += ' cat-ai';
+          else if (t === 'Data Engineering') extraClass += ' cat-dataeng';
+          else if (t === 'Cloud / DevOps') extraClass += ' cat-devops';
+          else if (t === 'Analytics / BI') extraClass += ' cat-analytics';
+          else if (t === 'Forward Deployed') extraClass += ' cat-fd';
           
-          return `<span class="tag ${extraClass}">${esc(t)}</span>`;
+          return `<span class="tag ${extraClass}" onclick="filterByTag('${esc(t)}', event)">${esc(t)}</span>`;
         })
         .join('');
 
@@ -1063,7 +1129,9 @@
             <div class="job-meta">
               <span>📍 ${esc((j.location || '\u2014').split(',')[0].trim())}</span>
               <span class="tag ${sourceClass}">${sourceLabel}</span>
-              ${isRemote ? '<span class="tag remote">🌐 Remote</span>' : ''}
+              ${directBadge}
+              ${workStyleBadge}
+              ${langReqBadge}
               ${typeTags}
               ${tagChips}
               <span>${j.date_added || ''}</span>
@@ -1106,10 +1174,10 @@
   ["search","location"].forEach(id => {
     document.getElementById(id).addEventListener("input", applyFilters);
   });
-  ["source","remote","job_type"].forEach(id => {
+  ["source","work_style","job_type","language"].forEach(id => {
     document.getElementById(id).addEventListener("change", loadJobs);
   });
-  ["sort_order", "language", "experience_level"].forEach(id => {
+  ["sort_order", "experience_level"].forEach(id => {
     document.getElementById(id).addEventListener("change", applyFilters);
   });
 

@@ -48,6 +48,8 @@ def lambda_handler(event, context):
     job_type    = (params.get('job_type') or '').lower().strip()
     location    = (params.get('location') or '').lower().strip()
     experience  = (params.get('experience') or '').lower().strip()
+    language_req = (params.get('language_req') or '').lower().strip()
+    work_style   = (params.get('work_style') or '').lower().strip()
     sort        = (params.get('sort') or 'newest').lower().strip()  # newest | oldest
     status      = (params.get('status') or 'active').lower().strip()  # active | expired
     limit       = min(int(params.get('limit', 500)), 5000)
@@ -89,6 +91,10 @@ def lambda_handler(event, context):
             jobs = [j for j in jobs if 'internship' in j.get('tags', '').lower()]
         elif experience in ('thesis', 'masterarbeit', 'bachelorarbeit', 'abschlussarbeit'):
             jobs = [j for j in jobs if 'master thesis' in j.get('tags', '').lower()]
+    if language_req:
+        jobs = [j for j in jobs if j.get('language_requirement', '').lower() == language_req]
+    if work_style:
+        jobs = [j for j in jobs if j.get('work_style', '').lower() == work_style]
 
     # Sort by date
     reverse = (sort != 'oldest')

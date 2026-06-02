@@ -11,17 +11,17 @@ os.environ['GOLD_BUCKET'] = 'test-gold-bucket'
 
 from jobs_api import lambda_handler
 
-# Sample mock CSV data matching DataForge Gold format
-MOCK_CSV = """job_id,title,company,location,tags,is_remote,date_added,job_types
-1,Senior Data Scientist,Tech Corp,Munich,AI / ML,false,2026-06-01,full_time
-2,Data Engineer,Data Corp,Berlin,"Junior / Entry Level,Data Engineering",true,2026-06-02,full_time
-3,Working Student - Data Analyst,AI Analytics,Hamburg,"Working Student,Analytics / BI",false,2026-06-02,part_time
-4,Intern Data Analyst,BI Corp,Cologne,"Internship,Analytics / BI",true,2026-06-02,internship
-5,Master Thesis - Deep Learning,Research Lab,Munich,"Master Thesis,AI / ML",false,2026-06-02,thesis
+# Sample mock CSV data matching DataForge Gold format with new columns
+MOCK_CSV = """job_id,title,company,location,tags,is_remote,date_added,job_types,work_style,language_requirement
+1,Senior Data Scientist,Tech Corp,Munich,AI / ML,false,2026-06-01,full_time,onsite,english_only
+2,Data Engineer,Data Corp,Berlin,"Junior / Entry Level,Data Engineering",true,2026-06-02,full_time,remote,english_only
+3,Working Student - Data Analyst,AI Analytics,Hamburg,"Working Student,Analytics / BI",false,2026-06-02,part_time,hybrid,german_required
+4,Intern Data Analyst,BI Corp,Cologne,"Internship,Analytics / BI",true,2026-06-02,internship,remote,english_only
+5,Master Thesis - Deep Learning,Research Lab,Munich,"Master Thesis,AI / ML",false,2026-06-02,thesis,hybrid,german_required
 """
 
 @patch('jobs_api.s3')
-def test_jobs_api_experience_filters(mock_s3):
+def test_jobs_api_filters(mock_s3):
     # Setup mock S3 response
     mock_obj = MagicMock()
     mock_obj['Body'].read.return_value = MOCK_CSV.encode('utf-8')
@@ -75,7 +75,39 @@ def test_jobs_api_experience_filters(mock_s3):
     assert len(body['jobs']) == 1
     assert body['jobs'][0]['job_id'] == '5'
 
-    print("All experience filter tests passed successfully!")
+    # Test 7: Filter by work_style=remote (jobs 2 and 4)
+    event = {"queryStringParameters": {"work_style": "remote"}}
+    res = lambda_handler(event, None)
+    assert res['statusCode'] == 200
+    body = json.loads(res['body'])
+    assert len(body['jobs']) == 2
+    assert {j['job_id'] for j in body['jobs']} == {'2', '4'}
+
+    # Test 8: Filter by work_style=hybrid (jobs 3 and 5)
+    event = {"queryStringParameters": {"work_style": "hybrid"}}
+    res = lambda_handler(event, None)
+    assert res['statusCode'] == 200
+    body = json.loads(res['body'])
+    assert len(body['jobs']) == 2
+    assert {j['job_id'] for j in body['jobs']} == {'3', '5'}
+
+    # Test 9: Filter by language_req=english_only (jobs 1, 2, 4)
+    event = {"queryStringParameters": {"language_req": "english_only"}}
+    res = lambda_handler(event, None)
+    assert res['statusCode'] == 200
+    body = json.loads(res['body'])
+    assert len(body['jobs']) == 3
+    assert {j['job_id'] for j in body['jobs']} == {'1', '2', '4'}
+
+    # Test 10: Filter by language_req=german_required (jobs 3, 5)
+    event = {"queryStringParameters": {"language_req": "german_required"}}
+    res = lambda_handler(event, None)
+    assert res['statusCode'] == 200
+    body = json.loads(res['body'])
+    assert len(body['jobs']) == 2
+    assert {j['job_id'] for j in body['jobs']} == {'3', '5'}
+
+    print("All jobs API filter tests passed successfully!")
 
 if __name__ == '__main__':
-    test_jobs_api_experience_filters()
+    test_jobs_api_filters()
