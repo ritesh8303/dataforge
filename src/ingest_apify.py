@@ -141,7 +141,19 @@ def lambda_handler(event, context):
     for source_name, task_id in tasks.items():
         print(f"Processing Apify source '{source_name}' (Task ID: {task_id})...")
         try:
-            # 1. Fetch the latest succeeded run of the task
+            # 1. Trigger a new run of the task asynchronously (runs in the background on Apify)
+            trigger_url = f"https://api.apify.com/v2/actor-tasks/{task_id}/runs"
+            try:
+                trigger_res = requests.post(trigger_url, params={"token": token}, timeout=10)
+                if trigger_res.status_code == 201:
+                    new_run_id = trigger_res.json().get('data', {}).get('id')
+                    print(f"Triggered new run {new_run_id} for task {task_id}.")
+                else:
+                    print(f"WARNING: Failed to trigger run for task {task_id}: {trigger_res.status_code} - {trigger_res.text}")
+            except Exception as te:
+                print(f"WARNING: Failed to trigger run for task {task_id}: {str(te)}")
+
+            # 2. Fetch the latest succeeded run of the task (picks up the previous day's run)
             runs_url = f"https://api.apify.com/v2/actor-tasks/{task_id}/runs"
             params = {"token": token, "limit": 10, "desc": "true"}
             res = requests.get(runs_url, params=params, timeout=15)
@@ -164,7 +176,7 @@ def lambda_handler(event, context):
             finished_at = succeeded_run.get('finishedAt', date_str)
             print(f"Found latest succeeded run {run_id} (dataset {dataset_id}) completed at {finished_at}.")
 
-            # 2. Get dataset items
+            # 3. Get dataset items
             items_url = f"https://api.apify.com/v2/datasets/{dataset_id}/items"
             items_params = {"token": token, "clean": "true"}
             items_res = requests.get(items_url, params=items_params, timeout=20)
