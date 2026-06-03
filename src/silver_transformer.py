@@ -205,28 +205,52 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
     silver_df = pd.DataFrame()
 
     try:
-        silver_df = wr.s3.read_parquet(path=silver_path, dataset=True)
-        silver_exists = True
-        print(f"Loaded {len(silver_df)} existing Silver records.")
-        if not silver_df.empty and "is_current" in silver_df.columns:
-            # Coerce partition representation to boolean
-            silver_df["is_current"] = silver_df["is_current"].astype(str).str.lower() == "true"
-        if not silver_df.empty and "job_id" in silver_df.columns:
-            is_old = ~silver_df["job_id"].astype(str).str.startswith("sem_")
-            if is_old.any():
-                print(f"Migrating {is_old.sum()} old Silver job IDs to semantic IDs...")
-                silver_df.loc[is_old, "job_id"] = silver_df.loc[is_old].apply(
-                    lambda r: (
-                        f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}"
-                    ),
-                    axis=1,
-                )
-    except wr.exceptions.NoFilesFound:
-        # Expected on first run — Silver bucket is empty
-        print("Silver layer is empty. Performing initial load.")
+        active_path = f"{silver_path}is_current=True/"
+        inactive_path = f"{silver_path}is_current=False/"
+        
+        dfs = []
+        active_objects = []
+        try:
+            active_objects = wr.s3.list_objects(path=active_path)
+        except wr.exceptions.NoFilesFound:
+            pass
+            
+        inactive_objects = []
+        try:
+            inactive_objects = wr.s3.list_objects(path=inactive_path)
+        except wr.exceptions.NoFilesFound:
+            pass
+
+        if active_objects:
+            df_active = wr.s3.read_parquet(path=active_path, dataset=True)
+            df_active["is_current"] = True
+            dfs.append(df_active)
+
+        if inactive_objects:
+            df_inactive = wr.s3.read_parquet(path=inactive_path, dataset=True)
+            df_inactive["is_current"] = False
+            dfs.append(df_inactive)
+
+        if dfs:
+            silver_df = pd.concat(dfs, ignore_index=True)
+            silver_df["is_current"] = silver_df["is_current"].astype(bool)
+            silver_exists = True
+            print(f"Loaded {len(silver_df)} existing Silver records.")
+            if not silver_df.empty and "job_id" in silver_df.columns:
+                is_old = ~silver_df["job_id"].astype(str).str.startswith("sem_")
+                if is_old.any():
+                    print(f"Migrating {is_old.sum()} old Silver job IDs to semantic IDs...")
+                    silver_df.loc[is_old, "job_id"] = silver_df.loc[is_old].apply(
+                        lambda r: (
+                            f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}"
+                        ),
+                        axis=1,
+                    )
+        else:
+            print("Silver layer is empty. Performing initial load.")
+
     except Exception as e:
-        # Re-raise anything that is NOT a missing file error
-        # so we don't silently overwrite Silver with bad data
+        # Re-raise any real error so we don't silently overwrite Silver with bad data
         raise RuntimeError(f"Failed to read Silver layer: {str(e)}") from e
 
     # Data Quality Gate Check
@@ -243,7 +267,7 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
         for col in bronze_df.select_dtypes(include="object").columns:
             bronze_df[col] = bronze_df[col].astype(str)
         wr.s3.to_parquet(
-            df=bronze_df,
+            df=bronze_df.drop(columns=["is_current"], errors="ignore"),
             path=f"{silver_path}is_current=True/",
             dataset=True,
             mode="overwrite",
@@ -296,7 +320,7 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
         active_df[col] = active_df[col].astype(str)
 
     wr.s3.to_parquet(
-        df=active_df,
+        df=active_df.drop(columns=["is_current"], errors="ignore"),
         path=f"{silver_path}is_current=True/",
         dataset=True,
         mode="overwrite",
@@ -307,7 +331,7 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
         for col in expired_records.select_dtypes(include="object").columns:
             expired_records[col] = expired_records[col].astype(str)
         wr.s3.to_parquet(
-            df=expired_records,
+            df=expired_records.drop(columns=["is_current"], errors="ignore"),
             path=f"{silver_path}is_current=False/",
             dataset=True,
             mode="append",

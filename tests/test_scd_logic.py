@@ -33,10 +33,22 @@ def test_scd_first_run():
 
     with (
         patch("src.silver_transformer.wr.s3.read_parquet", side_effect=_NoFilesFound),
+        patch("src.silver_transformer.wr.s3.list_objects", return_value=[]),
         patch("src.silver_transformer.wr.s3.to_parquet") as mock_write,
     ):
         process_scd_type_2(bronze_data, "s3://dummy/silver.parquet")
-        result_df = pd.concat([c[1]["df"] for c in mock_write.call_args_list], ignore_index=True)
+        
+        dfs = []
+        for call in mock_write.call_args_list:
+            df = call[1].get("df") if "df" in call[1] else call[0][0]
+            path = call[1].get("path") if "path" in call[1] else call[0][1]
+            df = df.copy()
+            if "is_current=True" in path:
+                df["is_current"] = True
+            elif "is_current=False" in path:
+                df["is_current"] = False
+            dfs.append(df)
+        result_df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
         assert len(result_df) == 2
         assert result_df["is_current"].all()
@@ -58,10 +70,22 @@ def test_scd_unchanged_record():
 
     with (
         patch("src.silver_transformer.wr.s3.read_parquet", return_value=existing_silver),
+        patch("src.silver_transformer.wr.s3.list_objects", side_effect=lambda path: ["file"] if "is_current=True" in path else []),
         patch("src.silver_transformer.wr.s3.to_parquet") as mock_write,
     ):
         process_scd_type_2(bronze_data, "s3://dummy/silver.parquet")
-        result_df = pd.concat([c[1]["df"] for c in mock_write.call_args_list], ignore_index=True)
+        
+        dfs = []
+        for call in mock_write.call_args_list:
+            df = call[1].get("df") if "df" in call[1] else call[0][0]
+            path = call[1].get("path") if "path" in call[1] else call[0][1]
+            df = df.copy()
+            if "is_current=True" in path:
+                df["is_current"] = True
+            elif "is_current=False" in path:
+                df["is_current"] = False
+            dfs.append(df)
+        result_df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
         current = result_df[result_df["is_current"]]
         assert len(current) == 1
@@ -75,17 +99,41 @@ def test_scd_updated_record():
 
     with (
         patch("src.silver_transformer.wr.s3.read_parquet", side_effect=_NoFilesFound),
+        patch("src.silver_transformer.wr.s3.list_objects", return_value=[]),
         patch("src.silver_transformer.wr.s3.to_parquet") as mock_write,
     ):
         process_scd_type_2(old_bronze, "s3://dummy/silver.parquet")
-        existing_silver = pd.concat([c[1]["df"] for c in mock_write.call_args_list], ignore_index=True)
+        
+        dfs = []
+        for call in mock_write.call_args_list:
+            df = call[1].get("df") if "df" in call[1] else call[0][0]
+            path = call[1].get("path") if "path" in call[1] else call[0][1]
+            df = df.copy()
+            if "is_current=True" in path:
+                df["is_current"] = True
+            elif "is_current=False" in path:
+                df["is_current"] = False
+            dfs.append(df)
+        existing_silver = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
     with (
         patch("src.silver_transformer.wr.s3.read_parquet", return_value=existing_silver),
+        patch("src.silver_transformer.wr.s3.list_objects", side_effect=lambda path: ["file"] if "is_current=True" in path else []),
         patch("src.silver_transformer.wr.s3.to_parquet") as mock_write,
     ):
         process_scd_type_2(new_bronze, "s3://dummy/silver.parquet")
-        result_df = pd.concat([c[1]["df"] for c in mock_write.call_args_list], ignore_index=True)
+        
+        dfs = []
+        for call in mock_write.call_args_list:
+            df = call[1].get("df") if "df" in call[1] else call[0][0]
+            path = call[1].get("path") if "path" in call[1] else call[0][1]
+            df = df.copy()
+            if "is_current=True" in path:
+                df["is_current"] = True
+            elif "is_current=False" in path:
+                df["is_current"] = False
+            dfs.append(df)
+        result_df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
         assert len(result_df) == 2
         expired = result_df[~result_df["is_current"]]
@@ -110,10 +158,22 @@ def test_scd_new_job_added():
 
     with (
         patch("src.silver_transformer.wr.s3.read_parquet", return_value=existing_silver),
+        patch("src.silver_transformer.wr.s3.list_objects", side_effect=lambda path: ["file"] if "is_current=True" in path else []),
         patch("src.silver_transformer.wr.s3.to_parquet") as mock_write,
     ):
         process_scd_type_2(pd.DataFrame([existing_row, new_row]), "s3://dummy/silver.parquet")
-        result_df = pd.concat([c[1]["df"] for c in mock_write.call_args_list], ignore_index=True)
+        
+        dfs = []
+        for call in mock_write.call_args_list:
+            df = call[1].get("df") if "df" in call[1] else call[0][0]
+            path = call[1].get("path") if "path" in call[1] else call[0][1]
+            df = df.copy()
+            if "is_current=True" in path:
+                df["is_current"] = True
+            elif "is_current=False" in path:
+                df["is_current"] = False
+            dfs.append(df)
+        result_df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
         current = result_df[result_df["is_current"]]
         assert len(current) == 2
