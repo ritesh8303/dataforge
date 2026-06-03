@@ -789,6 +789,7 @@
     <select id="experience_level">
       <option value="">All experience levels</option>
       <option value="Junior / Entry Level">Junior / Entry Level</option>
+      <option value="graduate_no_exp">Master Graduates (No Experience)</option>
       <option value="Working Student">Working Student</option>
       <option value="Internship">Internship</option>
       <option value="Master Thesis">Master Thesis</option>
@@ -1128,7 +1129,28 @@
         }
       }
       
-      if (expLevel && !tags.includes(expLevel.toLowerCase())) return false;
+      if (expLevel) {
+        if (expLevel === "graduate_no_exp") {
+          const isJun = tags.includes("junior / entry level") || title.includes("junior") || title.includes("entry") || title.includes("graduate");
+          const isMast = (j.description && (/\b(master|msc|m\.sc\.|degree|university|graduate|studium|hochschule)\b/i.test(j.description))) || /\b(master|msc|m\.sc\.|degree|university|graduate|studium|hochschule)\b/i.test(title);
+          let hasNoExp = true;
+          if (j.description) {
+            const descLower = j.description.toLowerCase();
+            const excludePatterns = [
+              /\b[3-9]\s*\+?\s*years?\b/,
+              /\b[3-9]\s*jahre\b/,
+              /mehrjährige\s+berufserfahrung/,
+              /several\s+years\s+of\s+experience/
+            ];
+            if (excludePatterns.some(pat => pat.test(descLower))) {
+              hasNoExp = false;
+            }
+          }
+          if (!isJun || !isMast || !hasNoExp) return false;
+        } else {
+          if (!tags.includes(expLevel.toLowerCase())) return false;
+        }
+      }
       return true;
     });
 
