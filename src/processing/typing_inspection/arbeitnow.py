@@ -2,6 +2,7 @@ from typing import Annotated, List
 from pydantic import StringConstraints, TypeAdapter
 from typing_extensions import TypedDict
 
+
 class ArbeitnowJob(TypedDict):
     slug: str
     company_name: Annotated[str, StringConstraints(strip_whitespace=True)]
@@ -12,12 +13,14 @@ class ArbeitnowJob(TypedDict):
     tags: List[str]
     job_types: List[str]
     location: str
-    created_at: int # Unix timestamp usually returned by this API
+    created_at: int  # Unix timestamp usually returned by this API
+
 
 class ArbeitnowResponse(TypedDict):
     data: List[ArbeitnowJob]
     links: dict
     meta: dict
+
 
 def validate_api_response(raw_json: dict) -> ArbeitnowResponse:
     """

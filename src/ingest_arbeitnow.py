@@ -10,14 +10,14 @@ def lambda_handler(event, context):
     """
     Fetch jobs from Arbeitnow and store them in the Bronze bucket.
     """
-    bucket = os.environ.get('BRONZE_BUCKET')
+    bucket = os.environ.get("BRONZE_BUCKET")
 
     try:
         if not bucket:
             raise ValueError("BRONZE_BUCKET environment variable is not set.")
         fetcher = ArbeitnowFetcher()
         data = fetcher.fetch_jobs()
-        df = pd.DataFrame(data['data'])
+        df = pd.DataFrame(data["data"])
 
         if df.empty:
             print("No jobs found from Arbeitnow.")
@@ -26,34 +26,32 @@ def lambda_handler(event, context):
         # --- Normalize columns ---
 
         # Stringify list columns so Parquet stays flat
-        for col in ['tags', 'job_types']:
+        for col in ["tags", "job_types"]:
             if col in df.columns:
-                df[col] = df[col].apply(
-                    lambda x: ','.join(x) if isinstance(x, list) else str(x)
-                )
+                df[col] = df[col].apply(lambda x: ",".join(x) if isinstance(x, list) else str(x))
 
         # Rename company_name -> company for unified schema
-        if 'company_name' in df.columns:
-            df.rename(columns={'company_name': 'company'}, inplace=True)
+        if "company_name" in df.columns:
+            df.rename(columns={"company_name": "company"}, inplace=True)
 
         # Rename slug -> job_id for SCD merge key
-        if 'slug' in df.columns:
-            df.rename(columns={'slug': 'job_id'}, inplace=True)
+        if "slug" in df.columns:
+            df.rename(columns={"slug": "job_id"}, inplace=True)
 
         # Keep apply URL
-        if 'url' not in df.columns:
-            df['url'] = ''
+        if "url" not in df.columns:
+            df["url"] = ""
 
         # Add remote flag explicitly as bool
-        if 'remote' in df.columns:
-            df['remote'] = df['remote'].astype(bool)
+        if "remote" in df.columns:
+            df["remote"] = df["remote"].astype(bool)
 
         # Add source and ingestion timestamp
-        df['source'] = 'arbeitnow'
-        df['ingested_at'] = datetime.now(timezone.utc).isoformat()
+        df["source"] = "arbeitnow"
+        df["ingested_at"] = datetime.now(timezone.utc).isoformat()
 
         # Partition by date
-        date_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+        date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         path = f"s3://{bucket}/arbeitnow/ingested_at={date_str}/jobs.parquet"
 
         wr.s3.to_parquet(df=df, path=path, index=False)

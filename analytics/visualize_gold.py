@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 print("Reading Gold layer from local CSV files...")
-df_loc       = pd.read_csv("analytics/top_locations.csv")
-df_source    = pd.read_csv("analytics/jobs_by_source.csv")
-df_remote    = pd.read_csv("analytics/remote_vs_onsite.csv")
-df_trend     = pd.read_csv("analytics/jobs_trend.csv")
+df_loc = pd.read_csv("analytics/top_locations.csv")
+df_source = pd.read_csv("analytics/jobs_by_source.csv")
+df_remote = pd.read_csv("analytics/remote_vs_onsite.csv")
+df_trend = pd.read_csv("analytics/jobs_trend.csv")
 df_companies = pd.read_csv("analytics/top_companies.csv")
 
 fig = plt.figure(figsize=(18, 14))
@@ -24,14 +24,20 @@ for i, v in enumerate(top10["job_count"]):
 
 # 2. Jobs by source — pie
 ax2 = fig.add_subplot(gs[0, 2])
-ax2.pie(df_source["job_count"], labels=df_source["source"],
-        autopct="%1.1f%%", colors=["#2ecc71", "#e74c3c"], startangle=90)
+ax2.pie(
+    df_source["job_count"], labels=df_source["source"], autopct="%1.1f%%", colors=["#2ecc71", "#e74c3c"], startangle=90
+)
 ax2.set_title("Jobs by Source")
 
 # 3. Remote vs onsite — pie
 ax3 = fig.add_subplot(gs[1, 0])
-ax3.pie(df_remote["job_count"], labels=df_remote["work_type"],
-        autopct="%1.1f%%", colors=["#9b59b6", "#f39c12"], startangle=90)
+ax3.pie(
+    df_remote["job_count"],
+    labels=df_remote["work_type"],
+    autopct="%1.1f%%",
+    colors=["#9b59b6", "#f39c12"],
+    startangle=90,
+)
 ax3.set_title("Remote vs On-site\n(Arbeitnow)")
 
 # 4. Jobs trend — line

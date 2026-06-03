@@ -13,12 +13,12 @@ def slugify(text):
     # Convert to lowercase and strip whitespace
     text = str(text).lower().strip()
     # Remove HTML / common tags
-    text = re.sub(r'\(m/w/d\)|\(f/m/d\)|\(w/m/d\)|\(m/f/d\)', '', text)
-    text = re.sub(r'\(senior\)|\(junior\)|\(lead\)|\(principal\)', '', text)
+    text = re.sub(r"\(m/w/d\)|\(f/m/d\)|\(w/m/d\)|\(m/f/d\)", "", text)
+    text = re.sub(r"\(senior\)|\(junior\)|\(lead\)|\(principal\)", "", text)
     # Remove common company suffixes
-    text = re.sub(r'\bgmbh\b|\binc\b|\bcorp\b|\bco\b|\bltd\b|\bag\b|\bse\b', '', text)
+    text = re.sub(r"\bgmbh\b|\binc\b|\bcorp\b|\bco\b|\bltd\b|\bag\b|\bse\b", "", text)
     # Keep only alphanumeric and spaces
-    text = re.sub(r'[^a-z0-9\s]', ' ', text)
+    text = re.sub(r"[^a-z0-9\s]", " ", text)
     # Collapse multiple spaces into one, then join with hyphens
     words = text.split()
     return "-".join(words)
@@ -28,9 +28,12 @@ def validate_jobs(df):
     """Filter out rows that don't meet core data contracts."""
     initial_count = len(df)
     valid_mask = (
-        df['title'].notna() & (df['title'].str.strip() != '') &
-        df['company'].notna() & (df['company'].str.strip() != '') &
-        df['url'].notna() & (df['url'].str.strip() != '')
+        df["title"].notna()
+        & (df["title"].str.strip() != "")
+        & df["company"].notna()
+        & (df["company"].str.strip() != "")
+        & df["url"].notna()
+        & (df["url"].str.strip() != "")
     )
     df_valid = df[valid_mask].copy()
     dropped = initial_count - len(df_valid)
@@ -45,36 +48,35 @@ def deduplicate_bronze(df):
         return df
 
     # Create semantic key
-    df['semantic_key'] = df.apply(
-        lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}",
-        axis=1
+    df["semantic_key"] = df.apply(
+        lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}", axis=1
     )
 
     # Prioritize sources: direct > arbeitnow > berlin_startups > hacker_news > ba_api
-    source_priority = {'direct': 0, 'arbeitnow': 1, 'berlin_startups': 2, 'hacker_news': 3, 'ba_api': 4}
-    df['priority'] = df['source'].map(lambda s: source_priority.get(s, 9))
-    
+    source_priority = {"direct": 0, "arbeitnow": 1, "berlin_startups": 2, "hacker_news": 3, "ba_api": 4}
+    df["priority"] = df["source"].map(lambda s: source_priority.get(s, 9))
+
     # Calculate description length to keep the most detailed posting
-    df['desc_len'] = df['description'].fillna('').astype(str).str.len()
-    
+    df["desc_len"] = df["description"].fillna("").astype(str).str.len()
+
     # Sort by priority, then description length
-    df = df.sort_values(by=['priority', 'desc_len'], ascending=[True, False])
-    
+    df = df.sort_values(by=["priority", "desc_len"], ascending=[True, False])
+
     # Drop duplicate semantic keys, keeping the highest quality source
-    df_dedup = df.drop_duplicates(subset=['semantic_key'], keep='first').copy()
-    
+    df_dedup = df.drop_duplicates(subset=["semantic_key"], keep="first").copy()
+
     # Override job_id with the semantic key for cross-source persistence matching
-    df_dedup['job_id'] = df_dedup['semantic_key']
-    
+    df_dedup["job_id"] = df_dedup["semantic_key"]
+
     # Drop temporary columns
-    df_dedup.drop(columns=['semantic_key', 'priority', 'desc_len'], inplace=True)
+    df_dedup.drop(columns=["semantic_key", "priority", "desc_len"], inplace=True)
     return df_dedup
 
 
 def lambda_handler(event, context):
-    silver_path = os.environ.get('SILVER_PATH')
-    gold_bucket = os.environ.get('GOLD_BUCKET')
-    bronze_bucket = os.environ.get('BRONZE_BUCKET')
+    silver_path = os.environ.get("SILVER_PATH")
+    gold_bucket = os.environ.get("GOLD_BUCKET")
+    bronze_bucket = os.environ.get("BRONZE_BUCKET")
 
     if not silver_path:
         raise ValueError("SILVER_PATH environment variable is not set.")
@@ -82,9 +84,9 @@ def lambda_handler(event, context):
         raise ValueError("BRONZE_BUCKET environment variable is not set.")
 
     # Determine execution date partition
-    today_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-    if isinstance(event, dict) and event.get('date'):
-        today_str = event['date']
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    if isinstance(event, dict) and event.get("date"):
+        today_str = event["date"]
         print(f"Manual date override detected: running for date {today_str}")
 
     print(f"Searching for Bronze files matching partition ingested_at={today_str}...")
@@ -100,7 +102,7 @@ def lambda_handler(event, context):
             f"s3://{bronze_bucket}/ba_api/ingested_at={today_str}/jobs.parquet",
             f"s3://{bronze_bucket}/direct_careers/ingested_at={today_str}/jobs.parquet",
             f"s3://{bronze_bucket}/hacker_news/ingested_at={today_str}/jobs.parquet",
-            f"s3://{bronze_bucket}/berlin_startups/ingested_at={today_str}/jobs.parquet"
+            f"s3://{bronze_bucket}/berlin_startups/ingested_at={today_str}/jobs.parquet",
         ]
 
     dfs = []
@@ -110,8 +112,8 @@ def lambda_handler(event, context):
                 df = wr.s3.read_parquet(path=path)
                 if not df.empty:
                     # Fill missing columns from older schemas if necessary
-                    if 'published_at' not in df.columns:
-                        df['published_at'] = ''
+                    if "published_at" not in df.columns:
+                        df["published_at"] = ""
                     dfs.append(df)
                     print(f"Successfully loaded {len(df)} jobs from {path}")
         except Exception as e:
@@ -122,30 +124,32 @@ def lambda_handler(event, context):
         return {"statusCode": 200, "body": f"No Bronze files found for date {today_str}."}
 
     bronze_df = pd.concat(dfs, ignore_index=True)
-    
+
     # Validate schemas
     bronze_df = validate_jobs(bronze_df)
-    
+
     # Filter for EU-only jobs (safety gate)
     # Sources 'ba_api', 'arbeitnow', and 'berlin_startups' are inherently EU-only.
     # Other sources ('direct', 'hacker_news', 'apify') are filtered.
     if not bronze_df.empty:
         initial_len = len(bronze_df)
+
         def row_is_in_eu(r):
-            source = r.get('source', '')
-            if source in ('ba_api', 'arbeitnow', 'berlin_startups'):
+            source = r.get("source", "")
+            if source in ("ba_api", "arbeitnow", "berlin_startups"):
                 return True
             return is_in_eu(
-                location_str=r.get('location', ''),
-                title_str=r.get('title', ''),
-                description_str=r.get('description', '')
+                location_str=r.get("location", ""),
+                title_str=r.get("title", ""),
+                description_str=r.get("description", ""),
             )
+
         bronze_df = bronze_df[bronze_df.apply(row_is_in_eu, axis=1)].copy()
         print(f"EU safety gate filtering: kept {len(bronze_df)} out of {initial_len} jobs.")
-    
+
     # Deduplicate semantically
     bronze_df = deduplicate_bronze(bronze_df)
-    
+
     if bronze_df.empty:
         print("No valid jobs left after validation and deduplication. Exiting.")
         return {"statusCode": 200, "body": "No valid jobs to process."}
@@ -173,29 +177,28 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
     now = datetime.now(timezone.utc)
 
     # Columns used to detect changes — all present after Bronze normalization
-    attr_cols = ['title', 'company', 'location', 'source', 'job_types']
+    attr_cols = ["title", "company", "location", "source", "job_types"]
 
     # Validate that job_id exists — both ingestors now produce this column
-    if 'job_id' not in bronze_df.columns:
+    if "job_id" not in bronze_df.columns:
         raise ValueError(
-            "Bronze data is missing 'job_id' column. "
-            "Ensure ingestors rename slug/refnr to job_id before writing."
+            "Bronze data is missing 'job_id' column. Ensure ingestors rename slug/refnr to job_id before writing."
         )
 
     # Ensure bronze_df job_ids are migrated to semantic IDs if they aren't already
-    is_old_bronze = ~bronze_df['job_id'].astype(str).str.startswith('sem_')
+    is_old_bronze = ~bronze_df["job_id"].astype(str).str.startswith("sem_")
     if is_old_bronze.any():
-        bronze_df.loc[is_old_bronze, 'job_id'] = bronze_df.loc[is_old_bronze].apply(
+        bronze_df.loc[is_old_bronze, "job_id"] = bronze_df.loc[is_old_bronze].apply(
             lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}",
-            axis=1
+            axis=1,
         )
 
     # 1. Prepare incoming Bronze data
     bronze_df = bronze_df.copy()
-    bronze_df['hash_key'] = generate_hash(bronze_df, attr_cols)
-    bronze_df['scd_start_date'] = now
-    bronze_df['scd_end_date'] = pd.NaT
-    bronze_df['is_current'] = True
+    bronze_df["hash_key"] = generate_hash(bronze_df, attr_cols)
+    bronze_df["scd_start_date"] = now
+    bronze_df["scd_end_date"] = pd.NaT
+    bronze_df["is_current"] = True
 
     # 2. Load existing Silver data
     silver_exists = False
@@ -205,13 +208,15 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
         silver_df = wr.s3.read_parquet(path=silver_path, dataset=True)
         silver_exists = True
         print(f"Loaded {len(silver_df)} existing Silver records.")
-        if not silver_df.empty and 'job_id' in silver_df.columns:
-            is_old = ~silver_df['job_id'].astype(str).str.startswith('sem_')
+        if not silver_df.empty and "job_id" in silver_df.columns:
+            is_old = ~silver_df["job_id"].astype(str).str.startswith("sem_")
             if is_old.any():
                 print(f"Migrating {is_old.sum()} old Silver job IDs to semantic IDs...")
-                silver_df.loc[is_old, 'job_id'] = silver_df.loc[is_old].apply(
-                    lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}",
-                    axis=1
+                silver_df.loc[is_old, "job_id"] = silver_df.loc[is_old].apply(
+                    lambda r: (
+                        f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}"
+                    ),
+                    axis=1,
                 )
     except wr.exceptions.NoFilesFound:
         # Expected on first run — Silver bucket is empty
@@ -223,82 +228,61 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
 
     # First run — write everything directly
     if not silver_exists or silver_df.empty:
-        for col in bronze_df.select_dtypes(include='object').columns:
+        for col in bronze_df.select_dtypes(include="object").columns:
             bronze_df[col] = bronze_df[col].astype(str)
-        wr.s3.to_parquet(
-            df=bronze_df,
-            path=silver_path,
-            dataset=True,
-            mode="overwrite"
-        )
+        wr.s3.to_parquet(df=bronze_df, path=silver_path, dataset=True, mode="overwrite")
         print(f"Initial load complete. Wrote {len(bronze_df)} records to Silver.")
         return
 
     # 3. Separate current from historical Silver records
-    current_silver = silver_df[silver_df['is_current']].copy()
-    historical_records = silver_df[~silver_df['is_current']].copy()
+    current_silver = silver_df[silver_df["is_current"]].copy()
+    historical_records = silver_df[~silver_df["is_current"]].copy()
 
     # 4. Detect changes by merging on job_id
     merged = pd.merge(
-        current_silver[['job_id', 'hash_key']],
-        bronze_df[['job_id', 'hash_key']],
-        on='job_id',
-        how='outer',
-        suffixes=('_old', '_new')
+        current_silver[["job_id", "hash_key"]],
+        bronze_df[["job_id", "hash_key"]],
+        on="job_id",
+        how="outer",
+        suffixes=("_old", "_new"),
     )
 
     # Case A — job exists in Silver but hash changed → expire old record
     changed_mask = (
-        merged['hash_key_old'].notna() &
-        merged['hash_key_new'].notna() &
-        (merged['hash_key_old'] != merged['hash_key_new'])
+        merged["hash_key_old"].notna()
+        & merged["hash_key_new"].notna()
+        & (merged["hash_key_old"] != merged["hash_key_new"])
     )
-    changed_ids = merged.loc[changed_mask, 'job_id'].tolist()
+    changed_ids = merged.loc[changed_mask, "job_id"].tolist()
 
-    expired_records = current_silver[
-        current_silver['job_id'].isin(changed_ids)
-    ].copy()
-    expired_records['is_current'] = False
-    expired_records['scd_end_date'] = now
+    expired_records = current_silver[current_silver["job_id"].isin(changed_ids)].copy()
+    expired_records["is_current"] = False
+    expired_records["scd_end_date"] = now
 
     # Case B — new job_id not in Silver at all → insert
-    new_mask = merged['hash_key_old'].isna()
-    new_ids = merged.loc[new_mask, 'job_id'].tolist()
+    new_mask = merged["hash_key_old"].isna()
+    new_ids = merged.loc[new_mask, "job_id"].tolist()
 
     # New inserts = brand new jobs + updated versions of changed jobs
     insert_ids = set(new_ids + changed_ids)
-    new_inserts = bronze_df[bronze_df['job_id'].isin(insert_ids)].copy()
+    new_inserts = bronze_df[bronze_df["job_id"].isin(insert_ids)].copy()
 
     # 5. Unchanged current records — keep as-is
-    unchanged_silver = current_silver[
-        ~current_silver['job_id'].isin(changed_ids)
-    ].copy()
+    unchanged_silver = current_silver[~current_silver["job_id"].isin(changed_ids)].copy()
 
     # 6. Build final dataset
-    final_df = pd.concat(
-        [historical_records, unchanged_silver, expired_records, new_inserts],
-        ignore_index=True
-    )
+    final_df = pd.concat([historical_records, unchanged_silver, expired_records, new_inserts], ignore_index=True)
 
     # 7. Deduplication safety net — remove any accidental duplicates
-    final_df = final_df.sort_values(
-        by=['job_id', 'scd_start_date'], ascending=[True, False]
-    )
-    final_df = final_df.drop_duplicates(
-        subset=['job_id', 'is_current', 'scd_start_date'], keep='first'
-    )
+    final_df = final_df.sort_values(by=["job_id", "scd_start_date"], ascending=[True, False])
+    final_df = final_df.drop_duplicates(subset=["job_id", "is_current", "scd_start_date"], keep="first")
 
     # 8. Write back to Silver S3 (no Glue catalog dependency)
     # Cast object columns to string to avoid pyarrow categorical ordering errors
-    for col in final_df.select_dtypes(include='object').columns:
+    for col in final_df.select_dtypes(include="object").columns:
         final_df[col] = final_df[col].astype(str)
 
-    wr.s3.to_parquet(
-        df=final_df,
-        path=silver_path,
-        dataset=True,
-        mode="overwrite"
-    )
+    wr.s3.to_parquet(df=final_df, path=silver_path, dataset=True, mode="overwrite")
 
     print(
         f"SCD Type 2 complete. "
@@ -309,14 +293,18 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
 
     # Write pipeline stats to Gold so dashboard can show real-time SCD metrics
     if gold_bucket:
-        today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-        stats = pd.DataFrame([{
-            'date':           today,
-            'new_jobs':       len(new_ids),
-            'updated_jobs':   len(changed_ids),
-            'unchanged_jobs': len(unchanged_silver),
-            'total_silver':   len(final_df),
-            'run_at':         datetime.now(timezone.utc).isoformat(),
-        }])
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        stats = pd.DataFrame(
+            [
+                {
+                    "date": today,
+                    "new_jobs": len(new_ids),
+                    "updated_jobs": len(changed_ids),
+                    "unchanged_jobs": len(unchanged_silver),
+                    "total_silver": len(final_df),
+                    "run_at": datetime.now(timezone.utc).isoformat(),
+                }
+            ]
+        )
         wr.s3.to_csv(stats, path=f"s3://{gold_bucket}/pipeline_stats.csv", index=False)
         print(f"Pipeline stats written to Gold: new={len(new_ids)}, updated={len(changed_ids)}")

@@ -1,43 +1,61 @@
 # dataforge
 
-A serverless Data Lakehouse built on AWS for processing German data job market data.
+A serverless Data Lakehouse built on AWS for processing and analyzing German and European data job market vacancies.
 
 ## Architecture
 
 ```
-8AM UTC Daily (EventBridge)
+EventBridge (Daily Schedules)
   ├── dataforge-ingestor        → Arbeitnow API (paginated, ~900 jobs)
   ├── dataforge-ba-ingestor     → BA Jobsuche API (8 queries, ~5000 jobs)
   ├── dataforge-company-ingestor→ Direct ATS career feeds (configurable companies)
-  │         ↓ S3 trigger (.parquet)
-  ├── dataforge-transformer     → SCD Type 2 → Silver Layer
-  │         ↓ S3 trigger (.parquet)
-  └── dataforge-gold-generator  → 7 Gold CSVs (auto-refreshed)
+  └── dataforge-apify-ingestor  → Apify LinkedIn & Indeed scraping runs
+            │
+            ▼ S3 upload (.parquet)
+      dataforge-bronze-dev-eu-central-1 (Bronze Bucket)
+            │
+            ▼ EventBridge (cron(30 7,12,16 * * ? *))
+      dataforge-transformer     → SCD Type 2 → Silver Layer (.parquet)
+            │
+            ▼ S3 trigger (ObjectCreated)
+      dataforge-gold-generator  → 11 Gold CSVs (.csv)
+            │
+            ▼ S3 upload & GitHub Actions publishing
+      GitHub Pages Website      ← Static UI hosted from /docs
+            │
+            ▼ Dynamic API Requests
+      AWS API Gateway           → dataforge-metrics & dataforge-jobs-api (Lambdas)
 ```
 
 ### Layers
-- **Bronze** — Raw Parquet files partitioned by date, one file per source per day
-- **Silver** — Deduplicated, SCD Type 2 history tracking all job changes over time
-- **Gold** — 7 analytics-ready CSVs refreshed automatically after every Silver update
+- **Bronze** — Raw Parquet files partitioned by date, one file per source per day.
+- **Silver** — Deduplicated, SCD Type 2 history tracking all job changes, creations, and expirations over time.
+- **Gold** — 11 analytics-ready CSVs refreshed automatically after every Silver update, pushed to S3 and compiled for visualization.
 
 ### Gold Outputs
 | File | Description |
 |---|---|
-| `all_jobs.csv` | All active jobs with title, company, location, source, date |
-| `top_locations.csv` | Top 20 German cities by job count |
+| `all_jobs.csv` | All active jobs with title, company, location, source, date (trimmed descriptions) |
+| `expired_jobs.csv` | Historically expired jobs with duration dates (`date_added`, `date_expired`) |
+| `top_locations.csv` | Top 20 European cities by job count (cleaned) |
 | `top_companies.csv` | Top 20 hiring companies |
-| `jobs_by_source.csv` | Arbeitnow vs BA API breakdown |
-| `remote_vs_onsite.csv` | Remote vs on-site for sources with remote signals |
-| `jobs_trend.csv` | New jobs added per day |
-| `active_vs_expired.csv` | Active vs historically expired jobs |
+| `jobs_by_source.csv` | Active postings breakdown by ingestion source |
+| `remote_vs_onsite.csv` | Remote vs on-site breakdown for sources with remote signals |
+| `jobs_trend.csv` | True new jobs added per day based on their initial appearance date |
+| `active_vs_expired.csv` | Database summary tracking active vs historically expired jobs |
+| `top_skills.csv` | Top 20 extracted technical skills from tags and job descriptions |
+| `description_insights.csv`| Stopword ratios, home office mentions, and benefit visibility statistics |
+| `pipeline_stats.csv` | Ingestion metrics tracking new, updated, and unchanged jobs per run |
 
 ## Tech Stack
 - **Infrastructure**: Terraform (IaC) — remote state on S3 + DynamoDB locking
-- **Compute**: AWS Lambda (Python 3.11) — 4 functions
+- **Presentation**: **GitHub Pages** static site hosting (`/docs` directory) consuming serverless REST APIs
+- **Compute**: AWS Lambda (Python 3.11) — 8 functions (4 ingestors, 1 transformer, 1 gold generator, 2 dashboard API functions)
+- **API Entry**: AWS API Gateway (HTTP APIs) routing requests to the metrics and jobs search Lambdas
 - **Storage**: AWS S3 — Bronze, Silver, Gold buckets
-- **Data Processing**: Pandas, AWS SDK for Pandas (awswrangler), Pydantic
+- **Data Processing**: Pandas, AWS SDK for Pandas (awswrangler)
 - **Monitoring**: CloudWatch Alarms → SNS email, SQS DLQ on all Lambdas
-- **CI**: GitHub Actions
+- **CI/CD**: GitHub Actions (runs test suites, generates reports, deploys Pages)
 
 ## Data Sources
 - **Arbeitnow** — Public German job board API, no auth required
@@ -47,6 +65,31 @@ A serverless Data Lakehouse built on AWS for processing German data job market d
 - **Direct company feeds** — Public career-page feeds from Greenhouse, Lever,
   Ashby, Workable, SmartRecruiters, Recruitee, Personio XML, Workday CXS,
   Comeet, and Pinpoint.
+- **Apify scraper runs** — LinkedIn and Indeed search task scraping.
+
+### Apify Scrapers Integration
+
+The pipeline integrates with **Apify** to scrape tech job listings from platforms that do not offer open public APIs (such as LinkedIn and Indeed).
+
+1. **Orchestration & Asynchronous Runs:**
+   - In order to stay within Lambda execution timeout limits, the scraper runs are decoupled from ingestion.
+   - When the `dataforge-apify-ingestor` Lambda is triggered daily, it makes a POST request to trigger a new run of the configured actor tasks on the Apify platform.
+   - It then queries the history of runs to fetch and download the default dataset items from the *last completed successful run* (providing a 1-day lag buffer, ensuring fast Lambda execution).
+2. **SSM Configuration:**
+   - Apify credentials and tasks are configured in the SSM Parameter Store under the key `/dataforge/dev/apify_credentials` as a JSON object:
+     ```json
+     {
+       "apify_token": "apify_api_your_token_here",
+       "tasks": {
+         "linkedin": "task_id_for_linkedin",
+         "indeed": "task_id_for_indeed"
+       }
+     }
+     ```
+3. **Data Normalization & EU Filter:**
+   - Scraped job postings vary significantly in schema. The ingestor normalizes different Indeed and LinkedIn scraper formats to the unified schema.
+   - All scraped jobs are validated through the strict EU location safety gate before writing to S3 Bronze to filter out any international remote postings.
+
 
 Direct company targets can be supplied without changing code:
 
@@ -74,10 +117,10 @@ Runs entirely within the **AWS Free Tier**:
 ## Running Locally
 
 ```bash
-# Refresh gold CSVs from Silver
+# Refresh gold CSVs from Silver S3
 python analytics/query_gold.py
 
-# Generate dashboard visualization
+# Generate dashboard visualization image
 python analytics/visualize_gold.py
 
 # Run E2E pipeline health check

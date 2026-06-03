@@ -11,14 +11,20 @@ sys.path = [p for p in sys.path if os.path.normcase(os.path.abspath(p)) != _src_
 sys.path.append(_src_normalized)
 
 # Purge any src/-based modules already cached
-_to_remove = [k for k, v in sys.modules.items()
-              if hasattr(v, '__file__') and v.__file__ and os.path.normcase(os.path.abspath(v.__file__)).startswith(_src_normalized)]
+_to_remove = [
+    k
+    for k, v in sys.modules.items()
+    if hasattr(v, "__file__")
+    and v.__file__
+    and os.path.normcase(os.path.abspath(v.__file__)).startswith(_src_normalized)
+]
 for k in _to_remove:
     del sys.modules[k]
 
 import pytest
 import boto3
 from moto import mock_aws
+
 
 @pytest.fixture
 def sample_input_data():
@@ -27,26 +33,29 @@ def sample_input_data():
         "records": [
             {"id": 1, "name": "Alice", "value": 100},
             {"id": 2, "name": "Bob", "value": 200},
-            {"id": 3, "name": "Charlie", "value": 300}
+            {"id": 3, "name": "Charlie", "value": 300},
         ]
     }
+
 
 @pytest.fixture
 def sample_csv_content():
     """Provides sample CSV content string."""
     return "id,name,value\n1,Alice,100\n2,Bob,200\n"
 
+
 @pytest.fixture
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
-    os.environ['AWS_ACCESS_KEY_ID'] = 'testing'
-    os.environ['AWS_SECRET_ACCESS_KEY'] = 'testing'
-    os.environ['AWS_SECURITY_TOKEN'] = 'testing'
-    os.environ['AWS_SESSION_TOKEN'] = 'testing'
-    os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
+    os.environ["AWS_ACCESS_KEY_ID"] = "testing"
+    os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
+    os.environ["AWS_SECURITY_TOKEN"] = "testing"
+    os.environ["AWS_SESSION_TOKEN"] = "testing"
+    os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
+
 
 @pytest.fixture
 def s3_client(aws_credentials):
     """Create a S3 client for testing."""
     with mock_aws():
-        yield boto3.client('s3', region_name='us-east-1')
+        yield boto3.client("s3", region_name="us-east-1")

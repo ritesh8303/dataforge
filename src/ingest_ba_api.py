@@ -10,7 +10,7 @@ def lambda_handler(event, context):
     """
     Fetch jobs from BA API using OAuth2 and store them in the Bronze bucket.
     """
-    bucket = os.environ.get('BRONZE_BUCKET')
+    bucket = os.environ.get("BRONZE_BUCKET")
 
     try:
         if not bucket:
@@ -45,9 +45,9 @@ def lambda_handler(event, context):
         seen_ids = set()
         for query in queries:
             result = fetcher.fetch_jobs(query=query)
-            for job in result['stellenangebote']:
-                if job['refnr'] not in seen_ids:
-                    seen_ids.add(job['refnr'])
+            for job in result["stellenangebote"]:
+                if job["refnr"] not in seen_ids:
+                    seen_ids.add(job["refnr"])
                     all_jobs.append(job)
             print(f"Query '{query}': {len(result['stellenangebote'])} jobs fetched")
 
@@ -60,33 +60,34 @@ def lambda_handler(event, context):
         # --- Normalize columns ---
 
         # Flatten nested arbeitsort dict into separate columns
-        if 'arbeitsort' in df.columns:
-            arbeitsort_df = df['arbeitsort'].apply(
-                lambda x: x if isinstance(x, dict) else {}
-            ).apply(pd.Series)
-            df['location'] = arbeitsort_df.get('city', pd.Series([''] * len(df)))
-            df['zip_code'] = arbeitsort_df.get('zip_code', pd.Series([''] * len(df)))
-            df['state'] = arbeitsort_df.get('state', pd.Series([''] * len(df)))
-            df.drop(columns=['arbeitsort'], inplace=True)
+        if "arbeitsort" in df.columns:
+            arbeitsort_df = df["arbeitsort"].apply(lambda x: x if isinstance(x, dict) else {}).apply(pd.Series)
+            df["location"] = arbeitsort_df.get("city", pd.Series([""] * len(df)))
+            df["zip_code"] = arbeitsort_df.get("zip_code", pd.Series([""] * len(df)))
+            df["state"] = arbeitsort_df.get("state", pd.Series([""] * len(df)))
+            df.drop(columns=["arbeitsort"], inplace=True)
 
         # Rename German field names to unified English schema
-        df.rename(columns={
-            'refnr':              'job_id',
-            'titel':              'title',
-            'arbeitgeber':        'company',
-            'eintrittsdatum':     'start_date_raw',
-            'modifikationsdatum': 'modified_at',
-        }, inplace=True)
+        df.rename(
+            columns={
+                "refnr": "job_id",
+                "titel": "title",
+                "arbeitgeber": "company",
+                "eintrittsdatum": "start_date_raw",
+                "modifikationsdatum": "modified_at",
+            },
+            inplace=True,
+        )
 
         # Construct apply URL from job_id (refnr)
-        df['url'] = 'https://www.arbeitsagentur.de/jobsuche/jobdetail/' + df['job_id'].astype(str)
+        df["url"] = "https://www.arbeitsagentur.de/jobsuche/jobdetail/" + df["job_id"].astype(str)
 
         # Add source and ingestion timestamp
-        df['source'] = 'ba_api'
-        df['ingested_at'] = datetime.now(timezone.utc).isoformat()
+        df["source"] = "ba_api"
+        df["ingested_at"] = datetime.now(timezone.utc).isoformat()
 
         # Partition by date
-        date_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+        date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         path = f"s3://{bucket}/ba_api/ingested_at={date_str}/jobs.parquet"
 
         wr.s3.to_parquet(df=df, path=path, index=False)

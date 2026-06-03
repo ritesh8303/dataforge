@@ -151,9 +151,17 @@ def _normalize_job(
     salary: Any = "",
 ) -> dict[str, Any]:
     location_text = _clean_text(location)
-    job_type_text = ",".join(_clean_text(item) for item in job_types if _clean_text(item)) if isinstance(job_types, list) else _clean_text(job_types)
+    job_type_text = (
+        ",".join(_clean_text(item) for item in job_types if _clean_text(item))
+        if isinstance(job_types, list)
+        else _clean_text(job_types)
+    )
     department_text = _clean_text(department)
-    tag_text = ",".join(_clean_text(item) for item in tags if _clean_text(item)) if isinstance(tags, list) else _clean_text(tags)
+    tag_text = (
+        ",".join(_clean_text(item) for item in tags if _clean_text(item))
+        if isinstance(tags, list)
+        else _clean_text(tags)
+    )
     remote_value = _bool(remote) or _looks_remote(location_text, job_type_text, tag_text)
     title_text = _clean_text(title)
     url_text = _clean_text(url)
@@ -300,6 +308,7 @@ _SLUG_EXTRACTORS = {
     "workday": _extract_workday_slug,
 }
 
+
 def _normalize_target(entry: dict[str, Any]) -> dict[str, Any]:
     target = dict(entry)
     if "ats" not in target and target.get("careers_url"):
@@ -327,18 +336,20 @@ def fetch_greenhouse(entry: dict[str, Any]) -> list[dict[str, Any]]:
     for job in jobs:
         departments = job.get("departments") or []
         department = _join_parts([d.get("name") for d in departments if isinstance(d, dict)])
-        results.append(_normalize_job(
-            ats="greenhouse",
-            slug=slug,
-            company=company,
-            raw_id=job.get("id"),
-            title=job.get("title"),
-            location=(job.get("location") or {}).get("name", ""),
-            url=job.get("absolute_url", ""),
-            description=job.get("content", ""),
-            department=department,
-            modified_at=job.get("updated_at", ""),
-        ))
+        results.append(
+            _normalize_job(
+                ats="greenhouse",
+                slug=slug,
+                company=company,
+                raw_id=job.get("id"),
+                title=job.get("title"),
+                location=(job.get("location") or {}).get("name", ""),
+                url=job.get("absolute_url", ""),
+                description=job.get("content", ""),
+                department=department,
+                modified_at=job.get("updated_at", ""),
+            )
+        )
     return results
 
 
@@ -360,22 +371,24 @@ def fetch_lever(entry: dict[str, Any]) -> list[dict[str, Any]]:
             categories = job.get("categories") or {}
             location = categories.get("location") or _join_parts(categories.get("allLocations") or [])
             salary = job.get("salaryDescriptionPlain") or job.get("salaryDescription") or ""
-            results.append(_normalize_job(
-                ats="lever",
-                slug=slug,
-                company=company,
-                raw_id=job.get("id"),
-                title=job.get("text"),
-                location=location,
-                url=job.get("hostedUrl") or job.get("applyUrl", ""),
-                description=job.get("descriptionPlain") or job.get("description") or "",
-                job_types=categories.get("commitment", ""),
-                department=categories.get("department") or categories.get("team", ""),
-                published_at=job.get("createdAt", ""),
-                remote=job.get("workplaceType", ""),
-                tags=[categories.get("team", ""), categories.get("level", "")],
-                salary=salary,
-            ))
+            results.append(
+                _normalize_job(
+                    ats="lever",
+                    slug=slug,
+                    company=company,
+                    raw_id=job.get("id"),
+                    title=job.get("text"),
+                    location=location,
+                    url=job.get("hostedUrl") or job.get("applyUrl", ""),
+                    description=job.get("descriptionPlain") or job.get("description") or "",
+                    job_types=categories.get("commitment", ""),
+                    department=categories.get("department") or categories.get("team", ""),
+                    published_at=job.get("createdAt", ""),
+                    remote=job.get("workplaceType", ""),
+                    tags=[categories.get("team", ""), categories.get("level", "")],
+                    salary=salary,
+                )
+            )
 
         if len(jobs) < limit:
             break
@@ -394,22 +407,24 @@ def fetch_ashby(entry: dict[str, Any]) -> list[dict[str, Any]]:
         if job.get("isListed") is False and not entry.get("include_unlisted", False):
             continue
         compensation = job.get("compensation") or {}
-        results.append(_normalize_job(
-            ats="ashby",
-            slug=slug,
-            company=company,
-            raw_id=job.get("id") or job.get("jobUrl"),
-            title=job.get("title"),
-            location=job.get("location", ""),
-            url=job.get("jobUrl") or job.get("applyUrl", ""),
-            description=job.get("descriptionPlain") or job.get("descriptionHtml", ""),
-            job_types=job.get("employmentType", ""),
-            department=job.get("department") or job.get("team", ""),
-            published_at=job.get("publishedAt", ""),
-            remote=job.get("isRemote") or job.get("workplaceType", ""),
-            salary=compensation.get("scrapeableCompensationSalarySummary")
-            or compensation.get("compensationTierSummary", ""),
-        ))
+        results.append(
+            _normalize_job(
+                ats="ashby",
+                slug=slug,
+                company=company,
+                raw_id=job.get("id") or job.get("jobUrl"),
+                title=job.get("title"),
+                location=job.get("location", ""),
+                url=job.get("jobUrl") or job.get("applyUrl", ""),
+                description=job.get("descriptionPlain") or job.get("descriptionHtml", ""),
+                job_types=job.get("employmentType", ""),
+                department=job.get("department") or job.get("team", ""),
+                published_at=job.get("publishedAt", ""),
+                remote=job.get("isRemote") or job.get("workplaceType", ""),
+                salary=compensation.get("scrapeableCompensationSalarySummary")
+                or compensation.get("compensationTierSummary", ""),
+            )
+        )
     return results
 
 
@@ -425,34 +440,40 @@ def fetch_workable(entry: dict[str, Any]) -> list[dict[str, Any]]:
     for job in jobs:
         location = job.get("location")
         if isinstance(location, dict):
-            location_text = location.get("location_str") or _join_parts([
-                location.get("city"),
-                location.get("region"),
-                location.get("country"),
-            ])
+            location_text = location.get("location_str") or _join_parts(
+                [
+                    location.get("city"),
+                    location.get("region"),
+                    location.get("country"),
+                ]
+            )
             remote = location.get("telecommuting") or location.get("workplace_type", "")
         else:
             location_text = location or _join_parts([job.get("city"), job.get("country")])
             remote = job.get("telecommuting", False)
         salary = job.get("salary")
         if isinstance(salary, dict):
-            salary = _join_parts([salary.get("salary_from"), salary.get("salary_to"), salary.get("salary_currency")], " ")
+            salary = _join_parts(
+                [salary.get("salary_from"), salary.get("salary_to"), salary.get("salary_currency")], " "
+            )
 
-        results.append(_normalize_job(
-            ats="workable",
-            slug=slug,
-            company=company or account_name or slug,
-            raw_id=job.get("shortcode") or job.get("id"),
-            title=job.get("title") or job.get("full_title"),
-            location=location_text,
-            url=job.get("url") or job.get("shortlink") or job.get("application_url", ""),
-            description=job.get("description") or job.get("full_description", ""),
-            job_types=job.get("employment_type", ""),
-            department=job.get("department", ""),
-            published_at=job.get("published_on") or job.get("created_at", ""),
-            remote=remote,
-            salary=salary or "",
-        ))
+        results.append(
+            _normalize_job(
+                ats="workable",
+                slug=slug,
+                company=company or account_name or slug,
+                raw_id=job.get("shortcode") or job.get("id"),
+                title=job.get("title") or job.get("full_title"),
+                location=location_text,
+                url=job.get("url") or job.get("shortlink") or job.get("application_url", ""),
+                description=job.get("description") or job.get("full_description", ""),
+                job_types=job.get("employment_type", ""),
+                department=job.get("department", ""),
+                published_at=job.get("published_on") or job.get("created_at", ""),
+                remote=remote,
+                salary=salary or "",
+            )
+        )
     return results
 
 
@@ -479,31 +500,33 @@ def fetch_smartrecruiters(entry: dict[str, Any]) -> list[dict[str, Any]]:
             break
 
         for job in page:
-            detail = _smartrecruiters_detail(slug, job.get("id")) if (FETCH_DETAILS or entry.get("fetch_details")) else {}
+            detail = (
+                _smartrecruiters_detail(slug, job.get("id")) if (FETCH_DETAILS or entry.get("fetch_details")) else {}
+            )
             source = detail or job
             loc = source.get("location") or {}
             description = ""
             sections = (detail.get("jobAd") or {}).get("sections") or {}
             if sections:
                 description = " ".join(
-                    _clean_text(section.get("text", ""))
-                    for section in sections.values()
-                    if isinstance(section, dict)
+                    _clean_text(section.get("text", "")) for section in sections.values() if isinstance(section, dict)
                 )
-            results.append(_normalize_job(
-                ats="smartrecruiters",
-                slug=slug,
-                company=company or (source.get("company") or {}).get("name", ""),
-                raw_id=source.get("id") or source.get("uuid"),
-                title=source.get("name"),
-                location=_join_parts([loc.get("city"), loc.get("region"), loc.get("country")]),
-                url=detail.get("applyUrl") or f"https://jobs.smartrecruiters.com/{slug}/{job.get('id')}",
-                description=description,
-                job_types=(source.get("typeOfEmployment") or {}).get("label", ""),
-                department=(source.get("department") or {}).get("label", ""),
-                published_at=source.get("releasedDate", ""),
-                remote=loc.get("remote", False),
-            ))
+            results.append(
+                _normalize_job(
+                    ats="smartrecruiters",
+                    slug=slug,
+                    company=company or (source.get("company") or {}).get("name", ""),
+                    raw_id=source.get("id") or source.get("uuid"),
+                    title=source.get("name"),
+                    location=_join_parts([loc.get("city"), loc.get("region"), loc.get("country")]),
+                    url=detail.get("applyUrl") or f"https://jobs.smartrecruiters.com/{slug}/{job.get('id')}",
+                    description=description,
+                    job_types=(source.get("typeOfEmployment") or {}).get("label", ""),
+                    department=(source.get("department") or {}).get("label", ""),
+                    published_at=source.get("releasedDate", ""),
+                    remote=loc.get("remote", False),
+                )
+            )
 
         if len(page) < limit:
             break
@@ -518,23 +541,26 @@ def fetch_recruitee(entry: dict[str, Any]) -> list[dict[str, Any]]:
     results = []
 
     for job in data.get("offers", []):
-        results.append(_normalize_job(
-            ats="recruitee",
-            slug=slug,
-            company=company or job.get("company_name", ""),
-            raw_id=job.get("id") or job.get("guid") or job.get("slug"),
-            title=job.get("title"),
-            location=job.get("location") or _join_parts([job.get("city"), job.get("state_name"), job.get("country")]),
-            url=job.get("careers_url") or job.get("careers_apply_url", ""),
-            description=_join_parts([job.get("description"), job.get("requirements")], "\n"),
-            job_types=job.get("employment_type") or job.get("employment_type_code", ""),
-            department=job.get("department", ""),
-            published_at=job.get("published_at") or job.get("created_at", ""),
-            modified_at=job.get("updated_at", ""),
-            remote=job.get("remote", False),
-            tags=job.get("tags", []),
-            salary=job.get("salary", ""),
-        ))
+        results.append(
+            _normalize_job(
+                ats="recruitee",
+                slug=slug,
+                company=company or job.get("company_name", ""),
+                raw_id=job.get("id") or job.get("guid") or job.get("slug"),
+                title=job.get("title"),
+                location=job.get("location")
+                or _join_parts([job.get("city"), job.get("state_name"), job.get("country")]),
+                url=job.get("careers_url") or job.get("careers_apply_url", ""),
+                description=_join_parts([job.get("description"), job.get("requirements")], "\n"),
+                job_types=job.get("employment_type") or job.get("employment_type_code", ""),
+                department=job.get("department", ""),
+                published_at=job.get("published_at") or job.get("created_at", ""),
+                modified_at=job.get("updated_at", ""),
+                remote=job.get("remote", False),
+                tags=job.get("tags", []),
+                salary=job.get("salary", ""),
+            )
+        )
     return results
 
 
@@ -547,34 +573,38 @@ def fetch_personio(entry: dict[str, Any]) -> list[dict[str, Any]]:
     results = []
 
     for job in list(root):
-        fields = {
-            child.tag.split("}", 1)[-1].lower(): _clean_text("".join(child.itertext()))
-            for child in list(job)
-        }
+        fields = {child.tag.split("}", 1)[-1].lower(): _clean_text("".join(child.itertext())) for child in list(job)}
         raw_id = fields.get("id") or fields.get("jobid") or fields.get("requisitionid") or fields.get("name")
         title = fields.get("name") or fields.get("title") or fields.get("jobtitle")
-        location = fields.get("office") or fields.get("location") or _join_parts([fields.get("city"), fields.get("country")])
-        description = _join_parts([
-            fields.get("jobdescription"),
-            fields.get("description"),
-            fields.get("profile"),
-            fields.get("recruitingcategory"),
-        ], "\n")
-        results.append(_normalize_job(
-            ats="personio",
-            slug=slug,
-            company=company or fields.get("company", ""),
-            raw_id=raw_id,
-            title=title,
-            location=location,
-            url=fields.get("url") or f"https://{slug}.jobs.personio.com/job/{raw_id}",
-            description=description,
-            job_types=fields.get("employmenttype") or fields.get("schedule"),
-            department=fields.get("department", ""),
-            published_at=fields.get("createdat") or fields.get("publishedat", ""),
-            modified_at=fields.get("updatedat", ""),
-            remote=fields.get("workplace") == "remote" or _looks_remote(location, description),
-        ))
+        location = (
+            fields.get("office") or fields.get("location") or _join_parts([fields.get("city"), fields.get("country")])
+        )
+        description = _join_parts(
+            [
+                fields.get("jobdescription"),
+                fields.get("description"),
+                fields.get("profile"),
+                fields.get("recruitingcategory"),
+            ],
+            "\n",
+        )
+        results.append(
+            _normalize_job(
+                ats="personio",
+                slug=slug,
+                company=company or fields.get("company", ""),
+                raw_id=raw_id,
+                title=title,
+                location=location,
+                url=fields.get("url") or f"https://{slug}.jobs.personio.com/job/{raw_id}",
+                description=description,
+                job_types=fields.get("employmenttype") or fields.get("schedule"),
+                department=fields.get("department", ""),
+                published_at=fields.get("createdat") or fields.get("publishedat", ""),
+                modified_at=fields.get("updatedat", ""),
+                remote=fields.get("workplace") == "remote" or _looks_remote(location, description),
+            )
+        )
     return [job for job in results if job["title"]]
 
 
@@ -597,7 +627,12 @@ def fetch_workday(entry: dict[str, Any]) -> list[dict[str, Any]]:
             f"{api_base}/jobs",
             method="POST",
             headers={"Content-Type": "application/json"},
-            body={"appliedFacets": entry.get("applied_facets", {}), "limit": limit, "offset": offset, "searchText": entry.get("search_text", "")},
+            body={
+                "appliedFacets": entry.get("applied_facets", {}),
+                "limit": limit,
+                "offset": offset,
+                "searchText": entry.get("search_text", ""),
+            },
         )
         page = data.get("jobPostings", [])
         if not page:
@@ -614,20 +649,27 @@ def fetch_workday(entry: dict[str, Any]) -> list[dict[str, Any]]:
             external_path = job.get("externalPath") or info.get("externalUrl", "")
             locations = [info.get("location") or job.get("locationsText")]
             locations.extend(info.get("additionalLocations") or [])
-            results.append(_normalize_job(
-                ats="workday",
-                slug=tenant,
-                company=company,
-                raw_id=info.get("jobReqId") or info.get("id") or (job.get("bulletFields") or [""])[0] or external_path,
-                title=info.get("title") or job.get("title"),
-                location=_join_parts(locations),
-                url=info.get("externalUrl") or f"{public_base}{external_path}",
-                description=info.get("jobDescription", ""),
-                job_types=info.get("timeType", ""),
-                department=info.get("jobRequisitionLocation", {}).get("descriptor", "") if isinstance(info.get("jobRequisitionLocation"), dict) else "",
-                published_at=info.get("startDate") or info.get("postedOn") or job.get("postedOn", ""),
-                remote=info.get("remoteType") or job.get("remoteType", ""),
-            ))
+            results.append(
+                _normalize_job(
+                    ats="workday",
+                    slug=tenant,
+                    company=company,
+                    raw_id=info.get("jobReqId")
+                    or info.get("id")
+                    or (job.get("bulletFields") or [""])[0]
+                    or external_path,
+                    title=info.get("title") or job.get("title"),
+                    location=_join_parts(locations),
+                    url=info.get("externalUrl") or f"{public_base}{external_path}",
+                    description=info.get("jobDescription", ""),
+                    job_types=info.get("timeType", ""),
+                    department=info.get("jobRequisitionLocation", {}).get("descriptor", "")
+                    if isinstance(info.get("jobRequisitionLocation"), dict)
+                    else "",
+                    published_at=info.get("startDate") or info.get("postedOn") or job.get("postedOn", ""),
+                    remote=info.get("remoteType") or job.get("remoteType", ""),
+                )
+            )
 
         total = data.get("total", 0)
         offset += len(page)
@@ -647,20 +689,22 @@ def fetch_comeet(entry: dict[str, Any]) -> list[dict[str, Any]]:
     for job in jobs:
         loc = job.get("location") or {}
         location = loc.get("name") if isinstance(loc, dict) else loc
-        results.append(_normalize_job(
-            ats="comeet",
-            slug=slug,
-            company=company,
-            raw_id=job.get("uid") or job.get("id"),
-            title=job.get("name") or job.get("title"),
-            location=location,
-            url=job.get("url") or job.get("absolute_url") or job.get("position_url", ""),
-            description=job.get("description") or job.get("details", ""),
-            job_types=job.get("employment_type") or job.get("type", ""),
-            department=job.get("department", ""),
-            published_at=job.get("time_created") or job.get("published_at", ""),
-            modified_at=job.get("time_updated", ""),
-        ))
+        results.append(
+            _normalize_job(
+                ats="comeet",
+                slug=slug,
+                company=company,
+                raw_id=job.get("uid") or job.get("id"),
+                title=job.get("name") or job.get("title"),
+                location=location,
+                url=job.get("url") or job.get("absolute_url") or job.get("position_url", ""),
+                description=job.get("description") or job.get("details", ""),
+                job_types=job.get("employment_type") or job.get("type", ""),
+                department=job.get("department", ""),
+                published_at=job.get("time_created") or job.get("published_at", ""),
+                modified_at=job.get("time_updated", ""),
+            )
+        )
     return results
 
 
@@ -675,35 +719,43 @@ def fetch_pinpoint(entry: dict[str, Any]) -> list[dict[str, Any]]:
         location = job.get("location")
         if isinstance(location, dict):
             location = location.get("name") or _join_parts([location.get("city"), location.get("country")])
-        description = _join_parts([
-            job.get("description"),
-            job.get("key_responsibilities"),
-            job.get("skills_knowledge_expertise"),
-            job.get("benefits"),
-        ], "\n")
+        description = _join_parts(
+            [
+                job.get("description"),
+                job.get("key_responsibilities"),
+                job.get("skills_knowledge_expertise"),
+                job.get("benefits"),
+            ],
+            "\n",
+        )
         salary = job.get("compensation")
         if not salary and job.get("compensation_visible"):
-            salary = _join_parts([
-                job.get("compensation_minimum"),
-                job.get("compensation_maximum"),
-                job.get("compensation_currency"),
-                job.get("compensation_frequency"),
-            ], " ")
-        results.append(_normalize_job(
-            ats="pinpoint",
-            slug=slug,
-            company=company,
-            raw_id=job.get("id") or job.get("path"),
-            title=job.get("title"),
-            location=location,
-            url=job.get("url") or f"https://{slug}.pinpointhq.com{job.get('path', '')}",
-            description=description,
-            job_types=job.get("employment_type_text") or job.get("employment_type", ""),
-            department=job.get("department") or (job.get("job") or {}).get("department", ""),
-            published_at=job.get("published_at") or job.get("created_at", ""),
-            remote=job.get("workplace_type_text") or job.get("workplace_type", ""),
-            salary=salary or "",
-        ))
+            salary = _join_parts(
+                [
+                    job.get("compensation_minimum"),
+                    job.get("compensation_maximum"),
+                    job.get("compensation_currency"),
+                    job.get("compensation_frequency"),
+                ],
+                " ",
+            )
+        results.append(
+            _normalize_job(
+                ats="pinpoint",
+                slug=slug,
+                company=company,
+                raw_id=job.get("id") or job.get("path"),
+                title=job.get("title"),
+                location=location,
+                url=job.get("url") or f"https://{slug}.pinpointhq.com{job.get('path', '')}",
+                description=description,
+                job_types=job.get("employment_type_text") or job.get("employment_type", ""),
+                department=job.get("department") or (job.get("job") or {}).get("department", ""),
+                published_at=job.get("published_at") or job.get("created_at", ""),
+                remote=job.get("workplace_type_text") or job.get("workplace_type", ""),
+                salary=salary or "",
+            )
+        )
     return results
 
 
@@ -799,7 +851,7 @@ def _is_eu_job(job: dict[str, Any]) -> bool:
         location_str=job.get("location", ""),
         title_str=job.get("title", ""),
         description_str=job.get("description", ""),
-        item=job
+        item=job,
     )
 
 
@@ -826,12 +878,12 @@ def lambda_handler(event, context):
         raise ValueError("BRONZE_BUCKET environment variable is not set.")
 
     targets = load_company_targets()
-    if not targets: # type: ignore
+    if not targets:  # type: ignore
         return {"statusCode": 204, "body": "No company career targets configured."}
 
     logger.info(
         f"Starting company careers ingestor: {len(targets)} companies across "
-        f"{len({t['ats'] for t in targets})} ATS platforms" # type: ignore
+        f"{len({t['ats'] for t in targets})} ATS platforms"  # type: ignore
     )
     started = time.time()
     all_jobs = collect_company_jobs(targets)
@@ -842,9 +894,21 @@ def lambda_handler(event, context):
 
     df = pd.DataFrame(all_jobs)
     required_cols = [
-        "job_id", "title", "company", "location", "url", "description", "source",
-        "ats", "job_types", "department", "published_at", "modified_at", "remote",
-        "tags", "salary",
+        "job_id",
+        "title",
+        "company",
+        "location",
+        "url",
+        "description",
+        "source",
+        "ats",
+        "job_types",
+        "department",
+        "published_at",
+        "modified_at",
+        "remote",
+        "tags",
+        "salary",
     ]
     for col in required_cols:
         if col not in df.columns:
@@ -865,6 +929,6 @@ def lambda_handler(event, context):
         "total_jobs": len(df),
         "targets": len(targets),
         "by_ats": by_ats,
-    } # type: ignore
+    }  # type: ignore
     logger.info(json.dumps(body))
     return {"statusCode": 200, "body": json.dumps(body)}

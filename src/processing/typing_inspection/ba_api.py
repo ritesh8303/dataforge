@@ -2,10 +2,12 @@ from typing import Annotated, List
 from pydantic import StringConstraints, TypeAdapter
 from typing_extensions import TypedDict
 
+
 class BAJobLocation(TypedDict):
     zip_code: str
     city: str
     state: str
+
 
 class BAJob(TypedDict):
     refnr: str
@@ -15,10 +17,12 @@ class BAJob(TypedDict):
     modifikationsdatum: str
     arbeitsort: BAJobLocation
 
+
 class BAResponse(TypedDict):
     stellenangebote: List[BAJob]
     max_results: int
     current_page: int
+
 
 def validate_ba_response(raw_json: dict) -> BAResponse:
     """
