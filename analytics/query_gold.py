@@ -5,7 +5,32 @@ GOLD_BUCKET = "s3://dataforge-gold-dev-eu-central-1"
 SILVER_PATH = "s3://dataforge-silver-dev-eu-central-1/cleaned/jobs_history.parquet/"
 
 print("Reading Silver data from S3...")
-df = wr.s3.read_parquet(SILVER_PATH, dataset=True)
+active_path = f"{SILVER_PATH}is_current=True/"
+inactive_path = f"{SILVER_PATH}is_current=False/"
+
+dfs = []
+try:
+    if wr.s3.list_objects(path=active_path):
+        df_active = wr.s3.read_parquet(path=active_path, dataset=True)
+        df_active["is_current"] = True
+        dfs.append(df_active)
+except Exception as e:
+    print(f"Warning: Failed to read active partition: {e}")
+
+try:
+    if wr.s3.list_objects(path=inactive_path):
+        df_inactive = wr.s3.read_parquet(path=inactive_path, dataset=True)
+        df_inactive["is_current"] = False
+        dfs.append(df_inactive)
+except Exception as e:
+    print(f"Warning: Failed to read inactive partition: {e}")
+
+if not dfs:
+    raise ValueError("No Silver data found in S3.")
+
+df = pd.concat(dfs, ignore_index=True)
+df["is_current"] = df["is_current"].astype(bool)
+
 current = df[df["is_current"] == True].copy().reset_index(drop=True)
 print(f"Total active jobs: {len(current)}")
 
