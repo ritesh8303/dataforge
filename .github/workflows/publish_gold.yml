@@ -5,6 +5,8 @@ on:
     branches: [main]
   schedule:
     - cron: '30 8 * * *'   # 30 min after pipeline runs at 8AM UTC
+  repository_dispatch:
+    types: [gold_data_updated]
   workflow_dispatch:
 
 

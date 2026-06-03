@@ -519,9 +519,54 @@ def lambda_handler(event, context):
 
         msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 10"
         print(msg)
+        _trigger_github_redeploy(len(current))
         return {"statusCode": 200, "body": json.dumps({"message": msg})}
 
     except Exception as e:
         error_msg = f"Gold generation failed: {str(e)}"
         print(error_msg)
         return {"statusCode": 500, "body": json.dumps({"error": error_msg})}
+
+
+def _trigger_github_redeploy(active_count):
+    token = os.environ.get("GITHUB_TOKEN")
+    owner = os.environ.get("GITHUB_OWNER", "ritesh8303")
+    repo = os.environ.get("GITHUB_REPO", "dataforge")
+
+    if not token:
+        try:
+            import boto3
+
+            ssm = boto3.client("ssm", region_name="eu-central-1")
+            param = ssm.get_parameter(Name="/dataforge/dev/github_token", WithDecryption=True)
+            token = param["Parameter"]["Value"]
+        except Exception as e:
+            print(
+                f"Skipping GitHub Pages trigger: GITHUB_TOKEN not found in environment or SSM Parameter Store ({str(e)})."
+            )
+            return
+
+    url = f"https://api.github.com/repos/{owner}/{repo}/dispatches"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "DataForge-Lambda",
+    }
+    payload = {
+        "event_type": "gold_data_updated",
+        "client_payload": {
+            "active_jobs": int(active_count),
+            "timestamp": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
+        },
+    }
+    try:
+        import requests
+
+        res = requests.post(url, headers=headers, json=payload, timeout=10)
+        if res.status_code == 204:
+            print("Successfully triggered GitHub Actions workflow dispatch for Pages update.")
+        else:
+            print(f"WARNING: GitHub dispatch failed: {res.status_code} - {res.text}")
+    except Exception as e:
+        print(f"WARNING: Failed to request GitHub workflow dispatch: {str(e)}")

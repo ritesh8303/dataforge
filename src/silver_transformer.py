@@ -208,6 +208,9 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
         silver_df = wr.s3.read_parquet(path=silver_path, dataset=True)
         silver_exists = True
         print(f"Loaded {len(silver_df)} existing Silver records.")
+        if not silver_df.empty and "is_current" in silver_df.columns:
+            # Coerce partition representation to boolean
+            silver_df["is_current"] = silver_df["is_current"].astype(str).str.lower() == "true"
         if not silver_df.empty and "job_id" in silver_df.columns:
             is_old = ~silver_df["job_id"].astype(str).str.startswith("sem_")
             if is_old.any():
@@ -226,11 +229,25 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
         # so we don't silently overwrite Silver with bad data
         raise RuntimeError(f"Failed to read Silver layer: {str(e)}") from e
 
+    # Data Quality Gate Check
+    active_silver_count = len(silver_df[silver_df["is_current"] == True]) if not silver_df.empty else 0
+    if silver_exists and active_silver_count > 1000 and len(bronze_df) < 100:
+        raise ValueError(
+            f"DATA_QUALITY_ANOMALY: Incoming Bronze batch size ({len(bronze_df)} jobs) "
+            f"is abnormally low compared to active Silver records ({active_silver_count}). "
+            f"Aborting to protect Silver database."
+        )
+
     # First run — write everything directly
     if not silver_exists or silver_df.empty:
         for col in bronze_df.select_dtypes(include="object").columns:
             bronze_df[col] = bronze_df[col].astype(str)
-        wr.s3.to_parquet(df=bronze_df, path=silver_path, dataset=True, mode="overwrite")
+        wr.s3.to_parquet(
+            df=bronze_df,
+            path=f"{silver_path}is_current=True/",
+            dataset=True,
+            mode="overwrite",
+        )
         print(f"Initial load complete. Wrote {len(bronze_df)} records to Silver.")
         return
 
@@ -270,25 +287,42 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
     # 5. Unchanged current records — keep as-is
     unchanged_silver = current_silver[~current_silver["job_id"].isin(changed_ids)].copy()
 
-    # 6. Build final dataset
-    final_df = pd.concat([historical_records, unchanged_silver, expired_records, new_inserts], ignore_index=True)
+    # 6. Write back to Silver S3 (partitioned, incremental)
+    # Write active records (overwriting active partition)
+    active_df = pd.concat([unchanged_silver, new_inserts], ignore_index=True)
+    active_df = active_df.sort_values(by=["job_id", "scd_start_date"], ascending=[True, False])
+    active_df = active_df.drop_duplicates(subset=["job_id"], keep="first")
+    for col in active_df.select_dtypes(include="object").columns:
+        active_df[col] = active_df[col].astype(str)
 
-    # 7. Deduplication safety net — remove any accidental duplicates
+    wr.s3.to_parquet(
+        df=active_df,
+        path=f"{silver_path}is_current=True/",
+        dataset=True,
+        mode="overwrite",
+    )
+
+    # Append newly expired records to False partition
+    if not expired_records.empty:
+        for col in expired_records.select_dtypes(include="object").columns:
+            expired_records[col] = expired_records[col].astype(str)
+        wr.s3.to_parquet(
+            df=expired_records,
+            path=f"{silver_path}is_current=False/",
+            dataset=True,
+            mode="append",
+        )
+
+    # 7. Locally construct final_df representation for stats
+    final_df = pd.concat([historical_records, unchanged_silver, expired_records, new_inserts], ignore_index=True)
     final_df = final_df.sort_values(by=["job_id", "scd_start_date"], ascending=[True, False])
     final_df = final_df.drop_duplicates(subset=["job_id", "is_current", "scd_start_date"], keep="first")
-
-    # 8. Write back to Silver S3 (no Glue catalog dependency)
-    # Cast object columns to string to avoid pyarrow categorical ordering errors
-    for col in final_df.select_dtypes(include="object").columns:
-        final_df[col] = final_df[col].astype(str)
-
-    wr.s3.to_parquet(df=final_df, path=silver_path, dataset=True, mode="overwrite")
 
     print(
         f"SCD Type 2 complete. "
         f"New: {len(new_ids)}, Updated: {len(changed_ids)}, "
         f"Unchanged: {len(unchanged_silver)}, "
-        f"Total Silver records: {len(final_df)}"
+        f"Total Silver records (reconstructed): {len(final_df)}"
     )
 
     # Write pipeline stats to Gold so dashboard can show real-time SCD metrics

@@ -16,6 +16,7 @@ CORS_HEADERS = {
     "Access-Control-Allow-Methods": "GET,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Content-Type": "application/json",
+    "Cache-Control": "public, max-age=14400",  # Cache for 4 hours (14400 seconds)
 }
 
 
