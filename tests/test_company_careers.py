@@ -222,17 +222,18 @@ def test_load_company_targets_from_url(monkeypatch):
     assert targets[0]["company"] == "URL Acme"
 
 
-def test_is_eu_job():
-    # Valid EU locations
-    assert careers._is_eu_job({"title": "ML Engineer", "location": "Berlin, Germany"}) is True
-    assert careers._is_eu_job({"title": "ML Engineer", "location": "Munich, DE"}) is True
-    assert careers._is_eu_job({"title": "Data Scientist", "location": "Paris, France"}) is True
-    assert careers._is_eu_job({"title": "Software Engineer, Spain", "location": "Hybrid"}) is True
-    assert careers._is_eu_job({"title": "Data Engineer", "location": "Amsterdam"}) is True
+def test_is_europe_job():
+    # Valid Europe locations
+    assert careers._is_europe_job({"title": "ML Engineer", "location": "Berlin, Germany"}) is True
+    assert careers._is_europe_job({"title": "ML Engineer", "location": "Munich, DE"}) is True
+    assert careers._is_europe_job({"title": "Data Scientist", "location": "Paris, France"}) is True
+    assert careers._is_europe_job({"title": "Software Engineer, Spain", "location": "Hybrid"}) is True
+    assert careers._is_europe_job({"title": "Data Engineer", "location": "Amsterdam"}) is True
+    assert careers._is_europe_job({"title": "ML Engineer", "location": "London, UK"}) is True
+    assert careers._is_europe_job({"title": "Data Engineer, Zurich", "location": "Remote"}) is False
+    assert careers._is_europe_job({"title": "Data Engineer, Switzerland", "location": "Remote"}) is True
 
-    # Invalid non-EU locations
-    assert careers._is_eu_job({"title": "ML Engineer", "location": "Hawthorne, CA"}) is False
-    assert careers._is_eu_job({"title": "ML Engineer", "location": "London, UK"}) is False
-    assert careers._is_eu_job({"title": "Data Engineer, Zurich", "location": "Remote"}) is False
-    assert careers._is_eu_job({"title": "Software Engineer", "location": "San Francisco, CA"}) is False
-    assert careers._is_eu_job({"title": "Sales Rep", "location": "Sydney, Australia"}) is False
+    # Invalid non-Europe locations
+    assert careers._is_europe_job({"title": "ML Engineer", "location": "Hawthorne, CA"}) is False
+    assert careers._is_europe_job({"title": "Software Engineer", "location": "San Francisco, CA"}) is False
+    assert careers._is_europe_job({"title": "Sales Rep", "location": "Sydney, Australia"}) is False

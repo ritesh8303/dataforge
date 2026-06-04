@@ -3,7 +3,7 @@ import re
 import hashlib
 from typing import Any, Dict
 from .typing_inspection.arbeitnow import validate_api_response as validate_arbeitnow
-from .eu_filter import is_in_eu
+from .eu_filter import is_in_europe
 
 
 class ArbeitnowFetcher:
@@ -169,7 +169,7 @@ class HackerNewsFetcher:
                             tags_list.append(yc_batch)
 
                         # Filter for EU only
-                        if not is_in_eu(location_str=location, title_str=title, description_str=title_text):
+                        if not is_in_europe(location_str=location, title_str=title, description_str=title_text):
                             continue
 
                         jobs.append(
@@ -243,7 +243,7 @@ class HackerNewsFetcher:
                                 location = parts[2] if len(parts) > 2 else "Remote"
 
                                 # Filter for EU only
-                                if not is_in_eu(location_str=location, title_str=title, description_str=plain_text):
+                                if not is_in_europe(location_str=location, title_str=title, description_str=plain_text):
                                     continue
 
                                 links = re.findall(r'href="([^"]+)"', text)

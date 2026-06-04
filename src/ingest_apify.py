@@ -39,7 +39,7 @@ def get_apify_credentials():
     return None, None
 
 
-from processing.eu_filter import is_in_eu
+from processing.eu_filter import is_in_europe
 
 
 def normalize_job_item(item, source_name):
@@ -66,7 +66,7 @@ def normalize_job_item(item, source_name):
         location = location_val or ""
 
     # Strict European Union filtering
-    if not is_in_eu(location_str=location, title_str=title, item=item):
+    if not is_in_europe(location_str=location, title_str=title, item=item):
         return None
 
     # 4. URL

@@ -28,7 +28,7 @@ from urllib.parse import urlparse
 import awswrangler as wr
 import pandas as pd
 import requests
-from processing.eu_filter import is_in_eu
+from processing.eu_filter import is_in_europe
 
 
 logger = logging.getLogger(__name__)
@@ -846,8 +846,8 @@ def _fetch_one(entry: dict[str, Any]) -> tuple[str, list[dict[str, Any]]]:
         return label, []
 
 
-def _is_eu_job(job: dict[str, Any]) -> bool:
-    return is_in_eu(
+def _is_europe_job(job: dict[str, Any]) -> bool:
+    return is_in_europe(
         location_str=job.get("location", ""),
         title_str=job.get("title", ""),
         description_str=job.get("description", ""),
@@ -866,7 +866,7 @@ def collect_company_jobs(targets: list[dict[str, Any]]) -> list[dict[str, Any]]:
             for job in jobs:  # type: ignore
                 job_id = job.get("job_id", "")
                 if job_id and job_id not in seen_ids and job.get("title"):
-                    if _is_eu_job(job):
+                    if _is_europe_job(job):
                         seen_ids.add(job_id)
                         all_jobs.append(job)
     return all_jobs
