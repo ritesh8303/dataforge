@@ -93,26 +93,52 @@ def lambda_handler(event, context):
         inactive_path = f"{silver_path}is_current=False/"
         
         dfs = []
+        active_objects = []
         try:
-            if wr.s3.list_objects(path=active_path):
-                df_active = wr.s3.read_parquet(path=active_path, dataset=True)
-                df_active["is_current"] = True
-                dfs.append(df_active)
+            active_objects = wr.s3.list_objects(path=active_path)
         except Exception as e:
-            print(f"Warning: Failed to read active partition: {e}")
+            print(f"Warning: Failed to list active path: {e}")
+            
+        inactive_objects = []
+        try:
+            inactive_objects = wr.s3.list_objects(path=inactive_path)
+        except Exception as e:
+            print(f"Warning: Failed to list inactive path: {e}")
 
-        try:
-            if wr.s3.list_objects(path=inactive_path):
-                df_inactive = wr.s3.read_parquet(path=inactive_path, dataset=True)
-                df_inactive["is_current"] = False
-                dfs.append(df_inactive)
-        except Exception as e:
-            print(f"Warning: Failed to read inactive partition: {e}")
+        for f in active_objects:
+            if f:
+                try:
+                    df_part = wr.s3.read_parquet(path=f)
+                    if not df_part.empty:
+                        df_part["is_current"] = True
+                        dfs.append(df_part)
+                except Exception as ex:
+                    print(f"Warning: Failed to read active file {f}: {ex}")
+
+        for f in inactive_objects:
+            if f:
+                try:
+                    df_part = wr.s3.read_parquet(path=f)
+                    if not df_part.empty:
+                        df_part["is_current"] = False
+                        dfs.append(df_part)
+                except Exception as ex:
+                    print(f"Warning: Failed to read inactive file {f}: {ex}")
 
         if not dfs:
             raise ValueError("No Silver data found in S3.")
             
         df = pd.concat(dfs, ignore_index=True)
+        df["is_current"] = df["is_current"].astype(bool)
+        
+        # Standardize date column schemas to avoid any type incompatibilities in metrics/trend calculations
+        for date_col in ["scd_start_date", "scd_end_date"]:
+            if date_col in df.columns:
+                df[date_col] = pd.to_datetime(df[date_col], errors="coerce")
+                if df[date_col].dt.tz is None:
+                    df[date_col] = df[date_col].dt.tz_localize("UTC")
+                else:
+                    df[date_col] = df[date_col].dt.tz_convert("UTC")
 
         # Automatically enrich tags with semantic categories
         def enrich_tags(row):

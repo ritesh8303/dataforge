@@ -197,7 +197,7 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
     bronze_df = bronze_df.copy()
     bronze_df["hash_key"] = generate_hash(bronze_df, attr_cols)
     bronze_df["scd_start_date"] = now
-    bronze_df["scd_end_date"] = pd.NaT
+    bronze_df["scd_end_date"] = pd.to_datetime(pd.Series(pd.NaT, index=bronze_df.index), utc=True)
     bronze_df["is_current"] = True
 
     # 2. Load existing Silver data
@@ -221,21 +221,39 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
         except wr.exceptions.NoFilesFound:
             pass
 
-        if active_objects:
-            df_active = wr.s3.read_parquet(path=active_path, dataset=True)
-            df_active["is_current"] = True
-            dfs.append(df_active)
+        for f in active_objects:
+            if f:
+                try:
+                    df_part = wr.s3.read_parquet(path=f)
+                    if not df_part.empty:
+                        df_part["is_current"] = True
+                        dfs.append(df_part)
+                except Exception as ex:
+                    print(f"Warning: Failed to read active file {f}: {ex}")
 
-        if inactive_objects:
-            df_inactive = wr.s3.read_parquet(path=inactive_path, dataset=True)
-            df_inactive["is_current"] = False
-            dfs.append(df_inactive)
+        for f in inactive_objects:
+            if f:
+                try:
+                    df_part = wr.s3.read_parquet(path=f)
+                    if not df_part.empty:
+                        df_part["is_current"] = False
+                        dfs.append(df_part)
+                except Exception as ex:
+                    print(f"Warning: Failed to read inactive file {f}: {ex}")
 
         if dfs:
             silver_df = pd.concat(dfs, ignore_index=True)
             silver_df["is_current"] = silver_df["is_current"].astype(bool)
             silver_exists = True
             print(f"Loaded {len(silver_df)} existing Silver records.")
+            if not silver_df.empty:
+                for date_col in ["scd_start_date", "scd_end_date"]:
+                    if date_col in silver_df.columns:
+                        silver_df[date_col] = pd.to_datetime(silver_df[date_col], errors="coerce")
+                        if silver_df[date_col].dt.tz is None:
+                            silver_df[date_col] = silver_df[date_col].dt.tz_localize("UTC")
+                        else:
+                            silver_df[date_col] = silver_df[date_col].dt.tz_convert("UTC")
             if not silver_df.empty and "job_id" in silver_df.columns:
                 is_old = ~silver_df["job_id"].astype(str).str.startswith("sem_")
                 if is_old.any():
