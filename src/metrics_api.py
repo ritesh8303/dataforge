@@ -29,6 +29,7 @@ def _build_payload(bucket):
     all_jobs = _read_csv(bucket, "all_jobs.csv")
     trend_rows = _read_csv(bucket, "jobs_trend.csv")
     source_rows = _read_csv(bucket, "jobs_by_source.csv")
+    region_rows = _read_csv(bucket, "jobs_by_region.csv")
     location_rows = _read_csv(bucket, "top_locations.csv")
     company_rows = _read_csv(bucket, "top_companies.csv")
     remote_rows = _read_csv(bucket, "remote_vs_onsite.csv")
@@ -55,6 +56,8 @@ def _build_payload(bucket):
     remote_vs_onsite = {r["work_type"]: int(r["job_count"]) for r in remote_rows}
 
     active_vs_expired = {r["status"]: int(r["job_count"]) for r in status_rows}
+
+    jobs_by_region = {r["region"]: int(r["job_count"]) for r in region_rows}
 
     top_skills = [{"skill": r["skill"], "count": int(r["job_count"])} for r in skill_rows[:15]]
 
@@ -84,6 +87,7 @@ def _build_payload(bucket):
         "total_jobs": len(all_jobs),
         "new_today": sum(1 for j in all_jobs if j.get("date_added", "") == today),
         "jobs_by_source": jobs_by_source,
+        "jobs_by_region": jobs_by_region,
         "trend": trend,
         "top_locations": top_locations,
         "top_companies": top_companies,

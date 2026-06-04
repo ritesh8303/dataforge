@@ -48,6 +48,7 @@ def lambda_handler(event, context):
     experience = (params.get("experience") or "").lower().strip()
     language_req = (params.get("language_req") or "").lower().strip()
     work_style = (params.get("work_style") or "").lower().strip()
+    region = (params.get("region") or "").lower().strip()
     sort = (params.get("sort") or "newest").lower().strip()  # newest | oldest
     status = (params.get("status") or "active").lower().strip()  # active | expired
     limit = min(int(params.get("limit", 500)), 5000)
@@ -118,6 +119,8 @@ def lambda_handler(event, context):
                 )
             )
         ]
+    if region:
+        jobs = [j for j in jobs if j.get("region", "").lower() == region]
 
     # Sort by date
     reverse = sort != "oldest"

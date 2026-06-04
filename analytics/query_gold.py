@@ -1,5 +1,8 @@
 import awswrangler as wr
 import pandas as pd
+import sys
+sys.path.append("src")
+from processing.eu_filter import classify_region
 
 GOLD_BUCKET = "s3://dataforge-gold-dev-eu-central-1"
 SILVER_PATH = "s3://dataforge-silver-dev-eu-central-1/cleaned/jobs_history.parquet/"
@@ -34,6 +37,17 @@ df["is_current"] = df["is_current"].astype(bool)
 current = df[df["is_current"] == True].copy().reset_index(drop=True)
 print(f"Total active jobs: {len(current)}")
 
+# Enrich with region
+current["region"] = current.apply(
+    lambda r: classify_region(
+        location_str=r.get("location", ""),
+        title_str=r.get("title", ""),
+        description_str=r.get("description", ""),
+        item=r
+    ),
+    axis=1
+)
+
 # 1. All jobs — full detail for GitHub Pages / Jobs API (aligned with gold_generator.py to prevent schema stripping)
 cols = [
     c
@@ -58,6 +72,7 @@ cols = [
         "start_date_raw",
         "modified_at",
         "ingested_at",
+        "region",
     ]
     if c in current.columns
 ]
@@ -74,6 +89,11 @@ all_jobs["is_remote"] = all_jobs.get("is_remote", pd.Series(False, index=all_job
 # 2. Jobs by source
 jobs_by_source = (
     current.groupby("source").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
+)
+
+# 2b. Jobs by region
+jobs_by_region = (
+    current.groupby("region").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
 )
 
 # 3. Top locations — clean up duplicates like "Berlin, Berlin, Germany" → "Berlin"
@@ -118,6 +138,7 @@ active_vs_expired = status.groupby("status").size().reset_index(name="job_count"
 
 # Print summaries
 print(f"\nJobs by source:\n{jobs_by_source.to_string(index=False)}")
+print(f"\nJobs by region:\n{jobs_by_region.to_string(index=False)}")
 print(f"\nTop 10 locations:\n{top_locations.head(10).to_string(index=False)}")
 print(f"\nRemote vs onsite:\n{remote_vs_onsite.to_string(index=False)}")
 print(f"\nJobs trend:\n{jobs_trend.to_string(index=False)}")
@@ -128,6 +149,7 @@ print(f"\nActive vs expired:\n{active_vs_expired.to_string(index=False)}")
 print("\nWriting Gold outputs to S3...")
 wr.s3.to_csv(all_jobs, path=f"{GOLD_BUCKET}/all_jobs.csv", index=False, quoting=1)
 wr.s3.to_csv(jobs_by_source, path=f"{GOLD_BUCKET}/jobs_by_source.csv", index=False)
+wr.s3.to_csv(jobs_by_region, path=f"{GOLD_BUCKET}/jobs_by_region.csv", index=False)
 wr.s3.to_csv(top_locations, path=f"{GOLD_BUCKET}/top_locations.csv", index=False)
 wr.s3.to_csv(remote_vs_onsite, path=f"{GOLD_BUCKET}/remote_vs_onsite.csv", index=False)
 wr.s3.to_csv(jobs_trend, path=f"{GOLD_BUCKET}/jobs_trend.csv", index=False)
@@ -139,6 +161,7 @@ print("Gold layer written to S3 successfully.")
 print("\nSaving locally to analytics/...")
 all_jobs.to_csv("analytics/all_jobs.csv", index=False, encoding="utf-8-sig")
 jobs_by_source.to_csv("analytics/jobs_by_source.csv", index=False, encoding="utf-8-sig")
+jobs_by_region.to_csv("analytics/jobs_by_region.csv", index=False, encoding="utf-8-sig")
 top_locations.to_csv("analytics/top_locations.csv", index=False, encoding="utf-8-sig")
 remote_vs_onsite.to_csv("analytics/remote_vs_onsite.csv", index=False, encoding="utf-8-sig")
 jobs_trend.to_csv("analytics/jobs_trend.csv", index=False, encoding="utf-8-sig")

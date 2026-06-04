@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import awswrangler as wr
 import re
+from processing.eu_filter import classify_region
 
 
 def detect_is_english(row):
@@ -301,6 +302,15 @@ def lambda_handler(event, context):
         df["is_english"] = df.apply(detect_is_english, axis=1)
         df["language_requirement"] = df.apply(detect_language_requirement, axis=1)
         df["work_style"] = df.apply(detect_work_style, axis=1)
+        df["region"] = df.apply(
+            lambda r: classify_region(
+                location_str=r.get("location", ""),
+                title_str=r.get("title", ""),
+                description_str=r.get("description", ""),
+                item=r
+            ),
+            axis=1
+        )
 
         current = df[df["is_current"] == True].copy().reset_index(drop=True)
         print(f"Total active jobs: {len(current)}")
@@ -332,6 +342,7 @@ def lambda_handler(event, context):
                 "is_english",
                 "work_style",
                 "language_requirement",
+                "region",
             ]
             if c in current.columns
         ]
@@ -373,6 +384,7 @@ def lambda_handler(event, context):
                 "is_english",
                 "work_style",
                 "language_requirement",
+                "region",
             ]
             if c in expired_raw.columns
         ]
@@ -388,6 +400,11 @@ def lambda_handler(event, context):
         # 2. Jobs by source
         jobs_by_source = (
             current.groupby("source").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
+        )
+
+        # 2b. Jobs by region
+        jobs_by_region = (
+            current.groupby("region").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
         )
 
         # 3. Top locations — take first part before comma to clean "Berlin, Berlin, Germany" → "Berlin"
@@ -558,6 +575,7 @@ def lambda_handler(event, context):
         wr.s3.to_csv(all_jobs, path=f"{gold_base}/all_jobs.csv", index=False, quoting=1)  # QUOTE_ALL
         wr.s3.to_csv(expired_jobs, path=f"{gold_base}/expired_jobs.csv", index=False, quoting=1)  # QUOTE_ALL
         wr.s3.to_csv(jobs_by_source, path=f"{gold_base}/jobs_by_source.csv", index=False)
+        wr.s3.to_csv(jobs_by_region, path=f"{gold_base}/jobs_by_region.csv", index=False)
         wr.s3.to_csv(top_locations, path=f"{gold_base}/top_locations.csv", index=False)
         wr.s3.to_csv(remote_vs_onsite, path=f"{gold_base}/remote_vs_onsite.csv", index=False)
         wr.s3.to_csv(jobs_trend, path=f"{gold_base}/jobs_trend.csv", index=False)
@@ -566,7 +584,7 @@ def lambda_handler(event, context):
         wr.s3.to_csv(top_skills, path=f"{gold_base}/top_skills.csv", index=False)
         wr.s3.to_csv(description_insights, path=f"{gold_base}/description_insights.csv", index=False)
 
-        msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 10"
+        msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 11"
         print(msg)
         _trigger_github_redeploy(len(current))
         return {"statusCode": 200, "body": json.dumps({"message": msg})}

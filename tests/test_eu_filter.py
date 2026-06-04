@@ -1,5 +1,5 @@
 import pytest
-from src.processing.eu_filter import is_in_europe
+from src.processing.eu_filter import is_in_europe, classify_region
 
 
 @pytest.mark.parametrize(
@@ -60,3 +60,41 @@ def test_is_in_europe_with_indeed_dict():
 
     item_outside_europe = {"location": {"cityName": "Bakersfield", "countryCode": "US", "countryName": "United States"}}
     assert is_in_europe(location_str="Bakersfield", item=item_outside_europe) is False
+
+
+@pytest.mark.parametrize(
+    "loc,title,desc,expected_region",
+    [
+        # Western Europe
+        ("Berlin, Germany", "Data Scientist", "", "Western Europe"),
+        ("Munich", "ML Engineer", "", "Western Europe"),
+        ("Zürich, Switzerland", "Quant Developer", "", "Western Europe"),
+        ("Amsterdam", "BI Analyst", "", "Western Europe"),
+        # Northern Europe
+        ("London, UK", "Backend Developer", "", "Northern Europe"),
+        ("London, United Kingdom", "Data Analyst", "", "Northern Europe"),
+        ("Oslo, Norway", "Systems Analyst", "", "Northern Europe"),
+        ("Dublin, Ireland", "Cloud Architect", "", "Northern Europe"),
+        # Southern Europe
+        ("Madrid, Spain", "Developer", "", "Southern Europe"),
+        ("Rome, Italy", "Engineer", "", "Southern Europe"),
+        ("Lisbon, Portugal", "UX Designer", "", "Southern Europe"),
+        # Eastern Europe
+        ("Warsaw, Poland", "System Architect", "", "Eastern Europe"),
+        ("Kyiv, Ukraine", "DevOps Engineer", "", "Eastern Europe"),
+        ("Istanbul, Turkey", "Product Manager", "", "Eastern Europe"),
+        # Other / Remote fallbacks
+        ("Remote", "Worldwide Remote Developer", "", "Other/Remote"),
+        ("Global", "Staff Engineer", "", "Other/Remote"),
+    ],
+)
+def test_classify_region(loc, title, desc, expected_region):
+    assert classify_region(location_str=loc, title_str=title, description_str=desc) == expected_region
+
+
+def test_classify_region_with_indeed_dict():
+    item_we = {"location": {"cityName": "Bakersfield", "countryCode": "DE", "countryName": "Germany"}}
+    assert classify_region(location_str="Bakersfield", item=item_we) == "Western Europe"
+
+    item_ne = {"location": {"cityName": "Bakersfield", "countryCode": "GB", "countryName": "United Kingdom"}}
+    assert classify_region(location_str="Bakersfield", item=item_ne) == "Northern Europe"

@@ -614,6 +614,21 @@
         </div>
       </div>
 
+      <!-- Region Distribution Donut -->
+      <div class="card">
+        <div class="card-title">Region Distribution</div>
+        <div class="donut-card-inner">
+          <div class="donut-ring">
+            <canvas id="donut-region"></canvas>
+            <div class="donut-center">
+              <span class="big" id="donut-region-pct">—</span>
+              <span class="small">western</span>
+            </div>
+          </div>
+          <div class="donut-legend" id="legend-region"></div>
+        </div>
+      </div>
+
       <!-- Jobs by Source -->
       <div class="card">
         <div class="card-title">Jobs by Source</div>
@@ -643,7 +658,7 @@
   const SOURCE_LABELS = { arbeitnow: "Arbeitnow", ba_api: "BA Jobsuche", direct: "Direct Company", linkedin: "LinkedIn", indeed: "Indeed", hacker_news: "Hacker News", berlin_startups: "Berlin Startups" };
 
   let trendChartInstance = null;
-  let remoteChartInstance = null;
+  const donutInstances = {};
 
   // ── Trend chart (Chart.js) ──────────────────────────────────────────────────
   function drawTrend(trend) {
@@ -739,7 +754,7 @@
   }
 
   // ── Donut rendering (Chart.js) ─────────────────────────────────────────────
-  function renderDonut(canvasId, pctId, legendId, slices) {
+  function renderDonut(canvasId, pctId, legendId, slices, defaultLabel = "") {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -749,13 +764,30 @@
     const colors = slices.map(s => s.color);
 
     const total = values.reduce((s, x) => s + x, 0);
-    const pct = total ? Math.round((values[0] / total) * 100) : 0;
+    
+    let pctVal = 0;
+    let pctLabel = defaultLabel;
+    if (canvasId === "donut-remote") {
+      pctVal = total ? Math.round((values[0] / total) * 100) : 0;
+      pctLabel = "remote";
+    } else {
+      const maxVal = Math.max(...values);
+      pctVal = total ? Math.round((maxVal / total) * 100) : 0;
+      const maxSlice = slices.find(s => s.value === maxVal);
+      pctLabel = maxSlice ? maxSlice.label.split(" ")[0].toLowerCase() : "western";
+    }
+
     const pctEl = document.getElementById(pctId);
-    if (pctEl) pctEl.textContent = pct + "%";
+    if (pctEl) pctEl.textContent = pctVal + "%";
+    
+    const labelEl = pctEl ? pctEl.nextElementSibling : null;
+    if (labelEl) labelEl.textContent = pctLabel;
 
-    if (remoteChartInstance) remoteChartInstance.destroy();
+    if (donutInstances[canvasId]) {
+      donutInstances[canvasId].destroy();
+    }
 
-    remoteChartInstance = new Chart(ctx, {
+    donutInstances[canvasId] = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: labels,
@@ -860,10 +892,20 @@
         </div>`).join("");
     }
 
+    const rg = data.jobs_by_region || {};
+
     renderDonut("donut-remote", "donut-remote-pct", "legend-remote", [
       { value: rv["Remote"]  || 0, color: "#3b82f6", label: "Remote"  },
       { value: rv["On-site"] || 0, color: "#1e293b", label: "On-site" },
-    ]);
+    ], "remote");
+
+    renderDonut("donut-region", "donut-region-pct", "legend-region", [
+      { value: rg["Western Europe"] || 0, color: "#6366f1", label: "Western Europe" },
+      { value: rg["Northern Europe"] || 0, color: "#f472b6", label: "Northern Europe" },
+      { value: rg["Southern Europe"] || 0, color: "#fbbf24", label: "Southern Europe" },
+      { value: rg["Eastern Europe"]  || 0, color: "#10b981", label: "Eastern Europe" },
+      { value: rg["Other/Remote"]    || 0, color: "#475569", label: "Other / Remote" },
+    ], "western");
   }
 
   function esc(s) {
