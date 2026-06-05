@@ -61,6 +61,10 @@ def normalize_job_item(item, source_name):
 
     # 3. Location
     location_val = item.get("location") or item.get("locationName") or item.get("country") or item.get("countryName") or ""
+    location_map = item.get("locationMap")
+    if not location_val and isinstance(location_map, dict) and len(location_map) > 0:
+        location_val = list(location_map.keys())[0]
+
     if isinstance(location_val, dict):
         location = location_val.get("cityName") or location_val.get("city") or location_val.get("countryName") or ""
     elif isinstance(location_val, list) and len(location_val) > 0:
@@ -77,7 +81,7 @@ def normalize_job_item(item, source_name):
         return None
 
     # 4. URL
-    url = item.get("url") or item.get("link") or item.get("jobUrl") or item.get("applyUrl") or item.get("urlToJob") or ""
+    url = item.get("url") or item.get("link") or item.get("jobUrl") or item.get("applyUrl") or item.get("urlToJob") or item.get("url_to_job") or ""
 
     # 5. Description
     desc_val = item.get("description") or item.get("descriptionHtml") or item.get("descriptionText") or ""

@@ -109,3 +109,21 @@ def test_normalize_eures_non_eu_filtering():
 
     normalized = normalize_job_item(item_non_eu, "eures")
     assert normalized is None
+
+
+def test_normalize_eures_location_map_and_url_to_job():
+    item = {
+        "id": "eures_abc",
+        "title": "AI Architect",
+        "employer": {"name": "AI Lab"},
+        "locationMap": {"ES": ["ES300"]},
+        "url_to_job": "https://europa.eu/eures/portal/jv-se/jv-details/NzMyNzM3NiAxMDI",
+        "description": "Scraping EURES data"
+    }
+
+    normalized = normalize_job_item(item, "eures")
+    assert normalized is not None
+    assert normalized["location"] == "ES"
+    assert normalized["url"] == "https://europa.eu/eures/portal/jv-se/jv-details/NzMyNzM3NiAxMDI"
+    assert normalized["company"] == "AI Lab"
+

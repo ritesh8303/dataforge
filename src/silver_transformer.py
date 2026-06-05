@@ -264,6 +264,9 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
                         ),
                         axis=1,
                     )
+            if not silver_df.empty and "hash_key" not in silver_df.columns:
+                print("Missing 'hash_key' in old Silver schema. Dynamically generating hash keys...")
+                silver_df["hash_key"] = generate_hash(silver_df, attr_cols)
         else:
             print("Silver layer is empty. Performing initial load.")
 
