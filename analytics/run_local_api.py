@@ -35,8 +35,9 @@ mock_s3 = MagicMock()
 mock_s3.get_object = mock_get_object
 boto3.client = lambda service, *args, **kwargs: mock_s3 if service == "s3" else MagicMock()
 
-# Import the actual lambda_handler
-from jobs_api import lambda_handler
+# Import the actual lambda_handlers
+from jobs_api import lambda_handler as jobs_handler
+from metrics_api import lambda_handler as metrics_handler
 
 
 class LocalAPIHandler(BaseHTTPRequestHandler):
@@ -56,9 +57,15 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
         # Construct mock Lambda event
         event = {"queryStringParameters": single_params, "requestContext": {"http": {"method": "GET"}}}
 
+        # Route to appropriate handler based on the path
+        if parsed_url.path == "/metrics":
+            handler = metrics_handler
+        else:
+            handler = jobs_handler
+
         # Invoke handler
         try:
-            response = lambda_handler(event, None)
+            response = handler(event, None)
             self.send_response(response["statusCode"])
             for k, v in response.get("headers", {}).items():
                 self.send_header(k, v)
