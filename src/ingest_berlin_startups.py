@@ -11,9 +11,10 @@ def lambda_handler(event, context):
     Fetch jobs from Berlin Startup Jobs and store them in the Bronze bucket.
     """
     bucket = os.environ.get("BRONZE_BUCKET")
+    is_local = os.environ.get("LOCAL_RUN") == "true"
 
     try:
-        if not bucket:
+        if not bucket and not is_local:
             raise ValueError("BRONZE_BUCKET environment variable is not set.")
         fetcher = BerlinStartupJobsFetcher()
         data = fetcher.fetch_jobs()
@@ -42,7 +43,8 @@ def lambda_handler(event, context):
         date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         path = f"s3://{bucket}/berlin_startups/ingested_at={date_str}/jobs.parquet"
 
-        wr.s3.to_parquet(df=df, path=path, index=False)
+        from processing.utils import save_parquet
+        save_parquet(df, path, "berlin_startups")
         print(f"Successfully ingested {len(df)} jobs from Berlin Startup Jobs.")
         return {"statusCode": 200, "body": f"Successfully ingested {len(df)} jobs."}
 

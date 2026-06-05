@@ -127,7 +127,8 @@ def lambda_handler(event, context):
     Fetch the latest completed datasets from Apify and save them in the Bronze bucket.
     """
     bucket = os.environ.get("BRONZE_BUCKET")
-    if not bucket:
+    is_local = os.environ.get("LOCAL_RUN") == "true"
+    if not bucket and not is_local:
         print("ERROR: BRONZE_BUCKET environment variable is not set.")
         return {"statusCode": 500, "body": "BRONZE_BUCKET is required."}
 
@@ -208,7 +209,8 @@ def lambda_handler(event, context):
 
             # 4. Save to S3 Bronze
             path = f"s3://{bucket}/apify_{source_name}/ingested_at={date_str}/jobs.parquet"
-            wr.s3.to_parquet(df=df, path=path, index=False)
+            from processing.utils import save_parquet
+            save_parquet(df, path, f"apify_{source_name}")
             print(f"Successfully saved {len(df)} normalized jobs to: {path}")
             total_ingested += len(df)
 

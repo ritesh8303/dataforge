@@ -874,7 +874,8 @@ def collect_company_jobs(targets: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def lambda_handler(event, context):
     bucket = os.environ.get("BRONZE_BUCKET")
-    if not bucket:
+    is_local = os.environ.get("LOCAL_RUN") == "true"
+    if not bucket and not is_local:
         raise ValueError("BRONZE_BUCKET environment variable is not set.")
 
     targets = load_company_targets()
@@ -921,7 +922,8 @@ def lambda_handler(event, context):
 
     date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     path = f"s3://{bucket}/direct_careers/ingested_at={date_str}/jobs.parquet"
-    wr.s3.to_parquet(df=df, path=path, index=False)
+    from processing.utils import save_parquet
+    save_parquet(df, path, "direct_careers")
 
     by_ats = df.groupby("ats").size().sort_values(ascending=False).to_dict()
     body = {
