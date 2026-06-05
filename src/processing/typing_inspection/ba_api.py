@@ -4,9 +4,9 @@ from typing_extensions import TypedDict
 
 
 class BAJobLocation(TypedDict):
-    zip_code: str
-    city: str
-    state: str
+    plz: str
+    ort: str
+    region: str
 
 
 class BAJob(TypedDict):
@@ -14,7 +14,7 @@ class BAJob(TypedDict):
     titel: Annotated[str, StringConstraints(strip_whitespace=True)]
     arbeitgeber: str
     eintrittsdatum: str
-    modifikationsdatum: str
+    modifikationsTimestamp: str
     arbeitsort: BAJobLocation
 
 

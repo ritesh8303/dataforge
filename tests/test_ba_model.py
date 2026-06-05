@@ -20,8 +20,8 @@ def test_ba_model_validation():
                 "titel": "  Softwareentwickler (m/w/d)  ",
                 "arbeitgeber": "Example GmbH",
                 "eintrittsdatum": "2024-01-01",
-                "modifikationsdatum": "2023-11-20T10:00:00",
-                "arbeitsort": {"zip_code": "10115", "city": "Berlin", "state": "Berlin"},
+                "modifikationsTimestamp": "2023-11-20T10:00:00",
+                "arbeitsort": {"plz": "10115", "ort": "Berlin", "region": "Berlin"},
             }
         ],
         "max_results": 100,

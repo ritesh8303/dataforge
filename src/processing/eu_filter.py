@@ -452,4 +452,13 @@ def classify_region(location_str, title_str="", description_str="", item=None):
     if is_remote:
         return "Remote"
 
+    # Fallback for Bundesagentur für Arbeit (German Federal Employment Agency)
+    if item is not None:
+        try:
+            source = item.get("source")
+            if _safe_str(source) == "ba_api":
+                return "Germany"
+        except Exception:
+            pass
+
     return "Other"

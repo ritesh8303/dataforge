@@ -62,9 +62,9 @@ def lambda_handler(event, context):
         # Flatten nested arbeitsort dict into separate columns
         if "arbeitsort" in df.columns:
             arbeitsort_df = df["arbeitsort"].apply(lambda x: x if isinstance(x, dict) else {}).apply(pd.Series)
-            df["location"] = arbeitsort_df.get("city", pd.Series([""] * len(df)))
-            df["zip_code"] = arbeitsort_df.get("zip_code", pd.Series([""] * len(df)))
-            df["state"] = arbeitsort_df.get("state", pd.Series([""] * len(df)))
+            df["location"] = arbeitsort_df.get("ort", pd.Series([""] * len(df)))
+            df["zip_code"] = arbeitsort_df.get("plz", pd.Series([""] * len(df)))
+            df["state"] = arbeitsort_df.get("region", pd.Series([""] * len(df)))
             df.drop(columns=["arbeitsort"], inplace=True)
 
         # Rename German field names to unified English schema
@@ -75,6 +75,7 @@ def lambda_handler(event, context):
                 "arbeitgeber": "company",
                 "eintrittsdatum": "start_date_raw",
                 "modifikationsdatum": "modified_at",
+                "modifikationsTimestamp": "modified_at",
             },
             inplace=True,
         )

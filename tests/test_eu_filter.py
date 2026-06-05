@@ -98,3 +98,19 @@ def test_classify_region_with_indeed_dict():
 
     item_ne = {"location": {"cityName": "Bakersfield", "countryCode": "GB", "countryName": "United Kingdom"}}
     assert classify_region(location_str="Bakersfield", item=item_ne) == "United Kingdom"
+
+
+def test_classify_region_ba_api_fallback():
+    item_ba = {"source": "ba_api"}
+    assert classify_region(location_str="Wietmarschen", item=item_ba) == "Germany"
+    assert classify_region(location_str="Bovenden", item=item_ba) == "Germany"
+
+    # If it is remote, it should still be Remote
+    item_ba_remote = {"source": "ba_api", "remote": True}
+    assert classify_region(location_str="Remote", item=item_ba_remote) == "Remote"
+    assert classify_region(location_str="Wietmarschen", title_str="Remote Developer", item=item_ba) == "Remote"
+
+    # Other sources with unknown locations default to Other
+    item_other = {"source": "indeed"}
+    assert classify_region(location_str="Wietmarschen", item=item_other) == "Other"
+
