@@ -286,10 +286,7 @@
     .tag.work-remote { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.18); }
     .tag.work-hybrid { background: rgba(99, 102, 241, 0.12); color: #818cf8; border-color: rgba(99, 102, 241, 0.18); }
     .tag.work-onsite { background: rgba(100, 116, 139, 0.12); color: #94a3b8; border-color: rgba(100, 116, 139, 0.18); }
-    .tag.region-western-europe { background: rgba(99, 102, 241, 0.12); color: #818cf8; border-color: rgba(99, 102, 241, 0.2); }
-    .tag.region-northern-europe { background: rgba(236, 72, 153, 0.12); color: #f472b6; border-color: rgba(236, 72, 153, 0.2); }
-    .tag.region-southern-europe { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border-color: rgba(245, 158, 11, 0.2); }
-    .tag.region-eastern-europe { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.2); }
+    .tag[class*="region-"] { background: rgba(99, 102, 241, 0.12); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.2); }
     
     .tag.clickable { cursor: pointer; transition: all 0.2s ease; }
     .tag.clickable:hover { border-color: rgba(99, 102, 241, 0.5); background: rgba(99, 102, 241, 0.2); color: #ffffff; }
@@ -583,12 +580,7 @@
       <option value="en">English only (No German)</option>
     </select>
     <select id="region">
-      <option value="">All regions</option>
-      <option value="Western Europe">Western Europe</option>
-      <option value="Northern Europe">Northern Europe</option>
-      <option value="Southern Europe">Southern Europe</option>
-      <option value="Eastern Europe">Eastern Europe</option>
-      <option value="Other/Remote">Other / Remote</option>
+      <option value="">All countries</option>
     </select>
     <select id="experience_level">
       <option value="">All experience levels</option>
@@ -626,7 +618,37 @@
     internship: "Internship", freelance: "Freelance", temporary: "Temporary"
   };
 
+  let countriesLoaded = false;
 
+  function populateCountryDropdown(jobs) {
+    if (countriesLoaded) return;
+    const select = document.getElementById("region");
+    const currentValue = select.value;
+
+    const countries = [...new Set(jobs.map(j => j.region).filter(Boolean))];
+    countries.sort((a, b) => {
+      if (a === "Remote") return -1;
+      if (b === "Remote") return 1;
+      if (a === "Other") return 1;
+      if (b === "Other") return -1;
+      return a.localeCompare(b);
+    });
+
+    select.innerHTML = '<option value="">All countries</option>';
+    countries.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = c === "Remote" ? "Remote" : c === "Other" ? "Other (On-site/unspecified)" : c;
+      select.appendChild(opt);
+    });
+
+    if (currentValue && countries.includes(currentValue)) {
+      select.value = currentValue;
+    }
+    if (jobs.length > 0 && countries.length > 1) {
+      countriesLoaded = true;
+    }
+  }
 
   async function loadJobs() {
     const source      = document.getElementById("source").value;
@@ -648,7 +670,7 @@
       document.getElementById("last-updated").textContent =
         `${(data.kpis?.total || allJobs.length).toLocaleString()} total jobs`;
       
-
+      populateCountryDropdown(allJobs);
       
       applyFilters();
     } catch(e) {
@@ -784,8 +806,8 @@
       const directBadge = isDirect ? `<span class="tag direct-apply">⚡ Direct Apply</span>` : "";
 
       let regionBadge = "";
-      if (j.region && j.region !== "Other/Remote") {
-        regionBadge = `<span class="tag region-${j.region.toLowerCase().replace(/\s+/g, '-')}">🇪🇺 ${esc(j.region)}</span>`;
+      if (j.region && j.region !== "Other" && j.region !== "Remote") {
+        regionBadge = `<span class="tag region-${j.region.toLowerCase().replace(/[^a-z0-9]+/g, '-')}">📍 ${esc(j.region)}</span>`;
       }
 
       const typeTags = (j.job_types || "")

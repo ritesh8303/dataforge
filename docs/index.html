@@ -614,15 +614,15 @@
         </div>
       </div>
 
-      <!-- Region Distribution Donut -->
+      <!-- Country Distribution Donut -->
       <div class="card">
-        <div class="card-title">Region Distribution</div>
+        <div class="card-title">Country Distribution</div>
         <div class="donut-card-inner">
           <div class="donut-ring">
             <canvas id="donut-region"></canvas>
             <div class="donut-center">
               <span class="big" id="donut-region-pct">—</span>
-              <span class="small">western</span>
+              <span class="small">top</span>
             </div>
           </div>
           <div class="donut-legend" id="legend-region"></div>
@@ -899,13 +899,43 @@
       { value: rv["On-site"] || 0, color: "#1e293b", label: "On-site" },
     ], "remote");
 
-    renderDonut("donut-region", "donut-region-pct", "legend-region", [
-      { value: rg["Western Europe"] || 0, color: "#6366f1", label: "Western Europe" },
-      { value: rg["Northern Europe"] || 0, color: "#f472b6", label: "Northern Europe" },
-      { value: rg["Southern Europe"] || 0, color: "#fbbf24", label: "Southern Europe" },
-      { value: rg["Eastern Europe"]  || 0, color: "#10b981", label: "Eastern Europe" },
-      { value: rg["Other/Remote"]    || 0, color: "#475569", label: "Other / Remote" },
-    ], "western");
+    // Dynamic country slices
+    const sortedRg = Object.entries(rg)
+      .map(([label, value]) => ({ label, value }))
+      .sort((a, b) => b.value - a.value);
+
+    const maxSlices = 4;
+    const slices = [];
+    let otherCount = 0;
+    const colors = ["#6366f1", "#f472b6", "#fbbf24", "#10b981", "#38bdf8", "#818cf8"];
+    const otherColor = "#64748b";
+
+    for (let i = 0; i < sortedRg.length; i++) {
+      const item = sortedRg[i];
+      if (item.label === "Other") {
+        otherCount += item.value;
+        continue;
+      }
+      if (slices.length < maxSlices) {
+        slices.push({
+          label: item.label,
+          value: item.value,
+          color: colors[slices.length % colors.length]
+        });
+      } else {
+        otherCount += item.value;
+      }
+    }
+    if (otherCount > 0) {
+      slices.push({
+        label: "Other",
+        value: otherCount,
+        color: otherColor
+      });
+    }
+    slices.sort((a, b) => b.value - a.value);
+
+    renderDonut("donut-region", "donut-region-pct", "legend-region", slices, "top");
   }
 
   function esc(s) {

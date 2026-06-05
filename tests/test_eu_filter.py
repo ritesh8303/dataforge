@@ -65,27 +65,27 @@ def test_is_in_europe_with_indeed_dict():
 @pytest.mark.parametrize(
     "loc,title,desc,expected_region",
     [
-        # Western Europe
-        ("Berlin, Germany", "Data Scientist", "", "Western Europe"),
-        ("Munich", "ML Engineer", "", "Western Europe"),
-        ("Zürich, Switzerland", "Quant Developer", "", "Western Europe"),
-        ("Amsterdam", "BI Analyst", "", "Western Europe"),
-        # Northern Europe
-        ("London, UK", "Backend Developer", "", "Northern Europe"),
-        ("London, United Kingdom", "Data Analyst", "", "Northern Europe"),
-        ("Oslo, Norway", "Systems Analyst", "", "Northern Europe"),
-        ("Dublin, Ireland", "Cloud Architect", "", "Northern Europe"),
-        # Southern Europe
-        ("Madrid, Spain", "Developer", "", "Southern Europe"),
-        ("Rome, Italy", "Engineer", "", "Southern Europe"),
-        ("Lisbon, Portugal", "UX Designer", "", "Southern Europe"),
-        # Eastern Europe
-        ("Warsaw, Poland", "System Architect", "", "Eastern Europe"),
-        ("Kyiv, Ukraine", "DevOps Engineer", "", "Eastern Europe"),
-        ("Istanbul, Turkey", "Product Manager", "", "Eastern Europe"),
+        # Western Europe countries
+        ("Berlin, Germany", "Data Scientist", "", "Germany"),
+        ("Munich", "ML Engineer", "", "Germany"),
+        ("Zürich, Switzerland", "Quant Developer", "", "Switzerland"),
+        ("Amsterdam", "BI Analyst", "", "Netherlands"),
+        # Northern Europe countries
+        ("London, UK", "Backend Developer", "", "United Kingdom"),
+        ("London, United Kingdom", "Data Analyst", "", "United Kingdom"),
+        ("Oslo, Norway", "Systems Analyst", "", "Norway"),
+        ("Dublin, Ireland", "Cloud Architect", "", "Ireland"),
+        # Southern Europe countries
+        ("Madrid, Spain", "Developer", "", "Spain"),
+        ("Rome, Italy", "Engineer", "", "Italy"),
+        ("Lisbon, Portugal", "UX Designer", "", "Portugal"),
+        # Eastern Europe countries
+        ("Warsaw, Poland", "System Architect", "", "Poland"),
+        ("Kyiv, Ukraine", "DevOps Engineer", "", "Ukraine"),
+        ("Istanbul, Turkey", "Product Manager", "", "Turkey"),
         # Other / Remote fallbacks
-        ("Remote", "Worldwide Remote Developer", "", "Other/Remote"),
-        ("Global", "Staff Engineer", "", "Other/Remote"),
+        ("Remote", "Worldwide Remote Developer", "", "Remote"),
+        ("Global", "Staff Engineer", "", "Other"),
     ],
 )
 def test_classify_region(loc, title, desc, expected_region):
@@ -94,7 +94,7 @@ def test_classify_region(loc, title, desc, expected_region):
 
 def test_classify_region_with_indeed_dict():
     item_we = {"location": {"cityName": "Bakersfield", "countryCode": "DE", "countryName": "Germany"}}
-    assert classify_region(location_str="Bakersfield", item=item_we) == "Western Europe"
+    assert classify_region(location_str="Bakersfield", item=item_we) == "Germany"
 
     item_ne = {"location": {"cityName": "Bakersfield", "countryCode": "GB", "countryName": "United Kingdom"}}
-    assert classify_region(location_str="Bakersfield", item=item_ne) == "Northern Europe"
+    assert classify_region(location_str="Bakersfield", item=item_ne) == "United Kingdom"

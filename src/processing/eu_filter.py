@@ -170,126 +170,222 @@ def is_in_europe(location_str, title_str="", description_str="", item=None):
 
 
 # Mapping of European countries (names & codes) to regions
-REGION_MAPPING = {
+# Mapping of European countries (names & codes) to country names
+COUNTRY_MAPPING = {
     # Western Europe
-    "at": "Western Europe", "be": "Western Europe", "fr": "Western Europe", "de": "Western Europe",
-    "li": "Western Europe", "lu": "Western Europe", "mc": "Western Europe", "nl": "Western Europe",
-    "ch": "Western Europe",
-    "austria": "Western Europe", "belgium": "Western Europe", "france": "Western Europe",
-    "germany": "Western Europe", "liechtenstein": "Western Europe", "luxembourg": "Western Europe",
-    "monaco": "Western Europe", "netherlands": "Western Europe", "switzerland": "Western Europe",
-    "österreich": "Western Europe", "belgien": "Western Europe", "frankreich": "Western Europe",
-    "deutschland": "Western Europe", "luxemburg": "Western Europe", "niederlande": "Western Europe",
-    "schweiz": "Western Europe",
+    "at": "Austria", "be": "Belgium", "fr": "France", "de": "Germany",
+    "li": "Liechtenstein", "lu": "Luxembourg", "mc": "Monaco", "nl": "Netherlands",
+    "ch": "Switzerland",
+    "austria": "Austria", "belgium": "Belgium", "france": "France",
+    "germany": "Germany", "liechtenstein": "Liechtenstein", "luxembourg": "Luxembourg",
+    "monaco": "Monaco", "netherlands": "Netherlands", "switzerland": "Switzerland",
+    "österreich": "Austria", "belgien": "Belgium", "frankreich": "France",
+    "deutschland": "Germany", "luxemburg": "Luxembourg", "niederlande": "Netherlands",
+    "schweiz": "Switzerland",
 
     # Northern Europe
-    "uk": "Northern Europe", "gb": "Northern Europe", "ie": "Northern Europe", "dk": "Northern Europe",
-    "fi": "Northern Europe", "is": "Northern Europe", "no": "Northern Europe", "se": "Northern Europe",
-    "ee": "Northern Europe", "lv": "Northern Europe", "lt": "Northern Europe",
-    "united kingdom": "Northern Europe", "great britain": "Northern Europe", "england": "Northern Europe",
-    "scotland": "Northern Europe", "wales": "Northern Europe", "ireland": "Northern Europe",
-    "denmark": "Northern Europe", "finland": "Northern Europe", "iceland": "Northern Europe",
-    "norway": "Northern Europe", "sweden": "Northern Europe", "estonia": "Northern Europe",
-    "latvia": "Northern Europe", "lithuania": "Northern Europe",
-    "dänemark": "Northern Europe", "finnland": "Northern Europe", "irland": "Northern Europe",
-    "norwegen": "Northern Europe", "island": "Northern Europe", "schweden": "Northern Europe",
-    "estland": "Northern Europe", "lettland": "Northern Europe", "litauen": "Northern Europe",
+    "uk": "United Kingdom", "gb": "United Kingdom", "ie": "Ireland", "dk": "Denmark",
+    "fi": "Finland", "is": "Iceland", "no": "Norway", "se": "Sweden",
+    "ee": "Estonia", "lv": "Latvia", "lt": "Lithuania",
+    "united kingdom": "United Kingdom", "great britain": "United Kingdom", "england": "United Kingdom",
+    "scotland": "United Kingdom", "wales": "United Kingdom", "ireland": "Ireland",
+    "denmark": "Denmark", "finland": "Finland", "iceland": "Iceland",
+    "norway": "Norway", "sweden": "Sweden", "estonia": "Estonia",
+    "latvia": "Latvia", "lithuania": "Lithuania",
+    "dänemark": "Denmark", "finnland": "Finland", "irland": "Ireland",
+    "norwegen": "Norway", "island": "Iceland", "schweden": "Sweden",
+    "estland": "Estonia", "lettland": "Latvia", "litauen": "Lithuania",
 
     # Southern Europe
-    "es": "Southern Europe", "it": "Southern Europe", "gr": "Southern Europe", "hr": "Southern Europe",
-    "bg": "Southern Europe", "cy": "Southern Europe", "mt": "Southern Europe", "si": "Southern Europe",
-    "al": "Southern Europe", "ad": "Southern Europe", "ba": "Southern Europe", "xk": "Southern Europe",
-    "me": "Southern Europe", "mk": "Southern Europe", "sm": "Southern Europe", "va": "Southern Europe",
-    "spain": "Southern Europe", "italy": "Southern Europe", "greece": "Southern Europe",
-    "croatia": "Southern Europe", "bulgaria": "Southern Europe", "cyprus": "Southern Europe",
-    "malta": "Southern Europe", "slovenia": "Southern Europe", "albania": "Southern Europe",
-    "andorra": "Southern Europe", "bosnia": "Southern Europe", "herzegovina": "Southern Europe",
-    "kosovo": "Southern Europe", "montenegro": "Southern Europe", "macedonia": "Southern Europe",
-    "san marino": "Southern Europe", "vatican": "Southern Europe", "portugal": "Southern Europe",
-    "pt": "Southern Europe",
-    "kroatien": "Southern Europe", "zypern": "Southern Europe", "griechenland": "Southern Europe",
-    "spanien": "Southern Europe", "italien": "Southern Europe", "bosnien": "Southern Europe",
+    "es": "Spain", "it": "Italy", "gr": "Greece", "hr": "Croatia",
+    "bg": "Bulgaria", "cy": "Cyprus", "mt": "Malta", "si": "Slovenia",
+    "al": "Albania", "ad": "Andorra", "ba": "Bosnia and Herzegovina", "xk": "Kosovo",
+    "me": "Montenegro", "mk": "North Macedonia", "sm": "San Marino", "va": "Vatican City",
+    "spain": "Spain", "italy": "Italy", "greece": "Greece",
+    "croatia": "Croatia", "bulgaria": "Bulgaria", "cyprus": "Cyprus",
+    "malta": "Malta", "slovenia": "Slovenia", "albania": "Albania",
+    "andorra": "Andorra", "bosnia": "Bosnia and Herzegovina", "herzegovina": "Bosnia and Herzegovina",
+    "kosovo": "Kosovo", "montenegro": "Montenegro", "macedonia": "North Macedonia",
+    "san marino": "San Marino", "vatican": "Vatican City", "portugal": "Portugal",
+    "pt": "Portugal",
+    "kroatien": "Croatia", "zypern": "Cyprus", "griechenland": "Greece",
+    "spanien": "Spain", "italien": "Italy", "bosnien": "Bosnia and Herzegovina",
 
     # Eastern Europe
-    "pl": "Eastern Europe", "ro": "Eastern Europe", "sk": "Eastern Europe", "cz": "Eastern Europe",
-    "ua": "Eastern Europe", "tr": "Eastern Europe", "by": "Eastern Europe", "md": "Eastern Europe",
-    "hu": "Eastern Europe", "rs": "Eastern Europe",
-    "poland": "Eastern Europe", "romania": "Eastern Europe", "slovakia": "Eastern Europe",
-    "czechia": "Eastern Europe", "czech republic": "Eastern Europe", "ukraine": "Eastern Europe",
-    "turkey": "Eastern Europe", "belarus": "Eastern Europe", "moldova": "Eastern Europe",
-    "hungary": "Eastern Europe", "serbia": "Eastern Europe",
-    "polen": "Eastern Europe", "rumänien": "Eastern Europe", "slowakei": "Eastern Europe",
-    "tschechien": "Eastern Europe", "türkei": "Eastern Europe", "weißrussland": "Eastern Europe",
-    "serbien": "Eastern Europe",
+    "pl": "Poland", "ro": "Romania", "sk": "Slovakia", "cz": "Czechia",
+    "ua": "Ukraine", "tr": "Turkey", "by": "Belarus", "md": "Moldova",
+    "hu": "Hungary", "rs": "Serbia",
+    "poland": "Poland", "romania": "Romania", "slovakia": "Slovakia",
+    "czechia": "Czechia", "czech republic": "Czechia", "ukraine": "Ukraine",
+    "turkey": "Turkey", "belarus": "Belarus", "moldova": "Moldova",
+    "hungary": "Hungary", "serbia": "Serbia",
+    "polen": "Poland", "rumänien": "Romania", "slowakei": "Slovakia",
+    "tschechien": "Czechia", "türkei": "Turkey", "weißrussland": "Belarus",
+    "serbien": "Serbia",
 }
 
-# Mapping of major European cities to regions
-CITY_REGION_MAPPING = {
-    # Western Europe Cities
-    "berlin": "Western Europe", "munich": "Western Europe", "münchen": "Western Europe", "hamburg": "Western Europe",
-    "frankfurt": "Western Europe", "cologne": "Western Europe", "köln": "Western Europe", "stuttgart": "Western Europe",
-    "düsseldorf": "Western Europe", "dortmund": "Western Europe", "essen": "Western Europe", "leipzig": "Western Europe",
-    "bremen": "Western Europe", "dresden": "Western Europe", "hannover": "Western Europe", "nuremberg": "Western Europe",
-    "nürnberg": "Western Europe", "duisburg": "Western Europe", "bochum": "Western Europe", "wuppertal": "Western Europe",
-    "bielefeld": "Western Europe", "bonn": "Western Europe", "munster": "Western Europe", "münster": "Western Europe",
-    "karlsruhe": "Western Europe", "mannheim": "Western Europe", "augsburg": "Western Europe", "wiesbaden": "Western Europe",
-    "gelsenkirchen": "Western Europe", "mönchengladbach": "Western Europe", "braunschweig": "Western Europe",
-    "chemnitz": "Western Europe", "aachen": "Western Europe", "halle": "Western Europe", "magdeburg": "Western Europe",
-    "freiburg": "Western Europe", "krefeld": "Western Europe", "lubeck": "Western Europe", "lübeck": "Western Europe",
-    "mainz": "Western Europe", "erfurt": "Western Europe", "rostock": "Western Europe", "kassel": "Western Europe",
-    "hagen": "Western Europe", "hamm": "Western Europe", "saarbrucken": "Western Europe", "saarbrücken": "Western Europe",
-    "mulheim": "Western Europe", "mülheim": "Western Europe", "herne": "Western Europe", "ludwigshafen": "Western Europe",
-    "osnabruck": "Western Europe", "osnabrück": "Western Europe", "solingen": "Western Europe", "leverkusen": "Western Europe",
-    "oldenburg": "Western Europe", "neuss": "Western Europe", "potsdam": "Western Europe", "heidelberg": "Western Europe",
-    "paderborn": "Western Europe", "darmstadt": "Western Europe", "wurzburg": "Western Europe", "würzburg": "Western Europe",
-    "regensburg": "Western Europe", "ingolstadt": "Western Europe", "heilbronn": "Western Europe", "ulm": "Western Europe",
-    "wolfsburg": "Western Europe", "gottingen": "Western Europe", "göttingen": "Western Europe", "offenbach": "Western Europe",
-    "pforzheim": "Western Europe", "recklinghausen": "Western Europe", "bottrop": "Western Europe", "furth": "Western Europe",
-    "fürth": "Western Europe", "remscheid": "Western Europe", "reutlingen": "Western Europe", "moers": "Western Europe",
-    "koblenz": "Western Europe", "siegen": "Western Europe", "bergisch gladbach": "Western Europe", "jena": "Western Europe",
-    "erlangen": "Western Europe", "trier": "Western Europe", "salzgitter": "Western Europe",
-    "paris": "Western Europe", "amsterdam": "Western Europe", "vienna": "Western Europe", "wien": "Western Europe",
-    "brussels": "Western Europe", "bruxelles": "Western Europe", "brüssel": "Western Europe",
-    "lyon": "Western Europe", "marseille": "Western Europe", "toulouse": "Western Europe", "bordeaux": "Western Europe",
-    "nice": "Western Europe", "utrecht": "Western Europe", "rotterdam": "Western Europe", "hague": "Western Europe",
-    "den haag": "Western Europe", "antwerp": "Western Europe", "antwerpen": "Western Europe", "ghent": "Western Europe",
-    "liege": "Western Europe", "liège": "Western Europe", "zurich": "Western Europe", "zürich": "Western Europe",
-    "geneva": "Western Europe", "genf": "Western Europe", "basel": "Western Europe", "lausanne": "Western Europe",
-    "bern": "Western Europe", "graz": "Western Europe", "linz": "Western Europe", "salzburg": "Western Europe",
-    "innsbruck": "Western Europe",
-
-    # Northern Europe Cities
-    "london": "Northern Europe", "manchester": "Northern Europe", "birmingham": "Northern Europe", "leeds": "Northern Europe",
-    "glasgow": "Northern Europe", "sheffield": "Northern Europe", "liverpool": "Northern Europe", "bristol": "Northern Europe",
-    "edinburgh": "Northern Europe", "copenhagen": "Northern Europe", "københavn": "Northern Europe", "stockholm": "Northern Europe",
-    "helsinki": "Northern Europe", "dublin": "Northern Europe", "tallinn": "Northern Europe", "riga": "Northern Europe",
-    "vilnius": "Northern Europe", "gothenburg": "Northern Europe", "göteborg": "Northern Europe", "malmo": "Northern Europe",
-    "malmö": "Northern Europe", "uppsala": "Northern Europe", "oslo": "Northern Europe", "bergen": "Northern Europe",
-    "trondheim": "Northern Europe", "stavanger": "Northern Europe", "reykjavik": "Northern Europe", "tallin": "Northern Europe",
-
-    # Southern Europe Cities
-    "madrid": "Southern Europe", "barcelona": "Southern Europe", "rome": "Southern Europe", "roma": "Southern Europe",
-    "milan": "Southern Europe", "milano": "Southern Europe", "athens": "Southern Europe", "sofia": "Southern Europe",
-    "ljubljana": "Southern Europe", "zagreb": "Southern Europe", "valletta": "Southern Europe", "nicosia": "Southern Europe",
-    "malaga": "Southern Europe", "málaga": "Southern Europe", "valencia": "Southern Europe", "seville": "Southern Europe",
-    "sevilla": "Southern Europe", "porto": "Southern Europe", "belgrade": "Southern Europe", "sarajevo": "Southern Europe",
-    "skopje": "Southern Europe", "tirana": "Southern Europe", "pristina": "Southern Europe", "podgorica": "Southern Europe",
-
-    # Eastern Europe Cities
-    "warsaw": "Eastern Europe", "warszawa": "Eastern Europe", "budapest": "Eastern Europe", "prague": "Eastern Europe",
-    "praha": "Eastern Europe", "bucharest": "Eastern Europe", "bucuresti": "Eastern Europe", "bratislava": "Eastern Europe",
-    "krakow": "Eastern Europe", "kraków": "Eastern Europe", "wroclaw": "Eastern Europe", "wrocław": "Eastern Europe",
-    "gdansk": "Eastern Europe", "gdańsk": "Eastern Europe", "poznan": "Eastern Europe", "poznań": "Eastern Europe",
-    "kyiv": "Eastern Europe", "kiev": "Eastern Europe", "kharkiv": "Eastern Europe", "lviv": "Eastern Europe",
-    "odessa": "Eastern Europe", "dnipro": "Eastern Europe", "istanbul": "Eastern Europe", "ankara": "Eastern Europe",
-    "izmir": "Eastern Europe", "chisinau": "Eastern Europe", "minsk": "Eastern Europe",
+# Mapping of major European cities to country names
+CITY_COUNTRY_MAPPING = {
+    # Germany
+    "berlin": "Germany", "munich": "Germany", "münchen": "Germany", "hamburg": "Germany",
+    "frankfurt": "Germany", "cologne": "Germany", "köln": "Germany", "stuttgart": "Germany",
+    "düsseldorf": "Germany", "dortmund": "Germany", "essen": "Germany", "leipzig": "Germany",
+    "bremen": "Germany", "dresden": "Germany", "hannover": "Germany", "nuremberg": "Germany",
+    "nürnberg": "Germany", "duisburg": "Germany", "bochum": "Germany", "wuppertal": "Germany",
+    "bielefeld": "Germany", "bonn": "Germany", "munster": "Germany", "münster": "Germany",
+    "karlsruhe": "Germany", "mannheim": "Germany", "augsburg": "Germany", "wiesbaden": "Germany",
+    "gelsenkirchen": "Germany", "mönchengladbach": "Germany", "braunschweig": "Germany",
+    "chemnitz": "Germany", "aachen": "Germany", "halle": "Germany", "magdeburg": "Germany",
+    "freiburg": "Germany", "krefeld": "Germany", "lubeck": "Germany", "lübeck": "Germany",
+    "mainz": "Germany", "erfurt": "Germany", "rostock": "Germany", "kassel": "Germany",
+    "hagen": "Germany", "hamm": "Germany", "saarbrucken": "Germany", "saarbrücken": "Germany",
+    "mulheim": "Germany", "mülheim": "Germany", "herne": "Germany", "ludwigshafen": "Germany",
+    "osnabruck": "Germany", "osnabrück": "Germany", "solingen": "Germany", "leverkusen": "Germany",
+    "oldenburg": "Germany", "neuss": "Germany", "potsdam": "Germany", "heidelberg": "Germany",
+    "paderborn": "Germany", "darmstadt": "Germany", "wurzburg": "Germany", "würzburg": "Germany",
+    "regensburg": "Germany", "ingolstadt": "Germany", "heilbronn": "Germany", "ulm": "Germany",
+    "wolfsburg": "Germany", "gottingen": "Germany", "göttingen": "Germany", "offenbach": "Germany",
+    "pforzheim": "Germany", "recklinghausen": "Germany", "bottrop": "Germany", "furth": "Germany",
+    "fürth": "Germany", "remscheid": "Germany", "reutlingen": "Germany", "moers": "Germany",
+    "koblenz": "Germany", "siegen": "Germany", "bergisch gladbach": "Germany", "jena": "Germany",
+    "erlangen": "Germany", "trier": "Germany", "salzgitter": "Germany",
+    
+    # France
+    "paris": "France", "lyon": "France", "marseille": "France", "toulouse": "France",
+    "bordeaux": "France", "nice": "France",
+    
+    # Netherlands
+    "amsterdam": "Netherlands", "utrecht": "Netherlands", "rotterdam": "Netherlands",
+    "hague": "Netherlands", "den haag": "Netherlands",
+    
+    # Austria
+    "vienna": "Austria", "wien": "Austria", "graz": "Austria", "linz": "Austria",
+    "salzburg": "Austria", "innsbruck": "Austria",
+    
+    # Belgium
+    "brussels": "Belgium", "bruxelles": "Belgium", "brüssel": "Belgium",
+    "antwerp": "Belgium", "antwerpen": "Belgium", "ghent": "Belgium",
+    "liege": "Belgium", "liège": "Belgium",
+    
+    # Switzerland
+    "zurich": "Switzerland", "zürich": "Switzerland", "geneva": "Switzerland",
+    "genf": "Switzerland", "basel": "Switzerland", "lausanne": "Switzerland",
+    "bern": "Switzerland",
+    
+    # United Kingdom
+    "london": "United Kingdom", "manchester": "United Kingdom", "birmingham": "United Kingdom",
+    "leeds": "United Kingdom", "glasgow": "United Kingdom", "sheffield": "United Kingdom",
+    "liverpool": "United Kingdom", "bristol": "United Kingdom", "edinburgh": "United Kingdom",
+    
+    # Denmark
+    "copenhagen": "Denmark", "københavn": "Denmark",
+    
+    # Sweden
+    "stockholm": "Sweden", "gothenburg": "Sweden", "göteborg": "Sweden",
+    "malmo": "Sweden", "malmö": "Sweden", "uppsala": "Sweden",
+    
+    # Finland
+    "helsinki": "Finland",
+    
+    # Ireland
+    "dublin": "Ireland",
+    
+    # Estonia
+    "tallinn": "Estonia", "tallin": "Estonia",
+    
+    # Latvia
+    "riga": "Latvia",
+    
+    # Lithuania
+    "vilnius": "Lithuania",
+    
+    # Norway
+    "oslo": "Norway", "bergen": "Norway", "trondheim": "Norway", "stavanger": "Norway",
+    
+    # Iceland
+    "reykjavik": "Iceland",
+    
+    # Spain
+    "madrid": "Spain", "barcelona": "Spain", "malaga": "Spain", "málaga": "Spain",
+    "valencia": "Spain", "seville": "Spain", "sevilla": "Spain",
+    
+    # Italy
+    "rome": "Italy", "roma": "Italy", "milan": "Italy", "milano": "Italy",
+    
+    # Greece
+    "athens": "Greece",
+    
+    # Bulgaria
+    "sofia": "Bulgaria",
+    
+    # Slovenia
+    "ljubljana": "Slovenia",
+    
+    # Croatia
+    "zagreb": "Croatia",
+    
+    # Malta
+    "valletta": "Malta",
+    
+    # Cyprus
+    "nicosia": "Cyprus",
+    
+    # Portugal
+    "porto": "Portugal", "lisbon": "Portugal", "lisboa": "Portugal",
+    
+    # Serbia
+    "belgrade": "Serbia",
+    
+    # Bosnia
+    "sarajevo": "Bosnia and Herzegovina",
+    
+    # North Macedonia
+    "skopje": "North Macedonia",
+    
+    # Albania
+    "tirana": "Albania",
+    
+    # Kosovo
+    "pristina": "Kosovo",
+    
+    # Montenegro
+    "podgorica": "Montenegro",
+    
+    # Poland
+    "warsaw": "Poland", "warszawa": "Poland", "krakow": "Poland", "kraków": "Poland",
+    "wroclaw": "Poland", "wrocław": "Poland", "gdansk": "Poland", "gdańsk": "Poland",
+    "poznan": "Poland", "poznań": "Poland",
+    
+    # Hungary
+    "budapest": "Hungary",
+    
+    # Czechia
+    "prague": "Czechia", "praha": "Czechia",
+    
+    # Romania
+    "bucharest": "Romania", "bucuresti": "Romania",
+    
+    # Slovakia
+    "bratislava": "Slovakia",
+    
+    # Ukraine
+    "kyiv": "Ukraine", "kiev": "Ukraine", "kharkiv": "Ukraine", "lviv": "Ukraine",
+    "odessa": "Ukraine", "dnipro": "Ukraine",
+    
+    # Turkey
+    "istanbul": "Turkey", "ankara": "Turkey", "izmir": "Turkey",
+    
+    # Moldova
+    "chisinau": "Moldova",
+    
+    # Belarus
+    "minsk": "Belarus",
 }
 
 
 def classify_region(location_str, title_str="", description_str="", item=None):
     """
-    Classifies a job location into one of the European regions:
-    'Western Europe', 'Northern Europe', 'Southern Europe', 'Eastern Europe', or 'Other/Remote'
+    Classifies a job location into a country name, 'Remote', or 'Other'.
     """
     # 1. Check nested location dict from Indeed/LinkedIn
     if isinstance(item, dict):
@@ -297,10 +393,10 @@ def classify_region(location_str, title_str="", description_str="", item=None):
         if isinstance(loc_dict, dict):
             c_code = str(loc_dict.get("countryCode", "")).lower().strip()
             c_name = str(loc_dict.get("countryName", "")).lower().strip()
-            if c_code in REGION_MAPPING:
-                return REGION_MAPPING[c_code]
-            if c_name in REGION_MAPPING:
-                return REGION_MAPPING[c_name]
+            if c_code in COUNTRY_MAPPING:
+                return COUNTRY_MAPPING[c_code]
+            if c_name in COUNTRY_MAPPING:
+                return COUNTRY_MAPPING[c_name]
 
     loc = _safe_str(location_str)
     title = _safe_str(title_str)
@@ -308,23 +404,52 @@ def classify_region(location_str, title_str="", description_str="", item=None):
     loc_words = set(re.findall(r"\b[a-z]+\b", loc))
 
     # 2. Check explicit country name in location
-    for country, region in REGION_MAPPING.items():
+    for country, country_name in COUNTRY_MAPPING.items():
         if len(country) > 2 and country in loc:
-            return region
+            return country_name
 
     # 3. Check ISO codes in location words
     for code in loc_words:
-        if code in REGION_MAPPING:
-            return REGION_MAPPING[code]
+        if code in COUNTRY_MAPPING:
+            return COUNTRY_MAPPING[code]
 
     # 4. Check cities in location
-    for city, region in CITY_REGION_MAPPING.items():
+    for city, country_name in CITY_COUNTRY_MAPPING.items():
         if city in loc:
-            return region
+            return country_name
 
     # 5. Check country in title (fallback)
-    for country, region in REGION_MAPPING.items():
+    for country, country_name in COUNTRY_MAPPING.items():
         if len(country) > 2 and country in title:
-            return region
+            return country_name
 
-    return "Other/Remote"
+    # 6. Determine Remote vs Other fallback
+    is_remote = False
+    if item is not None:
+        try:
+            work_style = item.get("work_style")
+            if _safe_str(work_style) == "remote":
+                is_remote = True
+            
+            is_remote_val = item.get("remote")
+            if is_remote_val is True or _safe_str(is_remote_val) == "true":
+                is_remote = True
+                
+            is_remote_val2 = item.get("is_remote")
+            if is_remote_val2 is True or _safe_str(is_remote_val2) == "true":
+                is_remote = True
+        except Exception:
+            pass
+
+    if not is_remote:
+        # Check location string for remote terms
+        if any(k in loc for k in ("remote", "worldwide", "anywhere", "telecommute", "home office", "home-office", "work from home")):
+            is_remote = True
+        # Check title string for remote keywords
+        elif any(k in title for k in ("remote", "worldwide", "anywhere")):
+            is_remote = True
+
+    if is_remote:
+        return "Remote"
+
+    return "Other"
