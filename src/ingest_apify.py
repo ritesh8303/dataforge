@@ -2,7 +2,6 @@ import os
 import json
 import requests
 import pandas as pd
-import awswrangler as wr
 from datetime import datetime, timezone
 import boto3
 

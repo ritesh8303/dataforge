@@ -40,7 +40,7 @@ def main():
         print(f"Status Code: {result.get('statusCode')}")
         print(f"Body: {result.get('body')}")
         
-    except Exception as e:
+    except Exception:
         print("\n=== Execution Failed ===")
         import traceback
         traceback.print_exc()

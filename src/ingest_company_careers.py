@@ -25,7 +25,6 @@ from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import urlparse
 
-import awswrangler as wr
 import pandas as pd
 import requests
 from processing.eu_filter import is_in_europe

@@ -1,7 +1,6 @@
 import os
 import json
 import pandas as pd
-import awswrangler as wr
 from datetime import datetime, timezone
 from processing.fetchers import ArbeitnowFetcher
 
