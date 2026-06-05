@@ -43,24 +43,32 @@ from processing.eu_filter import is_in_europe
 
 def normalize_job_item(item, source_name):
     """
-    Normalize varying Apify LinkedIn/Indeed scraper formats to unified schema.
+    Normalize varying Apify LinkedIn/Indeed/EURES scraper formats to unified schema.
     """
     # 1. Title
     title = item.get("title") or item.get("positionName") or item.get("jobTitle") or ""
 
     # 2. Company
-    company_val = item.get("companyName") or item.get("company") or item.get("company_name")
+    company_val = item.get("companyName") or item.get("company") or item.get("company_name") or item.get("employerName")
     if isinstance(company_val, dict):
         company = company_val.get("name") or ""
     elif not company_val and isinstance(item.get("employer"), dict):
         company = item.get("employer", {}).get("name") or ""
+    elif not company_val and isinstance(item.get("employer"), str):
+        company = item.get("employer") or ""
     else:
         company = company_val or ""
 
     # 3. Location
-    location_val = item.get("location") or item.get("locationName") or ""
+    location_val = item.get("location") or item.get("locationName") or item.get("country") or item.get("countryName") or ""
     if isinstance(location_val, dict):
         location = location_val.get("cityName") or location_val.get("city") or location_val.get("countryName") or ""
+    elif isinstance(location_val, list) and len(location_val) > 0:
+        first_loc = location_val[0]
+        if isinstance(first_loc, dict):
+            location = first_loc.get("cityName") or first_loc.get("city") or first_loc.get("countryName") or ""
+        else:
+            location = str(first_loc)
     else:
         location = location_val or ""
 
@@ -69,7 +77,7 @@ def normalize_job_item(item, source_name):
         return None
 
     # 4. URL
-    url = item.get("url") or item.get("link") or item.get("jobUrl") or item.get("applyUrl") or ""
+    url = item.get("url") or item.get("link") or item.get("jobUrl") or item.get("applyUrl") or item.get("urlToJob") or ""
 
     # 5. Description
     desc_val = item.get("description") or item.get("descriptionHtml") or item.get("descriptionText") or ""
