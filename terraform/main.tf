@@ -129,10 +129,9 @@ module "apify_ingestor" {
   env_vars = {
     BRONZE_BUCKET            = module.s3_bronze.bucket_id
     SSM_APIFY_PARAMETER_NAME = "/dataforge/dev/apify_credentials"
-    DISABLE_APIFY            = "true"
   }
   bronze_bucket_arn = module.s3_bronze.arn
-  enable_schedule   = false
+  enable_schedule   = true
   alert_email       = var.alert_email
 }
 
