@@ -143,6 +143,13 @@ def lambda_handler(event, context):
         print("ERROR: BRONZE_BUCKET environment variable is not set.")
         return {"statusCode": 500, "body": "BRONZE_BUCKET is required."}
 
+    if os.environ.get("DISABLE_APIFY") == "true":
+        print("INFO: Apify fetching is disabled via environment variable.")
+        return {
+            "statusCode": 200,
+            "body": "Skipped. Apify fetching is disabled via DISABLE_APIFY environment variable.",
+        }
+
     # Fetch token and task dictionary
     token, tasks = get_apify_credentials()
     if not token or not tasks:

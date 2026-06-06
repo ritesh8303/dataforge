@@ -67,9 +67,13 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
         try:
             response = handler(event, None)
             self.send_response(response["statusCode"])
+            has_cors = False
             for k, v in response.get("headers", {}).items():
                 self.send_header(k, v)
-            self.send_header("Access-Control-Allow-Origin", "*")
+                if k.lower() == "access-control-allow-origin":
+                    has_cors = True
+            if not has_cors:
+                self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(response["body"].encode("utf-8"))
         except Exception as e:
