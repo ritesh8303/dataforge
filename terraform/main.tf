@@ -130,9 +130,10 @@ module "apify_ingestor" {
     BRONZE_BUCKET            = module.s3_bronze.bucket_id
     SSM_APIFY_PARAMETER_NAME = "/dataforge/dev/apify_credentials"
   }
-  bronze_bucket_arn = module.s3_bronze.arn
-  enable_schedule   = true
-  alert_email       = var.alert_email
+  bronze_bucket_arn   = module.s3_bronze.arn
+  enable_schedule     = true
+  schedule_expression = "cron(0 8 * * ? *)"
+  alert_email         = var.alert_email
 }
 
 # Hacker News Ingestor
