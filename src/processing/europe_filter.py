@@ -21,7 +21,7 @@ EUROPE_CITIES = {
     # Germany
     "berlin", "munich", "münchen", "hamburg", "frankfurt", "cologne", "köln", "stuttgart", "düsseldorf", "dortmund", "essen", "leipzig", "bremen", "dresden", "hannover", "nuremberg", "nürnberg", "duisburg", "bochum", "wuppertal", "bielefeld", "bonn", "munster", "münster", "karlsruhe", "mannheim", "augsburg", "wiesbaden", "gelsenkirchen", "mönchengladbach", "braunschweig", "chemnitz", "aachen", "halle", "magdeburg", "freiburg", "krefeld", "lubeck", "lübeck", "mainz", "erfurt", "rostock", "kassel", "hagen", "hamm", "saarbrucken", "saarbrücken", "mulheim", "mülheim", "herne", "ludwigshafen", "osnabruck", "osnabrück", "solingen", "leverkusen", "oldenburg", "neuss", "potsdam", "heidelberg", "paderborn", "darmstadt", "wurzburg", "würzburg", "regensburg", "ingolstadt", "heilbronn", "ulm", "wolfsburg", "gottingen", "göttingen", "offenbach", "pforzheim", "recklinghausen", "bottrop", "furth", "fürth", "remscheid", "reutlingen", "moers", "koblenz", "siegen", "bergisch gladbach", "jena", "erlangen", "trier", "salzgitter",
     
-    # Other EU Cities
+    # Other European Cities
     "paris", "amsterdam", "madrid", "barcelona", "rome", "roma", "milan", "milano", "vienna", "wien", "brussels", "bruxelles", "brüssel", "warsaw", "warszawa", "budapest", "prague", "praha", "copenhagen", "københavn", "stockholm", "helsinki", "lisbon", "lisboa", "dublin", "athens", "sofia", "bucharest", "bucuresti", "bratislava", "ljubljana", "zagreb", "tallinn", "riga", "vilnius", "valletta", "nicosia", "malaga", "málaga", "valencia", "seville", "sevilla", "lyon", "marseille", "toulouse", "bordeaux", "nice", "porto", "utrecht", "rotterdam", "hague", "den haag", "antwerp", "antwerpen", "ghent", "liege", "liège", "gothenburg", "göteborg", "malmo", "malmö", "uppsala", "krakow", "kraków", "wroclaw", "wrocław", "gdansk", "gdańsk", "poznan", "poznań", "graz", "linz", "salzburg", "innsbruck", "tallin",
     
     # Non-EU European Cities
@@ -169,7 +169,6 @@ def is_in_europe(location_str, title_str="", description_str="", item=None):
     return False
 
 
-# Mapping of European countries (names & codes) to regions
 # Mapping of European countries (names & codes) to country names
 COUNTRY_MAPPING = {
     # Western Europe

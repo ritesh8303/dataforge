@@ -23,7 +23,7 @@ def _load_jobs():
     bucket = os.environ["GOLD_BUCKET"]
     key = os.environ.get("GOLD_KEY", "all_jobs.csv")
     obj = s3.get_object(Bucket=bucket, Key=key)
-    content = obj["Body"].read().decode("utf-8")
+    content = obj["Body"].read().decode("utf-8-sig")
     return list(csv.DictReader(StringIO(content)))
 
 
@@ -59,7 +59,7 @@ def lambda_handler(event, context):
         bucket = os.environ["GOLD_BUCKET"]
         key = "expired_jobs.csv" if status == "expired" else "all_jobs.csv"
         obj = s3.get_object(Bucket=bucket, Key=key)
-        content = obj["Body"].read().decode("utf-8")
+        content = obj["Body"].read().decode("utf-8-sig")
         _cache[cache_key] = list(csv.DictReader(StringIO(content)))
         _cache[cache_key + "_ts"] = now
 

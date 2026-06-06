@@ -531,7 +531,7 @@
   <div class="topbar">
     <div class="topbar-left">
       <h1>DataForge Insights Dashboard</h1>
-      <p>Aggregated analytics across LinkedIn, Indeed, EURES, Arbeitnow, BA Jobsuche, and direct career portals</p>
+      <p>Aggregated analytics across LinkedIn, Indeed, Arbeitnow, BA Jobsuche, and direct career portals</p>
     </div>
     <div class="topbar-right">
       <a class="nav-btn" href="jobs.html">🔍 Search Jobs →</a>
@@ -657,7 +657,7 @@
     ? "http://localhost:8000/metrics"
     : "https://2aww80hwgj.execute-api.eu-central-1.amazonaws.com/";
   const REFRESH_MS = 2 * 60 * 1000;
-  const SOURCE_LABELS = { arbeitnow: "Arbeitnow", ba_api: "BA Jobsuche", direct: "Direct Company", linkedin: "LinkedIn", indeed: "Indeed", eures: "EURES", hacker_news: "Hacker News", berlin_startups: "Berlin Startups" };
+  const SOURCE_LABELS = { arbeitnow: "Arbeitnow", ba_api: "BA Jobsuche", direct: "Direct Company", linkedin: "LinkedIn", indeed: "Indeed", hacker_news: "Hacker News", berlin_startups: "Berlin Startups" };
 
   let trendChartInstance = null;
   const donutInstances = {};

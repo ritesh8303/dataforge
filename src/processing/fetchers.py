@@ -3,7 +3,7 @@ import re
 import hashlib
 from typing import Any, Dict
 from .typing_inspection.arbeitnow import validate_api_response as validate_arbeitnow
-from .eu_filter import is_in_europe
+from .europe_filter import is_in_europe
 
 
 class ArbeitnowFetcher:

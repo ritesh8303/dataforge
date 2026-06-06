@@ -27,7 +27,7 @@ from urllib.parse import urlparse
 
 import pandas as pd
 import requests
-from processing.eu_filter import is_in_europe
+from processing.europe_filter import is_in_europe
 
 
 logger = logging.getLogger(__name__)

@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import awswrangler as wr
 import re
-from processing.eu_filter import classify_region
+from processing.europe_filter import classify_region
 
 
 def detect_is_english(row):

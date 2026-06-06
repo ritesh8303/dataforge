@@ -22,7 +22,8 @@ CORS_HEADERS = {
 
 def _read_csv(bucket, key):
     obj = s3.get_object(Bucket=bucket, Key=key)
-    return list(csv.DictReader(StringIO(obj["Body"].read().decode("utf-8"))))
+    return list(csv.DictReader(StringIO(obj["Body"].read().decode("utf-8-sig"))))
+
 
 
 def _build_payload(bucket):

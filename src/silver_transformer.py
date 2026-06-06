@@ -4,7 +4,7 @@ import awswrangler as wr
 from datetime import datetime, timezone
 import os
 import re
-from processing.eu_filter import is_in_europe
+from processing.europe_filter import is_in_europe
 
 
 def slugify(text):

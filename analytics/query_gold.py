@@ -2,7 +2,8 @@ import awswrangler as wr
 import pandas as pd
 import sys
 sys.path.append("src")
-from processing.eu_filter import classify_region
+from processing.europe_filter import classify_region
+
 
 GOLD_BUCKET = "s3://dataforge-gold-dev-eu-central-1"
 SILVER_PATH = "s3://dataforge-silver-dev-eu-central-1/cleaned/jobs_history.parquet/"

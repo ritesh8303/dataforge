@@ -38,12 +38,12 @@ def get_apify_credentials():
     return None, None
 
 
-from processing.eu_filter import is_in_europe
+from processing.europe_filter import is_in_europe
 
 
 def normalize_job_item(item, source_name):
     """
-    Normalize varying Apify LinkedIn/Indeed/EURES scraper formats to unified schema.
+    Normalize varying Apify LinkedIn/Indeed scraper formats to unified schema.
     """
     # 1. Title
     title = item.get("title") or item.get("positionName") or item.get("jobTitle") or ""
