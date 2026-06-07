@@ -52,8 +52,8 @@ def deduplicate_bronze(df):
         lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}", axis=1
     )
 
-    # Prioritize sources: direct > arbeitnow > berlin_startups > hacker_news > ba_api
-    source_priority = {"direct": 0, "arbeitnow": 1, "berlin_startups": 2, "hacker_news": 3, "ba_api": 4}
+    # Prioritize sources: direct > eures > arbeitnow > berlin_startups > hacker_news > ba_api
+    source_priority = {"direct": 0, "eures": 1, "arbeitnow": 2, "berlin_startups": 3, "hacker_news": 4, "ba_api": 5}
     df["priority"] = df["source"].map(lambda s: source_priority.get(s, 9))
 
     # Calculate description length to keep the most detailed posting
@@ -103,6 +103,7 @@ def lambda_handler(event, context):
             f"s3://{bronze_bucket}/direct_careers/ingested_at={today_str}/jobs.parquet",
             f"s3://{bronze_bucket}/hacker_news/ingested_at={today_str}/jobs.parquet",
             f"s3://{bronze_bucket}/berlin_startups/ingested_at={today_str}/jobs.parquet",
+            f"s3://{bronze_bucket}/eures/ingested_at={today_str}/jobs.parquet",
         ]
 
     dfs = []
@@ -207,14 +208,14 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None):
     try:
         active_path = f"{silver_path}is_current=True/"
         inactive_path = f"{silver_path}is_current=False/"
-        
+
         dfs = []
         active_objects = []
         try:
             active_objects = wr.s3.list_objects(path=active_path)
         except wr.exceptions.NoFilesFound:
             pass
-            
+
         inactive_objects = []
         try:
             inactive_objects = wr.s3.list_objects(path=inactive_path)

@@ -174,6 +174,25 @@ module "berlin_startups_ingestor" {
   alert_email       = var.alert_email
 }
 
+# EURES Portal Ingestor
+module "eures_ingestor" {
+  source            = "./modules/lambda"
+  function_name     = "dataforge-eures-ingestor"
+  handler           = "ingest_eures.lambda_handler"
+  lambda_role_arn   = module.iam.lambda_role_arn
+  lambda_role_name  = module.iam.lambda_role_name
+  source_dir        = "../src"
+  layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  memory_size       = 512
+  timeout           = 300
+  env_vars = {
+    BRONZE_BUCKET = module.s3_bronze.bucket_id
+  }
+  bronze_bucket_arn = module.s3_bronze.arn
+  enable_schedule   = true
+  alert_email       = var.alert_email
+}
+
 
 # Silver Transformer (SCD Type 2 Logic)
 module "transformer_lambda" {
