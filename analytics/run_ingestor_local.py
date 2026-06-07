@@ -10,7 +10,7 @@ INGESTORS = {
     "arbeitnow": ("ingest_arbeitnow", "Arbeitnow Ingestor"),
     "hn": ("ingest_hn", "Hacker News Ingestor"),
     "berlin": ("ingest_berlin_startups", "Berlin Startup Jobs Ingestor"),
-    "apify": ("ingest_apify", "Apify LinkedIn/Indeed Ingestor"),
+    "apify": ("ingest_apify", "Apify Indeed Ingestor"),
     "direct": ("ingest_company_careers", "Direct Company Careers Ingestor"),
 }
 

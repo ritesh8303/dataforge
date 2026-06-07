@@ -9,7 +9,7 @@ EventBridge (Daily Schedules)
   ├── dataforge-ingestor        → Arbeitnow API (paginated, ~900 jobs)
   ├── dataforge-ba-ingestor     → BA Jobsuche API (8 queries, ~5000 jobs)
   ├── dataforge-company-ingestor→ Direct ATS career feeds (configurable companies)
-  └── dataforge-apify-ingestor  → Apify LinkedIn & Indeed scraping runs
+  └── dataforge-apify-ingestor  → Apify Indeed scraping runs
             │
             ▼ S3 upload (.parquet)
       dataforge-bronze-dev-eu-central-1 (Bronze Bucket)
@@ -65,11 +65,11 @@ EventBridge (Daily Schedules)
 - **Direct company feeds** — Public career-page feeds from Greenhouse, Lever,
   Ashby, Workable, SmartRecruiters, Recruitee, Personio XML, Workday CXS,
   Comeet, and Pinpoint.
-- **Apify scraper runs** — LinkedIn and Indeed search task scraping.
+- **Apify scraper runs** — Indeed search task scraping.
 
 ### Apify Scrapers Integration
 
-The pipeline integrates with **Apify** to scrape tech job listings from platforms that do not offer open public APIs (such as LinkedIn and Indeed).
+The pipeline integrates with **Apify** to scrape tech job listings from platforms that do not offer open public APIs (such as Indeed).
 
 1. **Orchestration & Asynchronous Runs:**
    - In order to stay within Lambda execution timeout limits, the scraper runs are decoupled from ingestion.
@@ -81,13 +81,12 @@ The pipeline integrates with **Apify** to scrape tech job listings from platform
      {
        "apify_token": "apify_api_your_token_here",
        "tasks": {
-         "linkedin": "task_id_for_linkedin",
          "indeed": "task_id_for_indeed"
        }
      }
      ```
 3. **Data Normalization & EU Filter:**
-   - Scraped job postings vary significantly in schema. The ingestor normalizes different Indeed and LinkedIn scraper formats to the unified schema.
+   - Scraped job postings vary significantly in schema. The ingestor normalizes different Indeed scraper formats to the unified schema.
    - All scraped jobs are validated through the strict EU location safety gate before writing to S3 Bronze to filter out any international remote postings.
 
 

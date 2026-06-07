@@ -261,15 +261,15 @@
     .tag.source-direct { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.2); }
     .tag.source-hn { background: rgba(249, 115, 22, 0.15); color: #fdba74; border-color: rgba(249, 115, 22, 0.25); }
     .tag.source-bsj { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; border-color: rgba(20, 184, 166, 0.25); }
-    .tag.source-linkedin { background: rgba(10, 102, 194, 0.15); color: #70b5ff; border-color: rgba(10, 102, 194, 0.25); }
      .tag.source-indeed { background: rgba(37, 87, 167, 0.15); color: #79abf7; border-color: rgba(37, 87, 167, 0.25); }
     .tag.type { background: rgba(167, 139, 250, 0.12); color: #c084fc; border-color: rgba(167, 139, 250, 0.2); }
     
-    .tag:not(.remote):not(.source-ba):not(.source-direct):not(.source-hn):not(.source-bsj):not(.source-linkedin):not(.source-indeed):not(.type) {
+    .tag:not(.remote):not(.source-ba):not(.source-direct):not(.source-hn):not(.source-bsj):not(.source-indeed):not(.type) {
       background: rgba(30, 41, 59, 0.5);
       color: #cbd5e1;
       border-color: rgba(255, 255, 255, 0.05);
     }
+
     
     .tag.exp-junior { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.25); }
     .tag.exp-student { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.25); }
@@ -564,8 +564,8 @@
       <option value="arbeitnow">Arbeitnow</option>
       <option value="ba_api">BA Jobsuche</option>
       <option value="direct">Direct company feeds</option>
-      <option value="linkedin">LinkedIn</option>
       <option value="indeed">Indeed</option>
+
       <option value="hacker_news">Hacker News / YC</option>
       <option value="berlin_startups">Berlin Startup Jobs</option>
     </select>
@@ -771,14 +771,12 @@
       const sourceLabel = j.source === "ba_api" ? "BA Jobsuche"
         : j.source === "hacker_news" ? "Hacker News / YC"
         : j.source === "berlin_startups" ? "Berlin Startup Jobs"
-        : j.source === "linkedin" ? "LinkedIn"
         : j.source === "indeed" ? "Indeed"
         : isDirect ? `🏢 ${j.ats || 'Direct'}`
         : "Arbeitnow";
       const sourceClass = j.source === "ba_api" ? "source-ba"
         : j.source === "hacker_news" ? "source-hn"
         : j.source === "berlin_startups" ? "source-bsj"
-        : j.source === "linkedin" ? "source-linkedin"
         : j.source === "indeed" ? "source-indeed"
         : isDirect ? "source-direct"
         : "";

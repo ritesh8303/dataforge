@@ -43,8 +43,9 @@ from processing.europe_filter import is_in_europe
 
 def normalize_job_item(item, source_name):
     """
-    Normalize varying Apify LinkedIn/Indeed scraper formats to unified schema.
+    Normalize varying Apify Indeed scraper formats to unified schema.
     """
+
     # 1. Title
     title = item.get("title") or item.get("positionName") or item.get("jobTitle") or ""
 
@@ -157,6 +158,15 @@ def lambda_handler(event, context):
         return {
             "statusCode": 200,
             "body": "Skipped. Apify credentials not configured (setup /dataforge/dev/apify_credentials in SSM).",
+        }
+
+    # Only ingest indeed data and remove linkedin data completely
+    tasks = {k: v for k, v in tasks.items() if k == "indeed"}
+    if not tasks:
+        print("WARNING: No indeed task configured in Apify tasks. Skipping run.")
+        return {
+            "statusCode": 200,
+            "body": "Skipped. No indeed task configured in Apify credentials.",
         }
 
     total_ingested = 0

@@ -40,7 +40,7 @@ def is_in_europe(location_str, title_str="", description_str="", item=None):
     Unified check to determine if a job is located in Europe (EU + non-EU European countries).
     Returns True if the location is in Europe, False otherwise.
     """
-    # 1. Check direct nested location dict from Indeed/LinkedIn
+    # 1. Check direct nested location dict from Indeed
     if isinstance(item, dict):
         loc_dict = item.get("location")
         if isinstance(loc_dict, dict):
@@ -386,7 +386,7 @@ def classify_region(location_str, title_str="", description_str="", item=None):
     """
     Classifies a job location into a country name, 'Remote', or 'Other'.
     """
-    # 1. Check nested location dict from Indeed/LinkedIn
+    # 1. Check nested location dict from Indeed
     if isinstance(item, dict):
         loc_dict = item.get("location")
         if isinstance(loc_dict, dict):
