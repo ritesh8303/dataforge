@@ -50,6 +50,37 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed_url = urlparse(self.path)
+        
+        # Determine if request is for static HTML file in docs/
+        filename = parsed_url.path.lstrip("/")
+        if filename.startswith("docs/"):
+            filename = filename[5:]
+            
+        docs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "docs"))
+        static_file_path = os.path.join(docs_dir, filename)
+        
+        # Serve default index.html for base paths
+        if parsed_url.path in ("/", "/docs", "/docs/"):
+            static_file_path = os.path.join(docs_dir, "index.html")
+            
+        if os.path.exists(static_file_path) and os.path.isfile(static_file_path) and static_file_path.endswith(".html"):
+            try:
+                with open(static_file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(content.encode("utf-8"))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header("Content-Type", "text/plain")
+                self.end_headers()
+                self.wfile.write(f"Error reading static file: {str(e)}".encode("utf-8"))
+                return
+
+        # Fallback to API handlers
         query_params = parse_qs(parsed_url.query)
         # Convert list values to single strings as API Gateway does
         single_params = {k: v[0] for k, v in query_params.items()}
