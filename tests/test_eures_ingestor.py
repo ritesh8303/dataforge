@@ -1,9 +1,13 @@
+import importlib
+import sys
 import unittest
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import requests
 
+from src import ingest_eures
 from src.ingest_eures import (
     AntigravityClient,
     _job_url,
@@ -13,6 +17,8 @@ from src.ingest_eures import (
     lambda_handler,
     normalize_eures_job,
 )
+
+eures_requests = ingest_eures.requests
 
 
 class TestEuresIngestor(unittest.TestCase):
@@ -73,8 +79,8 @@ class TestEuresIngestor(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_post.side_effect = [
-            requests.exceptions.ConnectionError("Connection error"),
-            requests.exceptions.Timeout("Timeout"),
+            eures_requests.exceptions.ConnectionError("Connection error"),
+            eures_requests.exceptions.Timeout("Timeout"),
             mock_response,
         ]
 
@@ -117,6 +123,19 @@ class TestEuresIngestor(unittest.TestCase):
         self.assertEqual(len(df_passed), 1)
         self.assertEqual(df_passed.iloc[0]["job_id"], "eures_vacancy_abc")
         self.assertEqual(df_passed.iloc[0]["source"], "eures")
+
+
+    def test_import_site_package_avoids_src_shadow(self):
+        from src.processing.site_imports import import_site_package
+
+        src_dir = Path(__file__).resolve().parents[1] / "src"
+        shadow = src_dir / "requests"
+        if not shadow.is_dir():
+            self.skipTest("src/requests vendor shadow not present in this environment")
+
+        mod = import_site_package("requests")
+        self.assertTrue(hasattr(mod, "Session"))
+        self.assertNotEqual(getattr(mod, "__file__", ""), str(shadow / "__init__.py"))
 
 
 if __name__ == "__main__":

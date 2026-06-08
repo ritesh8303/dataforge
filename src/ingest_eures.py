@@ -20,7 +20,10 @@ from datetime import datetime, timezone
 from urllib.parse import quote
 
 import pandas as pd
-import requests
+
+from processing.site_imports import import_site_package
+
+requests = import_site_package("requests")
 
 # Standard library antigravity opens a browser — shim a retry-enabled HTTP client instead.
 if "antigravity" not in sys.modules:
