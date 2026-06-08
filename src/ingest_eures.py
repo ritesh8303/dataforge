@@ -1,31 +1,34 @@
-import os
-import sys
+"""
+dataforge-eures-ingestor
+
+Fetches EU job postings from the EURES portal API and writes Bronze Parquet.
+Runs on a GitHub Actions schedule (not Lambda) to avoid WAF blocks and timeout limits.
+"""
+
+from __future__ import annotations
+
 import json
 import logging
+import os
+import re
+import sys
 import types
+import time
 from datetime import datetime, timezone
+
 import pandas as pd
 import requests
-from processing.utils import save_parquet
 
-# -------------------------------------------------------------------------
-# Shim the "antigravity" library so it provides a safe, retry-enabled
-# REST client interface within the standard AWS Lambda environment.
-# This prevents the standard library easter egg from triggering webbrowser
-# and allows us to orchestrate direct REST HTTP calls using my name.
-# -------------------------------------------------------------------------
+# Standard library antigravity opens a browser — shim a retry-enabled HTTP client instead.
 if "antigravity" not in sys.modules:
     antigravity_mock = types.ModuleType("antigravity")
     sys.modules["antigravity"] = antigravity_mock
 
-import antigravity
+import antigravity  # noqa: E402
 
 
 class AntigravityClient:
-    """
-    Wrapper interface utilizing standard requests under the hood to safely
-    handle payload life cycles, HTTP configurations, and automated retries.
-    """
+    """Retry-enabled HTTP client used for EURES API POST requests."""
 
     def __init__(self, retries=3, backoff_factor=2):
         self.retries = retries
@@ -33,9 +36,6 @@ class AntigravityClient:
         self.session = requests.Session()
 
     def post(self, url, json_payload, headers=None):
-        """Executes HTTP POST request with automatic exponential backoff retry logic."""
-        import time
-
         last_error = None
         for attempt in range(self.retries):
             try:
@@ -43,16 +43,14 @@ class AntigravityClient:
                 response.raise_for_status()
                 return response
             except requests.exceptions.RequestException as e:
-                logging.warning(f"Antigravity network retry attempt {attempt + 1} failed: {str(e)}")
+                logging.warning(f"EURES API retry attempt {attempt + 1} failed: {e}")
                 last_error = e
                 time.sleep(self.backoff_factor**attempt)
         raise last_error
 
 
-# Assign our agentic HTTP client to the antigravity namespace shim
 antigravity.Client = AntigravityClient
 
-# Setup default logger
 logger = logging.getLogger(__name__)
 if not logger.handlers:
     handler = logging.StreamHandler(sys.stdout)
@@ -60,12 +58,23 @@ if not logger.handlers:
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
 
+EURES_ENDPOINT = "https://europa.eu/eures/portal/jv-se/api/v2/search/jobs"
+EURES_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Content-Type": "application/json",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Origin": "https://europa.eu",
+    "Referer": "https://europa.eu/eures/portal/jv-se/search/jobs",
+}
+SEARCH_KEYWORDS = ["Data", "Software", "MLOps", "DevOps"]
+
 
 def extract_location(item):
-    """Safely extracts combined 'City, Country' string from EURES nested JSON structures."""
+    """Extract a combined 'City, Country' string from EURES nested location fields."""
     locs = item.get("locations") or item.get("location")
     if not locs:
-        return "Unknown Location"
+        return ""
 
     parts = []
     if isinstance(locs, list):
@@ -85,11 +94,11 @@ def extract_location(item):
         elif city or country:
             parts.append(city or country)
 
-    return "; ".join(parts) if parts else "Unknown Location"
+    return "; ".join(parts)
 
 
 def extract_tags(item):
-    """Extracts category names and compiles them into a stringified JSON array."""
+    """Extract category labels as a comma-separated string (unified Bronze schema)."""
     categories = item.get("categories") or item.get("sectors") or []
     tags = []
     if isinstance(categories, list):
@@ -97,132 +106,136 @@ def extract_tags(item):
             if isinstance(cat, dict):
                 name = cat.get("name") or cat.get("label") or cat.get("value")
                 if name:
-                    tags.append(name)
+                    tags.append(str(name))
             elif isinstance(cat, str):
                 tags.append(cat)
     elif isinstance(categories, str):
         tags.append(categories)
+    return ",".join(tags)
 
-    return json.dumps(tags)
+
+def _looks_remote(*values):
+    haystack = " ".join(str(v).lower() for v in values if v)
+    return bool(re.search(r"\b(remote|hybrid|home[- ]?office|work from home|mobiles arbeiten)\b", haystack))
 
 
-def lambda_handler(event, context):
-    """
-    AWS Lambda Handler to fetch EURES job postings and save them in the Bronze bucket.
-    """
-    bucket = os.environ.get("BRONZE_BUCKET")
-    is_local = os.environ.get("LOCAL_RUN") == "true"
+def normalize_eures_job(item):
+    """Map a raw EURES API item to the unified Bronze schema."""
+    raw_id = item.get("id") or item.get("jobId") or item.get("vacancyId")
+    title = str(item.get("title") or "").strip()
+    if not raw_id or not title:
+        return None
 
-    if not bucket and not is_local:
-        error_msg = "BRONZE_BUCKET environment variable is not set."
-        logger.error(error_msg)
-        return {"statusCode": 500, "body": json.dumps({"error": error_msg})}
+    company = str(
+        item.get("employer", {}).get("name")
+        if isinstance(item.get("employer"), dict)
+        else (item.get("companyName") or "Unknown Employer")
+    ).strip()
 
-    # EURES internal API endpoint
-    endpoint = "https://europa.eu/eures/portal/jv-se/api/v2/search/jobs"
+    location = extract_location(item)
+    description = str(item.get("description") or item.get("descriptionText") or "").strip()
+    url = str(
+        item.get("url") or item.get("jobUrl") or f"https://europa.eu/eures/portal/jv-se/job/{raw_id}"
+    ).strip()
 
-    # Configure headers
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Content-Type": "application/json",
-        "Accept": "application/json",
+    return {
+        "job_id": f"eures_{raw_id}",
+        "title": title,
+        "company": company,
+        "location": location,
+        "url": url,
+        "description": description,
+        "tags": extract_tags(item),
+        "job_types": str(item.get("contractType") or item.get("employmentType") or "permanent").strip(),
+        "remote": _looks_remote(title, location, description),
+        "source": "eures",
+        "ingested_at": datetime.now(timezone.utc).isoformat(),
     }
 
-    # Initialize Antigravity wrapper client
-    client = antigravity.Client(retries=3, backoff_factor=2)
 
-    keywords = ["Data", "Software", "MLOps", "DevOps"]
-    results_per_page = 100
-    max_pages = 2  # Keep execution time bounded in Lambda
+def fetch_eures_jobs(client=None, keywords=None, results_per_page=100, max_pages=2):
+    """Fetch and deduplicate EURES postings for the configured keyword set."""
+    client = client or antigravity.Client(retries=3, backoff_factor=2)
+    keywords = keywords or SEARCH_KEYWORDS
 
     all_jobs = []
-    current_page = 1
+    seen_ids = set()
 
-    logger.info(f"Starting EURES ingestion pipeline for keywords: {keywords}")
-
-    while current_page <= max_pages:
-        logger.info(f"Fetching page {current_page} from EURES portal API...")
-
-        # Construct search payload body
+    for page in range(1, max_pages + 1):
+        logger.info(f"Fetching EURES page {page}...")
         payload = {
             "keywords": keywords,
             "resultsPerPage": results_per_page,
-            "page": current_page,
+            "page": page,
             "orderBy": "MOST_RECENT",
         }
 
         try:
-            # Safely orchestrate HTTP POST via Antigravity client wrapper
-            response = client.post(endpoint, json_payload=payload, headers=headers)
+            response = client.post(EURES_ENDPOINT, json_payload=payload, headers=EURES_HEADERS)
             data = response.json()
-
-            # Extract results list
-            jobs = data.get("results") or data.get("jobs") or data.get("items") or []
-            if not jobs:
-                logger.info("No more jobs returned from EURES API.")
-                break
-
-            all_jobs.extend(jobs)
-            logger.info(f"Ingested {len(jobs)} jobs from page {current_page}.")
-
-            # Safeguard if total results are less than next page boundary
-            total_results = data.get("totalNumberOfResults") or data.get("total") or len(jobs)
-            if len(all_jobs) >= total_results:
-                break
-
-            current_page += 1
-
         except Exception as e:
-            logger.error(f"Failed to fetch page {current_page}: {str(e)}")
+            logger.error(f"Failed to fetch EURES page {page}: {e}")
             break
 
-    if not all_jobs:
+        jobs = data.get("results") or data.get("jobs") or data.get("items") or []
+        if not jobs:
+            logger.info("No more jobs returned from EURES API.")
+            break
+
+        for job in jobs:
+            raw_id = job.get("id") or job.get("jobId") or job.get("vacancyId")
+            if raw_id and raw_id not in seen_ids:
+                seen_ids.add(raw_id)
+                all_jobs.append(job)
+
+        logger.info(f"Ingested {len(jobs)} jobs from page {page} ({len(all_jobs)} unique total).")
+
+        total_results = data.get("totalNumberOfResults") or data.get("total") or 0
+        if total_results and len(all_jobs) >= total_results:
+            break
+
+    return all_jobs
+
+
+def lambda_handler(event, context):
+    """
+    Ingest EURES job postings into the Bronze bucket.
+    Invoked from GitHub Actions or locally via `python src/ingest_eures.py`.
+    """
+    bucket = os.environ.get("BRONZE_BUCKET")
+    is_local = os.environ.get("LOCAL_RUN") == "true"
+    if not bucket and not is_local:
+        raise ValueError("BRONZE_BUCKET environment variable is not set.")
+
+    logger.info(f"Starting EURES ingestion for keywords: {SEARCH_KEYWORDS}")
+    raw_jobs = fetch_eures_jobs()
+
+    if not raw_jobs:
         logger.warning("No EURES jobs fetched.")
         return {"statusCode": 204, "body": "No jobs found to ingest."}
 
-    # Map raw EURES items to DataForge Bronze Schema
-    normalized_jobs = []
-    current_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    normalized = [job for item in raw_jobs if (job := normalize_eures_job(item))]
+    if not normalized:
+        return {"statusCode": 204, "body": "No valid EURES jobs after normalization."}
 
-    for item in all_jobs:
-        raw_id = item.get("id") or item.get("jobId") or item.get("vacancyId")
-        if not raw_id:
-            continue
+    df = pd.DataFrame(normalized)
+    df["remote"] = df["remote"].astype(bool)
 
-        normalized_jobs.append(
-            {
-                "job_id": f"eures_{raw_id}",
-                "title": str(item.get("title") or "").strip(),
-                "company": str(
-                    item.get("employer", {}).get("name")
-                    if isinstance(item.get("employer"), dict)
-                    else (item.get("companyName") or "Unknown Employer")
-                ).strip(),
-                "location": extract_location(item),
-                "source": "EURES",
-                "url": str(
-                    item.get("url") or item.get("jobUrl") or f"https://europa.eu/eures/portal/jv-se/job/{raw_id}"
-                ).strip(),
-                "description": str(item.get("description") or item.get("descriptionText") or "").strip(),
-                "tags": extract_tags(item),
-                "job_type": str(item.get("contractType") or item.get("employmentType") or "permanent").strip(),
-                "ingested_at": current_date,
-            }
-        )
-
-    # Convert to pandas DataFrame
-    df = pd.DataFrame(normalized_jobs)
-
-    # Partition path prefix
     date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     path = f"s3://{bucket}/eures/ingested_at={date_str}/jobs.parquet"
 
-    # Save to Bronze destination (local file or S3 bucket via wrangler)
     try:
+        from processing.utils import save_parquet
+
         save_parquet(df, path, "eures")
-        logger.info(f"Successfully processed and stored {len(df)} EURES jobs.")
-        return {"statusCode": 200, "body": f"Successfully ingested {len(df)} jobs from EURES."}
+        msg = f"Successfully ingested {len(df)} jobs from EURES."
+        logger.info(msg)
+        return {"statusCode": 200, "body": msg}
     except Exception as e:
-        error_msg = f"Failed to save EURES parquet data: {str(e)}"
+        error_msg = f"EURES ingestion failed: {e}"
         logger.error(error_msg)
         return {"statusCode": 500, "body": json.dumps({"error": error_msg})}
+
+
+if __name__ == "__main__":
+    lambda_handler({}, None)

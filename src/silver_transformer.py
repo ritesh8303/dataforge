@@ -104,6 +104,7 @@ def lambda_handler(event, context):
             f"s3://{bronze_bucket}/hacker_news/ingested_at={today_str}/jobs.parquet",
             f"s3://{bronze_bucket}/berlin_startups/ingested_at={today_str}/jobs.parquet",
             f"s3://{bronze_bucket}/eures/ingested_at={today_str}/jobs.parquet",
+            f"s3://{bronze_bucket}/apify_indeed/ingested_at={today_str}/jobs.parquet",
         ]
 
     dfs = []
@@ -130,14 +131,14 @@ def lambda_handler(event, context):
     bronze_df = validate_jobs(bronze_df)
 
     # Filter for Europe-only jobs (safety gate)
-    # Sources 'ba_api', 'arbeitnow', and 'berlin_startups' are inherently European.
+    # Sources 'ba_api', 'arbeitnow', 'berlin_startups', and 'eures' are inherently European.
     # Other sources ('direct', 'hacker_news', 'apify') are filtered.
     if not bronze_df.empty:
         initial_len = len(bronze_df)
 
         def row_is_in_europe(r):
             source = r.get("source", "")
-            if source in ("ba_api", "arbeitnow", "berlin_startups"):
+            if source in ("ba_api", "arbeitnow", "berlin_startups", "eures"):
                 return True
             return is_in_europe(
                 location_str=r.get("location", ""),

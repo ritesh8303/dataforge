@@ -9,7 +9,10 @@ EventBridge (Daily Schedules)
   ├── dataforge-ingestor        → Arbeitnow API (paginated, ~900 jobs)
   ├── dataforge-ba-ingestor     → BA Jobsuche API (8 queries, ~5000 jobs)
   ├── dataforge-company-ingestor→ Direct ATS career feeds (configurable companies)
-  └── dataforge-apify-ingestor  → Apify Indeed scraping runs
+  ├── dataforge-apify-ingestor  → Apify Indeed scraping runs
+  ├── dataforge-hn-ingestor     → Hacker News jobstories + Who is Hiring
+  ├── dataforge-berlin-startups-ingestor → Berlin Startup Jobs RSS
+  └── GitHub Action (daily 4AM) → EURES EU job portal API
             │
             ▼ S3 upload (.parquet)
       dataforge-bronze-dev-eu-central-1 (Bronze Bucket)
@@ -66,6 +69,7 @@ EventBridge (Daily Schedules)
   Ashby, Workable, SmartRecruiters, Recruitee, Personio XML, Workday CXS,
   Comeet, and Pinpoint.
 - **Apify scraper runs** — Indeed search task scraping.
+- **EURES** — EU job mobility portal API (ingested daily via GitHub Actions at 4 AM UTC; picked up by the Silver transformer on its next run).
 
 ### Apify Scrapers Integration
 

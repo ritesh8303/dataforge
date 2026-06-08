@@ -97,18 +97,28 @@ def test_pipeline_e2e():
     try:
         rules = events_client.list_rules(NamePrefix="dataforge")
         enabled = [r for r in rules["Rules"] if r["State"] == "ENABLED"]
-        if len(enabled) != 8:
-            print(f"   ❌ FAILED: Expected 8 enabled schedules, found {len(enabled)}")
+        if len(enabled) != 7:
+            print(f"   ❌ FAILED: Expected 7 enabled schedules, found {len(enabled)}")
             return False
-        print(
-            "   ✅ All 8 schedules enabled (including scheduled transformer, HN, Berlin Startup Jobs, and EURES ingestors)"
-        )
+        print("   ✅ All 7 Lambda schedules enabled (EURES runs separately via GitHub Actions)")
     except Exception as e:
         print(f"   ❌ FAILED: {e}")
         return False
 
-    # Step 7: Verify S3 trigger has been removed
-    print("\n7. Checking S3 trigger configuration...")
+    # Step 7: Check EURES Bronze data (ingested via GitHub Actions, not Lambda)
+    print("\n7. Checking EURES Bronze prefix...")
+    try:
+        objects = s3_client.list_objects_v2(Bucket="dataforge-bronze-dev-eu-central-1", Prefix="eures/")
+        if objects.get("KeyCount", 0) == 0:
+            print("   ⚠️  WARNING: No EURES files yet (runs daily at 4:00 AM UTC via GitHub Actions)")
+        else:
+            latest = sorted(objects["Contents"], key=lambda x: x["LastModified"])[-1]
+            print(f"   ✅ Latest EURES file: {latest['Key']} ({latest['Size']} bytes)")
+    except Exception as e:
+        print(f"   ⚠️  WARNING: Could not check EURES prefix: {e}")
+
+    # Step 8: Verify S3 trigger has been removed
+    print("\n8. Checking S3 trigger configuration...")
     try:
         config = s3_client.get_bucket_notification_configuration(Bucket="dataforge-bronze-dev-eu-central-1")
         lambdas = config.get("LambdaFunctionConfigurations", [])
