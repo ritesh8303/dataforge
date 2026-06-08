@@ -32,5 +32,4 @@ jobs:
           AWS_DEFAULT_REGION: eu-central-1
           BRONZE_BUCKET: dataforge-bronze-dev-eu-central-1
           LOCAL_RUN: "false"
-          PYTHONPATH: src
-        run: python src/ingest_eures.py
+        run: python -c "import sys; sys.path.append('src'); import ingest_eures; print(ingest_eures.lambda_handler({}, None))"

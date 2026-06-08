@@ -12,6 +12,7 @@ INGESTORS = {
     "berlin": ("ingest_berlin_startups", "Berlin Startup Jobs Ingestor"),
     "apify": ("ingest_apify", "Apify Indeed Ingestor"),
     "direct": ("ingest_company_careers", "Direct Company Careers Ingestor"),
+    "eures": ("ingest_eures", "EURES Portal Ingestor"),
 }
 
 def main():

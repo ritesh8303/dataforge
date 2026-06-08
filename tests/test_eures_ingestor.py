@@ -7,6 +7,7 @@ import requests
 
 from src.ingest_eures import (
     AntigravityClient,
+    build_search_payload,
     extract_location,
     extract_tags,
     lambda_handler,
@@ -15,37 +16,51 @@ from src.ingest_eures import (
 
 
 class TestEuresIngestor(unittest.TestCase):
-    def test_extract_location_list(self):
+    def test_extract_location_map(self):
+        item = {"locationMap": {"DE": ["DE7"], "FR": [None]}}
+        self.assertEqual(extract_location(item), "DE (DE7); FR")
+
+    def test_extract_location_legacy_list(self):
         item = {"locations": [{"cityName": "Berlin", "countryCode": "DE"}, {"cityName": "Paris", "countryCode": "FR"}]}
         self.assertEqual(extract_location(item), "Berlin, DE; Paris, FR")
-
-    def test_extract_location_dict(self):
-        item = {"location": {"cityName": "Munich", "countryCode": "DE"}}
-        self.assertEqual(extract_location(item), "Munich, DE")
 
     def test_extract_location_missing(self):
         self.assertEqual(extract_location({}), "")
 
     def test_extract_tags(self):
-        item = {"categories": [{"name": "IT Services"}, {"name": "Software Development"}]}
-        self.assertEqual(extract_tags(item), "IT Services,Software Development")
+        item = {
+            "positionScheduleCodes": ["fulltime"],
+            "positionOfferingCode": "directhire",
+            "jobCategoriesCodes": ["http://data.europa.eu/esco/occupation/example"],
+        }
+        self.assertEqual(extract_tags(item), "fulltime,directhire,example")
+
+    def test_build_search_payload(self):
+        payload = build_search_payload(["data engineer"], page=2, results_per_page=25, session_id="sess-1")
+        self.assertEqual(payload["page"], 2)
+        self.assertEqual(payload["resultsPerPage"], 25)
+        self.assertEqual(payload["keywords"], [{"keyword": "data engineer", "specificSearchCode": "EVERYWHERE"}])
+        self.assertEqual(payload["sessionId"], "sess-1")
 
     def test_normalize_eures_job(self):
         item = {
             "id": "vacancy_abc",
             "title": "Data Engineer",
             "employer": {"name": "Test Company"},
-            "locations": [{"cityName": "Hamburg", "countryCode": "DE"}],
-            "url": "http://eures.url/jobs/vacancy_abc",
-            "description": "Awesome role",
-            "categories": [{"name": "Tech"}],
-            "contractType": "permanent",
+            "locationMap": {"DE": ["DE7"]},
+            "description": "<b>Build pipelines</b>",
+            "positionOfferingCode": "directhire",
+            "positionScheduleCodes": ["fulltime"],
+            "creationDate": 1739403609768,
         }
         job = normalize_eures_job(item)
         self.assertEqual(job["job_id"], "eures_vacancy_abc")
         self.assertEqual(job["source"], "eures")
-        self.assertEqual(job["job_types"], "permanent")
-        self.assertEqual(job["tags"], "Tech")
+        self.assertEqual(job["company"], "Test Company")
+        self.assertEqual(job["location"], "DE (DE7)")
+        self.assertEqual(job["description"], "Build pipelines")
+        self.assertIn("directhire", job["job_types"])
+        self.assertTrue(job["url"].endswith("/job?lang=en"))
 
     @patch("src.ingest_eures.requests.Session.post")
     def test_antigravity_client_retry(self, mock_post):
@@ -71,17 +86,16 @@ class TestEuresIngestor(unittest.TestCase):
 
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "totalNumberOfResults": 1,
-            "results": [
+            "numberRecords": 1,
+            "jvs": [
                 {
                     "id": "vacancy_abc",
                     "title": "Data Engineer",
                     "employer": {"name": "Test Company"},
-                    "locations": [{"cityName": "Hamburg", "countryCode": "DE"}],
-                    "url": "http://eures.url/jobs/vacancy_abc",
+                    "locationMap": {"DE": ["DE7"]},
                     "description": "Awesome role",
-                    "categories": [{"name": "Tech"}],
-                    "contractType": "permanent",
+                    "positionOfferingCode": "directhire",
+                    "positionScheduleCodes": ["fulltime"],
                 }
             ],
         }

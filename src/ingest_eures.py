@@ -7,6 +7,7 @@ Runs on a GitHub Actions schedule (not Lambda) to avoid WAF blocks and timeout l
 
 from __future__ import annotations
 
+import html
 import json
 import logging
 import os
@@ -14,6 +15,7 @@ import re
 import sys
 import types
 import time
+import uuid
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -39,9 +41,16 @@ class AntigravityClient:
         last_error = None
         for attempt in range(self.retries):
             try:
-                response = self.session.post(url, json=json_payload, headers=headers, timeout=15)
+                response = self.session.post(url, json=json_payload, headers=headers, timeout=30)
                 response.raise_for_status()
                 return response
+            except requests.exceptions.HTTPError as e:
+                # Client errors are not transient — retrying will not help.
+                if e.response is not None and 400 <= e.response.status_code < 500:
+                    raise
+                logging.warning(f"EURES API retry attempt {attempt + 1} failed: {e}")
+                last_error = e
+                time.sleep(self.backoff_factor**attempt)
             except requests.exceptions.RequestException as e:
                 logging.warning(f"EURES API retry attempt {attempt + 1} failed: {e}")
                 last_error = e
@@ -58,20 +67,65 @@ if not logger.handlers:
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
 
-EURES_ENDPOINT = "https://europa.eu/eures/portal/jv-se/api/v2/search/jobs"
+EURES_ENDPOINT = "https://europa.eu/eures/api/jv-searchengine/public/jv-search/search"
 EURES_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Content-Type": "application/json",
     "Accept": "application/json, text/plain, */*",
     "Accept-Language": "en-US,en;q=0.9",
     "Origin": "https://europa.eu",
-    "Referer": "https://europa.eu/eures/portal/jv-se/search/jobs",
+    "Referer": "https://europa.eu/eures/portal/jv-se/search",
 }
-SEARCH_KEYWORDS = ["Data", "Software", "MLOps", "DevOps"]
+SEARCH_KEYWORDS = [
+    "data engineer",
+    "data scientist",
+    "software engineer",
+    "mlops",
+    "devops",
+]
+
+
+def build_search_payload(keywords, page, results_per_page, session_id):
+    """Build a request body for the public EURES search engine API."""
+    return {
+        "resultsPerPage": results_per_page,
+        "page": page,
+        "sortSearch": "MOST_RECENT",
+        "keywords": [{"keyword": kw, "specificSearchCode": "EVERYWHERE"} for kw in keywords],
+        "publicationPeriod": None,
+        "occupationUris": [],
+        "skillUris": [],
+        "requiredExperienceCodes": [],
+        "positionScheduleCodes": [],
+        "sectorCodes": [],
+        "educationAndQualificationLevelCodes": [],
+        "positionOfferingCodes": [],
+        "locationCodes": [],
+        "euresFlagCodes": [],
+        "otherBenefitsCodes": [],
+        "requiredLanguages": [],
+        "minNumberPost": None,
+        "sessionId": session_id,
+        "requestLanguage": "en",
+    }
 
 
 def extract_location(item):
-    """Extract a combined 'City, Country' string from EURES nested location fields."""
+    """Extract a location string from EURES locationMap or legacy location fields."""
+    location_map = item.get("locationMap")
+    if isinstance(location_map, dict) and location_map:
+        parts = []
+        for country, regions in location_map.items():
+            if not isinstance(regions, list) or not regions:
+                parts.append(str(country))
+                continue
+            region_labels = [str(r) for r in regions if r]
+            if region_labels:
+                parts.append(f"{country} ({', '.join(region_labels)})")
+            else:
+                parts.append(str(country))
+        return "; ".join(parts)
+
     locs = item.get("locations") or item.get("location")
     if not locs:
         return ""
@@ -98,9 +152,16 @@ def extract_location(item):
 
 
 def extract_tags(item):
-    """Extract category labels as a comma-separated string (unified Bronze schema)."""
-    categories = item.get("categories") or item.get("sectors") or []
+    """Extract schedule/offering/category labels as a comma-separated string."""
     tags = []
+    for code in item.get("positionScheduleCodes") or []:
+        if code:
+            tags.append(str(code))
+    offering = item.get("positionOfferingCode") or item.get("contractType") or item.get("employmentType")
+    if offering:
+        tags.append(str(offering))
+
+    categories = item.get("categories") or item.get("sectors") or item.get("jobCategoriesCodes") or []
     if isinstance(categories, list):
         for cat in categories:
             if isinstance(cat, dict):
@@ -108,15 +169,30 @@ def extract_tags(item):
                 if name:
                     tags.append(str(name))
             elif isinstance(cat, str):
-                tags.append(cat)
+                if cat.startswith("http"):
+                    tags.append(cat.rsplit("/", 1)[-1])
+                else:
+                    tags.append(cat)
     elif isinstance(categories, str):
         tags.append(categories)
-    return ",".join(tags)
+
+    return ",".join(dict.fromkeys(tags))
+
+
+def _strip_html(value):
+    text = re.sub(r"<br\s*/?>", " ", str(value or ""), flags=re.IGNORECASE)
+    text = re.sub(r"</p\s*>", " ", text, flags=re.IGNORECASE)
+    text = re.sub(r"<[^>]+>", " ", text)
+    return re.sub(r"\s+", " ", html.unescape(text)).strip()
 
 
 def _looks_remote(*values):
     haystack = " ".join(str(v).lower() for v in values if v)
     return bool(re.search(r"\b(remote|hybrid|home[- ]?office|work from home|mobiles arbeiten)\b", haystack))
+
+
+def _job_url(raw_id):
+    return f"https://europa.eu/eures/portal/jv-se/jv/{raw_id}/job?lang=en"
 
 
 def normalize_eures_job(item):
@@ -126,17 +202,24 @@ def normalize_eures_job(item):
     if not raw_id or not title:
         return None
 
-    company = str(
-        item.get("employer", {}).get("name")
-        if isinstance(item.get("employer"), dict)
-        else (item.get("companyName") or "Unknown Employer")
-    ).strip()
+    employer = item.get("employer") if isinstance(item.get("employer"), dict) else {}
+    company = str(employer.get("name") or item.get("companyName") or "Unknown Employer").strip()
 
     location = extract_location(item)
-    description = str(item.get("description") or item.get("descriptionText") or "").strip()
-    url = str(
-        item.get("url") or item.get("jobUrl") or f"https://europa.eu/eures/portal/jv-se/job/{raw_id}"
-    ).strip()
+    description = _strip_html(item.get("description") or item.get("descriptionText") or "")
+    url = str(item.get("url") or item.get("jobUrl") or _job_url(raw_id)).strip()
+
+    schedules = item.get("positionScheduleCodes") or []
+    offering = item.get("positionOfferingCode") or item.get("contractType") or item.get("employmentType") or ""
+    job_types = ",".join([str(v) for v in [offering, *schedules] if v])
+
+    published_at = ""
+    creation_ms = item.get("creationDate")
+    if creation_ms:
+        try:
+            published_at = datetime.fromtimestamp(int(creation_ms) / 1000, tz=timezone.utc).isoformat()
+        except (TypeError, ValueError, OSError):
+            published_at = ""
 
     return {
         "job_id": f"eures_{raw_id}",
@@ -146,38 +229,37 @@ def normalize_eures_job(item):
         "url": url,
         "description": description,
         "tags": extract_tags(item),
-        "job_types": str(item.get("contractType") or item.get("employmentType") or "permanent").strip(),
+        "job_types": job_types or "permanent",
         "remote": _looks_remote(title, location, description),
+        "published_at": published_at,
         "source": "eures",
         "ingested_at": datetime.now(timezone.utc).isoformat(),
     }
 
 
-def fetch_eures_jobs(client=None, keywords=None, results_per_page=100, max_pages=2):
+def fetch_eures_jobs(client=None, keywords=None, results_per_page=50, max_pages=4, session_id=None):
     """Fetch and deduplicate EURES postings for the configured keyword set."""
     client = client or antigravity.Client(retries=3, backoff_factor=2)
     keywords = keywords or SEARCH_KEYWORDS
+    session_id = session_id or str(uuid.uuid4())
 
     all_jobs = []
     seen_ids = set()
 
     for page in range(1, max_pages + 1):
         logger.info(f"Fetching EURES page {page}...")
-        payload = {
-            "keywords": keywords,
-            "resultsPerPage": results_per_page,
-            "page": page,
-            "orderBy": "MOST_RECENT",
-        }
+        payload = build_search_payload(keywords, page, results_per_page, session_id)
 
         try:
             response = client.post(EURES_ENDPOINT, json_payload=payload, headers=EURES_HEADERS)
             data = response.json()
+            if not isinstance(data, dict):
+                raise ValueError(f"Unexpected EURES response type: {type(data).__name__}")
         except Exception as e:
             logger.error(f"Failed to fetch EURES page {page}: {e}")
             break
 
-        jobs = data.get("results") or data.get("jobs") or data.get("items") or []
+        jobs = data.get("jvs") or data.get("results") or data.get("jobs") or data.get("items") or []
         if not jobs:
             logger.info("No more jobs returned from EURES API.")
             break
@@ -190,8 +272,10 @@ def fetch_eures_jobs(client=None, keywords=None, results_per_page=100, max_pages
 
         logger.info(f"Ingested {len(jobs)} jobs from page {page} ({len(all_jobs)} unique total).")
 
-        total_results = data.get("totalNumberOfResults") or data.get("total") or 0
+        total_results = data.get("numberRecords") or data.get("totalNumberOfResults") or data.get("total") or 0
         if total_results and len(all_jobs) >= total_results:
+            break
+        if len(jobs) < results_per_page:
             break
 
     return all_jobs
@@ -200,7 +284,7 @@ def fetch_eures_jobs(client=None, keywords=None, results_per_page=100, max_pages
 def lambda_handler(event, context):
     """
     Ingest EURES job postings into the Bronze bucket.
-    Invoked from GitHub Actions or locally via `python src/ingest_eures.py`.
+    Invoked from GitHub Actions or locally via `analytics/run_ingestor_local.py eures`.
     """
     bucket = os.environ.get("BRONZE_BUCKET")
     is_local = os.environ.get("LOCAL_RUN") == "true"
