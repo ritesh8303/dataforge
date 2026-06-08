@@ -54,6 +54,7 @@ def lambda_handler(event, context):
     status = (params.get("status") or "active").lower().strip()  # active | expired
     max_limit = 12000
     limit = min(int(params.get("limit", 500)), max_limit)
+    offset = max(int(params.get("offset", 0)), 0)
 
     cache_key = status
     now = time.time()
@@ -131,19 +132,22 @@ def lambda_handler(event, context):
     all_jobs = _cache.get(cache_key, [])
     today = __import__("datetime").date.today().isoformat()
     filtered_count = len(jobs)
-    returned_count = min(filtered_count, limit)
+    page = jobs[offset : offset + limit]
+    returned_count = len(page)
+    has_more = (offset + returned_count) < filtered_count
     kpis = {
         "total": len(all_jobs),
         "new_today": sum(1 for j in all_jobs if j.get("date_added", "") == today),
         "remote": sum(1 for j in all_jobs if j.get("is_remote", "").lower() == "true"),
         "filtered": filtered_count,
         "returned": returned_count,
-        "truncated": filtered_count > returned_count,
+        "truncated": has_more,
+        "offset": offset,
         "limit": limit,
     }
 
     return {
         "statusCode": 200,
         "headers": CORS_HEADERS,
-        "body": json.dumps({"jobs": jobs[:limit], "kpis": kpis, "cached_at": _cache["ts"]}),
+        "body": json.dumps({"jobs": page, "kpis": kpis, "cached_at": _cache["ts"]}),
     }

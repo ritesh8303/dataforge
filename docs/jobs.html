@@ -9,7 +9,7 @@
   <title>DataForge — Find Jobs in Europe</title>
   <script>
     (function () {
-      var BUILD = "2026-06-08.4";
+      var BUILD = "2026-06-08.5";
       try {
         var key = "dataforge.jobs.build";
         var prev = localStorage.getItem(key);
@@ -629,8 +629,8 @@
   const JOBS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:8000/jobs"
     : "https://2amv4immb0.execute-api.eu-central-1.amazonaws.com/";
-  const BOARD_BUILD = "2026-06-08.4";
-  const JOB_FETCH_LIMIT = 12000;
+  const BOARD_BUILD = "2026-06-08.5";
+  const JOB_PAGE_SIZE = 2000;
   const PAGE_SIZE = 25;
 
   let allJobs = [];
@@ -689,13 +689,44 @@
     return res.json();
   }
 
+  async function fetchAllJobPages(baseParams) {
+    const jobs = [];
+    let offset = 0;
+    let filtered = 0;
+    let lastKpis = {};
+
+    while (true) {
+      const params = new URLSearchParams(baseParams);
+      params.set("limit", String(JOB_PAGE_SIZE));
+      params.set("offset", String(offset));
+      const data = await fetchJobsFromApi(params);
+      const batch = data.jobs || [];
+      lastKpis = data.kpis || {};
+      filtered = Number(lastKpis.filtered || filtered || 0);
+      jobs.push(...batch);
+      if (!batch.length || !lastKpis.truncated) break;
+      offset += batch.length;
+      if (filtered > 0 && jobs.length >= filtered) break;
+      if (offset > 50000) break;
+    }
+
+    return {
+      jobs,
+      kpis: {
+        ...lastKpis,
+        filtered: filtered || jobs.length,
+        returned: jobs.length,
+        truncated: false,
+      },
+    };
+  }
+
   async function loadJobs() {
     const source      = document.getElementById("source").value;
     const workStyle   = document.getElementById("work_style").value;
     const languageReq = document.getElementById("language").value;
 
     const params = new URLSearchParams({
-      limit: String(JOB_FETCH_LIMIT),
       sort: "newest",
       status: "active",
       board: BOARD_BUILD,
@@ -707,26 +738,9 @@
 
     try {
       document.getElementById("error-box").style.display = "none";
-      let data = await fetchJobsFromApi(params);
-      const expected = Number(data?.kpis?.filtered || 0);
-      let received = (data?.jobs || []).length;
-      const truncated = Boolean(data?.kpis?.truncated);
-      if (source && expected > 0 && received + 5 < expected && !truncated) {
-        params.set("_retry", String(Date.now()));
-        data = await fetchJobsFromApi(params);
-        received = (data?.jobs || []).length;
-      }
+      document.getElementById("result-count").textContent = "Loading...";
+      const data = await fetchAllJobPages(params);
       allJobs = data.jobs || [];
-      const stillTruncated = Boolean(data?.kpis?.truncated);
-      if (stillTruncated) {
-        document.getElementById("error-box").style.display = "block";
-        document.getElementById("error-box").textContent =
-          `Showing ${allJobs.length.toLocaleString()} of ${expected.toLocaleString()} matching jobs (API page limit). Narrow filters to see more.`;
-      } else if (source && expected > 0 && allJobs.length + 5 < expected) {
-        document.getElementById("error-box").style.display = "block";
-        document.getElementById("error-box").textContent =
-          `⚠ Loaded ${allJobs.length.toLocaleString()} of ${expected.toLocaleString()} ${source.toUpperCase()} jobs. Hard-refresh the page (Ctrl+Shift+R).`;
-      }
       populateCountryDropdown(allJobs);
       applyFilters(data);
     } catch(e) {
