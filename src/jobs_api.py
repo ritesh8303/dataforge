@@ -15,7 +15,8 @@ CORS_HEADERS = {
     "Access-Control-Allow-Methods": "GET,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Content-Type": "application/json",
-    "Cache-Control": "public, max-age=300",  # 5 minutes — matches Lambda in-memory cache
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    "Pragma": "no-cache",
 }
 
 
