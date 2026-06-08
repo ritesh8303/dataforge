@@ -9,7 +9,7 @@
   <title>DataForge — Find Jobs in Europe</title>
   <script>
     (function () {
-      var BUILD = "2026-06-08.3";
+      var BUILD = "2026-06-08.4";
       try {
         var key = "dataforge.jobs.build";
         var prev = localStorage.getItem(key);
@@ -629,7 +629,8 @@
   const JOBS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:8000/jobs"
     : "https://2amv4immb0.execute-api.eu-central-1.amazonaws.com/";
-  const BOARD_BUILD = "2026-06-08.3";
+  const BOARD_BUILD = "2026-06-08.4";
+  const JOB_FETCH_LIMIT = 12000;
   const PAGE_SIZE = 25;
 
   let allJobs = [];
@@ -693,9 +694,8 @@
     const workStyle   = document.getElementById("work_style").value;
     const languageReq = document.getElementById("language").value;
 
-    const limit = 5000;
     const params = new URLSearchParams({
-      limit: String(limit),
+      limit: String(JOB_FETCH_LIMIT),
       sort: "newest",
       status: "active",
       board: BOARD_BUILD,
@@ -709,13 +709,20 @@
       document.getElementById("error-box").style.display = "none";
       let data = await fetchJobsFromApi(params);
       const expected = Number(data?.kpis?.filtered || 0);
-      const received = (data?.jobs || []).length;
-      if (source && expected > 0 && received + 5 < expected) {
+      let received = (data?.jobs || []).length;
+      const truncated = Boolean(data?.kpis?.truncated);
+      if (source && expected > 0 && received + 5 < expected && !truncated) {
         params.set("_retry", String(Date.now()));
         data = await fetchJobsFromApi(params);
+        received = (data?.jobs || []).length;
       }
       allJobs = data.jobs || [];
-      if (source && expected > 0 && allJobs.length + 5 < expected) {
+      const stillTruncated = Boolean(data?.kpis?.truncated);
+      if (stillTruncated) {
+        document.getElementById("error-box").style.display = "block";
+        document.getElementById("error-box").textContent =
+          `Showing ${allJobs.length.toLocaleString()} of ${expected.toLocaleString()} matching jobs (API page limit). Narrow filters to see more.`;
+      } else if (source && expected > 0 && allJobs.length + 5 < expected) {
         document.getElementById("error-box").style.display = "block";
         document.getElementById("error-box").textContent =
           `⚠ Loaded ${allJobs.length.toLocaleString()} of ${expected.toLocaleString()} ${source.toUpperCase()} jobs. Hard-refresh the page (Ctrl+Shift+R).`;
