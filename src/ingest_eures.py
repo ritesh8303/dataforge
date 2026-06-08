@@ -17,6 +17,7 @@ import types
 import time
 import uuid
 from datetime import datetime, timezone
+from urllib.parse import quote
 
 import pandas as pd
 import requests
@@ -196,8 +197,23 @@ def _looks_remote(*values):
     return bool(re.search(r"\b(remote|hybrid|home[- ]?office|work from home|mobiles arbeiten)\b", haystack))
 
 
-def _job_url(raw_id):
-    return f"https://europa.eu/eures/portal/jv-se/jv/{raw_id}/job?lang=en"
+def _preferred_language(item):
+    langs = item.get("availableLanguages") or []
+    if isinstance(langs, list) and langs:
+        first = str(langs[0]).lower()
+        if first:
+            return first
+    return "en"
+
+
+def _job_url(raw_id, lang="en"):
+    """Build the public EURES job detail page URL (matches portal link format)."""
+    encoded_id = quote(str(raw_id), safe="")
+    lang = (lang or "en").lower()
+    return (
+        f"https://europa.eu/eures/portal/jv-se/jv-details/{encoded_id}"
+        f"?jvDisplayLanguage={lang}&lang={lang}"
+    )
 
 
 def normalize_eures_job(item):
@@ -212,7 +228,7 @@ def normalize_eures_job(item):
 
     location = extract_location(item)
     description = _strip_html(item.get("description") or item.get("descriptionText") or "")
-    url = str(item.get("url") or item.get("jobUrl") or _job_url(raw_id)).strip()
+    url = str(item.get("url") or item.get("jobUrl") or _job_url(raw_id, _preferred_language(item))).strip()
 
     schedules = item.get("positionScheduleCodes") or []
     offering = item.get("positionOfferingCode") or item.get("contractType") or item.get("employmentType") or ""

@@ -787,7 +787,7 @@
         : j.source === "eures" ? "source-eures"
         : isDirect ? "source-direct"
         : "";
-      const url = j.job_url || j.url || "#";
+      const url = fixEuresApplyUrl(j.job_url || j.url || "#");
 
       let workStyleBadge = "";
       if (j.work_style) {
@@ -871,7 +871,7 @@
             ${descSnippet}
           </div>
           <div class="btn-container">
-            <a class="apply-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
+            <a class="apply-btn" href="${escUrl(url)}" target="_blank" rel="noopener noreferrer">
               Apply →
             </a>
           </div>
@@ -899,6 +899,18 @@
     return String(s || "")
       .replace(/&/g,"&amp;").replace(/</g,"&lt;")
       .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function escUrl(u) {
+    try { return encodeURI(String(u || "")); } catch (_) { return "#"; }
+  }
+
+  function fixEuresApplyUrl(url) {
+    const u = String(url || "");
+    const legacy = u.match(/\/jv-se\/jv\/([^/?]+)\/job(?:\?|$)/);
+    if (!legacy) return u;
+    const id = decodeURIComponent(legacy[1]);
+    return `https://europa.eu/eures/portal/jv-se/jv-details/${encodeURIComponent(id)}?jvDisplayLanguage=en&lang=en`;
   }
 
   ["search","location"].forEach(id => {

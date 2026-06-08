@@ -1051,7 +1051,7 @@
         skills_match: matched.join(", ") || "General Engineering",
         missing_skills: missing,
         why_fits: `Strong overlap with your skills in ${matched.slice(0, 3).join(", ")}. Matches target title.`,
-        url: j.job_url || j.url || "#",
+        url: fixEuresApplyUrl(j.job_url || j.url || "#"),
         easy_apply: (j.source === "arbeitnow" || j.source === "direct") ? "Yes" : "No",
         priority: priority,
         compensation: comp,
@@ -1105,7 +1105,7 @@
           <td style="max-width:250px">${esc(j.exp_summary)}</td>
           <td style="max-width:200px;color:#a5b4fc">${esc(j.skills_match)}</td>
           <td style="max-width:250px">${esc(j.why_fits)}</td>
-          <td><a class="table-apply-btn" href="${esc(j.url)}" target="_blank" rel="noopener noreferrer">Apply →</a></td>
+          <td><a class="table-apply-btn" href="${escUrl(j.url)}" target="_blank" rel="noopener noreferrer">Apply →</a></td>
           <td>${j.easy_apply}</td>
           <td><span class="badge-pri ${priClass}">${j.priority}</span></td>
           <td style="color:#34d399;font-weight:600">${esc(j.compensation)}</td>
@@ -1183,6 +1183,18 @@
     return String(s || "")
       .replace(/&/g, "&amp;").replace(/</g, "&lt;")
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function escUrl(u) {
+    try { return encodeURI(String(u || "")); } catch (_) { return "#"; }
+  }
+
+  function fixEuresApplyUrl(url) {
+    const u = String(url || "");
+    const legacy = u.match(/\/jv-se\/jv\/([^/?]+)\/job(?:\?|$)/);
+    if (!legacy) return u;
+    const id = decodeURIComponent(legacy[1]);
+    return `https://europa.eu/eures/portal/jv-se/jv-details/${encodeURIComponent(id)}?jvDisplayLanguage=en&lang=en`;
   }
 </script>
 </body>

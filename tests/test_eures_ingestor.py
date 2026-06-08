@@ -6,6 +6,7 @@ import requests
 
 from src.ingest_eures import (
     AntigravityClient,
+    _job_url,
     build_search_payload,
     extract_location,
     extract_tags,
@@ -41,6 +42,11 @@ class TestEuresIngestor(unittest.TestCase):
         self.assertEqual(payload["keywords"], [{"keyword": "data engineer", "specificSearchCode": "EVERYWHERE"}])
         self.assertEqual(payload["sessionId"], "sess-1")
 
+    def test_job_url_encodes_spaces(self):
+        url = _job_url("MTQ3NDk0MzMgMTI", "pl")
+        self.assertIn("/jv-details/MTQ3NDk0MzMgMTI?", url)
+        self.assertIn("jvDisplayLanguage=pl", url)
+
     def test_normalize_eures_job(self):
         item = {
             "id": "vacancy_abc",
@@ -59,7 +65,8 @@ class TestEuresIngestor(unittest.TestCase):
         self.assertEqual(job["location"], "DE (DE7)")
         self.assertEqual(job["description"], "Build pipelines")
         self.assertIn("directhire", job["job_types"])
-        self.assertTrue(job["url"].endswith("/job?lang=en"))
+        self.assertIn("/jv-details/vacancy_abc?", job["url"])
+        self.assertIn("jvDisplayLanguage=en", job["url"])
 
     @patch("src.ingest_eures.requests.Session.post")
     def test_antigravity_client_retry(self, mock_post):
