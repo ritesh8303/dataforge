@@ -5,19 +5,19 @@ A serverless Data Lakehouse built on AWS for processing and analyzing German and
 ## Architecture
 
 ```
-EventBridge (Daily Schedules)
+EventBridge (4× daily: 07:00 / 12:00 / 16:00 / 20:00 UTC — 20:00 ≈ 22:00 CEST)
   ├── dataforge-ingestor        → Arbeitnow API (paginated, ~900 jobs)
   ├── dataforge-ba-ingestor     → BA Jobsuche API (8 queries, ~5000 jobs)
   ├── dataforge-company-ingestor→ Direct ATS career feeds (configurable companies)
-  ├── dataforge-apify-ingestor  → Apify Indeed scraping runs
+  ├── dataforge-apify-ingestor  → Apify Indeed (08:00 UTC + 22:00 Berlin)
   ├── dataforge-hn-ingestor     → Hacker News jobstories + Who is Hiring
   ├── dataforge-berlin-startups-ingestor → Berlin Startup Jobs RSS
-  └── GitHub Action (daily 4AM) → EURES EU job portal API
+  └── GitHub Action (04:00 + 20:00 UTC) → EURES EU job portal API
             │
             ▼ S3 upload (.parquet)
       dataforge-bronze-dev-eu-central-1 (Bronze Bucket)
             │
-            ▼ EventBridge (cron(30 7,12,16 * * ? *))
+            ▼ EventBridge transformer (4× daily: :30 past each ingest hour)
       dataforge-transformer     → SCD Type 2 → Silver Layer (.parquet)
             │
             ▼ S3 trigger (ObjectCreated)
@@ -69,29 +69,52 @@ EventBridge (Daily Schedules)
   Ashby, Workable, SmartRecruiters, Recruitee, Personio XML, Workday CXS,
   Comeet, and Pinpoint.
 - **Apify scraper runs** — Indeed search task scraping.
-- **EURES** — EU job mobility portal API (ingested daily via GitHub Actions at 4 AM UTC; picked up by the Silver transformer on its next run).
+- **EURES** — EU job mobility portal API (GitHub Actions at 04:00 and 20:00 UTC).
+
+### Pipeline schedule (4 runs per day)
+
+| UTC | Local (CEST) | What runs |
+|-----|--------------|-----------|
+| 07:00 | 09:00 | All ingestors |
+| 07:30 | 09:30 | Silver transformer → Gold (S3 trigger) |
+| 08:00 | 10:00 | Apify Indeed (morning scrape) |
+| 12:00 | 14:00 | All ingestors |
+| 12:30 | 14:30 | Silver transformer → Gold |
+| 16:00 | 18:00 | All ingestors |
+| 16:30 | 18:30 | Silver transformer → Gold |
+| 20:00 | **22:00** | All ingestors + Apify Indeed + EURES (GitHub) |
+| 20:30 | 22:30 | Silver transformer → Gold |
+| 21:00 | 23:00 | Gold CSV publish to GitHub (backup sync) |
 
 ### Apify Scrapers Integration
 
 The pipeline integrates with **Apify** to scrape tech job listings from platforms that do not offer open public APIs (such as Indeed).
 
-1. **Orchestration & Asynchronous Runs:**
-   - In order to stay within Lambda execution timeout limits, the scraper runs are decoupled from ingestion.
-   - When the `dataforge-apify-ingestor` Lambda is triggered daily, it makes a POST request to trigger a new run of the configured actor tasks on the Apify platform.
-   - It then queries the history of runs to fetch and download the default dataset items from the *last completed successful run* (providing a 1-day lag buffer, ensuring fast Lambda execution).
-2. **SSM Configuration:**
-   - Apify credentials and tasks are configured in the SSM Parameter Store under the key `/dataforge/dev/apify_credentials` as a JSON object:
+**Recommended actor:** [`valig/indeed-jobs-scraper`](https://apify.com/valig/indeed-jobs-scraper) — proven in this project (~300 jobs/run, ~10–20s runtime). Create a saved **Actor Task** in Apify Console from this actor, then reference the task ID in SSM.
+
+1. **Orchestration:**
+   - When `dataforge-apify-ingestor` runs (08:00 UTC and **22:00 Europe/Berlin**), it triggers your saved Indeed task, **waits for completion** (up to 4 min), then downloads that run's dataset.
+   - If the new run fails (e.g. billing limit), it falls back to the latest succeeded run.
+2. **SSM Configuration** (`/dataforge/dev/apify_credentials`) — update this when you switch Apify accounts:
      ```json
      {
-       "apify_token": "apify_api_your_token_here",
+       "apify_token": "apify_api_NEW_ACCOUNT_TOKEN",
        "tasks": {
-         "indeed": "task_id_for_indeed"
+         "indeed": "YOUR_INDEED_TASK_ID"
        }
      }
      ```
-3. **Data Normalization & EU Filter:**
-   - Scraped job postings vary significantly in schema. The ingestor normalizes different Indeed scraper formats to the unified schema.
-   - All scraped jobs are validated through the strict EU location safety gate before writing to S3 Bronze to filter out any international remote postings.
+   Create the saved task in the new account from actor `valig/indeed-jobs-scraper`, then paste the new task ID here (AWS Console → Systems Manager → Parameter Store, or `aws ssm put-parameter`).
+   Optional: add more tasks with keys like `indeed_berlin`, `indeed_munich` for broader coverage (all map to `source=indeed`).
+3. **Suggested task input** (in Apify Console for `valig/indeed-jobs-scraper`):
+   - `country`: `de` (or `at`, `ch`, etc.)
+   - `query`: `data engineer` (run separate tasks per keyword for more volume)
+   - `maxItems`: `300`
+4. **Data Normalization & EU Filter:**
+   - Normalizer targets `valig/indeed-jobs-scraper` fields (`jobKey`, `jobUrl`, `employer.name`, nested `location`).
+   - Non-European postings are filtered before Bronze write.
+
+> **Billing note:** Apify free tier is $5/month. When usage is exceeded, runs are blocked until the next billing period — upgrade or wait before expecting new Indeed data.
 
 
 Direct company targets can be supplied without changing code:

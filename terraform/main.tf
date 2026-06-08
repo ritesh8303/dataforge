@@ -53,6 +53,18 @@ resource "aws_ssm_parameter" "ba_api_keys" {
 
 # --- 3. COMPUTE LAYER ---
 
+# Evening pipeline: 22:00 German time ≈ 20:00 UTC (CEST) / 21:00 CET in winter.
+locals {
+  evening_ingest_schedule = {
+    expression  = "cron(0 20 * * ? *)"
+    name_suffix = "evening"
+  }
+  evening_transformer_schedule = {
+    expression  = "cron(30 20 * * ? *)"
+    name_suffix = "evening"
+  }
+}
+
 # Arbeitnow Ingestor
 module "ingestion_lambda" {
   source           = "./modules/lambda"
@@ -68,9 +80,10 @@ module "ingestion_lambda" {
     BRONZE_BUCKET      = module.s3_bronze.bucket_id
     SSM_PARAMETER_NAME = aws_ssm_parameter.ba_api_keys.name
   }
-  bronze_bucket_arn = module.s3_bronze.arn
-  enable_schedule   = true
-  alert_email       = var.alert_email
+  bronze_bucket_arn      = module.s3_bronze.arn
+  enable_schedule        = true
+  extra_schedule_rules   = [local.evening_ingest_schedule]
+  alert_email            = var.alert_email
 }
 
 # BA (Federal) Ingestor
@@ -86,10 +99,11 @@ module "ba_ingestor" {
     SSM_PARAMETER_NAME = aws_ssm_parameter.ba_api_keys.name
   }
   layers          = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
-  memory_size     = 512
-  timeout         = 300
-  enable_schedule = true
-  alert_email     = var.alert_email
+  memory_size          = 512
+  timeout              = 300
+  enable_schedule      = true
+  extra_schedule_rules = [local.evening_ingest_schedule]
+  alert_email          = var.alert_email
 }
 
 # Company Careers Direct Ingestor (Greenhouse + Lever + Workable + SmartRecruiters)
@@ -109,10 +123,11 @@ module "company_ingestor" {
     COMPANY_CAREERS_CONFIG_URL    = var.company_careers_config_url
     COMPANY_CAREERS_CONFIG_MODE   = var.company_careers_config_mode
   }
-  bronze_bucket_arn = module.s3_bronze.arn
-  enable_schedule   = true # Daily at 8AM UTC (same EventBridge schedule)
-  enable_alerts     = true
-  alert_email       = var.alert_email
+  bronze_bucket_arn      = module.s3_bronze.arn
+  enable_schedule        = true
+  extra_schedule_rules   = [local.evening_ingest_schedule]
+  enable_alerts          = true
+  alert_email            = var.alert_email
 }
 
 # Apify Ingestor (pulls scraped jobs from Apify datasets)
@@ -130,10 +145,11 @@ module "apify_ingestor" {
     BRONZE_BUCKET            = module.s3_bronze.bucket_id
     SSM_APIFY_PARAMETER_NAME = "/dataforge/dev/apify_credentials"
   }
-  bronze_bucket_arn   = module.s3_bronze.arn
-  enable_schedule     = true
-  schedule_expression = "cron(0 8 * * ? *)"
-  alert_email         = var.alert_email
+  bronze_bucket_arn      = module.s3_bronze.arn
+  enable_schedule        = true
+  schedule_expression    = "cron(0 8 * * ? *)"
+  extra_schedule_rules   = [local.evening_ingest_schedule]
+  alert_email            = var.alert_email
 }
 
 # Hacker News Ingestor
@@ -150,9 +166,10 @@ module "hn_ingestor" {
   env_vars = {
     BRONZE_BUCKET = module.s3_bronze.bucket_id
   }
-  bronze_bucket_arn = module.s3_bronze.arn
-  enable_schedule   = true
-  alert_email       = var.alert_email
+  bronze_bucket_arn      = module.s3_bronze.arn
+  enable_schedule        = true
+  extra_schedule_rules   = [local.evening_ingest_schedule]
+  alert_email            = var.alert_email
 }
 
 # Berlin Startup Jobs Ingestor
@@ -169,9 +186,10 @@ module "berlin_startups_ingestor" {
   env_vars = {
     BRONZE_BUCKET = module.s3_bronze.bucket_id
   }
-  bronze_bucket_arn = module.s3_bronze.arn
-  enable_schedule   = true
-  alert_email       = var.alert_email
+  bronze_bucket_arn      = module.s3_bronze.arn
+  enable_schedule        = true
+  extra_schedule_rules   = [local.evening_ingest_schedule]
+  alert_email            = var.alert_email
 }
 
 
@@ -191,11 +209,12 @@ module "transformer_lambda" {
     BRONZE_BUCKET = module.s3_bronze.bucket_id
   }
   layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
-  bronze_bucket_arn = module.s3_bronze.arn
-  enable_schedule   = true
-  schedule_expression = "cron(30 7,12,16 * * ? *)"
-  enable_alerts     = true
-  alert_email       = var.alert_email
+  bronze_bucket_arn      = module.s3_bronze.arn
+  enable_schedule        = true
+  schedule_expression    = "cron(30 7,12,16 * * ? *)"
+  extra_schedule_rules   = [local.evening_transformer_schedule]
+  enable_alerts          = true
+  alert_email            = var.alert_email
 }
 
 # Gold Generator (runs after Silver is updated)

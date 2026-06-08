@@ -45,3 +45,12 @@ variable "schedule_expression" {
   type    = string
   default = "cron(0 7,12,16 * * ? *)"
 }
+
+variable "extra_schedule_rules" {
+  type = list(object({
+    expression  = string
+    name_suffix = string
+  }))
+  default     = []
+  description = "Additional EventBridge cron rules for the same Lambda (e.g. evening pipeline run)."
+}

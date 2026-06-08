@@ -93,26 +93,43 @@ resource "aws_lambda_permission" "allow_s3" {
   source_arn    = var.bronze_bucket_arn
 }
 
-# Every hour during office hours (08:00-18:00 UTC), every 3 hours outside
+locals {
+  schedule_configs = var.enable_schedule ? concat(
+    [{
+      key        = "primary"
+      expression = var.schedule_expression
+    }],
+    [
+      for rule in var.extra_schedule_rules : {
+        key        = rule.name_suffix
+        expression = rule.expression
+      }
+    ]
+  ) : []
+}
+
 resource "aws_cloudwatch_event_rule" "daily_trigger" {
-  count               = var.enable_schedule ? 1 : 0
-  name                = "${var.function_name}-schedule"
-  description         = "Triggers ${var.function_name} schedule"
-  schedule_expression = var.schedule_expression
+  for_each = { for cfg in local.schedule_configs : cfg.key => cfg }
+
+  name                = "${var.function_name}-schedule-${each.key}"
+  description         = "Triggers ${var.function_name} (${each.key})"
+  schedule_expression = each.value.expression
 }
 
 resource "aws_cloudwatch_event_target" "lambda_target" {
-  count     = var.enable_schedule ? 1 : 0
-  rule      = aws_cloudwatch_event_rule.daily_trigger[0].name
-  target_id = "SendToLambda"
+  for_each = aws_cloudwatch_event_rule.daily_trigger
+
+  rule      = each.value.name
+  target_id = "SendToLambda-${each.key}"
   arn       = aws_lambda_function.this.arn
 }
 
 resource "aws_lambda_permission" "allow_eventbridge" {
-  count         = var.enable_schedule ? 1 : 0
-  statement_id  = "AllowExecutionFromEventBridge"
+  for_each = aws_cloudwatch_event_rule.daily_trigger
+
+  statement_id  = "AllowExecutionFromEventBridge-${each.key}"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.this.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.daily_trigger[0].arn
+  source_arn    = each.value.arn
 }
