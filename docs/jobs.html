@@ -621,10 +621,7 @@
     internship: "Internship", freelance: "Freelance", temporary: "Temporary"
   };
 
-  let countriesLoaded = false;
-
   function populateCountryDropdown(jobs) {
-    if (countriesLoaded) return;
     const select = document.getElementById("region");
     const currentValue = select.value;
 
@@ -648,37 +645,45 @@
     if (currentValue && countries.includes(currentValue)) {
       select.value = currentValue;
     }
-    if (jobs.length > 0 && countries.length > 1) {
-      countriesLoaded = true;
-    }
+  }
+
+  function updateSummaryLine(data, visibleCount) {
+    const source = document.getElementById("source").value;
+    const sourceLabel = source
+      ? document.getElementById("source").selectedOptions[0]?.textContent || source
+      : "";
+    const loaded = (data?.jobs || allJobs).length;
+    const filtered = data?.kpis?.filtered ?? loaded;
+    const count = visibleCount ?? filtered;
+    const scope = sourceLabel ? `${sourceLabel} · ` : "";
+    document.getElementById("last-updated").textContent =
+      `${scope}${count.toLocaleString()} shown · ${loaded.toLocaleString()} loaded`;
   }
 
   async function loadJobs() {
     const source      = document.getElementById("source").value;
     const workStyle   = document.getElementById("work_style").value;
     const languageReq = document.getElementById("language").value;
-    const region      = document.getElementById("region").value;
-
-    countriesLoaded = false;
 
     const limit = 5000;
-    const params = new URLSearchParams({ limit: String(limit), sort: 'newest', status: 'active' });
+    const params = new URLSearchParams({
+      limit: String(limit),
+      sort: "newest",
+      status: "active",
+      _: String(Date.now()),
+    });
     if (source)      params.set("source",       source);
     if (workStyle)   params.set("work_style",   workStyle);
     if (languageReq) params.set("language_req", languageReq === "en" ? "english_only" : "");
-    if (region)      params.set("region",       region);
 
     try {
-      const res = await fetch(`${JOBS_API_URL}?${params}`);
+      document.getElementById("error-box").style.display = "none";
+      const res = await fetch(`${JOBS_API_URL}?${params}`, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       allJobs = data.jobs || [];
-      document.getElementById("last-updated").textContent =
-        `${(data.kpis?.total || allJobs.length).toLocaleString()} total jobs`;
-      
       populateCountryDropdown(allJobs);
-      
-      applyFilters();
+      applyFilters(data);
     } catch(e) {
       document.getElementById("error-box").style.display = "block";
       document.getElementById("error-box").textContent = `⚠ ${e.message}`;
@@ -686,7 +691,7 @@
     }
   }
 
-  function applyFilters() {
+  function applyFilters(summaryData) {
     const search    = document.getElementById("search").value.toLowerCase().trim();
     const location  = document.getElementById("location").value.toLowerCase().trim();
     const language  = document.getElementById("language").value;
@@ -755,6 +760,7 @@
     page = 1;
     document.getElementById("result-count").textContent =
       `${filtered.length.toLocaleString()} jobs`;
+    updateSummaryLine(summaryData, filtered.length);
     renderJobs();
   }
 
@@ -914,13 +920,21 @@
   }
 
   ["search","location"].forEach(id => {
-    document.getElementById(id).addEventListener("input", applyFilters);
+    document.getElementById(id).addEventListener("input", () => applyFilters());
   });
-  ["source","work_style","language","region"].forEach(id => {
+  ["work_style","language"].forEach(id => {
     document.getElementById(id).addEventListener("change", loadJobs);
   });
+  document.getElementById("region").addEventListener("change", () => applyFilters());
+  document.getElementById("source").addEventListener("change", () => {
+    document.getElementById("region").value = "";
+    document.getElementById("location").value = "";
+    document.getElementById("search").value = "";
+    document.getElementById("experience_level").value = "";
+    loadJobs();
+  });
   ["experience_level"].forEach(id => {
-    document.getElementById(id).addEventListener("change", applyFilters);
+    document.getElementById(id).addEventListener("change", () => applyFilters());
   });
 
   loadJobs();
