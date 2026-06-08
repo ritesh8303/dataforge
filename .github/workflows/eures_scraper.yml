@@ -26,10 +26,39 @@ jobs:
           pip install -r requirements-test.txt
 
       - name: Run EURES Ingestion Script
+        id: ingest
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: eu-central-1
           BRONZE_BUCKET: dataforge-bronze-dev-eu-central-1
           LOCAL_RUN: "false"
-        run: python -c "import sys; sys.path.append('src'); import ingest_eures; print(ingest_eures.lambda_handler({}, None))"
+        run: |
+          python -c "
+          import sys
+          sys.path.append('src')
+          import ingest_eures
+          result = ingest_eures.lambda_handler({}, None)
+          print(result)
+          if result.get('statusCode') != 200:
+            raise SystemExit(f\"EURES ingest failed: {result}\")
+          "
+
+      - name: Trigger Silver transformer
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: eu-central-1
+        run: |
+          python -c "
+          import boto3, json
+          from datetime import datetime, timezone
+          date = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+          client = boto3.client('lambda', region_name='eu-central-1')
+          client.invoke(
+              FunctionName='dataforge-transformer',
+              InvocationType='Event',
+              Payload=json.dumps({'date': date}),
+          )
+          print(f'Triggered dataforge-transformer for ingested_at={date}')
+          "
