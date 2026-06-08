@@ -1,7 +1,13 @@
+import sys
+from pathlib import Path
+
 import awswrangler as wr
 import pandas as pd
-import sys
-sys.path.append("src")
+
+_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_ROOT / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from paths import GOLD_DIR
 from processing.europe_filter import classify_region
 
 
@@ -159,13 +165,14 @@ wr.s3.to_csv(active_vs_expired, path=f"{GOLD_BUCKET}/active_vs_expired.csv", ind
 print("Gold layer written to S3 successfully.")
 
 # Also save locally
-print("\nSaving locally to analytics/...")
-all_jobs.to_csv("analytics/all_jobs.csv", index=False, encoding="utf-8-sig")
-jobs_by_source.to_csv("analytics/jobs_by_source.csv", index=False, encoding="utf-8-sig")
-jobs_by_region.to_csv("analytics/jobs_by_region.csv", index=False, encoding="utf-8-sig")
-top_locations.to_csv("analytics/top_locations.csv", index=False, encoding="utf-8-sig")
-remote_vs_onsite.to_csv("analytics/remote_vs_onsite.csv", index=False, encoding="utf-8-sig")
-jobs_trend.to_csv("analytics/jobs_trend.csv", index=False, encoding="utf-8-sig")
-top_companies.to_csv("analytics/top_companies.csv", index=False, encoding="utf-8-sig")
-active_vs_expired.to_csv("analytics/active_vs_expired.csv", index=False, encoding="utf-8-sig")
+GOLD_DIR.mkdir(parents=True, exist_ok=True)
+print(f"\nSaving locally to {GOLD_DIR}...")
+all_jobs.to_csv(GOLD_DIR / "all_jobs.csv", index=False, encoding="utf-8-sig")
+jobs_by_source.to_csv(GOLD_DIR / "jobs_by_source.csv", index=False, encoding="utf-8-sig")
+jobs_by_region.to_csv(GOLD_DIR / "jobs_by_region.csv", index=False, encoding="utf-8-sig")
+top_locations.to_csv(GOLD_DIR / "top_locations.csv", index=False, encoding="utf-8-sig")
+remote_vs_onsite.to_csv(GOLD_DIR / "remote_vs_onsite.csv", index=False, encoding="utf-8-sig")
+jobs_trend.to_csv(GOLD_DIR / "jobs_trend.csv", index=False, encoding="utf-8-sig")
+top_companies.to_csv(GOLD_DIR / "top_companies.csv", index=False, encoding="utf-8-sig")
+active_vs_expired.to_csv(GOLD_DIR / "active_vs_expired.csv", index=False, encoding="utf-8-sig")
 print("All files saved locally.")

@@ -11,7 +11,6 @@ __pycache__/
 .ruff_cache/
 .venv/
 venv/
-airflow/logs/
 *.egg-info/
 .DS_Store
 aws-keys-do-not-commit.txt
@@ -36,14 +35,12 @@ src/bin/
 src/*.so
 src/*.pyd
 
-# Local gold CSV outputs — committed by publish_gold.yml workflow after each pipeline run
-# analytics/*.csv
-# analytics/*.png
+# Local pipeline outputs (Gold snapshots in data/gold/ are committed intentionally)
+data/bronze/
+data/silver/
 
 # Temp debug files
 event.json
 out.txt
 response.json
 response2.json
-data/
-

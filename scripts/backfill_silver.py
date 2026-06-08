@@ -3,13 +3,15 @@ One-time backfill script: reads all Bronze JSON files from S3,
 normalizes them to the unified schema, and runs SCD Type 2 into Silver.
 """
 
-import sys
 import json
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
 import boto3
 import pandas as pd
-from datetime import datetime, timezone
 
-sys.path.insert(0, "src")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from silver_transformer import process_scd_type_2
 
 BRONZE_BUCKET = "dataforge-bronze-dev-eu-central-1"
@@ -107,4 +109,4 @@ if __name__ == "__main__":
             print(f"  ERROR: {e}")
 
     print(f"\nBackfill complete. Total records processed: {total}")
-    print("Re-run analytics/query_gold.py to generate updated gold outputs.")
+    print("Re-run scripts/query_gold.py or scripts/download_all.py to refresh local Gold CSVs.")

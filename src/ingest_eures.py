@@ -306,7 +306,7 @@ def fetch_eures_jobs(client=None, keywords=None, results_per_page=50, max_pages=
 def lambda_handler(event, context):
     """
     Ingest EURES job postings into the Bronze bucket.
-    Invoked from GitHub Actions or locally via `analytics/run_ingestor_local.py eures`.
+    Invoked from GitHub Actions or locally via `scripts/run_ingestor_local.py eures`.
     """
     bucket = os.environ.get("BRONZE_BUCKET")
     is_local = os.environ.get("LOCAL_RUN") == "true"

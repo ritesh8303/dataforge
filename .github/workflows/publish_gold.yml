@@ -32,15 +32,15 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: eu-central-1
-        run: python analytics/download_all.py
+        run: python scripts/download_all.py
 
       - name: Regenerate dashboard PNG
-        run: pip install matplotlib && python analytics/visualize_gold.py
+        run: pip install matplotlib && python scripts/visualize_gold.py
 
       - name: Commit and push data
         run: |
           git config user.name "dataforge-bot"
           git config user.email "actions@github.com"
-          git add analytics/*.csv analytics/job_market_dashboard.png
+          git add data/gold/*.csv data/gold/job_market_dashboard.png
           git diff --staged --quiet || git commit -m "chore: refresh gold data $(date -u +%Y-%m-%d)"
           git push origin main

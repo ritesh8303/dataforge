@@ -1,30 +1,28 @@
+import json
 import os
 import sys
-import json
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse, parse_qs
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
-# Add src to sys.path
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from paths import GOLD_DIR, SRC_DIR
 
-# Mock env vars
+sys.path.append(str(SRC_DIR))
+
 os.environ["GOLD_BUCKET"] = "local-mock"
 os.environ["GOLD_KEY"] = "all_jobs.csv"
 
-# Patch boto3 to read from local analytics/ folder instead of AWS S3
 import boto3
 from unittest.mock import MagicMock
 
-local_gold_dir = os.path.dirname(__file__)
-
 
 def mock_get_object(Bucket, Key):
-    filepath = os.path.join(local_gold_dir, Key)
-    if not os.path.exists(filepath):
-        # Fallback to search in root analytics or docs
-        filepath = os.path.join(os.path.dirname(__file__), "..", "analytics", Key)
+    filepath = GOLD_DIR / Key
+    if not filepath.exists():
+        filepath = Path(__file__).resolve().parents[1] / "data" / "gold" / Key
 
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         content = f.read()
     mock_body = MagicMock()
     mock_body.read.return_value = content.encode("utf-8")
@@ -118,7 +116,7 @@ class LocalAPIHandler(BaseHTTPRequestHandler):
 def run(port=8000):
     server = HTTPServer(("localhost", port), LocalAPIHandler)
     print(f"Starting local API server on http://localhost:{port}...")
-    print(f"Using local CSV data from: {os.path.abspath(os.path.join(local_gold_dir, 'all_jobs.csv'))}")
+    print(f"Using local CSV data from: {GOLD_DIR / 'all_jobs.csv'}")
     print("Press Ctrl+C to stop.")
     server.serve_forever()
 

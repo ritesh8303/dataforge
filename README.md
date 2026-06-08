@@ -53,7 +53,7 @@ EventBridge (Daily Schedules)
 ## Tech Stack
 - **Infrastructure**: Terraform (IaC) — remote state on S3 + DynamoDB locking
 - **Presentation**: **GitHub Pages** static site hosting (`/docs` directory) consuming serverless REST APIs
-- **Compute**: AWS Lambda (Python 3.11) — 8 functions (4 ingestors, 1 transformer, 1 gold generator, 2 dashboard API functions)
+- **Compute**: AWS Lambda (Python 3.11) — 10 functions (6 ingestors, transformer, gold generator, 2 APIs) + EURES via GitHub Actions
 - **API Entry**: AWS API Gateway (HTTP APIs) routing requests to the metrics and jobs search Lambdas
 - **Storage**: AWS S3 — Bronze, Silver, Gold buckets
 - **Data Processing**: Pandas, AWS SDK for Pandas (awswrangler)
@@ -117,21 +117,36 @@ Runs entirely within the **AWS Free Tier**:
 - Lambda + DuckDB instead of Glue or Athena
 - S3 Standard within 5GB limits
 
+## Project Layout
+
+```
+dataforge/
+├── src/           # Lambda handlers and shared processing code
+├── terraform/     # AWS infrastructure (S3, Lambda, API Gateway)
+├── docs/          # GitHub Pages dashboard and job board UI
+├── scripts/       # Local dev and ops tooling
+├── data/gold/     # Committed Gold CSV snapshots (refreshed by CI)
+├── tests/         # Unit and integration tests
+└── .github/       # CI, EURES scraper, Gold publish, Pages deploy
+```
+
 ## Running Locally
 
 ```bash
-# Refresh gold CSVs from Silver S3
-python analytics/query_gold.py
+# Download latest Gold CSVs from S3
+python scripts/download_all.py
 
-# Generate dashboard visualization image
-python analytics/visualize_gold.py
+# Regenerate local dashboard PNG from data/gold/
+python scripts/visualize_gold.py
 
-# Run E2E pipeline health check
-set PYTHONIOENCODING=utf-8
-python tests/test_e2e_pipeline.py
+# Run an ingestor locally (writes to data/bronze/)
+python scripts/run_ingestor_local.py eures
 
-# Backfill Silver from all existing Bronze files
-python analytics/backfill_silver.py
+# Local API server using data/gold/ CSVs
+python scripts/run_local_api.py
+
+# Backfill Silver from existing Bronze files in S3
+python scripts/backfill_silver.py
 ```
 
 ## Infrastructure

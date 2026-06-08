@@ -1,9 +1,9 @@
+import argparse
 import os
 import sys
-import argparse
+from pathlib import Path
 
-# Add src/ folder to python path so we can import ingestors
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
+sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
 INGESTORS = {
     "ba": ("ingest_ba_api", "BA API Ingestor"),
