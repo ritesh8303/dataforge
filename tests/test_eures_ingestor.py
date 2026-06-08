@@ -1,11 +1,8 @@
-import importlib
-import sys
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
-import requests
 
 from src import ingest_eures
 from src.ingest_eures import (
