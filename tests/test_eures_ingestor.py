@@ -1,4 +1,3 @@
-import json
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -54,7 +53,7 @@ class TestEuresIngestor(unittest.TestCase):
             "creationDate": 1739403609768,
         }
         job = normalize_eures_job(item)
-        self.assertEqual(job["job_id"], "eures_vacancy_abc")
+        self.assertEqual(job["job_id"], "eures_vacancy_abc")  # alphanumeric ids unchanged
         self.assertEqual(job["source"], "eures")
         self.assertEqual(job["company"], "Test Company")
         self.assertEqual(job["location"], "DE (DE7)")

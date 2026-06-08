@@ -126,7 +126,7 @@ def lambda_handler(event, context):
     reverse = sort != "oldest"
     jobs = sorted(jobs, key=lambda j: j.get("date_added", ""), reverse=reverse)
 
-    all_jobs = _cache.get("active", _cache.get("data", []))
+    all_jobs = _cache.get(cache_key, [])
     today = __import__("datetime").date.today().isoformat()
     kpis = {
         "total": len(all_jobs),

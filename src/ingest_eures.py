@@ -79,9 +79,14 @@ EURES_HEADERS = {
 SEARCH_KEYWORDS = [
     "data engineer",
     "data scientist",
+    "data analyst",
     "software engineer",
+    "machine learning",
     "mlops",
     "devops",
+    "platform engineer",
+    "cloud engineer",
+    "site reliability engineer",
 ]
 
 
@@ -221,8 +226,9 @@ def normalize_eures_job(item):
         except (TypeError, ValueError, OSError):
             published_at = ""
 
+    safe_id = re.sub(r"[^\w.-]+", "_", str(raw_id)).strip("_")
     return {
-        "job_id": f"eures_{raw_id}",
+        "job_id": f"eures_{safe_id}",
         "title": title,
         "company": company,
         "location": location,
@@ -237,46 +243,46 @@ def normalize_eures_job(item):
     }
 
 
-def fetch_eures_jobs(client=None, keywords=None, results_per_page=50, max_pages=4, session_id=None):
-    """Fetch and deduplicate EURES postings for the configured keyword set."""
+def fetch_eures_jobs(client=None, keywords=None, results_per_page=50, max_pages=None, session_id=None):
+    """Fetch and deduplicate EURES postings — one keyword search at a time (API ANDs keywords)."""
     client = client or antigravity.Client(retries=3, backoff_factor=2)
     keywords = keywords or SEARCH_KEYWORDS
     session_id = session_id or str(uuid.uuid4())
+    if max_pages is None:
+        max_pages = int(os.environ.get("EURES_MAX_PAGES_PER_KEYWORD", "5"))
 
     all_jobs = []
     seen_ids = set()
 
-    for page in range(1, max_pages + 1):
-        logger.info(f"Fetching EURES page {page}...")
-        payload = build_search_payload(keywords, page, results_per_page, session_id)
+    for keyword in keywords:
+        logger.info(f"Searching EURES for keyword: {keyword!r}")
+        for page in range(1, max_pages + 1):
+            logger.info(f"  page {page}...")
+            payload = build_search_payload([keyword], page, results_per_page, session_id)
 
-        try:
-            response = client.post(EURES_ENDPOINT, json_payload=payload, headers=EURES_HEADERS)
-            data = response.json()
-            if not isinstance(data, dict):
-                raise ValueError(f"Unexpected EURES response type: {type(data).__name__}")
-        except Exception as e:
-            logger.error(f"Failed to fetch EURES page {page}: {e}")
-            break
+            try:
+                response = client.post(EURES_ENDPOINT, json_payload=payload, headers=EURES_HEADERS)
+                data = response.json()
+                if not isinstance(data, dict):
+                    raise ValueError(f"Unexpected EURES response type: {type(data).__name__}")
+            except Exception as e:
+                logger.error(f"Failed to fetch EURES keyword={keyword!r} page={page}: {e}")
+                break
 
-        jobs = data.get("jvs") or data.get("results") or data.get("jobs") or data.get("items") or []
-        if not jobs:
-            logger.info("No more jobs returned from EURES API.")
-            break
+            jobs = data.get("jvs") or data.get("results") or data.get("jobs") or data.get("items") or []
+            if not jobs:
+                break
 
-        for job in jobs:
-            raw_id = job.get("id") or job.get("jobId") or job.get("vacancyId")
-            if raw_id and raw_id not in seen_ids:
-                seen_ids.add(raw_id)
-                all_jobs.append(job)
+            for job in jobs:
+                raw_id = job.get("id") or job.get("jobId") or job.get("vacancyId")
+                if raw_id and raw_id not in seen_ids:
+                    seen_ids.add(raw_id)
+                    all_jobs.append(job)
 
-        logger.info(f"Ingested {len(jobs)} jobs from page {page} ({len(all_jobs)} unique total).")
+            logger.info(f"  got {len(jobs)} jobs ({len(all_jobs)} unique total so far)")
 
-        total_results = data.get("numberRecords") or data.get("totalNumberOfResults") or data.get("total") or 0
-        if total_results and len(all_jobs) >= total_results:
-            break
-        if len(jobs) < results_per_page:
-            break
+            if len(jobs) < results_per_page:
+                break
 
     return all_jobs
 

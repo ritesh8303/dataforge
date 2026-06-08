@@ -659,7 +659,10 @@
     const languageReq = document.getElementById("language").value;
     const region      = document.getElementById("region").value;
 
-    const params = new URLSearchParams({ limit: 1000, sort: 'newest', status: 'active' });
+    countriesLoaded = false;
+
+    const limit = 5000;
+    const params = new URLSearchParams({ limit: String(limit), sort: 'newest', status: 'active' });
     if (source)      params.set("source",       source);
     if (workStyle)   params.set("work_style",   workStyle);
     if (languageReq) params.set("language_req", languageReq === "en" ? "english_only" : "");
@@ -766,7 +769,8 @@
       return;
     }
 
-    list.innerHTML = slice.map(j => {
+    list.innerHTML = slice.map((j, i) => {
+      const cardId = `job-card-${start + i}`;
       const isRemote = j.is_remote === "True" || j.is_remote === true;
       const isDirect = j.source === "direct";
       const sourceLabel = j.source === "ba_api" ? "BA Jobsuche"
@@ -843,13 +847,13 @@
 
       const rawDesc = j.description || '';
       const plainDesc = rawDesc.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-      const showDesc = (j.source === 'arbeitnow' || j.source === 'direct') && plainDesc.length > 10;
+      const showDesc = (j.source === 'arbeitnow' || j.source === 'direct' || j.source === 'eures') && plainDesc.length > 10;
       const descSnippet = showDesc
         ? `<div class="job-desc">${esc(plainDesc.slice(0, 180))}${plainDesc.length > 180 ? '…' : ''}</div>`
         : '';
 
       return `
-        <div class="job-card" id="job-card-${j.job_id}">
+        <div class="job-card" id="${cardId}">
           <div class="job-info">
             <div class="job-title" title="${esc(j.title)}">${esc(j.title)}</div>
             <div class="job-company">${esc(j.company || '\u2014')}</div>
