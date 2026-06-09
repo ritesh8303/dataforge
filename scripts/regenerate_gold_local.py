@@ -12,7 +12,8 @@ sys.path.insert(0, str(ROOT / "src"))
 from gold_generator import detect_is_english, detect_language_requirement, detect_work_style  # noqa: E402
 from processing.company_normalize import normalize_company  # noqa: E402
 from processing.data_quality import compute_quality_metrics, REMOVED_SOURCES  # noqa: E402
-from processing.europe_filter import classify_region  # noqa: E402
+from processing.data_quality import validate_region_taxonomy  # noqa: E402
+from processing.europe_filter import classify_region, normalize_region_bucket  # noqa: E402
 
 GOLD = ROOT / "data" / "gold"
 REMOVED = REMOVED_SOURCES
@@ -48,10 +49,13 @@ def main():
     active["language_requirement"] = active.apply(detect_language_requirement, axis=1)
     active["work_style"] = active.apply(detect_work_style, axis=1)
     active["region"] = active.apply(
-        lambda r: classify_region(
-            location_str=r.get("location", ""),
-            title_str=r.get("title", ""),
-            description_str=r.get("description", ""),
+        lambda r: normalize_region_bucket(
+            classify_region(
+                location_str=r.get("location", ""),
+                title_str=r.get("title", ""),
+                description_str=r.get("description", ""),
+                item=r.to_dict(),
+            )
         ),
         axis=1,
     )
@@ -63,6 +67,7 @@ def main():
     jobs_by_source = (
         current.groupby("source").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
     )
+    validate_region_taxonomy(current["region"].unique())
     jobs_by_region = (
         current.groupby("region").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
     )
@@ -78,16 +83,20 @@ def main():
         .rename(columns={"location_clean": "location"})
     )
 
-    work_style_labels = {"remote": "Remote", "hybrid": "Hybrid", "onsite": "On-site"}
-    remote_vs_onsite = (
-        current.groupby("work_style")
-        .size()
-        .reset_index(name="job_count")
-        .rename(columns={"work_style": "work_type"})
-    )
-    remote_vs_onsite["work_type"] = remote_vs_onsite["work_type"].map(
-        lambda x: work_style_labels.get(str(x).lower(), str(x).title())
-    )
+    remote_path = GOLD / "remote_vs_onsite.csv"
+    if remote_path.exists():
+        remote_vs_onsite = pd.read_csv(remote_path)
+    else:
+        work_style_labels = {"remote": "Remote", "hybrid": "Hybrid", "onsite": "On-site"}
+        remote_vs_onsite = (
+            current.groupby("work_style")
+            .size()
+            .reset_index(name="job_count")
+            .rename(columns={"work_style": "work_type"})
+        )
+        remote_vs_onsite["work_type"] = remote_vs_onsite["work_type"].map(
+            lambda x: work_style_labels.get(str(x).lower(), str(x).title())
+        )
 
     companies_df = current.copy()
     companies_df["company"] = companies_df["company"].apply(normalize_company)

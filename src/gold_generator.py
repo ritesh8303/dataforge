@@ -3,7 +3,8 @@ import json
 import pandas as pd
 import awswrangler as wr
 import re
-from processing.europe_filter import classify_region
+from processing.data_quality import validate_region_taxonomy
+from processing.europe_filter import classify_region, normalize_region_bucket
 from processing.company_normalize import normalize_company
 from processing.data_quality import compute_quality_metrics, REMOVED_SOURCES, VALID_SOURCES
 
@@ -309,13 +310,15 @@ def lambda_handler(event, context):
         df["language_requirement"] = df.apply(detect_language_requirement, axis=1)
         df["work_style"] = df.apply(detect_work_style, axis=1)
         df["region"] = df.apply(
-            lambda r: classify_region(
-                location_str=r.get("location", ""),
-                title_str=r.get("title", ""),
-                description_str=r.get("description", ""),
-                item=r
+            lambda r: normalize_region_bucket(
+                classify_region(
+                    location_str=r.get("location", ""),
+                    title_str=r.get("title", ""),
+                    description_str=r.get("description", ""),
+                    item=r,
+                )
             ),
-            axis=1
+            axis=1,
         )
 
         current = df[df["is_current"] == True].copy().reset_index(drop=True)
@@ -413,7 +416,8 @@ def lambda_handler(event, context):
             current.groupby("source").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
         )
 
-        # 2b. Jobs by region
+        # 2b. Jobs by region (geographic only — never work-style "Remote")
+        validate_region_taxonomy(current["region"].unique())
         jobs_by_region = (
             current.groupby("region").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
         )

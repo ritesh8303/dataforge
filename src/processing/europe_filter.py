@@ -382,9 +382,21 @@ CITY_COUNTRY_MAPPING = {
 }
 
 
+INVALID_COUNTRY_REGIONS = frozenset({"Remote"})
+
+
+def normalize_region_bucket(region: str) -> str:
+    """Map invalid geographic buckets (e.g. work-style 'Remote') to Unspecified."""
+    r = str(region or "").strip()
+    if r in INVALID_COUNTRY_REGIONS:
+        return "Unspecified"
+    return r or "Other"
+
+
 def classify_region(location_str, title_str="", description_str="", item=None):
     """
-    Classifies a job location into a country name, 'Remote', or 'Other'.
+    Classifies a job location into a country name, 'Unspecified', or 'Other'.
+    Work style (remote/hybrid/on-site) is handled separately via work_style.
     """
     # 1. Check nested location dict from Indeed
     if isinstance(item, dict):
@@ -449,7 +461,7 @@ def classify_region(location_str, title_str="", description_str="", item=None):
             is_remote = True
 
     if is_remote:
-        return "Remote"
+        return "Unspecified"
 
     # Fallback for Bundesagentur für Arbeit (German Federal Employment Agency)
     if item is not None:

@@ -652,10 +652,8 @@
 
     const countries = [...new Set(jobs.map(j => j.region).filter(Boolean))];
     countries.sort((a, b) => {
-      if (a === "Remote") return -1;
-      if (b === "Remote") return 1;
-      if (a === "Other") return 1;
-      if (b === "Other") return -1;
+      if (a === "Unspecified" || a === "Other") return 1;
+      if (b === "Unspecified" || b === "Other") return -1;
       return a.localeCompare(b);
     });
 
@@ -663,7 +661,8 @@
     countries.forEach(c => {
       const opt = document.createElement("option");
       opt.value = c;
-      opt.textContent = c === "Remote" ? "Remote" : c === "Other" ? "Other (On-site/unspecified)" : c;
+      opt.textContent = c === "Unspecified" ? "Unspecified (no country)"
+        : c === "Other" ? "Other / unspecified location" : c;
       select.appendChild(opt);
     });
 
@@ -884,7 +883,7 @@
       const directBadge = isDirect ? `<span class="tag direct-apply">⚡ Direct Apply</span>` : "";
 
       let regionBadge = "";
-      if (j.region && j.region !== "Other" && j.region !== "Remote") {
+      if (j.region && j.region !== "Other" && j.region !== "Unspecified") {
         regionBadge = `<span class="tag region-${j.region.toLowerCase().replace(/[^a-z0-9]+/g, '-')}">📍 ${esc(j.region)}</span>`;
       }
 

@@ -45,6 +45,10 @@ def compute_quality_metrics(df: pd.DataFrame) -> Dict[str, Any]:
             + (~active["source"].isin(VALID_SOURCES)).sum()
         )
 
+    remote_in_country_dimension = 0
+    if "region" in active.columns:
+        remote_in_country_dimension = int((active["region"].astype(str).str.strip() == "Remote").sum())
+
     required_cols = {"job_id", "title", "company", "location", "source", "url"}
     schema_pass = required_cols.issubset(set(active.columns))
 
@@ -56,6 +60,14 @@ def compute_quality_metrics(df: pd.DataFrame) -> Dict[str, Any]:
         "duplicate_job_id_rate": round(float(dupes / len(active)), 4) if len(active) else 0.0,
         "stale_jobs_count": stale_count,
         "invalid_source_count": invalid_source,
-        "schema_validation_pass": schema_pass and invalid_source == 0,
+        "remote_in_country_dimension": remote_in_country_dimension,
+        "schema_validation_pass": schema_pass and invalid_source == 0 and remote_in_country_dimension == 0,
         "computed_at": now.isoformat(),
     }
+
+
+def validate_region_taxonomy(regions) -> None:
+    """Raise ValueError if work-style 'Remote' appears in the country/region dimension."""
+    values = set(str(r).strip() for r in regions)
+    if "Remote" in values:
+        raise ValueError("Invalid country classification: Remote found in country dimension")

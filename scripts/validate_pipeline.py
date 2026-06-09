@@ -33,6 +33,7 @@ def validate_gold(errors: list) -> dict:
     jobs_by_source = pd.read_csv(GOLD / "jobs_by_source.csv")
     remote = pd.read_csv(GOLD / "remote_vs_onsite.csv")
     top_companies = pd.read_csv(GOLD / "top_companies.csv")
+    jobs_by_region = pd.read_csv(GOLD / "jobs_by_region.csv")
     desc = pd.read_csv(GOLD / "description_insights.csv")
 
     sources_in_jobs = set(all_jobs["source"].dropna().unique())
@@ -89,6 +90,17 @@ def validate_gold(errors: list) -> dict:
         _fail("Negative remote counts", errors)
     else:
         _ok("No negative remote counts")
+
+    # Country dimension must not include work-style "Remote"
+    if "region" in jobs_by_region.columns and "Remote" in jobs_by_region["region"].astype(str).values:
+        _fail('"Remote" found in jobs_by_region country dimension', errors)
+    else:
+        _ok('jobs_by_region has no "Remote" country bucket')
+
+    if "region" in all_jobs.columns and (all_jobs["region"].astype(str).str.strip() == "Remote").any():
+        _fail('"Remote" found in all_jobs.region column', errors)
+    else:
+        _ok('all_jobs.region has no "Remote" values')
 
     # Top companies placeholders
     bad_companies = []

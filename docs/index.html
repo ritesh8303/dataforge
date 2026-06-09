@@ -945,7 +945,7 @@
 
     for (let i = 0; i < sortedRg.length; i++) {
       const item = sortedRg[i];
-      if (item.label === "Other") {
+      if (item.label === "Other" || item.label === "Unspecified") {
         otherCount += item.value;
         continue;
       }
@@ -961,7 +961,7 @@
     }
     if (otherCount > 0) {
       slices.push({
-        label: "Other",
+        label: "Other / Unspecified",
         value: otherCount,
         color: otherColor
       });

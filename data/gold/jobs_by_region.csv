@@ -1,21 +1,22 @@
 ﻿region,job_count
-Germany,7257
+Germany,7182
 Italy,444
 United Kingdom,271
-Belgium,250
+Belgium,266
 France,207
 Spain,163
 Sweden,134
 Hungary,127
 Poland,92
 Austria,88
+Belarus,79
 Portugal,79
 Ireland,78
 Netherlands,61
 Romania,60
 Slovenia,53
 Other,47
-Remote,46
+Unspecified,46
 Norway,41
 Turkey,39
 Switzerland,37
@@ -24,7 +25,6 @@ Serbia,30
 Denmark,29
 Bulgaria,24
 Czechia,20
-Belarus,20
 Ukraine,15
 Luxembourg,8
 Croatia,8

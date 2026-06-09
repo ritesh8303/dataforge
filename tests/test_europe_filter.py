@@ -1,5 +1,5 @@
 import pytest
-from src.processing.europe_filter import is_in_europe, classify_region
+from src.processing.europe_filter import classify_region, is_in_europe, normalize_region_bucket
 
 
 @pytest.mark.parametrize(
@@ -83,8 +83,8 @@ def test_is_in_europe_with_indeed_dict():
          ("Warsaw, Poland", "System Architect", "", "Poland"),
          ("Kyiv, Ukraine", "DevOps Engineer", "", "Ukraine"),
          ("Istanbul, Turkey", "Product Manager", "", "Turkey"),
-         # Other / Remote fallbacks
-         ("Remote", "Worldwide Remote Developer", "", "Remote"),
+         # Geographic fallbacks (remote work style → Unspecified, not a country)
+         ("Remote", "Worldwide Remote Developer", "", "Unspecified"),
          ("Global", "Staff Engineer", "", "Other"),
      ],
 )
@@ -105,10 +105,15 @@ def test_classify_region_ba_api_fallback():
     assert classify_region(location_str="Wietmarschen", item=item_ba) == "Germany"
     assert classify_region(location_str="Bovenden", item=item_ba) == "Germany"
 
-    # If it is remote, it should still be Remote
+    # Remote work style without a resolvable country → Unspecified (not a country bucket)
     item_ba_remote = {"source": "ba_api", "remote": True}
-    assert classify_region(location_str="Remote", item=item_ba_remote) == "Remote"
-    assert classify_region(location_str="Wietmarschen", title_str="Remote Developer", item=item_ba) == "Remote"
+    assert classify_region(location_str="Remote", item=item_ba_remote) == "Unspecified"
+    assert classify_region(location_str="Wietmarschen", title_str="Remote Developer", item=item_ba) == "Unspecified"
+
+
+def test_normalize_region_bucket_removes_remote():
+    assert normalize_region_bucket("Remote") == "Unspecified"
+    assert normalize_region_bucket("Germany") == "Germany"
 
     # Other sources with unknown locations default to Other
     item_other = {"source": "indeed"}
