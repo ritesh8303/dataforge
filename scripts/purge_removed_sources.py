@@ -2,11 +2,9 @@
 from __future__ import annotations
 
 import os
-import sys
 
 import awswrangler as wr
 import boto3
-import pandas as pd
 
 REMOVED = {"indeed", "hacker_news"}
 BRONZE_PREFIXES = ["apify_indeed/", "hacker_news/"]

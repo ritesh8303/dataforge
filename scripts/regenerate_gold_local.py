@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from gold_generator import detect_is_english, detect_language_requirement, detect_work_style  # noqa: E402
 from processing.company_normalize import normalize_company  # noqa: E402
-from processing.data_quality import compute_quality_metrics, REMOVED_SOURCES, VALID_SOURCES  # noqa: E402
+from processing.data_quality import compute_quality_metrics, REMOVED_SOURCES  # noqa: E402
 from processing.europe_filter import classify_region  # noqa: E402
 
 GOLD = ROOT / "data" / "gold"
