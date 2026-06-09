@@ -130,48 +130,6 @@ module "company_ingestor" {
   alert_email            = var.alert_email
 }
 
-# Apify Ingestor (pulls scraped jobs from Apify datasets)
-module "apify_ingestor" {
-  source            = "./modules/lambda"
-  function_name     = "dataforge-apify-ingestor"
-  handler           = "ingest_apify.lambda_handler"
-  lambda_role_arn   = module.iam.lambda_role_arn
-  lambda_role_name  = module.iam.lambda_role_name
-  source_dir        = "../src"
-  layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
-  memory_size       = 512
-  timeout           = 300
-  env_vars = {
-    BRONZE_BUCKET            = module.s3_bronze.bucket_id
-    SSM_APIFY_PARAMETER_NAME = "/dataforge/dev/apify_credentials"
-  }
-  bronze_bucket_arn      = module.s3_bronze.arn
-  enable_schedule        = true
-  schedule_expression    = "cron(0 8 * * ? *)"
-  extra_schedule_rules   = [local.evening_ingest_schedule]
-  alert_email            = var.alert_email
-}
-
-# Hacker News Ingestor
-module "hn_ingestor" {
-  source            = "./modules/lambda"
-  function_name     = "dataforge-hn-ingestor"
-  handler           = "ingest_hn.lambda_handler"
-  lambda_role_arn   = module.iam.lambda_role_arn
-  lambda_role_name  = module.iam.lambda_role_name
-  source_dir        = "../src"
-  layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
-  memory_size       = 512
-  timeout           = 300
-  env_vars = {
-    BRONZE_BUCKET = module.s3_bronze.bucket_id
-  }
-  bronze_bucket_arn      = module.s3_bronze.arn
-  enable_schedule        = true
-  extra_schedule_rules   = [local.evening_ingest_schedule]
-  alert_email            = var.alert_email
-}
-
 # Berlin Startup Jobs Ingestor
 module "berlin_startups_ingestor" {
   source            = "./modules/lambda"

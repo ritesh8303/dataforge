@@ -5,6 +5,10 @@ from datetime import datetime, timezone
 import os
 import re
 from processing.europe_filter import is_in_europe
+from processing.company_normalize import normalize_company
+
+VALID_SOURCES = frozenset({"ba_api", "direct", "eures", "arbeitnow", "berlin_startups"})
+REMOVED_SOURCES = frozenset({"indeed", "hacker_news"})
 
 
 def slugify(text):
@@ -52,8 +56,8 @@ def deduplicate_bronze(df):
         lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}", axis=1
     )
 
-    # Prioritize sources: direct > eures > arbeitnow > berlin_startups > hacker_news > ba_api
-    source_priority = {"direct": 0, "eures": 1, "arbeitnow": 2, "berlin_startups": 3, "hacker_news": 4, "ba_api": 5}
+    # Prioritize sources: direct > eures > arbeitnow > berlin_startups > ba_api
+    source_priority = {"direct": 0, "eures": 1, "arbeitnow": 2, "berlin_startups": 3, "ba_api": 4}
     df["priority"] = df["source"].map(lambda s: source_priority.get(s, 9))
 
     # Calculate description length to keep the most detailed posting
@@ -101,10 +105,8 @@ def lambda_handler(event, context):
             f"s3://{bronze_bucket}/arbeitnow/ingested_at={today_str}/jobs.parquet",
             f"s3://{bronze_bucket}/ba_api/ingested_at={today_str}/jobs.parquet",
             f"s3://{bronze_bucket}/direct_careers/ingested_at={today_str}/jobs.parquet",
-            f"s3://{bronze_bucket}/hacker_news/ingested_at={today_str}/jobs.parquet",
             f"s3://{bronze_bucket}/berlin_startups/ingested_at={today_str}/jobs.parquet",
             f"s3://{bronze_bucket}/eures/ingested_at={today_str}/jobs.parquet",
-            f"s3://{bronze_bucket}/apify_indeed/ingested_at={today_str}/jobs.parquet",
         ]
 
     dfs = []
@@ -127,12 +129,27 @@ def lambda_handler(event, context):
 
     bronze_df = pd.concat(dfs, ignore_index=True)
 
+    # Drop removed sources and unknown source values
+    if "source" in bronze_df.columns:
+        before = len(bronze_df)
+        bronze_df = bronze_df[~bronze_df["source"].isin(REMOVED_SOURCES)].copy()
+        bronze_df = bronze_df[bronze_df["source"].isin(VALID_SOURCES)].copy()
+        dropped = before - len(bronze_df)
+        if dropped:
+            print(f"Dropped {dropped} rows with removed or invalid source values.")
+
+    # Normalize company names before validation
+    if "company" in bronze_df.columns:
+        bronze_df["company"] = bronze_df["company"].apply(
+            lambda c: normalize_company(c) or ""
+        )
+
     # Validate schemas
     bronze_df = validate_jobs(bronze_df)
 
     # Filter for Europe-only jobs (safety gate)
     # Sources 'ba_api', 'arbeitnow', 'berlin_startups', and 'eures' are inherently European.
-    # Other sources ('direct', 'hacker_news', 'apify') are filtered.
+    # Other sources ('direct') are filtered.
     if not bronze_df.empty:
         initial_len = len(bronze_df)
 

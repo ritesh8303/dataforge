@@ -226,8 +226,13 @@ def normalize_eures_job(item):
     if not raw_id or not title:
         return None
 
+    from processing.company_normalize import normalize_company
+
     employer = item.get("employer") if isinstance(item.get("employer"), dict) else {}
-    company = str(employer.get("name") or item.get("companyName") or "Unknown Employer").strip()
+    raw_company = str(employer.get("name") or item.get("companyName") or "").strip()
+    company = normalize_company(raw_company) or ""
+    if not company:
+        return None
 
     location = extract_location(item)
     description = _strip_html(item.get("description") or item.get("descriptionText") or "")

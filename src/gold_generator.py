@@ -4,54 +4,48 @@ import pandas as pd
 import awswrangler as wr
 import re
 from processing.europe_filter import classify_region
+from processing.company_normalize import normalize_company
+from processing.data_quality import compute_quality_metrics, REMOVED_SOURCES, VALID_SOURCES
+
+_EN_TITLE_ROLE_RE = re.compile(
+    r"\b(engineer|developer|manager|specialist|lead|analyst|designer|architect|"
+    r"coordinator|consultant|expert|scientist)\b",
+    re.IGNORECASE,
+)
+_GERMAN_DESC_RE = re.compile(
+    r"\b(und|der|die|das|wir|sie|für|aufgaben|qualifikation|erfahrung|kenntnisse|"
+    r"stellenanzeige|bewerbung)\b",
+    re.IGNORECASE,
+)
+_GERMAN_REQ_RE = re.compile(
+    r"\b(german\s+skills|german\s+language|fluent\s+german|speak\s+german|"
+    r"german\s+level|deutsch\s+sprechen|deutschkenntnisse|deutsch\s+auf|"
+    r"knowledge\s+of\s+german|muttersprache\s+deutsch)\b",
+    re.IGNORECASE,
+)
 
 
 def detect_is_english(row):
-    title = str(row.get("title", "")).lower()
-    description = str(row.get("description", "")).lower()
-    text = title + " " + description
-
-    english_words = re.findall(
-        r"\b(the|and|for|with|you|our|your|we|are|team|role|experience|skills|requirements|responsibilities|software|engineer|developer|data|management|design|is)\b",
-        text,
-    )
-    german_words = re.findall(
-        r"\b(und|die|der|mit|wir|sie|für|eine|ist|sind|das|arbeitszeit|aufgaben|profil|wir bieten|qualifikation|erfahrung|kenntnisse|mitarbeit|bereich|stelle|stelleanzeige)\b",
-        text,
-    )
-
-    en_count = len(english_words)
-    de_count = len(german_words)
-
-    if en_count == 0 and de_count == 0:
-        en_title_keywords = re.search(
-            r"\b(engineer|developer|manager|specialist|lead|analyst|designer|architect|coordinator|consultant|expert)\b",
-            text,
-        )
-        return bool(en_title_keywords)
-
-    return en_count >= de_count
+    """English if title contains English tech role keywords (m/w/d alone is not disqualifying)."""
+    title = str(row.get("title", ""))
+    return bool(_EN_TITLE_ROLE_RE.search(title))
 
 
 def detect_language_requirement(row):
-    is_english = bool(row.get("is_english", True))
-    if not is_english:
-        return "german_required"
-
-    # If text is in English, scan for German requirements
     title = str(row.get("title", "")).lower()
     description = str(row.get("description", "")).lower()
-    text = title + " " + description
+    text = f"{title} {description}"
 
-    # German requirement pattern
-    german_req_pattern = re.compile(
-        r"\b(german\s+skills|german\s+language|fluent\s+german|speak\s+german|german\s+level|deutsch\s+sprechen|b2|c1|c2|deutschkenntnisse|deutsch\s+auf|knowledge\s+of\s+german)\b",
-        re.IGNORECASE,
-    )
+    is_en = bool(row.get("is_english", False))
+    has_german_desc = bool(_GERMAN_DESC_RE.search(description)) if description.strip() else False
 
-    if german_req_pattern.search(text):
+    if _GERMAN_REQ_RE.search(text):
         return "german_required"
-    return "english_only"
+    if is_en and has_german_desc:
+        return "bilingual"
+    if is_en:
+        return "english_only"
+    return "german_required"
 
 
 def detect_work_style(row):
@@ -131,7 +125,19 @@ def lambda_handler(event, context):
             
         df = pd.concat(dfs, ignore_index=True)
         df["is_current"] = df["is_current"].astype(bool)
-        
+
+        # Exclude removed sources from historical Silver data
+        if "source" in df.columns:
+            before = len(df)
+            df = df[~df["source"].isin(REMOVED_SOURCES)].copy()
+            df = df[df["source"].isin(VALID_SOURCES)].copy()
+            dropped = before - len(df)
+            if dropped:
+                print(f"Filtered {dropped} rows with removed/invalid sources from Silver.")
+
+        if "company" in df.columns:
+            df["company"] = df["company"].apply(lambda c: normalize_company(c) or "")
+
         # Standardize date column schemas to avoid any type incompatibilities in metrics/trend calculations
         for date_col in ["scd_start_date", "scd_end_date"]:
             if date_col in df.columns:
@@ -313,6 +319,11 @@ def lambda_handler(event, context):
         )
 
         current = df[df["is_current"] == True].copy().reset_index(drop=True)
+        if "company" in current.columns:
+            invalid_company = current["company"].isna() | (current["company"].astype(str).str.strip() == "")
+            if invalid_company.any():
+                print(f"Dropping {invalid_company.sum()} active jobs with invalid company after normalization.")
+                current = current[~invalid_company].copy().reset_index(drop=True)
         print(f"Total active jobs: {len(current)}")
 
         # 1. All active jobs
@@ -419,13 +430,18 @@ def lambda_handler(event, context):
             .rename(columns={"location_clean": "location"})
         )
 
-        # 4. Remote vs onsite (sources with an explicit remote signal)
-        if "remote" in current.columns:
-            remote_df = current[current["source"].isin(["arbeitnow", "direct"])].copy()
-            remote_df["work_type"] = remote_df["remote"].apply(
-                lambda x: "Remote" if x is True or str(x) == "True" else "On-site"
+        # 4. Remote / hybrid / on-site — all sources via work_style
+        work_style_labels = {"remote": "Remote", "hybrid": "Hybrid", "onsite": "On-site"}
+        if "work_style" in current.columns:
+            remote_vs_onsite = (
+                current.groupby("work_style")
+                .size()
+                .reset_index(name="job_count")
+                .rename(columns={"work_style": "work_type"})
             )
-            remote_vs_onsite = remote_df.groupby("work_type").size().reset_index(name="job_count")
+            remote_vs_onsite["work_type"] = remote_vs_onsite["work_type"].map(
+                lambda x: work_style_labels.get(str(x).lower(), str(x).title())
+            )
         else:
             remote_vs_onsite = pd.DataFrame({"work_type": [], "job_count": []})
 
@@ -434,9 +450,13 @@ def lambda_handler(event, context):
         first_seen["date"] = pd.to_datetime(first_seen["scd_start_date"]).dt.date.astype(str)
         jobs_trend = first_seen.groupby("date").size().reset_index(name="new_jobs").sort_values("date")
 
-        # 6. Top companies
+        # 6. Top companies (real employers only)
+        companies_df = current.copy()
+        companies_df["company"] = companies_df["company"].apply(
+            lambda c: normalize_company(c)
+        )
         top_companies = (
-            current[current["company"].notna() & (current["company"] != "")]
+            companies_df[companies_df["company"].notna()]
             .groupby("company")
             .size()
             .reset_index(name="job_count")
@@ -561,16 +581,23 @@ def lambda_handler(event, context):
 
         top_skills = pd.DataFrame(skill_counter.most_common(20), columns=["skill", "job_count"])
 
+        english_jobs_total = int(current["is_english"].astype(bool).sum()) if "is_english" in current.columns else 0
+
         description_insights = pd.DataFrame(
             [
                 {
-                    "english_jobs": english_count,
+                    "english_jobs": english_jobs_total,
+                    "arbeitnow_english_descriptions": english_count,
                     "homeoffice_mentioned": homeoffice_desc_count,
                     "jobs_with_benefits": benefits_count,
                     "arbeitnow_total": len(arbeitnow_jobs),
                 }
             ]
         )
+
+        quality_metrics = compute_quality_metrics(df)
+        data_quality_report = pd.DataFrame([quality_metrics])
+
         gold_base = f"s3://{gold_bucket}"
         wr.s3.to_csv(all_jobs, path=f"{gold_base}/all_jobs.csv", index=False, quoting=1)  # QUOTE_ALL
         wr.s3.to_csv(expired_jobs, path=f"{gold_base}/expired_jobs.csv", index=False, quoting=1)  # QUOTE_ALL
@@ -583,8 +610,9 @@ def lambda_handler(event, context):
         wr.s3.to_csv(active_vs_expired, path=f"{gold_base}/active_vs_expired.csv", index=False)
         wr.s3.to_csv(top_skills, path=f"{gold_base}/top_skills.csv", index=False)
         wr.s3.to_csv(description_insights, path=f"{gold_base}/description_insights.csv", index=False)
+        wr.s3.to_csv(data_quality_report, path=f"{gold_base}/data_quality_report.csv", index=False)
 
-        msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 11"
+        msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 12"
         print(msg)
         _trigger_github_redeploy(len(current))
         return {"statusCode": 200, "body": json.dumps({"message": msg})}

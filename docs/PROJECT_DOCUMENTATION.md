@@ -404,7 +404,9 @@ Runtime pip deps for Lambda deployment: `pydantic`, `requests`, `typing_extensio
 | `process_scd_type_2(...)` | Full SCD Type 2 merge logic |
 | `lambda_handler(...)` | Orchestrate Bronze read → transform → Silver write |
 
-**Source priority for dedup (lower = wins):** `direct` < `eures` < `arbeitnow` < `berlin_startups` < `hacker_news` < `ba_api`
+**Source priority for dedup (lower = wins):** `direct` < `eures` < `arbeitnow` < `berlin_startups` < `ba_api`
+
+**Active sources (5):** `ba_api`, `direct`, `eures`, `arbeitnow`, `berlin_startups`
 
 ---
 
@@ -881,7 +883,7 @@ No required parameters.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `search` | string | `""` | Substring in title, company, tags, location |
-| `source` | string | `""` | Exact match: `ba_api`, `eures`, `arbeitnow`, `direct`, `indeed`, `hacker_news`, `berlin_startups` |
+| `source` | string | `""` | Exact match: `ba_api`, `eures`, `arbeitnow`, `direct`, `berlin_startups` |
 | `remote` | bool string | `""` | `true` or `false` on `is_remote` |
 | `job_type` | string | `""` | Substring in `job_types` |
 | `location` | string | `""` | Substring in `location` |

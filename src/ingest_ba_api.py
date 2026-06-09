@@ -1,8 +1,20 @@
 import os
 import json
+import re
 import pandas as pd
 from datetime import datetime, timezone
 from processing.fetchers import BAFetcher
+from processing.company_normalize import normalize_company
+
+
+def _looks_remote(*values):
+    haystack = " ".join(str(v).lower() for v in values if v)
+    return bool(
+        re.search(
+            r"\b(remote|hybrid|home[- ]?office|work from home|mobiles arbeiten|telearbeit)\b",
+            haystack,
+        )
+    )
 
 
 def lambda_handler(event, context):
@@ -82,6 +94,16 @@ def lambda_handler(event, context):
 
         # Construct apply URL from job_id (refnr)
         df["url"] = "https://www.arbeitsagentur.de/jobsuche/jobdetail/" + df["job_id"].astype(str)
+
+        if "company" in df.columns:
+            df["company"] = df["company"].apply(lambda c: normalize_company(c) or "")
+
+        title_col = df["title"] if "title" in df.columns else pd.Series([""] * len(df))
+        loc_col = df["location"] if "location" in df.columns else pd.Series([""] * len(df))
+        df["remote"] = [
+            _looks_remote(t, loc, "")
+            for t, loc in zip(title_col, loc_col)
+        ]
 
         # Add source and ingestion timestamp
         df["source"] = "ba_api"

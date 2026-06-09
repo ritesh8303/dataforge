@@ -32,4 +32,4 @@ jobs:
       - name: Run tests
         env:
           PYTHONPATH: .
-        run: pytest tests/test_scd_logic.py tests/test_architecture_smoke.py tests/test_eures_ingestor.py -v --tb=short
+        run: pytest tests/test_scd_logic.py tests/test_architecture_smoke.py tests/test_eures_ingestor.py tests/test_company_normalize.py tests/test_gold_detection.py tests/test_berlin_fetcher.py -v --tb=short

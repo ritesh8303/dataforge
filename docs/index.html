@@ -531,7 +531,7 @@
   <div class="topbar">
     <div class="topbar-left">
       <h1>DataForge Insights Dashboard</h1>
-      <p>Aggregated analytics across Indeed, Arbeitnow, BA Jobsuche, and direct career portals</p>
+      <p>Aggregated analytics across BA Jobsuche, EURES, Arbeitnow, direct ATS feeds, and Berlin startups</p>
 
     </div>
     <div class="topbar-right">
@@ -561,12 +561,12 @@
     <div class="kpi-card" style="--accent:#3b82f6">
       <div class="label">Remote Openings</div>
       <div class="value" id="kpi-remote"><span class="skeleton"></span></div>
-      <div class="sub">Arbeitnow + Direct</div>
+      <div class="sub">all sources · remote work style</div>
     </div>
     <div class="kpi-card" style="--accent:#a78bfa">
       <div class="label">English Jobs</div>
       <div class="value" id="kpi-english"><span class="skeleton"></span></div>
-      <div class="sub">English descriptions</div>
+      <div class="sub">English title roles · all sources</div>
     </div>
     <div class="kpi-card" style="--accent:#fbbf24">
       <div class="label">🔥 Top Skill</div>
@@ -658,7 +658,7 @@
     ? "http://localhost:8000/metrics"
     : "https://2aww80hwgj.execute-api.eu-central-1.amazonaws.com/";
   const REFRESH_MS = 2 * 60 * 1000;
-  const SOURCE_LABELS = { arbeitnow: "Arbeitnow", ba_api: "BA Jobsuche", direct: "Direct Company", indeed: "Indeed", eures: "EURES", hacker_news: "Hacker News", berlin_startups: "Berlin Startups" };
+  const SOURCE_LABELS = { arbeitnow: "Arbeitnow", ba_api: "BA Jobsuche", direct: "Direct Company", eures: "EURES", berlin_startups: "Berlin Startups" };
 
 
   let trendChartInstance = null;
@@ -838,7 +838,8 @@
 
   // ── Render all ─────────────────────────────────────────────────────────────
   function render(data) {
-    const rv = data.remote_vs_onsite  || {};
+    const rv = data.remote_vs_onsite || {};
+    const rc = data.remote_counts || {};
 
     const setEl = (id, val) => {
       const el = document.getElementById(id);
@@ -847,10 +848,8 @@
 
     setEl("kpi-total", (data.total_jobs || 0).toLocaleString());
     setEl("kpi-today", (data.new_today  || 0).toLocaleString());
-    setEl("kpi-remote", (rv["Remote"]  || 0).toLocaleString());
-
-    const di = data.description_insights || {};
-    setEl("kpi-english", (di.english_jobs || 0).toLocaleString());
+    setEl("kpi-remote", (rc.remote != null ? rc.remote : (rv["Remote"] || 0)).toLocaleString());
+    setEl("kpi-english", (data.english_jobs ?? data.description_insights?.english_jobs ?? 0).toLocaleString());
 
     if (data.top_skills?.length) {
       setEl("kpi-top-skill-count", data.top_skills[0].count.toLocaleString() + " postings");
@@ -899,8 +898,9 @@
     const rg = data.jobs_by_region || {};
 
     renderDonut("donut-remote", "donut-remote-pct", "legend-remote", [
-      { value: rv["Remote"]  || 0, color: "#3b82f6", label: "Remote"  },
-      { value: rv["On-site"] || 0, color: "#1e293b", label: "On-site" },
+      { value: rv["Remote"]   || 0, color: "#3b82f6", label: "Remote"  },
+      { value: rv["Hybrid"]   || 0, color: "#8b5cf6", label: "Hybrid"  },
+      { value: rv["On-site"]  || 0, color: "#1e293b", label: "On-site" },
     ], "remote");
 
     // Dynamic country slices

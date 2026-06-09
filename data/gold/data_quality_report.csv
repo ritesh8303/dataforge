@@ -1,0 +1,2 @@
+﻿total_jobs,missing_company_rate,missing_title_rate,missing_location_rate,duplicate_job_id_rate,stale_jobs_count,invalid_source_count,schema_validation_pass,computed_at
+9777,0.0007,0.0,0.0216,0.0,0,0,True,2026-06-09T12:04:13.782185+00:00

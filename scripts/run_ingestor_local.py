@@ -8,9 +8,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 INGESTORS = {
     "ba": ("ingest_ba_api", "BA API Ingestor"),
     "arbeitnow": ("ingest_arbeitnow", "Arbeitnow Ingestor"),
-    "hn": ("ingest_hn", "Hacker News Ingestor"),
     "berlin": ("ingest_berlin_startups", "Berlin Startup Jobs Ingestor"),
-    "apify": ("ingest_apify", "Apify Indeed Ingestor"),
     "direct": ("ingest_company_careers", "Direct Company Careers Ingestor"),
     "eures": ("ingest_eures", "EURES Portal Ingestor"),
 }

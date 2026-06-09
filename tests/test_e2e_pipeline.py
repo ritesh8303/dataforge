@@ -5,11 +5,14 @@ Tests Bronze ingestion → Silver transformation → Gold analytics.
 
 import boto3
 import json
+from botocore.config import Config
+
+LAMBDA_CFG = Config(read_timeout=600, connect_timeout=60)
 
 
 def test_pipeline_e2e():
     """Test the full pipeline end-to-end in AWS."""
-    lambda_client = boto3.client("lambda", region_name="eu-central-1")
+    lambda_client = boto3.client("lambda", region_name="eu-central-1", config=LAMBDA_CFG)
     s3_client = boto3.client("s3", region_name="eu-central-1")
 
     print("\n=== DataForge Pipeline E2E Test ===\n")
@@ -97,10 +100,10 @@ def test_pipeline_e2e():
     try:
         rules = events_client.list_rules(NamePrefix="dataforge")
         enabled = [r for r in rules["Rules"] if r["State"] == "ENABLED"]
-        if len(enabled) != 7:
-            print(f"   ❌ FAILED: Expected 7 enabled schedules, found {len(enabled)}")
+        if len(enabled) != 10:
+            print(f"   ❌ FAILED: Expected 10 enabled schedules (5 Lambdas × 2), found {len(enabled)}")
             return False
-        print("   ✅ All 7 Lambda schedules enabled (EURES runs separately via GitHub Actions)")
+        print("   ✅ All 10 Lambda schedules enabled (EURES runs separately via GitHub Actions)")
     except Exception as e:
         print(f"   ❌ FAILED: {e}")
         return False
