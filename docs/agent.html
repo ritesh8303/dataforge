@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataForge — AI Career Agent & Recruiter Assistant</title>
+  <title>DataForge — Career Matching Wizard</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
@@ -643,8 +643,8 @@
   <!-- Header -->
   <div class="header">
     <div class="header-left">
-      <h1>AI Career Agent & Recruiter Assistant</h1>
-      <p>Intelligently matching your profile against active tech jobs in Germany & Europe</p>
+      <h1>Career Matching Wizard</h1>
+      <p>Matches your resume against real job listings using skill-based scoring across Germany &amp; Europe</p>
     </div>
     <div class="nav-links">
       <a href="index.html">← Analytics Dashboard</a>
@@ -718,7 +718,7 @@
 
       <div class="btn-row">
         <button class="secondary-btn" onclick="goToStep(2)">← Back</button>
-        <button class="primary-btn" onclick="submitLocation()">⚡ Run AI Recruiting Agent</button>
+        <button class="primary-btn" onclick="submitLocation()" title="Matches your resume against real job listings using skill-based scoring.">⚡ Run Career Match</button>
       </div>
     </div>
 
@@ -739,7 +739,7 @@
     <!-- Recruiter Summary report -->
     <div class="recruiter-report-panel">
       <div>
-        <div class="report-title">👔 AI Recruiter Assistant Summary Report</div>
+        <div class="report-title">👔 Career Match Summary Report</div>
         <div class="report-text" id="report-summary">Loading recruiter summary...</div>
         <div class="report-badge-list" id="report-marketable-skills"></div>
       </div>
@@ -779,7 +779,7 @@
     <!-- Complete 15-column Interactive Spreadsheet -->
     <div class="card" style="padding:1.5rem">
       <div class="spreadsheet-actions">
-        <div class="spreadsheet-title">📊 Complete 15-Column AI Matching Spreadsheet</div>
+        <div class="spreadsheet-title">📊 Complete 15-Column Career Match Spreadsheet</div>
         <button class="primary-btn" onclick="exportSpreadsheetCSV()" style="font-size:0.78rem;padding:0.5rem 1rem">
           📥 Export Spreadsheet (.CSV)
         </button>
@@ -1159,7 +1159,7 @@
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `DataForge_AI_Career_Agent_Report_${new Date().toISOString().slice(0,10)}.csv`);
+    link.setAttribute("download", `DataForge_Career_Matching_Wizard_${new Date().toISOString().slice(0,10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

@@ -522,6 +522,15 @@
     .footer a:hover {
       color: #6366f1;
     }
+
+    .kpi-info {
+      display: inline-block;
+      margin-left: 0.25rem;
+      font-size: 0.72rem;
+      color: #64748b;
+      cursor: help;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
@@ -536,7 +545,7 @@
     </div>
     <div class="topbar-right">
       <a class="nav-btn" href="jobs.html">🔍 Search Jobs →</a>
-      <a class="nav-btn" href="agent.html" style="--accent:#818cf8;background:linear-gradient(135deg, #818cf8 0%, #6366f1 100%)">⚡ AI Career Agent →</a>
+      <a class="nav-btn" href="agent.html" style="--accent:#818cf8;background:linear-gradient(135deg, #818cf8 0%, #6366f1 100%)" title="Matches your resume against real job listings using skill-based scoring.">⚡ Career Matching Wizard →</a>
       <div class="live-badge">
         <span class="live-dot"></span>
         <span id="last-updated">loading timestamp...</span>
@@ -548,25 +557,25 @@
 
   <!-- KPI Row (Clean 5-card row showing important insights) -->
   <div class="kpi-grid">
-    <div class="kpi-card" style="--accent:#6366f1">
+    <div class="kpi-card" style="--accent:#6366f1" title="Count of all active jobs in the Gold layer across five ingestion sources.">
       <div class="label">Total Active Jobs</div>
       <div class="value" id="kpi-total"><span class="skeleton"></span></div>
       <div class="sub">aggregated database</div>
     </div>
-    <div class="kpi-card" style="--accent:#10b981">
-      <div class="label">New Today</div>
+    <div class="kpi-card" style="--accent:#10b981" title="New job IDs from the latest Silver pipeline run (pipeline_stats.new_jobs). Not the same as total jobs after a full re-ingest snapshot.">
+      <div class="label">New Since Last Run <span class="kpi-info" title="Incremental count from the latest pipeline transform, not total active jobs.">ⓘ</span></div>
       <div class="value" id="kpi-today"><span class="skeleton"></span></div>
-      <div class="sub">added last 24h</div>
+      <div class="sub" id="kpi-today-sub">incremental · latest pipeline run</div>
     </div>
-    <div class="kpi-card" style="--accent:#3b82f6">
-      <div class="label">Remote Openings</div>
+    <div class="kpi-card" style="--accent:#3b82f6" title="Jobs classified as Remote via work_style across all sources (excludes hybrid and on-site).">
+      <div class="label">Remote Openings <span class="kpi-info" title="work_style = remote across all five sources.">ⓘ</span></div>
       <div class="value" id="kpi-remote"><span class="skeleton"></span></div>
-      <div class="sub">all sources · remote work style</div>
+      <div class="sub">work_style · remote only</div>
     </div>
-    <div class="kpi-card" style="--accent:#a78bfa">
-      <div class="label">English Jobs</div>
+    <div class="kpi-card" style="--accent:#a78bfa" title="Based on job title keyword detection across all sources. Job board 'English only' uses the stricter language_requirement field.">
+      <div class="label">English Jobs (title-based) <span class="kpi-info" title="Title keyword heuristic. See strict count in subtitle.">ⓘ</span></div>
       <div class="value" id="kpi-english"><span class="skeleton"></span></div>
-      <div class="sub">English title roles · all sources</div>
+      <div class="sub" id="kpi-english-sub">title heuristic · all sources</div>
     </div>
     <div class="kpi-card" style="--accent:#fbbf24">
       <div class="label">🔥 Top Skill</div>
@@ -847,9 +856,29 @@
     };
 
     setEl("kpi-total", (data.total_jobs || 0).toLocaleString());
-    setEl("kpi-today", (data.new_today  || 0).toLocaleString());
+
+    const incrNew = data.pipeline_stats?.new_jobs;
+    const newDisplay = (incrNew != null && incrNew !== "") ? Number(incrNew) : (data.new_today || 0);
+    setEl("kpi-today", newDisplay.toLocaleString());
+    const todaySub = document.getElementById("kpi-today-sub");
+    if (todaySub) {
+      const runAt = data.pipeline_stats?.run_at;
+      todaySub.textContent = runAt
+        ? `incremental · run ${new Date(runAt).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}`
+        : "incremental · latest pipeline run";
+    }
+
     setEl("kpi-remote", (rc.remote != null ? rc.remote : (rv["Remote"] || 0)).toLocaleString());
-    setEl("kpi-english", (data.english_jobs ?? data.description_insights?.english_jobs ?? 0).toLocaleString());
+
+    const englishTitle = data.english_jobs_title_based ?? data.english_jobs ?? data.description_insights?.english_jobs ?? 0;
+    const englishStrict = data.english_jobs_strict;
+    setEl("kpi-english", Number(englishTitle).toLocaleString());
+    const englishSub = document.getElementById("kpi-english-sub");
+    if (englishSub) {
+      englishSub.textContent = englishStrict != null
+        ? `title heuristic · strict filter: ${Number(englishStrict).toLocaleString()}`
+        : "title heuristic · all sources";
+    }
 
     if (data.top_skills?.length) {
       setEl("kpi-top-skill-count", data.top_skills[0].count.toLocaleString() + " postings");

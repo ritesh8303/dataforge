@@ -72,6 +72,10 @@ def _build_payload(bucket):
 
     desc = desc_rows[0] if desc_rows else {}
     english_jobs = int(desc.get("english_jobs", 0))
+    english_jobs_title_based = english_jobs
+    english_jobs_strict = sum(
+        1 for j in all_jobs if j.get("language_requirement", "").lower() == "english_only"
+    )
 
     description_insights = {
         "english_jobs": english_jobs,
@@ -101,6 +105,8 @@ def _build_payload(bucket):
         "total_jobs": len(all_jobs),
         "new_today": sum(1 for j in all_jobs if j.get("date_added", "") == today),
         "english_jobs": english_jobs,
+        "english_jobs_title_based": english_jobs_title_based,
+        "english_jobs_strict": english_jobs_strict,
         "remote_counts": remote_counts,
         "jobs_by_source": jobs_by_source,
         "jobs_by_region": jobs_by_region,

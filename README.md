@@ -120,6 +120,13 @@ dataforge/
 └── .github/       # CI, EURES scraper, Gold publish, Pages deploy
 ```
 
+## Jobs API pagination
+
+The live Jobs API returns paginated JSON (default up to 2,000 jobs per request). Single
+responses above ~5,000 jobs can exceed AWS Lambda payload limits and return HTTP 500.
+The GitHub Pages job board loads the full dataset in chunks automatically; clients should
+use `offset` and `limit` query parameters for complete results.
+
 ## Running Locally
 
 ```bash

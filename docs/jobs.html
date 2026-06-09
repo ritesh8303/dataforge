@@ -565,7 +565,7 @@
   </div>
   <div class="nav">
     <a href="index.html">← Analytics Dashboard</a>
-    <a href="agent.html" style="margin-left:auto;color:#c7d2fe">⚡ AI Career Agent →</a>
+    <a href="agent.html" style="margin-left:auto;color:#c7d2fe" title="Matches your resume against real job listings using skill-based scoring.">⚡ Career Matching Wizard →</a>
   </div>
 
 
@@ -592,7 +592,9 @@
     </select>
     <select id="language">
       <option value="">All languages</option>
-      <option value="en">English only (No German)</option>
+      <option value="en">English only (strict)</option>
+      <option value="de">Non-English / German required</option>
+      <option value="bi">Bilingual</option>
     </select>
     <select id="region">
       <option value="">All countries</option>
@@ -611,6 +613,9 @@
     <span id="result-count">Loading...</span>
     <span id="last-updated"></span>
   </div>
+  <p style="font-size:0.72rem;color:#64748b;margin:-1rem 0 1.5rem 0.5rem;">
+    Data loads in chunks (2,000 jobs per request) due to AWS Lambda response size limits.
+  </p>
 
   <div class="job-list" id="job-list">
     <div class="loading">Loading jobs...</div>
@@ -628,6 +633,7 @@
   const BOARD_BUILD = "2026-06-08.5";
   const JOB_PAGE_SIZE = 2000;
   const PAGE_SIZE = 25;
+  const LANG_API = { en: "english_only", de: "german_required", bi: "bilingual" };
 
   let allJobs = [];
   let filtered = [];
@@ -730,7 +736,7 @@
     });
     if (source)      params.set("source",       source);
     if (workStyle)   params.set("work_style",   workStyle);
-    if (languageReq) params.set("language_req", languageReq === "en" ? "english_only" : "");
+    if (languageReq && LANG_API[languageReq]) params.set("language_req", LANG_API[languageReq]);
 
     try {
       document.getElementById("error-box").style.display = "none";
@@ -773,6 +779,14 @@
         } else {
           if (j.is_english !== "True" && j.is_english !== true) return false;
         }
+      } else if (language === "de") {
+        if (j.language_requirement) {
+          if (j.language_requirement !== "german_required") return false;
+        } else {
+          if (j.is_english === "True" || j.is_english === true) return false;
+        }
+      } else if (language === "bi") {
+        if (j.language_requirement !== "bilingual") return false;
       }
       
       if (workStyle) {

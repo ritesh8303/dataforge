@@ -511,7 +511,7 @@ Role `dataforge-lambda-role-dev` with bucket-scoped S3 policies and SSM read on 
 - Renders 25 jobs/page with Apply links
 - Build version cache-bust: `BOARD_BUILD = "2026-06-08.5"`
 
-#### `docs/agent.html` — Career Agent (client-side)
+#### `docs/agent.html` — Career Matching Wizard (client-side)
 - 4-step wizard: resume → dream role → location → results
 - Fetches up to 800 jobs matching dream role search
 - `extractSkills()`, `detectSeniority()`, weighted match score (60% skills, 20% seniority, 20% location)
@@ -689,10 +689,10 @@ Regex patterns add system tags: `AI / ML`, `Data Engineering`, `Cloud / DevOps`,
 - **Display:** KPI card "Total Jobs"
 - **Update:** On Gold generator run (~3× daily + after EURES)
 
-#### New Today
-- **Definition:** Jobs whose `date_added` equals today's UTC date
-- **Formula:** `sum(1 for j in all_jobs if j.date_added == today)`
-- **Display:** KPI card "New Today"
+#### New Since Last Run
+- **Definition:** Incremental new job IDs from the latest Silver pipeline run (`pipeline_stats.new_jobs`)
+- **Fallback:** `sum(1 for j in all_jobs if j.date_added == today)` when pipeline stats are unavailable
+- **Display:** KPI card "New Since Last Run" (avoids misleading total after full re-ingest snapshots)
 
 #### Jobs by Source
 - **Definition:** Active job count grouped by `source` field
