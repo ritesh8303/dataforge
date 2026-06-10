@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="components/design-system.css" />
   <script>
     (function () {
-      var BUILD = "2026-06-10.1";
+      var BUILD = "2026-06-10.2";
       try {
         var key = "dataforge.jobs.build";
         var prev = localStorage.getItem(key);
@@ -42,7 +42,12 @@
     .pagination { display: flex; justify-content: center; gap: var(--df-space-2); margin-top: var(--df-space-8); flex-wrap: wrap; }
     .page-btn { background: var(--df-glass); backdrop-filter: blur(8px); border: 1px solid var(--df-border); border-radius: var(--df-radius); color: var(--df-text-secondary); padding: 0.45rem 0.9rem; font-size: 0.8125rem; cursor: pointer; transition: all var(--df-transition-fast); font-family: inherit; }
     .page-btn.active { background: var(--df-gradient); border-color: transparent; color: #fff; box-shadow: var(--df-shadow-primary); }
-    .page-btn:hover:not(.active) { border-color: rgba(122,168,255,0.4); color: var(--df-primary-dark); }
+    .page-btn:hover:not(.active) {
+      border-color: var(--df-hover-border);
+      color: var(--df-primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--df-shadow-glow-hover);
+    }
     .loading-msg { text-align: center; padding: var(--df-space-12) 0; grid-column: 1 / -1; }
     .board-note { font-size: 0.75rem; color: var(--df-text-muted); margin-bottom: var(--df-space-4); }
     .page-header { margin-bottom: var(--df-space-6); }
@@ -92,8 +97,13 @@
 
   <div class="board-layout">
     <!-- Sidebar Filters -->
-    <aside class="filter-sidebar">
-      <h3>Filters</h3>
+    <aside class="filter-sidebar" aria-label="Job filters">
+      <div class="filter-sidebar-header">
+        <h3>Filters</h3>
+        <button type="button" id="reset-filters" class="df-btn df-btn-ghost df-btn-sm">Reset</button>
+      </div>
+      <div class="filter-sidebar-inner-wrap">
+        <div class="filter-sidebar-scroll">
 
       <div class="filter-group">
         <label class="df-label" for="location">City</label>
@@ -170,10 +180,14 @@
           <option value="Master Thesis">Master Thesis</option>
         </select>
       </div>
+
+        </div>
+        <div class="filter-sidebar-fade" aria-hidden="true"></div>
+      </div>
     </aside>
 
     <!-- Main Results -->
-    <main>
+    <main class="board-main">
       <div class="results-top">
         <h2 id="result-count">Loading...</h2>
         <span class="results-meta" id="last-updated"></span>
@@ -192,7 +206,7 @@
   const JOBS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:8000/jobs"
     : "https://2amv4immb0.execute-api.eu-central-1.amazonaws.com/";
-  const BOARD_BUILD = "2026-06-10.1";
+  const BOARD_BUILD = "2026-06-10.2";
   const JOB_PAGE_SIZE = 2000;
   const PAGE_SIZE = 25;
   const LANG_API = { en: "english_only", de: "german_required", bi: "bilingual" };
@@ -272,6 +286,27 @@
 
   function clearChip(i) {
     if (window._chips?.[i]) window._chips[i].clear();
+  }
+
+  function resetFilters() {
+    document.getElementById("search").value = "";
+    document.getElementById("location").value = "";
+    document.getElementById("region").value = "";
+    document.getElementById("experience_level").value = "";
+    document.getElementById("source").value = "";
+    document.getElementById("work_style").value = "";
+    document.getElementById("language").value = "";
+    syncPillFromSelect("source-pills", "source");
+    syncPillFromSelect("workstyle-pills", "work_style");
+    syncPillFromSelect("language-pills", "language");
+    const sidebar = document.querySelector(".filter-sidebar");
+    const backdrop = document.querySelector(".filter-drawer-backdrop");
+    if (sidebar?.classList.contains("open")) {
+      sidebar.classList.remove("open");
+      backdrop?.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+    loadJobs();
   }
 
   function showSkeletons() {
@@ -599,6 +634,7 @@
 
   document.getElementById("region").addEventListener("change", () => applyFilters());
   document.getElementById("experience_level").addEventListener("change", () => applyFilters());
+  document.getElementById("reset-filters").addEventListener("click", resetFilters);
 
   document.getElementById("board-build").textContent = BOARD_BUILD;
   loadJobs();

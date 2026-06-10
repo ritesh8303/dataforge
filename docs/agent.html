@@ -174,7 +174,7 @@
     }
 
     .mini-job-card:hover {
-      border-color: rgba(122, 168, 255, 0.35);
+      border-color: var(--df-hover-border);
       transform: translateY(-2px);
       box-shadow: var(--df-shadow-glow-hover);
     }
@@ -277,9 +277,11 @@
     }
 
     .table-apply-btn:hover {
-      background: var(--df-gradient);
-      color: #fff;
-      border-color: transparent;
+      background: var(--df-hover-tint);
+      color: var(--df-primary-dark);
+      border-color: var(--df-hover-border);
+      transform: translateY(-2px);
+      box-shadow: var(--df-shadow-glow-hover);
     }
 
     .sample-btn {
