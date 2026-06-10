@@ -8,233 +8,34 @@
   <link rel="icon" href="Dataforge.png" type="image/png" />
   <link rel="stylesheet" href="components/design-system.css" />
   <style>
-    .hero {
-      position: relative;
-      padding: var(--df-space-16) 0 var(--df-space-12);
-      text-align: center;
-      overflow: hidden;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 1;
-      max-width: 720px;
-      margin: 0 auto;
-    }
-
-    .hero-logo {
-      width: 72px;
-      height: 72px;
-      margin: 0 auto var(--df-space-6);
-      animation: df-fadeIn 0.6s ease-out forwards;
-    }
-
-    .hero h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      line-height: 1.15;
-      margin-bottom: var(--df-space-4);
-      background: linear-gradient(135deg, #111827 30%, #4F46E5 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-sub {
-      font-size: 1.125rem;
-      color: var(--df-text-secondary);
-      line-height: 1.7;
-      margin-bottom: var(--df-space-8);
-      max-width: 580px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .hero-cta {
-      display: flex;
-      gap: var(--df-space-4);
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .hero-preview {
-      margin-top: var(--df-space-12);
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-preview-frame {
-      background: var(--df-bg-white);
-      border: 1px solid var(--df-border);
-      border-radius: var(--df-radius-xl);
-      box-shadow: var(--df-shadow-lg);
-      padding: var(--df-space-2);
-      max-width: 900px;
-      margin: 0 auto;
-      overflow: hidden;
-    }
-
-    .hero-preview-bar {
-      display: flex;
-      gap: 6px;
-      padding: var(--df-space-3) var(--df-space-4);
-      border-bottom: 1px solid var(--df-border);
-    }
-
-    .hero-preview-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--df-border);
-    }
-
-    .hero-preview-dot:nth-child(1) { background: #FCA5A5; }
-    .hero-preview-dot:nth-child(2) { background: #FCD34D; }
-    .hero-preview-dot:nth-child(3) { background: #6EE7B7; }
-
-    .hero-preview-body {
-      padding: var(--df-space-6);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: var(--df-space-4);
-      min-height: 180px;
-    }
-
-    .hero-preview-kpi {
-      background: var(--df-bg-subtle);
-      border-radius: var(--df-radius);
-      padding: var(--df-space-4);
-      text-align: left;
-    }
-
-    .hero-preview-kpi .val {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--df-text);
-    }
-
-    .hero-preview-kpi .lbl {
-      font-size: 0.7rem;
-      color: var(--df-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-top: 4px;
-    }
-
-    .features-section {
-      padding: var(--df-space-16) var(--df-space-6);
-      max-width: var(--df-max-width);
-      margin: 0 auto;
-    }
-
-    .feature-card {
-      padding: var(--df-space-6);
-    }
-
-    .feature-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--df-radius);
-      background: var(--df-gradient-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      margin-bottom: var(--df-space-4);
-    }
-
-    .feature-card h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: var(--df-space-2);
-      color: var(--df-text);
-    }
-
-    .feature-card p {
-      font-size: 0.875rem;
-      color: var(--df-text-secondary);
-      line-height: 1.6;
-    }
-
-    .stats-section {
-      background: var(--df-bg-white);
-      border-top: 1px solid var(--df-border);
-      border-bottom: 1px solid var(--df-border);
-      padding: var(--df-space-12) var(--df-space-6);
-    }
-
-    .stats-inner {
-      max-width: var(--df-max-width);
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .stat-item .num {
-      font-size: 2.25rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--df-text);
-    }
-
-    .stat-item .lbl {
-      font-size: 0.8125rem;
-      color: var(--df-text-secondary);
-      margin-top: var(--df-space-1);
-    }
-
-    .pipeline-section {
-      padding: var(--df-space-16) var(--df-space-6);
-      max-width: var(--df-max-width);
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .preview-section {
-      padding: var(--df-space-16) var(--df-space-6);
-      background: var(--df-bg-subtle);
-    }
-
-    .preview-inner {
-      max-width: var(--df-max-width);
-      margin: 0 auto;
-    }
-
-    .preview-card {
-      text-align: center;
-      padding: var(--df-space-8) var(--df-space-6);
-    }
-
-    .preview-mock {
-      background: var(--df-bg-subtle);
-      border-radius: var(--df-radius);
-      height: 160px;
-      margin-bottom: var(--df-space-5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      border: 1px dashed var(--df-border);
-    }
-
-    .preview-card h3 {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-bottom: var(--df-space-2);
-    }
-
-    .preview-card p {
-      font-size: 0.875rem;
-      color: var(--df-text-secondary);
-      margin-bottom: var(--df-space-4);
-    }
-
-    .stat-skeleton {
-      display: inline-block;
-      width: 80px;
-      height: 2rem;
-      border-radius: var(--df-radius-sm);
-    }
+    .hero-content { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+    .hero-logo { width: 72px; height: 72px; margin: 0 auto var(--df-space-6); animation: df-fadeIn 0.6s ease-out forwards; }
+    .hero-sub { font-size: 1.125rem; line-height: 1.75; margin-bottom: var(--df-space-8); max-width: 580px; margin-left: auto; margin-right: auto; }
+    .hero-cta { display: flex; gap: var(--df-space-4); justify-content: center; flex-wrap: wrap; }
+    .hero-preview { margin-top: var(--df-space-12); position: relative; z-index: 1; }
+    .hero-preview-frame { background: var(--df-glass); backdrop-filter: blur(12px); border: 1px solid var(--df-border); border-radius: var(--df-radius-xl); box-shadow: var(--df-shadow-lg); padding: var(--df-space-2); max-width: 900px; margin: 0 auto; overflow: hidden; }
+    .hero-preview-bar { display: flex; gap: 6px; padding: var(--df-space-3) var(--df-space-4); border-bottom: 1px solid var(--df-border); }
+    .hero-preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .hero-preview-dot:nth-child(1) { background: var(--df-pink); }
+    .hero-preview-dot:nth-child(2) { background: var(--df-peach); }
+    .hero-preview-dot:nth-child(3) { background: var(--df-mint); }
+    .hero-preview-body { padding: var(--df-space-6); display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--df-space-4); min-height: 180px; }
+    .hero-preview-kpi { background: var(--df-gradient-subtle); border-radius: var(--df-radius); padding: var(--df-space-4); text-align: left; border: 1px solid var(--df-border); }
+    .hero-preview-kpi .val { font-size: 1.25rem; font-weight: 700; color: var(--df-text); }
+    .hero-preview-kpi .lbl { font-size: 0.7rem; color: var(--df-text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+    .features-section { max-width: var(--df-max-width); margin: 0 auto; }
+    .feature-icon { width: 44px; height: 44px; border-radius: var(--df-radius); background: var(--df-gradient-subtle); border: 1px solid var(--df-border); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: var(--df-space-4); }
+    .feature-card p { font-size: 0.875rem; line-height: 1.65; }
+    .stats-inner { max-width: var(--df-max-width); margin: 0 auto; text-align: center; }
+    .stat-item .num { font-size: 2.25rem; font-weight: 700; letter-spacing: -0.03em; color: var(--df-text); }
+    .stat-item .lbl { font-size: 0.8125rem; margin-top: var(--df-space-1); }
+    .pipeline-section { max-width: var(--df-max-width); margin: 0 auto; text-align: center; }
+    .preview-inner { max-width: var(--df-max-width); margin: 0 auto; }
+    .preview-card { text-align: center; }
+    .preview-mock { background: var(--df-gradient-subtle); border-radius: var(--df-radius); height: 160px; margin-bottom: var(--df-space-5); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; border: 1px dashed var(--df-border); }
+    .preview-card p { font-size: 0.875rem; margin-bottom: var(--df-space-4); }
+    .stat-skeleton { display: inline-block; width: 80px; height: 2rem; border-radius: var(--df-radius-sm); }
+    @media (max-width: 640px) { .hero-preview-body { grid-template-columns: repeat(2, 1fr); } }
   </style>
 </head>
 <body>
@@ -260,7 +61,7 @@
 </nav>
 
 <!-- Hero -->
-<section class="hero">
+<section class="df-hero">
   <div class="df-hero-grid"></div>
   <div class="hero-content df-fade-in">
     <img src="Dataforge.png" alt="DataForge" class="hero-logo" />
@@ -304,7 +105,7 @@
 </section>
 
 <!-- Features -->
-<section class="features-section">
+<section class="df-section features-section df-section-alt df-reveal">
   <div class="df-section-header" style="text-align:center;margin-left:auto;margin-right:auto;">
     <div class="df-section-eyebrow">Platform Capabilities</div>
     <h2>Everything you need for job market intelligence</h2>
@@ -345,24 +146,24 @@
 </section>
 
 <!-- Live Stats -->
-<section class="stats-section">
+<section class="df-section-lg stats-section df-reveal">
   <div class="stats-inner">
     <div class="df-section-eyebrow">Live Data</div>
     <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:var(--df-space-8);letter-spacing:-0.02em;">Platform at a glance</h2>
     <div class="df-grid-4">
-      <div class="stat-item">
+      <div class="stat-item df-stat-glass">
         <div class="num" id="stat-total"><span class="df-skeleton stat-skeleton"></span></div>
         <div class="lbl">Total Jobs</div>
       </div>
-      <div class="stat-item">
+      <div class="stat-item df-stat-glass">
         <div class="num" id="stat-remote"><span class="df-skeleton stat-skeleton"></span></div>
         <div class="lbl">Remote Jobs</div>
       </div>
-      <div class="stat-item">
+      <div class="stat-item df-stat-glass">
         <div class="num" id="stat-english"><span class="df-skeleton stat-skeleton"></span></div>
         <div class="lbl">English Jobs</div>
       </div>
-      <div class="stat-item">
+      <div class="stat-item df-stat-glass">
         <div class="num" id="stat-companies"><span class="df-skeleton stat-skeleton"></span></div>
         <div class="lbl">Active Companies</div>
       </div>
@@ -371,7 +172,7 @@
 </section>
 
 <!-- Pipeline -->
-<section class="pipeline-section">
+<section class="df-section pipeline-section df-section-mint df-reveal">
   <div class="df-section-header" style="text-align:center;margin:0 auto var(--df-space-10);">
     <div class="df-section-eyebrow">Data Pipeline</div>
     <h2>From raw feeds to actionable insights</h2>
@@ -417,7 +218,7 @@
 </section>
 
 <!-- Previews -->
-<section class="preview-section">
+<section class="df-section preview-section df-section-peach df-reveal">
   <div class="preview-inner">
     <div class="df-section-header" style="text-align:center;margin:0 auto var(--df-space-10);">
       <div class="df-section-eyebrow">Product Preview</div>
@@ -515,5 +316,6 @@
 
   loadStats();
 </script>
+<script src="components/ui.js"></script>
 </body>
 </html>

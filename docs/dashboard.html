@@ -9,109 +9,10 @@
   <link rel="stylesheet" href="components/design-system.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .dash-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: var(--df-space-6);
-      margin-bottom: var(--df-space-8);
-    }
-
-    .dash-header h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--df-text);
-    }
-
-    .dash-header p {
-      color: var(--df-text-secondary);
-      font-size: 0.9rem;
-      margin-top: var(--df-space-1);
-    }
-
-    .dash-header-actions {
-      display: flex;
-      align-items: center;
-      gap: var(--df-space-3);
-      flex-wrap: wrap;
-    }
-
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1.7fr 1.3fr;
-      gap: var(--df-space-6);
-    }
-
-    @media (max-width: 1024px) {
-      .main-grid { grid-template-columns: 1fr; }
-    }
-
-    .chart-card { margin-bottom: var(--df-space-6); }
-    .chart-card:last-child { margin-bottom: 0; }
-
-    .chart-wrap {
-      width: 100%;
-      height: 280px;
-      position: relative;
-    }
-
-    .chart-wrap canvas { width: 100% !important; height: 100% !important; }
-
-    .card-heading {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--df-text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: var(--df-space-5);
-      padding-bottom: var(--df-space-3);
-      border-bottom: 1px solid var(--df-border);
-    }
-
-    .bar-row {
-      display: flex;
-      align-items: center;
-      gap: var(--df-space-4);
-      margin-bottom: var(--df-space-3);
-    }
-
-    .bar-row:last-child { margin-bottom: 0; }
-
-    .bar-name {
-      font-size: 0.8125rem;
-      color: var(--df-text);
-      width: 110px;
-      flex-shrink: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-weight: 500;
-    }
-
-    .bar-track {
-      flex: 1;
-      background: var(--df-bg-subtle);
-      border-radius: var(--df-radius-full);
-      height: 8px;
-      overflow: hidden;
-    }
-
-    .bar-fill {
-      height: 100%;
-      border-radius: var(--df-radius-full);
-      transition: width 1s ease-out;
-    }
-
-    .bar-count {
-      font-size: 0.8125rem;
-      color: var(--df-text-secondary);
-      width: 48px;
-      text-align: right;
-      font-weight: 600;
-    }
-
+    body { background: linear-gradient(180deg, var(--df-bg) 0%, var(--df-bg-secondary) 100%); }
+    .dash-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: var(--df-space-6); margin-bottom: var(--df-space-8); }
+    .dash-header p { font-size: 0.9rem; margin-top: var(--df-space-1); }
+    .dash-header-actions { display: flex; align-items: center; gap: var(--df-space-3); flex-wrap: wrap; }
     .donut-inner {
       display: flex;
       align-items: center;
@@ -173,16 +74,17 @@
       align-items: center;
       justify-content: space-between;
       padding: var(--df-space-3) var(--df-space-4);
-      background: var(--df-bg-subtle);
+      background: var(--df-glass);
+      backdrop-filter: blur(8px);
       border-radius: var(--df-radius);
       border: 1px solid var(--df-border);
       transition: all var(--df-transition-fast);
     }
 
     .company-item:hover {
-      border-color: rgba(79,70,229,0.25);
+      border-color: rgba(122, 168, 255, 0.35);
       transform: translateX(3px);
-      background: rgba(79,70,229,0.03);
+      background: rgba(122, 168, 255, 0.06);
     }
 
     .company-info { display: flex; align-items: center; gap: var(--df-space-3); min-width: 0; }
@@ -265,31 +167,31 @@
 
   <!-- KPI Grid -->
   <div class="df-grid-5" style="margin-bottom:var(--df-space-8);">
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#4F46E5,#6366F1);" title="Count of all active jobs in the Gold layer across five ingestion sources.">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#7AA8FF,#A78BFA);--kpi-tint:linear-gradient(145deg,rgba(122,168,255,0.15),rgba(167,139,250,0.08));" title="Count of all active jobs in the Gold layer across five ingestion sources.">
       <div class="df-kpi-icon">📊</div>
       <div class="df-kpi-label">Total Active Jobs</div>
       <div class="df-kpi-value" id="kpi-total"><span class="df-skeleton kpi-skeleton"></span></div>
       <div class="df-kpi-sub">aggregated database</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#059669,#10B981);" title="New job IDs from the latest Silver pipeline run.">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#6EE7D2,#7AA8FF);--kpi-tint:linear-gradient(145deg,rgba(110,231,210,0.18),rgba(122,168,255,0.06));" title="New job IDs from the latest Silver pipeline run.">
       <div class="df-kpi-icon">🆕</div>
       <div class="df-kpi-label">New Since Last Run <span class="kpi-info" title="Incremental count from the latest pipeline transform.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-today"><span class="df-skeleton kpi-skeleton"></span></div>
       <div class="df-kpi-sub" id="kpi-today-sub">incremental · latest pipeline run</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2563EB,#3B82F6);">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#7AA8FF,#6EE7D2);--kpi-tint:linear-gradient(145deg,rgba(122,168,255,0.12),rgba(110,231,210,0.1));">
       <div class="df-kpi-icon">🌐</div>
       <div class="df-kpi-label">Remote Openings <span class="kpi-info" title="work_style = remote across all five sources.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-remote"><span class="df-skeleton kpi-skeleton"></span></div>
       <div class="df-kpi-sub">work_style · remote only</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#7C3AED,#A78BFA);">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#A78BFA,#F9A8D4);--kpi-tint:linear-gradient(145deg,rgba(167,139,250,0.14),rgba(249,168,212,0.08));">
       <div class="df-kpi-icon">🇬🇧</div>
       <div class="df-kpi-label">English Jobs <span class="kpi-info" title="Title keyword heuristic.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-english"><span class="df-skeleton kpi-skeleton"></span></div>
       <div class="df-kpi-sub" id="kpi-english-sub">title heuristic · all sources</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#D97706,#F59E0B);">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#FDBA74,#F9A8D4);--kpi-tint:linear-gradient(145deg,rgba(253,186,116,0.15),rgba(249,168,212,0.08));">
       <div class="df-kpi-icon">🔥</div>
       <div class="df-kpi-label">Top Skill</div>
       <div class="df-kpi-value" id="kpi-top-skill-count"><span class="df-skeleton kpi-skeleton"></span></div>
@@ -378,10 +280,11 @@
   const donutInstances = {};
 
   const CHART_COLORS = {
-    grid: 'rgba(0,0,0,0.04)',
+    grid: 'rgba(120,130,180,0.08)',
     tick: '#9CA3AF',
-    tooltip: { bg: '#FFFFFF', border: '#EAECEF', text: '#111827' }
+    tooltip: { bg: 'rgba(255,255,255,0.95)', border: 'rgba(120,130,180,0.2)', text: '#1F2937' }
   };
+  const PASTEL = { blue: '#7AA8FF', purple: '#A78BFA', mint: '#6EE7D2', pink: '#F9A8D4', peach: '#FDBA74', gray: '#C5CDE8' };
 
   function drawTrend(trend) {
     const canvas = document.getElementById("trend-chart");
@@ -393,8 +296,8 @@
     if (trendChartInstance) trendChartInstance.destroy();
 
     const grad = ctx.createLinearGradient(0, 0, 0, 240);
-    grad.addColorStop(0, "rgba(79, 70, 229, 0.12)");
-    grad.addColorStop(1, "rgba(79, 70, 229, 0)");
+    grad.addColorStop(0, "rgba(122, 168, 255, 0.2)");
+    grad.addColorStop(1, "rgba(167, 139, 250, 0)");
 
     trendChartInstance = new Chart(ctx, {
       type: 'line',
@@ -402,12 +305,12 @@
         labels,
         datasets: [{
           data: counts,
-          borderColor: '#4F46E5',
-          borderWidth: 2,
+          borderColor: PASTEL.blue,
+          borderWidth: 2.5,
           backgroundColor: grad,
           fill: true,
           tension: 0.35,
-          pointBackgroundColor: '#6366F1',
+          pointBackgroundColor: PASTEL.purple,
           pointBorderColor: '#FFFFFF',
           pointHoverRadius: 5,
           pointRadius: 2,
@@ -562,7 +465,7 @@
     setEl("last-updated", "Updated " + new Date(data.last_updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }));
 
     if (data.trend?.length) drawTrend(data.trend);
-    if (data.top_skills?.length) renderBars("top-skills", data.top_skills.slice(0, 8), "skill", "count", "#4F46E5");
+    if (data.top_skills?.length) renderBars("top-skills", data.top_skills.slice(0, 8), "skill", "count", PASTEL.peach);
 
     const compEl = document.getElementById("top-companies");
     if (compEl && data.top_companies?.length) {
@@ -584,16 +487,16 @@
         <div class="bar-row">
           <span class="bar-name">${SOURCE_LABELS[src] ?? src}</span>
           <div class="bar-track">
-            <div class="bar-fill" style="width:${(count/srcMax)*100}%;background:#4F46E5"></div>
+            <div class="bar-fill" style="width:${(count/srcMax)*100}%;background:linear-gradient(90deg,${PASTEL.blue},${PASTEL.purple})"></div>
           </div>
           <span class="bar-count">${count.toLocaleString()}</span>
         </div>`).join("");
     }
 
     renderDonut("donut-remote", "donut-remote-pct", "legend-remote", [
-      { value: rv["Remote"] || 0, color: "#3B82F6", label: "Remote" },
-      { value: rv["Hybrid"] || 0, color: "#8B5CF6", label: "Hybrid" },
-      { value: rv["On-site"] || 0, color: "#D1D5DB", label: "On-site" },
+      { value: rv["Remote"] || 0, color: PASTEL.mint, label: "Remote" },
+      { value: rv["Hybrid"] || 0, color: PASTEL.peach, label: "Hybrid" },
+      { value: rv["On-site"] || 0, color: PASTEL.gray, label: "On-site" },
     ], "remote");
 
     const rg = data.jobs_by_region || {};
@@ -601,7 +504,8 @@
     const maxSlices = 4;
     const slices = [];
     let otherCount = 0;
-    const colors = ["#4F46E5", "#EC4899", "#F59E0B", "#10B981", "#38BDF8", "#8B5CF6"];
+    const colors = [PASTEL.blue, PASTEL.purple, PASTEL.peach, PASTEL.mint, PASTEL.pink, PASTEL.gray];
+    const otherColor = PASTEL.gray;
 
     for (let i = 0; i < sortedRg.length; i++) {
       const item = sortedRg[i];
@@ -609,7 +513,7 @@
       if (slices.length < maxSlices) slices.push({ label: item.label, value: item.value, color: colors[slices.length % colors.length] });
       else otherCount += item.value;
     }
-    if (otherCount > 0) slices.push({ label: "Other / Unspecified", value: otherCount, color: "#9CA3AF" });
+    if (otherCount > 0) slices.push({ label: "Other / Unspecified", value: otherCount, color: otherColor });
     slices.sort((a, b) => b.value - a.value);
 
     renderDonut("donut-region", "donut-region-pct", "legend-region", slices, "top");
@@ -635,5 +539,6 @@
   fetchMetrics();
   setInterval(fetchMetrics, REFRESH_MS);
 </script>
+<script src="components/ui.js"></script>
 </body>
 </html>

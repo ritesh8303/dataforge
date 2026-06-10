@@ -24,292 +24,31 @@
     })();
   </script>
   <style>
-    .board-layout {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: var(--df-space-6);
-      align-items: start;
-    }
-
-    @media (max-width: 900px) {
-      .board-layout { grid-template-columns: 1fr; }
-      .filter-sidebar { position: static !important; }
-    }
-
-    .filter-sidebar {
-      position: sticky;
-      top: calc(var(--df-nav-height) + var(--df-space-4));
-      background: var(--df-bg-white);
-      border: 1px solid var(--df-border);
-      border-radius: var(--df-radius-lg);
-      padding: var(--df-space-5);
-      box-shadow: var(--df-shadow-sm);
-    }
-
-    .filter-sidebar h3 {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--df-text-muted);
-      margin-bottom: var(--df-space-4);
-    }
-
-    .filter-group { margin-bottom: var(--df-space-5); }
-    .filter-group:last-child { margin-bottom: 0; }
-
-    .search-hero {
-      margin-bottom: var(--df-space-5);
-    }
-
-    .search-hero .df-input-search {
-      font-size: 1rem;
-      padding: 0.85rem 1rem 0.85rem 2.75rem;
-      border-radius: var(--df-radius-lg);
-      box-shadow: var(--df-shadow-sm);
-    }
-
-    .search-hero .df-input-search:focus {
-      box-shadow: var(--df-shadow-glow), var(--df-shadow);
-    }
-
-    .results-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: var(--df-space-3);
-      margin-bottom: var(--df-space-4);
-    }
-
-    .results-top h2 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .results-meta {
-      font-size: 0.8125rem;
-      color: var(--df-text-secondary);
-    }
-
-    .job-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: var(--df-space-4);
-    }
-
-    @media (max-width: 480px) {
-      .job-grid { grid-template-columns: 1fr; }
-    }
-
-    .job-card {
-      background: var(--df-bg-white);
-      border: 1px solid var(--df-border);
-      border-radius: var(--df-radius-lg);
-      padding: var(--df-space-5);
-      display: flex;
-      flex-direction: column;
-      gap: var(--df-space-4);
-      transition: all var(--df-transition);
-      animation: df-fadeIn 0.4s ease-out forwards;
-      opacity: 0;
-      box-shadow: var(--df-shadow-xs);
-    }
-
-    .job-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(79,70,229,0.25);
-      box-shadow: var(--df-shadow-lg);
-    }
-
-    .job-card-top {
-      display: flex;
-      gap: var(--df-space-4);
-      align-items: flex-start;
-    }
-
-    .company-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--df-radius);
-      background: var(--df-gradient-subtle);
-      border: 1px solid var(--df-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.875rem;
-      font-weight: 700;
-      color: var(--df-primary);
-      flex-shrink: 0;
-      text-transform: uppercase;
-    }
-
+    body { background: linear-gradient(180deg, var(--df-bg) 0%, var(--df-bg-secondary) 100%); }
+    .search-hero { margin-bottom: var(--df-space-5); }
+    .search-hero .df-input-search { font-size: 1rem; padding: 0.85rem 1rem 0.85rem 2.75rem; border-radius: var(--df-radius-lg); box-shadow: var(--df-shadow); }
+    .search-hero .df-input-search:focus { box-shadow: var(--df-shadow-glow), var(--df-shadow); }
+    .results-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--df-space-3); margin-bottom: var(--df-space-4); }
+    .results-meta { font-size: 0.8125rem; }
+    .job-card-top { display: flex; gap: var(--df-space-4); align-items: flex-start; }
     .job-card-info { flex: 1; min-width: 0; }
-
-    .job-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--df-text);
-      line-height: 1.35;
-      letter-spacing: -0.01em;
-    }
-
-    .job-company {
-      font-size: 0.875rem;
-      color: var(--df-text-secondary);
-      margin-top: 2px;
-    }
-
-    .job-location {
-      font-size: 0.8125rem;
-      color: var(--df-text-muted);
-      margin-top: var(--df-space-1);
-    }
-
-    .job-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--df-space-2);
-    }
-
-    .tag {
-      border-radius: var(--df-radius-full);
-      padding: 0.2rem 0.6rem;
-      font-size: 0.7rem;
-      font-weight: 600;
-      border: 1px solid transparent;
-    }
-
-    .tag.source-ba { background: rgba(37,99,235,0.08); color: #2563EB; border-color: rgba(37,99,235,0.15); }
-    .tag.source-direct { background: var(--df-success-bg); color: var(--df-success); }
-    .tag.source-bsj { background: rgba(20,184,166,0.08); color: #0D9488; }
-    .tag.source-eures { background: rgba(124,58,237,0.08); color: #7C3AED; }
-    .tag.work-remote { background: var(--df-success-bg); color: var(--df-success); }
-    .tag.work-hybrid { background: rgba(79,70,229,0.08); color: var(--df-primary); }
-    .tag.work-onsite { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
-    .tag.lang-en { background: rgba(37,99,235,0.08); color: #2563EB; }
-    .tag.lang-de { background: var(--df-error-bg); color: var(--df-error); }
-    .tag.direct-apply { background: rgba(217,119,6,0.08); color: var(--df-warning); }
-    .tag.type { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
-    .tag.exp-junior { background: rgba(79,70,229,0.08); color: var(--df-primary); }
-    .tag.exp-student { background: rgba(217,119,6,0.08); color: var(--df-warning); }
-    .tag.exp-intern { background: rgba(236,72,153,0.08); color: #DB2777; }
-    .tag.exp-thesis { background: rgba(6,182,212,0.08); color: #0891B2; }
-    .tag.cat-ai, .tag.cat-dataeng, .tag.cat-devops, .tag.cat-analytics, .tag.cat-fd {
-      background: rgba(79,70,229,0.06); color: var(--df-primary);
-    }
-    .tag[class*="region-"] { background: rgba(79,70,229,0.06); color: var(--df-primary); }
-    .tag.clickable { cursor: pointer; transition: all var(--df-transition-fast); }
-    .tag.clickable:hover { background: rgba(79,70,229,0.12); border-color: rgba(79,70,229,0.25); }
-
-    .job-desc {
-      font-size: 0.8125rem;
-      color: var(--df-text-secondary);
-      line-height: 1.55;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      border-left: 2px solid rgba(79,70,229,0.2);
-      padding-left: var(--df-space-3);
-    }
-
-    .job-card-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: auto;
-      padding-top: var(--df-space-3);
-      border-top: 1px solid var(--df-border);
-    }
-
+    .job-title { font-size: 1rem; font-weight: 600; line-height: 1.35; }
+    .job-company { font-size: 0.875rem; margin-top: 2px; }
+    .job-location { font-size: 0.8125rem; color: var(--df-text-muted); margin-top: var(--df-space-1); }
+    .job-tags { display: flex; flex-wrap: wrap; gap: var(--df-space-2); }
+    .job-desc { font-size: 0.8125rem; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; border-left: 2px solid rgba(122,168,255,0.35); padding-left: var(--df-space-3); }
+    .job-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: var(--df-space-3); border-top: 1px solid var(--df-border); }
     .job-date { font-size: 0.75rem; color: var(--df-text-muted); }
-
-    .apply-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--df-space-2);
-      background: var(--df-gradient);
-      color: #fff;
-      border: none;
-      border-radius: var(--df-radius);
-      padding: 0.5rem 1rem;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      font-family: inherit;
-      transition: all var(--df-transition);
-      box-shadow: var(--df-shadow-primary);
-    }
-
-    .apply-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(79,70,229,0.35);
-      color: #fff;
-    }
-
-    .pagination {
-      display: flex;
-      justify-content: center;
-      gap: var(--df-space-2);
-      margin-top: var(--df-space-8);
-      flex-wrap: wrap;
-    }
-
-    .page-btn {
-      background: var(--df-bg-white);
-      border: 1px solid var(--df-border);
-      border-radius: var(--df-radius);
-      color: var(--df-text-secondary);
-      padding: 0.45rem 0.9rem;
-      font-size: 0.8125rem;
-      cursor: pointer;
-      transition: all var(--df-transition-fast);
-      font-family: inherit;
-    }
-
-    .page-btn.active {
-      background: var(--df-gradient);
-      border-color: transparent;
-      color: #fff;
-      box-shadow: var(--df-shadow-primary);
-    }
-
-    .page-btn:hover:not(.active) {
-      border-color: var(--df-primary-light);
-      color: var(--df-primary);
-    }
-
-    .loading-msg {
-      text-align: center;
-      color: var(--df-text-secondary);
-      padding: var(--df-space-12) 0;
-      grid-column: 1 / -1;
-    }
-
-    .board-note {
-      font-size: 0.75rem;
-      color: var(--df-text-muted);
-      margin-bottom: var(--df-space-4);
-    }
-
-    .page-header {
-      margin-bottom: var(--df-space-6);
-    }
-
-    .page-header h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-    }
-
-    .page-header p {
-      color: var(--df-text-secondary);
-      font-size: 0.9rem;
-      margin-top: var(--df-space-1);
-    }
+    .pagination { display: flex; justify-content: center; gap: var(--df-space-2); margin-top: var(--df-space-8); flex-wrap: wrap; }
+    .page-btn { background: var(--df-glass); backdrop-filter: blur(8px); border: 1px solid var(--df-border); border-radius: var(--df-radius); color: var(--df-text-secondary); padding: 0.45rem 0.9rem; font-size: 0.8125rem; cursor: pointer; transition: all var(--df-transition-fast); font-family: inherit; }
+    .page-btn.active { background: var(--df-gradient); border-color: transparent; color: #fff; box-shadow: var(--df-shadow-primary); }
+    .page-btn:hover:not(.active) { border-color: rgba(122,168,255,0.4); color: var(--df-primary-dark); }
+    .loading-msg { text-align: center; padding: var(--df-space-12) 0; grid-column: 1 / -1; }
+    .board-note { font-size: 0.75rem; color: var(--df-text-muted); margin-bottom: var(--df-space-4); }
+    .page-header { margin-bottom: var(--df-space-6); }
+    .page-header p { font-size: 0.9rem; margin-top: var(--df-space-1); }
+    .filter-toggle-row { display: none; margin-bottom: var(--df-space-4); }
+    @media (max-width: 900px) { .filter-toggle-row { display: block; } }
   </style>
 </head>
 <body>
@@ -345,6 +84,11 @@
   </div>
 
   <div id="filter-chips" class="df-filter-chips"></div>
+
+  <div class="filter-toggle-row">
+    <button type="button" id="filter-drawer-toggle" class="df-btn df-btn-secondary df-btn-sm">☰ Filters</button>
+  </div>
+  <div class="filter-drawer-backdrop" aria-hidden="true"></div>
 
   <div class="board-layout">
     <!-- Sidebar Filters -->
@@ -859,5 +603,6 @@
   document.getElementById("board-build").textContent = BOARD_BUILD;
   loadJobs();
 </script>
+<script src="components/ui.js"></script>
 </body>
 </html>

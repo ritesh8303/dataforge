@@ -8,31 +8,9 @@
   <link rel="icon" href="Dataforge.png" type="image/png" />
   <link rel="stylesheet" href="components/design-system.css" />
   <style>
-    .wizard-header {
-      margin-bottom: var(--df-space-8);
-    }
-
-    .wizard-header h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-    }
-
-    .wizard-header p {
-      color: var(--df-text-secondary);
-      font-size: 0.9rem;
-      margin-top: var(--df-space-1);
-    }
-
-    .wizard-card {
-      background: var(--df-bg-white);
-      border: 1px solid var(--df-border);
-      border-radius: var(--df-radius-lg);
-      padding: var(--df-space-8);
-      box-shadow: var(--df-shadow-sm);
-      margin-bottom: var(--df-space-6);
-    }
-
+    body { background: linear-gradient(180deg, var(--df-bg) 0%, var(--df-bg-secondary) 100%); }
+    .wizard-header { margin-bottom: var(--df-space-8); }
+    .wizard-header p { font-size: 0.9rem; margin-top: var(--df-space-1); }
     .wizard-card-title {
       font-size: 1.1rem;
       font-weight: 600;
@@ -73,9 +51,9 @@
     }
 
     .chat-bubble.user {
-      background: rgba(79,70,229,0.08);
-      color: var(--df-primary-dark);
-      border: 1px solid rgba(79,70,229,0.15);
+      background: rgba(167, 139, 250, 0.14);
+      color: #6D4FB8;
+      border: 1px solid rgba(167, 139, 250, 0.25);
       align-self: flex-end;
       border-top-right-radius: 4px;
     }
@@ -100,8 +78,9 @@
       width: 72px;
       height: 72px;
       border-radius: 50%;
-      background: rgba(79,70,229,0.08);
-      border: 2px solid var(--df-primary);
+      background: rgba(122, 168, 255, 0.12);
+      border: 2px solid var(--df-blue);
+      box-shadow: 0 0 24px rgba(167, 139, 250, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -127,8 +106,10 @@
     .results-panel.active { display: block; }
 
     .report-panel {
-      background: var(--df-gradient-subtle);
-      border: 1px solid rgba(79,70,229,0.15);
+      background: linear-gradient(145deg, rgba(255,255,255,0.85), rgba(238,241,248,0.7));
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--df-border);
+      box-shadow: var(--df-shadow);
       border-radius: var(--df-radius-lg);
       padding: var(--df-space-6);
       margin-bottom: var(--df-space-8);
@@ -144,7 +125,7 @@
     .report-title {
       font-size: 0.875rem;
       font-weight: 600;
-      color: var(--df-primary);
+      color: var(--df-purple);
       margin-bottom: var(--df-space-3);
     }
 
@@ -182,18 +163,20 @@
     }
 
     .mini-job-card {
-      background: var(--df-bg-white);
+      background: var(--df-glass);
+      backdrop-filter: blur(10px);
       border: 1px solid var(--df-border);
       border-radius: var(--df-radius);
       padding: var(--df-space-4);
       margin-bottom: var(--df-space-3);
       transition: all var(--df-transition-fast);
+      box-shadow: var(--df-shadow-xs);
     }
 
     .mini-job-card:hover {
-      border-color: rgba(79,70,229,0.25);
+      border-color: rgba(122, 168, 255, 0.35);
       transform: translateY(-2px);
-      box-shadow: var(--df-shadow-sm);
+      box-shadow: var(--df-shadow-glow-hover);
     }
 
     .mini-card-top {
@@ -255,7 +238,7 @@
     }
 
     .badge-tier.faang { background: var(--df-error-bg); color: var(--df-error); }
-    .badge-tier.product { background: rgba(37,99,235,0.08); color: #2563EB; }
+    .badge-tier.product { background: rgba(122, 168, 255, 0.2); color: #4A7FD4; }
     .badge-tier.startup { background: var(--df-success-bg); color: var(--df-success); }
     .badge-tier.midtier { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
 
@@ -267,7 +250,7 @@
     }
 
     .badge-type.remote { background: var(--df-success-bg); color: var(--df-success); }
-    .badge-type.hybrid { background: rgba(79,70,229,0.08); color: var(--df-primary); }
+    .badge-type.hybrid { background: rgba(253, 186, 116, 0.25); color: #B45309; }
     .badge-type.onsite { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
 
     .badge-pri {
@@ -282,9 +265,9 @@
     .badge-pri.medium { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
 
     .table-apply-btn {
-      background: rgba(79,70,229,0.08);
-      color: var(--df-primary);
-      border: 1px solid rgba(79,70,229,0.2);
+      background: rgba(122, 168, 255, 0.15);
+      color: var(--df-primary-dark);
+      border: 1px solid rgba(122, 168, 255, 0.3);
       padding: 0.3rem 0.65rem;
       border-radius: var(--df-radius-sm);
       text-decoration: none;
@@ -294,8 +277,9 @@
     }
 
     .table-apply-btn:hover {
-      background: var(--df-primary);
+      background: var(--df-gradient);
       color: #fff;
+      border-color: transparent;
     }
 
     .sample-btn {
@@ -372,7 +356,7 @@
   </div>
 
   <!-- Wizard -->
-  <div class="wizard-card" id="wizard-card">
+  <div class="wizard-card step-active" id="wizard-card">
 
     <div class="step-container active" id="step-1">
       <div class="wizard-card-title">Step 1 — Upload or Paste Your Resume</div>
@@ -587,6 +571,8 @@
     }
     document.querySelectorAll(".step-container").forEach(el => el.classList.remove("active"));
     document.getElementById(`step-${stepNum}`).classList.add("active");
+    const wc = document.getElementById("wizard-card");
+    if (wc) wc.classList.add("step-active");
     updateStepper(stepNum);
     currentStep = stepNum;
   }
@@ -828,5 +814,6 @@
     return `https://europa.eu/eures/portal/jv-se/jv-details/${encodeURIComponent(id)}?jvDisplayLanguage=en&lang=en`;
   }
 </script>
+<script src="components/ui.js"></script>
 </body>
 </html>
