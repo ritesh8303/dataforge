@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataForge — Job Intelligence Dashboard</title>
+  <meta name="description" content="DataForge Job Intelligence Dashboard — aggregated analytics across BA Jobsuche, EURES, Arbeitnow, direct ATS feeds, and Berlin startups." />
+  <link rel="icon" href="Dataforge.png" type="image/png" />
+  <link rel="stylesheet" href="components/design-system.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .dash-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--df-space-6);
+      margin-bottom: var(--df-space-8);
+    }
+
+    .dash-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--df-text);
+    }
+
+    .dash-header p {
+      color: var(--df-text-secondary);
+      font-size: 0.9rem;
+      margin-top: var(--df-space-1);
+    }
+
+    .dash-header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--df-space-3);
+      flex-wrap: wrap;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.7fr 1.3fr;
+      gap: var(--df-space-6);
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-card { margin-bottom: var(--df-space-6); }
+    .chart-card:last-child { margin-bottom: 0; }
+
+    .chart-wrap {
+      width: 100%;
+      height: 280px;
+      position: relative;
+    }
+
+    .chart-wrap canvas { width: 100% !important; height: 100% !important; }
+
+    .card-heading {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--df-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: var(--df-space-5);
+      padding-bottom: var(--df-space-3);
+      border-bottom: 1px solid var(--df-border);
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: var(--df-space-4);
+      margin-bottom: var(--df-space-3);
+    }
+
+    .bar-row:last-child { margin-bottom: 0; }
+
+    .bar-name {
+      font-size: 0.8125rem;
+      color: var(--df-text);
+      width: 110px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 500;
+    }
+
+    .bar-track {
+      flex: 1;
+      background: var(--df-bg-subtle);
+      border-radius: var(--df-radius-full);
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: var(--df-radius-full);
+      transition: width 1s ease-out;
+    }
+
+    .bar-count {
+      font-size: 0.8125rem;
+      color: var(--df-text-secondary);
+      width: 48px;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .donut-inner {
+      display: flex;
+      align-items: center;
+      gap: var(--df-space-6);
+      padding: var(--df-space-2) 0;
+    }
+
+    .donut-ring {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      flex-shrink: 0;
+    }
+
+    .donut-ring canvas { width: 120px !important; height: 120px !important; }
+
+    .donut-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .donut-center .big {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--df-text);
+      line-height: 1;
+    }
+
+    .donut-center .small {
+      font-size: 0.65rem;
+      color: var(--df-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .donut-legend { flex: 1; display: flex; flex-direction: column; gap: var(--df-space-3); }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8125rem;
+    }
+
+    .legend-left { display: flex; align-items: center; gap: var(--df-space-2); color: var(--df-text); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .legend-val { font-weight: 600; color: var(--df-text-secondary); }
+
+    .company-list { display: flex; flex-direction: column; gap: var(--df-space-2); }
+
+    .company-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--df-space-3) var(--df-space-4);
+      background: var(--df-bg-subtle);
+      border-radius: var(--df-radius);
+      border: 1px solid var(--df-border);
+      transition: all var(--df-transition-fast);
+    }
+
+    .company-item:hover {
+      border-color: rgba(79,70,229,0.25);
+      transform: translateX(3px);
+      background: rgba(79,70,229,0.03);
+    }
+
+    .company-info { display: flex; align-items: center; gap: var(--df-space-3); min-width: 0; }
+
+    .company-rank {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--df-primary);
+      width: 20px;
+      text-align: center;
+    }
+
+    .company-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .company-count {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--df-success);
+      background: var(--df-success-bg);
+      padding: 0.2rem 0.55rem;
+      border-radius: var(--df-radius-full);
+    }
+
+    .kpi-skeleton {
+      display: inline-block;
+      width: 72px;
+      height: 1.75rem;
+      border-radius: var(--df-radius-sm);
+    }
+
+    .kpi-info {
+      font-size: 0.7rem;
+      color: var(--df-text-muted);
+      cursor: help;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="df-navbar">
+  <div class="df-navbar-inner">
+    <a href="index.html" class="df-navbar-brand">
+      <img src="Dataforge.png" alt="DataForge" />
+      DataForge
+    </a>
+    <div class="df-navbar-links">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="jobs.html">Jobs</a>
+      <a href="agent.html">Career Matching Wizard</a>
+    </div>
+    <div class="df-navbar-actions">
+      <a href="jobs.html" class="df-btn df-btn-ghost df-btn-sm">Explore Jobs</a>
+      <a href="agent.html" class="df-btn df-btn-primary df-btn-sm">Career Matching Wizard</a>
+    </div>
+  </div>
+</nav>
+
+<div class="df-page df-fade-in" id="root">
+  <div class="dash-header">
+    <div>
+      <h1>Job Intelligence Dashboard</h1>
+      <p>Aggregated job intelligence across BA Jobsuche, EURES, Arbeitnow, direct ATS, and Berlin startups</p>
+    </div>
+    <div class="dash-header-actions">
+      <span class="df-freshness">
+        <span class="df-live-dot" style="width:6px;height:6px;border-radius:50%;background:var(--df-success);animation:df-pulse 2s infinite;"></span>
+        <span id="last-updated">Loading...</span>
+      </span>
+    </div>
+  </div>
+
+  <div id="error-box" class="df-error" style="display:none"></div>
+
+  <!-- KPI Grid -->
+  <div class="df-grid-5" style="margin-bottom:var(--df-space-8);">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#4F46E5,#6366F1);" title="Count of all active jobs in the Gold layer across five ingestion sources.">
+      <div class="df-kpi-icon">📊</div>
+      <div class="df-kpi-label">Total Active Jobs</div>
+      <div class="df-kpi-value" id="kpi-total"><span class="df-skeleton kpi-skeleton"></span></div>
+      <div class="df-kpi-sub">aggregated database</div>
+    </div>
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#059669,#10B981);" title="New job IDs from the latest Silver pipeline run.">
+      <div class="df-kpi-icon">🆕</div>
+      <div class="df-kpi-label">New Since Last Run <span class="kpi-info" title="Incremental count from the latest pipeline transform.">ⓘ</span></div>
+      <div class="df-kpi-value" id="kpi-today"><span class="df-skeleton kpi-skeleton"></span></div>
+      <div class="df-kpi-sub" id="kpi-today-sub">incremental · latest pipeline run</div>
+    </div>
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2563EB,#3B82F6);">
+      <div class="df-kpi-icon">🌐</div>
+      <div class="df-kpi-label">Remote Openings <span class="kpi-info" title="work_style = remote across all five sources.">ⓘ</span></div>
+      <div class="df-kpi-value" id="kpi-remote"><span class="df-skeleton kpi-skeleton"></span></div>
+      <div class="df-kpi-sub">work_style · remote only</div>
+    </div>
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#7C3AED,#A78BFA);">
+      <div class="df-kpi-icon">🇬🇧</div>
+      <div class="df-kpi-label">English Jobs <span class="kpi-info" title="Title keyword heuristic.">ⓘ</span></div>
+      <div class="df-kpi-value" id="kpi-english"><span class="df-skeleton kpi-skeleton"></span></div>
+      <div class="df-kpi-sub" id="kpi-english-sub">title heuristic · all sources</div>
+    </div>
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#D97706,#F59E0B);">
+      <div class="df-kpi-icon">🔥</div>
+      <div class="df-kpi-label">Top Skill</div>
+      <div class="df-kpi-value" id="kpi-top-skill-count"><span class="df-skeleton kpi-skeleton"></span></div>
+      <div class="df-kpi-sub" id="kpi-top-skill">loading...</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="col-left">
+      <div class="df-card chart-card">
+        <div class="card-heading">New Jobs Trend — Last 30 Days</div>
+        <div class="chart-wrap">
+          <canvas id="trend-chart"></canvas>
+        </div>
+      </div>
+      <div class="df-card chart-card">
+        <div class="card-heading">Real-Time Skill Demand (Top 8)</div>
+        <div id="top-skills"></div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="df-card chart-card">
+        <div class="card-heading">Remote vs On-site</div>
+        <div class="donut-inner">
+          <div class="donut-ring">
+            <canvas id="donut-remote"></canvas>
+            <div class="donut-center">
+              <span class="big" id="donut-remote-pct">—</span>
+              <span class="small">remote</span>
+            </div>
+          </div>
+          <div class="donut-legend" id="legend-remote"></div>
+        </div>
+      </div>
+
+      <div class="df-card chart-card">
+        <div class="card-heading">Country Distribution</div>
+        <div class="donut-inner">
+          <div class="donut-ring">
+            <canvas id="donut-region"></canvas>
+            <div class="donut-center">
+              <span class="big" id="donut-region-pct">—</span>
+              <span class="small">top</span>
+            </div>
+          </div>
+          <div class="donut-legend" id="legend-region"></div>
+        </div>
+      </div>
+
+      <div class="df-card chart-card">
+        <div class="card-heading">Jobs by Source</div>
+        <div id="source-bars"></div>
+      </div>
+
+      <div class="df-card chart-card">
+        <div class="card-heading">Top 5 Hiring Companies</div>
+        <div class="company-list" id="top-companies"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="df-footer">
+  <div class="df-footer-inner">
+    <div>
+      <div class="df-footer-brand"><img src="Dataforge.png" alt="" /> DataForge</div>
+      <p>Pipeline: Lambda → S3 Bronze → Silver (SCD Type 2) → Gold → API Gateway</p>
+    </div>
+    <div class="df-footer-links">
+      <a href="index.html">Home</a>
+      <a href="jobs.html">Job Intelligence Board</a>
+      <a href="agent.html">Career Matching Wizard</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const METRICS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
+    ? "http://localhost:8000/metrics"
+    : "https://2aww80hwgj.execute-api.eu-central-1.amazonaws.com/";
+  const REFRESH_MS = 2 * 60 * 1000;
+  const SOURCE_LABELS = { arbeitnow: "Arbeitnow", ba_api: "BA Jobsuche", direct: "Direct Company", eures: "EURES", berlin_startups: "Berlin Startups" };
+
+  let trendChartInstance = null;
+  const donutInstances = {};
+
+  const CHART_COLORS = {
+    grid: 'rgba(0,0,0,0.04)',
+    tick: '#9CA3AF',
+    tooltip: { bg: '#FFFFFF', border: '#EAECEF', text: '#111827' }
+  };
+
+  function drawTrend(trend) {
+    const canvas = document.getElementById("trend-chart");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const labels = trend.map(d => d.date.slice(5));
+    const counts = trend.map(d => d.count);
+
+    if (trendChartInstance) trendChartInstance.destroy();
+
+    const grad = ctx.createLinearGradient(0, 0, 0, 240);
+    grad.addColorStop(0, "rgba(79, 70, 229, 0.12)");
+    grad.addColorStop(1, "rgba(79, 70, 229, 0)");
+
+    trendChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: counts,
+          borderColor: '#4F46E5',
+          borderWidth: 2,
+          backgroundColor: grad,
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#6366F1',
+          pointBorderColor: '#FFFFFF',
+          pointHoverRadius: 5,
+          pointRadius: 2,
+          pointHitRadius: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: CHART_COLORS.tooltip.bg,
+            titleColor: CHART_COLORS.tooltip.text,
+            bodyColor: CHART_COLORS.tooltip.text,
+            borderColor: CHART_COLORS.tooltip.border,
+            borderWidth: 1,
+            padding: 10,
+            cornerRadius: 8,
+            displayColors: false,
+            callbacks: { label: ctx => `${ctx.parsed.y.toLocaleString()} new jobs` }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: CHART_COLORS.tick, font: { size: 10 }, maxTicksLimit: 8 }
+          },
+          y: {
+            grid: { color: CHART_COLORS.grid },
+            ticks: { color: CHART_COLORS.tick, font: { size: 10 } }
+          }
+        }
+      }
+    });
+  }
+
+  function renderBars(id, items, nameKey, countKey, color) {
+    const max = items[0]?.[countKey] || 1;
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = items.map(item => `
+      <div class="bar-row">
+        <span class="bar-name" title="${esc(item[nameKey])}">${esc(item[nameKey])}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${(item[countKey]/max)*100}%;background:${color}"></div>
+        </div>
+        <span class="bar-count">${Number(item[countKey]).toLocaleString()}</span>
+      </div>`).join("");
+  }
+
+  function renderDonut(canvasId, pctId, legendId, slices, defaultLabel = "") {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const labels = slices.map(s => s.label);
+    const values = slices.map(s => s.value);
+    const colors = slices.map(s => s.color);
+    const total = values.reduce((s, x) => s + x, 0);
+
+    let pctVal = 0, pctLabel = defaultLabel;
+    if (canvasId === "donut-remote") {
+      pctVal = total ? Math.round((values[0] / total) * 100) : 0;
+      pctLabel = "remote";
+    } else {
+      const maxVal = Math.max(...values);
+      pctVal = total ? Math.round((maxVal / total) * 100) : 0;
+      const maxSlice = slices.find(s => s.value === maxVal);
+      pctLabel = maxSlice ? maxSlice.label.split(" ")[0].toLowerCase() : "top";
+    }
+
+    const pctEl = document.getElementById(pctId);
+    if (pctEl) pctEl.textContent = pctVal + "%";
+    const labelEl = pctEl?.nextElementSibling;
+    if (labelEl) labelEl.textContent = pctLabel;
+
+    if (donutInstances[canvasId]) donutInstances[canvasId].destroy();
+
+    donutInstances[canvasId] = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{ data: values, backgroundColor: colors, borderColor: '#FFFFFF', borderWidth: 2, hoverOffset: 4 }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '76%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: CHART_COLORS.tooltip.bg,
+            titleColor: CHART_COLORS.tooltip.text,
+            bodyColor: CHART_COLORS.tooltip.text,
+            borderColor: CHART_COLORS.tooltip.border,
+            borderWidth: 1,
+            padding: 8,
+            cornerRadius: 6
+          }
+        }
+      }
+    });
+
+    const legendEl = document.getElementById(legendId);
+    if (legendEl) {
+      legendEl.innerHTML = slices.map(s => `
+        <div class="legend-row">
+          <div class="legend-left">
+            <span class="legend-dot" style="background:${s.color}"></span>
+            <span>${esc(s.label)}</span>
+          </div>
+          <span class="legend-val">${s.value.toLocaleString()}</span>
+        </div>`).join("");
+    }
+  }
+
+  function render(data) {
+    const rv = data.remote_vs_onsite || {};
+    const rc = data.remote_counts || {};
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    setEl("kpi-total", (data.total_jobs || 0).toLocaleString());
+
+    const incrNew = data.pipeline_stats?.new_jobs;
+    const newDisplay = (incrNew != null && incrNew !== "") ? Number(incrNew) : (data.new_today || 0);
+    setEl("kpi-today", newDisplay.toLocaleString());
+    const todaySub = document.getElementById("kpi-today-sub");
+    if (todaySub) {
+      const runAt = data.pipeline_stats?.run_at;
+      todaySub.textContent = runAt
+        ? `incremental · run ${new Date(runAt).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}`
+        : "incremental · latest pipeline run";
+    }
+
+    setEl("kpi-remote", (rc.remote != null ? rc.remote : (rv["Remote"] || 0)).toLocaleString());
+
+    const englishTitle = data.english_jobs_title_based ?? data.english_jobs ?? data.description_insights?.english_jobs ?? 0;
+    const englishStrict = data.english_jobs_strict;
+    setEl("kpi-english", Number(englishTitle).toLocaleString());
+    const englishSub = document.getElementById("kpi-english-sub");
+    if (englishSub) {
+      englishSub.textContent = englishStrict != null
+        ? `title heuristic · strict filter: ${Number(englishStrict).toLocaleString()}`
+        : "title heuristic · all sources";
+    }
+
+    if (data.top_skills?.length) {
+      setEl("kpi-top-skill-count", data.top_skills[0].count.toLocaleString() + " postings");
+      setEl("kpi-top-skill", "#1: " + data.top_skills[0].skill);
+    }
+
+    setEl("last-updated", "Updated " + new Date(data.last_updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }));
+
+    if (data.trend?.length) drawTrend(data.trend);
+    if (data.top_skills?.length) renderBars("top-skills", data.top_skills.slice(0, 8), "skill", "count", "#4F46E5");
+
+    const compEl = document.getElementById("top-companies");
+    if (compEl && data.top_companies?.length) {
+      compEl.innerHTML = data.top_companies.slice(0, 5).map((c, i) => `
+        <div class="company-item">
+          <div class="company-info">
+            <span class="company-rank">#${i+1}</span>
+            <span class="company-name" title="${esc(c.company)}">${esc(c.company)}</span>
+          </div>
+          <span class="company-count">${c.count.toLocaleString()} jobs</span>
+        </div>`).join("");
+    }
+
+    const srcEntries = Object.entries(data.jobs_by_source || {}).sort((a,b) => b[1]-a[1]);
+    const srcMax = srcEntries[0]?.[1] || 1;
+    const srcBarsEl = document.getElementById("source-bars");
+    if (srcBarsEl) {
+      srcBarsEl.innerHTML = srcEntries.map(([src, count]) => `
+        <div class="bar-row">
+          <span class="bar-name">${SOURCE_LABELS[src] ?? src}</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${(count/srcMax)*100}%;background:#4F46E5"></div>
+          </div>
+          <span class="bar-count">${count.toLocaleString()}</span>
+        </div>`).join("");
+    }
+
+    renderDonut("donut-remote", "donut-remote-pct", "legend-remote", [
+      { value: rv["Remote"] || 0, color: "#3B82F6", label: "Remote" },
+      { value: rv["Hybrid"] || 0, color: "#8B5CF6", label: "Hybrid" },
+      { value: rv["On-site"] || 0, color: "#D1D5DB", label: "On-site" },
+    ], "remote");
+
+    const rg = data.jobs_by_region || {};
+    const sortedRg = Object.entries(rg).map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value);
+    const maxSlices = 4;
+    const slices = [];
+    let otherCount = 0;
+    const colors = ["#4F46E5", "#EC4899", "#F59E0B", "#10B981", "#38BDF8", "#8B5CF6"];
+
+    for (let i = 0; i < sortedRg.length; i++) {
+      const item = sortedRg[i];
+      if (item.label === "Other" || item.label === "Unspecified") { otherCount += item.value; continue; }
+      if (slices.length < maxSlices) slices.push({ label: item.label, value: item.value, color: colors[slices.length % colors.length] });
+      else otherCount += item.value;
+    }
+    if (otherCount > 0) slices.push({ label: "Other / Unspecified", value: otherCount, color: "#9CA3AF" });
+    slices.sort((a, b) => b.value - a.value);
+
+    renderDonut("donut-region", "donut-region-pct", "legend-region", slices, "top");
+  }
+
+  function esc(s) {
+    return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  async function fetchMetrics() {
+    try {
+      const res = await fetch(METRICS_API_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      document.getElementById("error-box").style.display = "none";
+      render(data);
+    } catch(e) {
+      document.getElementById("error-box").style.display = "block";
+      document.getElementById("error-box").textContent = `⚠ ${e.message}`;
+    }
+  }
+
+  fetchMetrics();
+  setInterval(fetchMetrics, REFRESH_MS);
+</script>
+</body>
+</html>

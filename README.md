@@ -1,6 +1,8 @@
-# dataforge
+# DataForge
 
-A serverless Data Lakehouse built on AWS for processing and analyzing German and European data job market vacancies.
+**DataForge** is a **Job Intelligence Platform** that aggregates, processes, and analyzes 10,000+ jobs across Europe using a multi-source ETL pipeline.
+
+A serverless Data Lakehouse built on AWS for processing and analyzing German and European job market vacancies — delivered through a Job Intelligence Dashboard, Job Intelligence Board, and Career Matching Wizard.
 
 ## Architecture
 
@@ -113,7 +115,7 @@ Runs entirely within the **AWS Free Tier**:
 dataforge/
 ├── src/           # Lambda handlers and shared processing code
 ├── terraform/     # AWS infrastructure (S3, Lambda, API Gateway)
-├── docs/          # GitHub Pages dashboard and job board UI
+├── docs/          # GitHub Pages UI (landing, dashboard, job board, Career Matching Wizard)
 ├── scripts/       # Local dev and ops tooling
 ├── data/gold/     # Committed Gold CSV snapshots (refreshed by CI)
 ├── tests/         # Unit and integration tests
@@ -124,7 +126,7 @@ dataforge/
 
 The live Jobs API returns paginated JSON (default up to 2,000 jobs per request). Single
 responses above ~5,000 jobs can exceed AWS Lambda payload limits and return HTTP 500.
-The GitHub Pages job board loads the full dataset in chunks automatically; clients should
+The GitHub Pages Job Intelligence Board loads the full dataset in chunks automatically; clients should
 use `offset` and `limit` query parameters for complete results.
 
 ## Running Locally

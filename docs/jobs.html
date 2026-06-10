@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-  <title>DataForge — Find Jobs in Europe</title>
+  <title>DataForge — Job Intelligence Board</title>
+  <meta name="description" content="DataForge Job Intelligence Board — search and filter Europe-wide jobs across BA Jobsuche, EURES, Arbeitnow, direct ATS feeds, and Berlin startups." />
+  <link rel="icon" href="Dataforge.png" type="image/png" />
+  <link rel="stylesheet" href="components/design-system.css" />
   <script>
     (function () {
-      var BUILD = "2026-06-08.5";
+      var BUILD = "2026-06-10.1";
       try {
         var key = "dataforge.jobs.build";
         var prev = localStorage.getItem(key);
@@ -23,606 +24,423 @@
     })();
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .board-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: var(--df-space-6);
+      align-items: start;
     }
 
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #080a10;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 99px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
+    @media (max-width: 900px) {
+      .board-layout { grid-template-columns: 1fr; }
+      .filter-sidebar { position: static !important; }
     }
 
-    html, body {
-      background: #000000;
-      color: #f1f5f9;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      min-height: 100vh;
-      line-height: 1.6;
-      overflow-x: hidden;
+    .filter-sidebar {
+      position: sticky;
+      top: calc(var(--df-nav-height) + var(--df-space-4));
+      background: var(--df-bg-white);
+      border: 1px solid var(--df-border);
+      border-radius: var(--df-radius-lg);
+      padding: var(--df-space-5);
+      box-shadow: var(--df-shadow-sm);
     }
 
-    #root {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem 5rem;
+    .filter-sidebar h3 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--df-text-muted);
+      margin-bottom: var(--df-space-4);
     }
 
-    /* ── Header ── */
-    .header {
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      padding-bottom: 1.5rem;
+    .filter-group { margin-bottom: var(--df-space-5); }
+    .filter-group:last-child { margin-bottom: 0; }
+
+    .search-hero {
+      margin-bottom: var(--df-space-5);
     }
-    
-    .header h1 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 2.2rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+
+    .search-hero .df-input-search {
+      font-size: 1rem;
+      padding: 0.85rem 1rem 0.85rem 2.75rem;
+      border-radius: var(--df-radius-lg);
+      box-shadow: var(--df-shadow-sm);
+    }
+
+    .search-hero .df-input-search:focus {
+      box-shadow: var(--df-shadow-glow), var(--df-shadow);
+    }
+
+    .results-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--df-space-3);
+      margin-bottom: var(--df-space-4);
+    }
+
+    .results-top h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
       letter-spacing: -0.02em;
     }
-    
-    .header p {
-      color: #94a3b8;
-      font-size: 0.9rem;
-      margin-top: 0.4rem;
+
+    .results-meta {
+      font-size: 0.8125rem;
+      color: var(--df-text-secondary);
     }
 
-    .nav {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      font-size: 0.85rem;
-    }
-    
-    .nav a {
-      color: #818cf8;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.25s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    
-    .nav a:hover {
-      color: #6366f1;
-      transform: translateX(-2px);
-    }
-
-
-    /* ── Filters Grid (Polished for 7 Columns) ── */
-    .filters {
+    .job-grid {
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 0.85rem;
-      margin-bottom: 2rem;
-      background: rgba(17, 24, 39, 0.35);
-      padding: 1.25rem;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    @media(max-width: 1024px) {
-      .filters {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-    @media(max-width: 640px) {
-      .filters {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-        padding: 1rem;
-      }
-    }
-    @media(max-width: 440px) {
-      .filters {
-        grid-template-columns: 1fr;
-      }
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: var(--df-space-4);
     }
 
-    input, select {
-      background: rgba(30, 41, 59, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 12px;
-      color: #f1f5f9;
-      padding: 0.75rem 1rem;
-      font-size: 0.85rem;
-      width: 100%;
-      outline: none;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    input::placeholder {
-      color: #64748b;
-    }
-    
-    input:focus, select:focus {
-      border-color: #6366f1;
-      background: rgba(30, 41, 59, 0.65);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-    }
-    
-    select option {
-      background: #0b0d19;
-      color: #f1f5f9;
+    @media (max-width: 480px) {
+      .job-grid { grid-template-columns: 1fr; }
     }
 
-    .results-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      font-size: 0.85rem;
-      color: #94a3b8;
-      font-weight: 500;
-      padding: 0 0.5rem;
-    }
-    
-    #result-count {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #ffffff;
-    }
-    
-    #last-updated {
-      font-size: 0.78rem;
-      color: #64748b;
-    }
-
-    /* ── Job List ── */
-    .job-list {
+    .job-card {
+      background: var(--df-bg-white);
+      border: 1px solid var(--df-border);
+      border-radius: var(--df-radius-lg);
+      padding: var(--df-space-5);
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-    }
-    
-    .job-card {
-      background: rgba(17, 24, 39, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 20px;
-      padding: 1.5rem 1.75rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 2rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      gap: var(--df-space-4);
+      transition: all var(--df-transition);
+      animation: df-fadeIn 0.4s ease-out forwards;
       opacity: 0;
-      transform: translateY(15px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    
-    @keyframes fadeIn {
-      to { opacity: 1; transform: translateY(0); }
+      box-shadow: var(--df-shadow-xs);
     }
 
     .job-card:hover {
-      border-color: rgba(99, 102, 241, 0.3);
-      background: rgba(17, 24, 39, 0.55);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.4), 0 0 15px -3px rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+      border-color: rgba(79,70,229,0.25);
+      box-shadow: var(--df-shadow-lg);
     }
-    
-    .job-info {
-      flex: 1;
-      min-width: 0;
+
+    .job-card-top {
+      display: flex;
+      gap: var(--df-space-4);
+      align-items: flex-start;
     }
-    
+
+    .company-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--df-radius);
+      background: var(--df-gradient-subtle);
+      border: 1px solid var(--df-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--df-primary);
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    .job-card-info { flex: 1; min-width: 0; }
+
     .job-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.15rem;
+      font-size: 1rem;
       font-weight: 600;
-      color: #ffffff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      color: var(--df-text);
+      line-height: 1.35;
       letter-spacing: -0.01em;
     }
-    
+
     .job-company {
-      font-size: 0.9rem;
-      color: #94a3b8;
-      margin-top: 0.3rem;
-      font-weight: 500;
-    }
-    
-    .job-meta {
-      font-size: 0.78rem;
-      color: #64748b;
-      margin-top: 0.75rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      align-items: center;
-    }
-    
-    .job-meta span:first-child {
-      color: #cbd5e1;
-      font-weight: 500;
+      font-size: 0.875rem;
+      color: var(--df-text-secondary);
+      margin-top: 2px;
     }
 
-    /* ── Tags (Styling Upgrades) ── */
+    .job-location {
+      font-size: 0.8125rem;
+      color: var(--df-text-muted);
+      margin-top: var(--df-space-1);
+    }
+
+    .job-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--df-space-2);
+    }
+
     .tag {
-      border-radius: 8px;
-      padding: 0.25rem 0.65rem;
-      font-size: 0.74rem;
+      border-radius: var(--df-radius-full);
+      padding: 0.2rem 0.6rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      letter-spacing: 0.01em;
-      border: 1px solid rgba(255, 255, 255, 0.03);
-    }
-    
-    .tag.remote { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.2); }
-    .tag.source-ba { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border-color: rgba(59, 130, 246, 0.2); }
-    .tag.source-direct { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.2); }
-    .tag.source-bsj { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; border-color: rgba(20, 184, 166, 0.25); }
-    .tag.source-eures { background: rgba(167, 139, 250, 0.15); color: #c084fc; border-color: rgba(167, 139, 250, 0.25); }
-    .tag.type { background: rgba(167, 139, 250, 0.12); color: #c084fc; border-color: rgba(167, 139, 250, 0.2); }
-    
-    .tag:not(.remote):not(.source-ba):not(.source-direct):not(.source-bsj):not(.source-eures):not(.type) {
-      background: rgba(30, 41, 59, 0.5);
-      color: #cbd5e1;
-      border-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid transparent;
     }
 
-    
-    .tag.exp-junior { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.25); }
-    .tag.exp-student { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.25); }
-    .tag.exp-intern { background: rgba(236, 72, 153, 0.15); color: #f472b6; border-color: rgba(236, 72, 153, 0.25); }
-    .tag.exp-thesis { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border-color: rgba(6, 182, 212, 0.25); }
-    .tag.cat-ai { background: rgba(139, 92, 246, 0.15); color: #c084fc; border-color: rgba(139, 92, 246, 0.25); }
-    .tag.cat-dataeng { background: rgba(14, 165, 233, 0.15); color: #38bdf8; border-color: rgba(14, 165, 233, 0.25); }
-    .tag.cat-devops { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.25); }
-    .tag.cat-analytics { background: rgba(34, 197, 94, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.25); }
-    .tag.cat-fd { background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.25); }
-    .tag.direct-apply { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.25); }
-    .tag.lang-en { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border-color: rgba(59, 130, 246, 0.18); }
-    .tag.lang-de { background: rgba(239, 68, 68, 0.12); color: #f87171; border-color: rgba(239, 68, 68, 0.18); }
-    .tag.work-remote { background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.18); }
-    .tag.work-hybrid { background: rgba(99, 102, 241, 0.12); color: #818cf8; border-color: rgba(99, 102, 241, 0.18); }
-    .tag.work-onsite { background: rgba(100, 116, 139, 0.12); color: #94a3b8; border-color: rgba(100, 116, 139, 0.18); }
-    .tag[class*="region-"] { background: rgba(99, 102, 241, 0.12); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.2); }
-    
-    .tag.clickable { cursor: pointer; transition: all 0.2s ease; }
-    .tag.clickable:hover { border-color: rgba(99, 102, 241, 0.5); background: rgba(99, 102, 241, 0.2); color: #ffffff; }
-
-    /* ── Action Buttons & Container ── */
-    .btn-container {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.85rem;
-      justify-content: center;
-      flex-shrink: 0;
-      width: 140px; /* Set solid space to prevent congestion */
+    .tag.source-ba { background: rgba(37,99,235,0.08); color: #2563EB; border-color: rgba(37,99,235,0.15); }
+    .tag.source-direct { background: var(--df-success-bg); color: var(--df-success); }
+    .tag.source-bsj { background: rgba(20,184,166,0.08); color: #0D9488; }
+    .tag.source-eures { background: rgba(124,58,237,0.08); color: #7C3AED; }
+    .tag.work-remote { background: var(--df-success-bg); color: var(--df-success); }
+    .tag.work-hybrid { background: rgba(79,70,229,0.08); color: var(--df-primary); }
+    .tag.work-onsite { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
+    .tag.lang-en { background: rgba(37,99,235,0.08); color: #2563EB; }
+    .tag.lang-de { background: var(--df-error-bg); color: var(--df-error); }
+    .tag.direct-apply { background: rgba(217,119,6,0.08); color: var(--df-warning); }
+    .tag.type { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
+    .tag.exp-junior { background: rgba(79,70,229,0.08); color: var(--df-primary); }
+    .tag.exp-student { background: rgba(217,119,6,0.08); color: var(--df-warning); }
+    .tag.exp-intern { background: rgba(236,72,153,0.08); color: #DB2777; }
+    .tag.exp-thesis { background: rgba(6,182,212,0.08); color: #0891B2; }
+    .tag.cat-ai, .tag.cat-dataeng, .tag.cat-devops, .tag.cat-analytics, .tag.cat-fd {
+      background: rgba(79,70,229,0.06); color: var(--df-primary);
     }
-    
-    @media(max-width: 640px) {
-      .btn-container {
-        width: 100%;
-        flex-direction: row !important;
-        justify-content: space-between;
-        align-items: center !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-        padding-top: 1rem;
-        margin-top: 0.5rem;
-      }
-    }
-
-    .apply-btn {
-      width: 100%;
-      text-align: center;
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      padding: 0.65rem 1.25rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      white-space: nowrap;
-      display: inline-block;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      font-family: 'Outfit', sans-serif;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
-    }
-    
-    .apply-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45);
-      background: linear-gradient(135deg, #818cf8 0%, #5850ec 100%);
-    }
-
-    /* ── Pagination ── */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-top: 3rem;
-      flex-wrap: wrap;
-    }
-    
-    .page-btn {
-      background: rgba(30, 41, 59, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
-      color: #94a3b8;
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.25s ease;
-    }
-    
-    .page-btn.active {
-      background: #6366f1;
-      border-color: #6366f1;
-      color: #ffffff;
-      box-shadow: 0 0 15px rgba(99, 102, 241, 0.35);
-    }
-    
-    .page-btn:hover:not(.active) {
-      border-color: rgba(99, 102, 241, 0.5);
-      color: #f1f5f9;
-      background: rgba(30, 41, 59, 0.75);
-    }
+    .tag[class*="region-"] { background: rgba(79,70,229,0.06); color: var(--df-primary); }
+    .tag.clickable { cursor: pointer; transition: all var(--df-transition-fast); }
+    .tag.clickable:hover { background: rgba(79,70,229,0.12); border-color: rgba(79,70,229,0.25); }
 
     .job-desc {
-      font-size: 0.82rem;
-      color: #94a3b8;
-      margin-top: 0.75rem;
-      line-height: 1.6;
+      font-size: 0.8125rem;
+      color: var(--df-text-secondary);
+      line-height: 1.55;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      border-left: 2px solid rgba(99, 102, 241, 0.3);
-      padding-left: 0.75rem;
-    }
-    
-    .loading {
-      font-size: 0.95rem;
-      text-align: center;
-      color: #64748b;
-      padding: 4rem 0;
-      font-weight: 500;
+      border-left: 2px solid rgba(79,70,229,0.2);
+      padding-left: var(--df-space-3);
     }
 
-    .error {
-      color: #f87171;
-      font-size: 0.88rem;
-      padding: 1.15rem 1.5rem;
-      background: rgba(127, 29, 29, 0.25);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      border-radius: 16px;
-      margin-bottom: 2rem;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.1);
-    }
-
-    /* ── Match Score Badge & Analysis Panel ── */
-    .match-badge {
+    .job-card-footer {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      padding: 0.4rem 0.85rem;
-      text-align: center;
-      width: 100%; /* Spans width of btn-container */
-      font-family: 'Outfit', sans-serif;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      margin-top: auto;
+      padding-top: var(--df-space-3);
+      border-top: 1px solid var(--df-border);
     }
-    
-    .match-badge.high {
-      background: rgba(16, 185, 129, 0.12);
-      color: #34d399;
-      border-color: rgba(16, 185, 129, 0.25);
-    }
-    
-    .match-badge.med {
-      background: rgba(245, 158, 11, 0.12);
-      color: #fbbf24;
-      border-color: rgba(245, 158, 11, 0.25);
-    }
-    
-    .match-badge.low {
-      background: rgba(239, 68, 68, 0.1);
-      color: #f87171;
-      border-color: rgba(239, 68, 68, 0.2);
-    }
-    
-    .match-badge-pct {
-      font-size: 1.2rem;
-      font-weight: 800;
-    }
-    
-    .match-badge-lbl {
-      font-size: 0.6rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      opacity: 0.85;
-    }
-    
-    /* Analysis Collapsible Row */
-    .fit-analysis-toggle {
-      background: rgba(30, 41, 59, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      color: #cbd5e1;
-      border-radius: 8px;
-      padding: 0.4rem 0.85rem;
-      font-size: 0.72rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 0.85rem;
-      transition: all 0.2s ease;
+
+    .job-date { font-size: 0.75rem; color: var(--df-text-muted); }
+
+    .apply-btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      font-family: 'Outfit', sans-serif;
-    }
-    
-    .fit-analysis-toggle:hover {
-      border-color: rgba(99, 102, 241, 0.4);
-      color: #ffffff;
-      background: rgba(99, 102, 241, 0.1);
-    }
-    
-    .fit-analysis-panel {
-      margin-top: 1rem;
-      padding: 1.25rem;
-      background: rgba(30, 41, 59, 0.2);
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .analysis-section {
-      margin-bottom: 0.85rem;
-    }
-    
-    .analysis-section:last-child {
-      margin-bottom: 0;
-    }
-    
-    .analysis-section-title {
-      font-size: 0.72rem;
-      color: #94a3b8;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
-    }
-    
-    .analysis-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-    }
-    
-    .analysis-tag {
-      font-size: 0.7rem;
+      gap: var(--df-space-2);
+      background: var(--df-gradient);
+      color: #fff;
+      border: none;
+      border-radius: var(--df-radius);
+      padding: 0.5rem 1rem;
+      font-size: 0.8125rem;
       font-weight: 600;
-      padding: 0.2rem 0.55rem;
-      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: inherit;
+      transition: all var(--df-transition);
+      box-shadow: var(--df-shadow-primary);
     }
-    
-    .analysis-tag.match {
-      background: rgba(16, 185, 129, 0.1);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.15);
+
+    .apply-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(79,70,229,0.35);
+      color: #fff;
     }
-    
-    .analysis-tag.gap {
-      background: rgba(239, 68, 68, 0.08);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.15);
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: var(--df-space-2);
+      margin-top: var(--df-space-8);
+      flex-wrap: wrap;
     }
-    
-    .analysis-text {
-      font-size: 0.78rem;
-      color: #e2e8f0;
-      line-height: 1.5;
-      border-left: 2px solid #6366f1;
-      padding-left: 0.75rem;
-      margin-top: 0.3rem;
+
+    .page-btn {
+      background: var(--df-bg-white);
+      border: 1px solid var(--df-border);
+      border-radius: var(--df-radius);
+      color: var(--df-text-secondary);
+      padding: 0.45rem 0.9rem;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all var(--df-transition-fast);
+      font-family: inherit;
+    }
+
+    .page-btn.active {
+      background: var(--df-gradient);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: var(--df-shadow-primary);
+    }
+
+    .page-btn:hover:not(.active) {
+      border-color: var(--df-primary-light);
+      color: var(--df-primary);
+    }
+
+    .loading-msg {
+      text-align: center;
+      color: var(--df-text-secondary);
+      padding: var(--df-space-12) 0;
+      grid-column: 1 / -1;
+    }
+
+    .board-note {
+      font-size: 0.75rem;
+      color: var(--df-text-muted);
+      margin-bottom: var(--df-space-4);
+    }
+
+    .page-header {
+      margin-bottom: var(--df-space-6);
+    }
+
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .page-header p {
+      color: var(--df-text-secondary);
+      font-size: 0.9rem;
+      margin-top: var(--df-space-1);
     }
   </style>
 </head>
 <body>
-<div id="root">
-  <div class="header">
-    <h1>DataForge Job Board</h1>
-    <p>Search across BA Jobsuche, EURES, Arbeitnow, direct ATS feeds, and Berlin startups · Updated daily</p>
+
+<nav class="df-navbar">
+  <div class="df-navbar-inner">
+    <a href="index.html" class="df-navbar-brand">
+      <img src="Dataforge.png" alt="DataForge" />
+      DataForge
+    </a>
+    <div class="df-navbar-links">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="jobs.html" class="active">Jobs</a>
+      <a href="agent.html">Career Matching Wizard</a>
+    </div>
+    <div class="df-navbar-actions">
+      <a href="agent.html" class="df-btn df-btn-primary df-btn-sm">Career Matching Wizard</a>
+    </div>
   </div>
-  <div class="nav">
-    <a href="index.html">← Analytics Dashboard</a>
-    <a href="agent.html" style="margin-left:auto;color:#c7d2fe" title="Matches your resume against real job listings using skill-based scoring.">⚡ Career Matching Wizard →</a>
-  </div>
+</nav>
 
-
-
-  <div id="error-box" class="error" style="display:none"></div>
-  
-  <!-- 6-column Filters row -->
-  <div class="filters">
-    <input id="search"   type="text" placeholder="Title, company, or keyword..." />
-    <input id="location" type="text" placeholder="City (e.g. Berlin)" />
-    <select id="source">
-      <option value="">All sources</option>
-      <option value="arbeitnow">Arbeitnow</option>
-      <option value="ba_api">BA Jobsuche</option>
-      <option value="direct">Direct company feeds</option>
-      <option value="eures">EURES</option>
-      <option value="berlin_startups">Berlin Startup Jobs</option>
-    </select>
-    <select id="work_style">
-      <option value="">All work styles</option>
-      <option value="remote">Remote only</option>
-      <option value="hybrid">Hybrid only</option>
-      <option value="onsite">On-site only</option>
-    </select>
-    <select id="language">
-      <option value="">All languages</option>
-      <option value="en">English only (strict)</option>
-      <option value="de">Non-English / German required</option>
-      <option value="bi">Bilingual</option>
-    </select>
-    <select id="region">
-      <option value="">All countries</option>
-    </select>
-    <select id="experience_level">
-      <option value="">All experience levels</option>
-      <option value="Junior / Entry Level">Junior / Entry Level</option>
-      <option value="graduate_no_exp">Master Graduates (No Experience)</option>
-      <option value="Working Student">Working Student</option>
-      <option value="Internship">Internship</option>
-      <option value="Master Thesis">Master Thesis</option>
-    </select>
+<div class="df-page-narrow df-fade-in">
+  <div class="page-header">
+    <h1>Job Intelligence Board</h1>
+    <p>Search and filter Europe-wide job listings across BA Jobsuche, EURES, Arbeitnow, direct ATS feeds, and Berlin startups</p>
   </div>
 
-  <div class="results-header">
-    <span id="result-count">Loading...</span>
-    <span id="last-updated"></span>
-  </div>
-  <p style="font-size:0.72rem;color:#64748b;margin:-1rem 0 1.5rem 0.5rem;">
-    Data loads in chunks (2,000 jobs per request) due to AWS Lambda response size limits.
-  </p>
+  <div id="error-box" class="df-error" style="display:none"></div>
 
-  <div class="job-list" id="job-list">
-    <div class="loading">Loading jobs...</div>
+  <div class="search-hero">
+    <input id="search" class="df-input df-input-search" type="text" placeholder="Search title, company, or keyword..." />
   </div>
-  <div class="pagination" id="pagination"></div>
-  <div style="text-align:center;color:#64748b;font-size:0.75rem;margin:1.5rem 0 0.5rem;">
-    Board build <span id="board-build"></span>
+
+  <div id="filter-chips" class="df-filter-chips"></div>
+
+  <div class="board-layout">
+    <!-- Sidebar Filters -->
+    <aside class="filter-sidebar">
+      <h3>Filters</h3>
+
+      <div class="filter-group">
+        <label class="df-label" for="location">City</label>
+        <input id="location" class="df-input" type="text" placeholder="e.g. Berlin" />
+      </div>
+
+      <div class="filter-group">
+        <label class="df-label">Source</label>
+        <div class="df-pill-group" id="source-pills">
+          <button class="df-pill active" data-value="">All</button>
+          <button class="df-pill" data-value="arbeitnow">Arbeitnow</button>
+          <button class="df-pill" data-value="ba_api">BA Jobsuche</button>
+          <button class="df-pill" data-value="direct">Direct</button>
+          <button class="df-pill" data-value="eures">EURES</button>
+          <button class="df-pill" data-value="berlin_startups">Berlin Startups</button>
+        </div>
+        <select id="source" style="display:none">
+          <option value="">All sources</option>
+          <option value="arbeitnow">Arbeitnow</option>
+          <option value="ba_api">BA Jobsuche</option>
+          <option value="direct">Direct company feeds</option>
+          <option value="eures">EURES</option>
+          <option value="berlin_startups">Berlin Startup Jobs</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="df-label">Work Style</label>
+        <div class="df-pill-group" id="workstyle-pills">
+          <button class="df-pill active" data-value="">All</button>
+          <button class="df-pill" data-value="remote">Remote</button>
+          <button class="df-pill" data-value="hybrid">Hybrid</button>
+          <button class="df-pill" data-value="onsite">On-site</button>
+        </div>
+        <select id="work_style" style="display:none">
+          <option value="">All work styles</option>
+          <option value="remote">Remote only</option>
+          <option value="hybrid">Hybrid only</option>
+          <option value="onsite">On-site only</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="df-label">Language</label>
+        <div class="df-pill-group" id="language-pills">
+          <button class="df-pill active" data-value="">All</button>
+          <button class="df-pill" data-value="en">English</button>
+          <button class="df-pill" data-value="de">German</button>
+          <button class="df-pill" data-value="bi">Bilingual</button>
+        </div>
+        <select id="language" style="display:none">
+          <option value="">All languages</option>
+          <option value="en">English only (strict)</option>
+          <option value="de">Non-English / German required</option>
+          <option value="bi">Bilingual</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="df-label" for="region">Country</label>
+        <select id="region" class="df-select">
+          <option value="">All countries</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="df-label" for="experience_level">Experience</label>
+        <select id="experience_level" class="df-select">
+          <option value="">All experience levels</option>
+          <option value="Junior / Entry Level">Junior / Entry Level</option>
+          <option value="graduate_no_exp">Master Graduates (No Experience)</option>
+          <option value="Working Student">Working Student</option>
+          <option value="Internship">Internship</option>
+          <option value="Master Thesis">Master Thesis</option>
+        </select>
+      </div>
+    </aside>
+
+    <!-- Main Results -->
+    <main>
+      <div class="results-top">
+        <h2 id="result-count">Loading...</h2>
+        <span class="results-meta" id="last-updated"></span>
+      </div>
+      <p class="board-note">Data loads in chunks (2,000 jobs per request) due to AWS Lambda response size limits. · Build <span id="board-build"></span></p>
+
+      <div class="job-grid" id="job-list">
+        <div class="loading-msg">Loading jobs...</div>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </main>
   </div>
 </div>
 
@@ -630,7 +448,7 @@
   const JOBS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:8000/jobs"
     : "https://2amv4immb0.execute-api.eu-central-1.amazonaws.com/";
-  const BOARD_BUILD = "2026-06-08.5";
+  const BOARD_BUILD = "2026-06-10.1";
   const JOB_PAGE_SIZE = 2000;
   const PAGE_SIZE = 25;
   const LANG_API = { en: "english_only", de: "german_required", bi: "bilingual" };
@@ -638,25 +456,99 @@
   let allJobs = [];
   let filtered = [];
   let page = 1;
-
-
+  let isLoading = false;
 
   const TYPE_LABELS = {
     full_time: "Full-time", part_time: "Part-time",
     internship: "Internship", freelance: "Freelance", temporary: "Temporary"
   };
 
+  function companyInitials(name) {
+    const parts = String(name || "?").trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return "?";
+    if (parts.length === 1) return parts[0].slice(0, 2);
+    return (parts[0][0] + parts[1][0]);
+  }
+
+  function highlightText(text, query) {
+    if (!query || !text) return esc(text);
+    const safe = esc(text);
+    const q = esc(query);
+    try {
+      const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return safe.replace(re, '<span class="df-highlight">$1</span>');
+    } catch (_) { return safe; }
+  }
+
+  function setupPillGroup(pillContainerId, selectId, onChange) {
+    const container = document.getElementById(pillContainerId);
+    const select = document.getElementById(selectId);
+    container.querySelectorAll('.df-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        container.querySelectorAll('.df-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        select.value = pill.dataset.value;
+        onChange();
+      });
+    });
+  }
+
+  function syncPillFromSelect(pillContainerId, selectId) {
+    const val = document.getElementById(selectId).value;
+    document.querySelectorAll(`#${pillContainerId} .df-pill`).forEach(p => {
+      p.classList.toggle('active', p.dataset.value === val);
+    });
+  }
+
+  function renderFilterChips() {
+    const chips = [];
+    const search = document.getElementById("search").value.trim();
+    const location = document.getElementById("location").value.trim();
+    const source = document.getElementById("source");
+    const workStyle = document.getElementById("work_style");
+    const language = document.getElementById("language");
+    const region = document.getElementById("region").value;
+    const exp = document.getElementById("experience_level").value;
+
+    if (search) chips.push({ label: `Search: ${search}`, clear: () => { document.getElementById("search").value = ""; applyFilters(); } });
+    if (location) chips.push({ label: `City: ${location}`, clear: () => { document.getElementById("location").value = ""; applyFilters(); } });
+    if (source.value) chips.push({ label: source.selectedOptions[0]?.textContent, clear: () => { source.value = ""; syncPillFromSelect("source-pills", "source"); loadJobs(); } });
+    if (workStyle.value) chips.push({ label: workStyle.selectedOptions[0]?.textContent, clear: () => { workStyle.value = ""; syncPillFromSelect("workstyle-pills", "work_style"); loadJobs(); } });
+    if (language.value) chips.push({ label: language.selectedOptions[0]?.textContent, clear: () => { language.value = ""; syncPillFromSelect("language-pills", "language"); loadJobs(); } });
+    if (region) chips.push({ label: `Country: ${region}`, clear: () => { document.getElementById("region").value = ""; applyFilters(); } });
+    if (exp) chips.push({ label: exp, clear: () => { document.getElementById("experience_level").value = ""; applyFilters(); } });
+
+    const el = document.getElementById("filter-chips");
+    if (!chips.length) { el.innerHTML = ""; return; }
+    el.innerHTML = chips.map((c, i) =>
+      `<span class="df-chip">${esc(c.label)} <button type="button" onclick="clearChip(${i})" aria-label="Remove">×</button></span>`
+    ).join("");
+    window._chips = chips;
+  }
+
+  function clearChip(i) {
+    if (window._chips?.[i]) window._chips[i].clear();
+  }
+
+  function showSkeletons() {
+    const list = document.getElementById("job-list");
+    list.innerHTML = Array(6).fill(0).map(() => `
+      <div class="df-skeleton-card">
+        <div class="df-skeleton df-skeleton-line lg"></div>
+        <div class="df-skeleton df-skeleton-line"></div>
+        <div class="df-skeleton df-skeleton-line sm"></div>
+      </div>`).join("");
+  }
+
   function populateCountryDropdown(jobs) {
     const select = document.getElementById("region");
     const currentValue = select.value;
-
     const countries = [...new Set(jobs.map(j => j.region).filter(Boolean))];
     countries.sort((a, b) => {
       if (a === "Unspecified" || a === "Other") return 1;
       if (b === "Unspecified" || b === "Other") return -1;
       return a.localeCompare(b);
     });
-
     select.innerHTML = '<option value="">All countries</option>';
     countries.forEach(c => {
       const opt = document.createElement("option");
@@ -665,20 +557,15 @@
         : c === "Other" ? "Other / unspecified location" : c;
       select.appendChild(opt);
     });
-
-    if (currentValue && countries.includes(currentValue)) {
-      select.value = currentValue;
-    }
+    if (currentValue && countries.includes(currentValue)) select.value = currentValue;
   }
 
   function updateSummaryLine(data, visibleCount) {
     const source = document.getElementById("source").value;
-    const sourceLabel = source
-      ? document.getElementById("source").selectedOptions[0]?.textContent || source
-      : "";
+    const sourceLabel = source ? document.getElementById("source").selectedOptions[0]?.textContent || source : "";
     const loaded = (data?.jobs || allJobs).length;
-    const filtered = data?.kpis?.filtered ?? loaded;
-    const count = visibleCount ?? filtered;
+    const filteredCount = data?.kpis?.filtered ?? loaded;
+    const count = visibleCount ?? filteredCount;
     const scope = sourceLabel ? `${sourceLabel} · ` : "";
     document.getElementById("last-updated").textContent =
       `${scope}${count.toLocaleString()} shown · ${loaded.toLocaleString()} loaded`;
@@ -693,9 +580,8 @@
   async function fetchAllJobPages(baseParams) {
     const jobs = [];
     let offset = 0;
-    let filtered = 0;
+    let filteredCount = 0;
     let lastKpis = {};
-
     while (true) {
       const params = new URLSearchParams(baseParams);
       params.set("limit", String(JOB_PAGE_SIZE));
@@ -703,43 +589,30 @@
       const data = await fetchJobsFromApi(params);
       const batch = data.jobs || [];
       lastKpis = data.kpis || {};
-      filtered = Number(lastKpis.filtered || filtered || 0);
+      filteredCount = Number(lastKpis.filtered || filteredCount || 0);
       jobs.push(...batch);
       if (!batch.length || !lastKpis.truncated) break;
       offset += batch.length;
-      if (filtered > 0 && jobs.length >= filtered) break;
+      if (filteredCount > 0 && jobs.length >= filteredCount) break;
       if (offset > 50000) break;
     }
-
-    return {
-      jobs,
-      kpis: {
-        ...lastKpis,
-        filtered: filtered || jobs.length,
-        returned: jobs.length,
-        truncated: false,
-      },
-    };
+    return { jobs, kpis: { ...lastKpis, filtered: filteredCount || jobs.length, returned: jobs.length, truncated: false } };
   }
 
   async function loadJobs() {
-    const source      = document.getElementById("source").value;
-    const workStyle   = document.getElementById("work_style").value;
+    const source = document.getElementById("source").value;
+    const workStyle = document.getElementById("work_style").value;
     const languageReq = document.getElementById("language").value;
-
-    const params = new URLSearchParams({
-      sort: "newest",
-      status: "active",
-      board: BOARD_BUILD,
-      _: String(Date.now()),
-    });
-    if (source)      params.set("source",       source);
-    if (workStyle)   params.set("work_style",   workStyle);
+    const params = new URLSearchParams({ sort: "newest", status: "active", board: BOARD_BUILD, _: String(Date.now()) });
+    if (source) params.set("source", source);
+    if (workStyle) params.set("work_style", workStyle);
     if (languageReq && LANG_API[languageReq]) params.set("language_req", LANG_API[languageReq]);
 
     try {
+      isLoading = true;
       document.getElementById("error-box").style.display = "none";
       document.getElementById("result-count").textContent = "Loading...";
+      showSkeletons();
       const data = await fetchAllJobPages(params);
       allJobs = data.jobs || [];
       populateCountryDropdown(allJobs);
@@ -748,56 +621,52 @@
       document.getElementById("error-box").style.display = "block";
       document.getElementById("error-box").textContent = `⚠ ${e.message}`;
       document.getElementById("result-count").textContent = "Failed to load";
+      document.getElementById("job-list").innerHTML = `<div class="loading-msg">Failed to load jobs.</div>`;
+    } finally {
+      isLoading = false;
     }
   }
 
   function applyFilters(summaryData) {
-    const search    = document.getElementById("search").value.toLowerCase().trim();
-    const location  = document.getElementById("location").value.toLowerCase().trim();
-    const language  = document.getElementById("language").value;
+    const search = document.getElementById("search").value.toLowerCase().trim();
+    const location = document.getElementById("location").value.toLowerCase().trim();
+    const language = document.getElementById("language").value;
     const workStyle = document.getElementById("work_style").value;
-    const region    = document.getElementById("region").value;
-    const expLevel  = document.getElementById("experience_level").value;
+    const region = document.getElementById("region").value;
+    const expLevel = document.getElementById("experience_level").value;
 
     filtered = allJobs.filter(j => {
       if (region) {
         const jobRegion = j.region || "";
         if (jobRegion.toLowerCase() !== region.toLowerCase()) return false;
       }
-      const title   = (j.title    || "").toLowerCase();
-      const company = (j.company  || "").toLowerCase();
-      const loc     = (j.location || "").toLowerCase();
-      const tags    = (j.tags     || "").toLowerCase();
+      const title = (j.title || "").toLowerCase();
+      const company = (j.company || "").toLowerCase();
+      const loc = (j.location || "").toLowerCase();
+      const tags = (j.tags || "").toLowerCase();
 
-      if (search   && !title.includes(search) && !company.includes(search) && !loc.includes(search) && !tags.includes(search)) return false;
+      if (search && !title.includes(search) && !company.includes(search) && !loc.includes(search) && !tags.includes(search)) return false;
       if (location && !loc.includes(location)) return false;
-      
+
       if (language === "en") {
-        if (j.language_requirement) {
-          if (j.language_requirement !== "english_only") return false;
-        } else {
-          if (j.is_english !== "True" && j.is_english !== true) return false;
-        }
+        if (j.language_requirement) { if (j.language_requirement !== "english_only") return false; }
+        else { if (j.is_english !== "True" && j.is_english !== true) return false; }
       } else if (language === "de") {
-        if (j.language_requirement) {
-          if (j.language_requirement !== "german_required") return false;
-        } else {
-          if (j.is_english === "True" || j.is_english === true) return false;
-        }
+        if (j.language_requirement) { if (j.language_requirement !== "german_required") return false; }
+        else { if (j.is_english === "True" || j.is_english === true) return false; }
       } else if (language === "bi") {
         if (j.language_requirement !== "bilingual") return false;
       }
-      
+
       if (workStyle) {
         const ws = (j.work_style || "").toLowerCase();
-        if (ws) {
-          if (ws !== workStyle) return false;
-        } else {
+        if (ws) { if (ws !== workStyle) return false; }
+        else {
           const legacy = (j.is_remote === "True" || j.is_remote === true) ? "remote" : "onsite";
           if (legacy !== workStyle) return false;
         }
       }
-      
+
       if (expLevel) {
         if (expLevel === "graduate_no_exp") {
           const isJun = tags.includes("junior / entry level") || title.includes("junior") || title.includes("entry") || title.includes("graduate");
@@ -805,15 +674,8 @@
           let hasNoExp = true;
           if (j.description) {
             const descLower = j.description.toLowerCase();
-            const excludePatterns = [
-              /\b[3-9]\s*\+?\s*years?\b/,
-              /\b[3-9]\s*jahre\b/,
-              /mehrjährige\s+berufserfahrung/,
-              /several\s+years\s+of\s+experience/
-            ];
-            if (excludePatterns.some(pat => pat.test(descLower))) {
-              hasNoExp = false;
-            }
+            const excludePatterns = [/\b[3-9]\s*\+?\s*years?\b/, /\b[3-9]\s*jahre\b/, /mehrjährige\s+berufserfahrung/, /several\s+years\s+of\s+experience/];
+            if (excludePatterns.some(pat => pat.test(descLower))) hasNoExp = false;
           }
           if (!isJun || !isMast || !hasNoExp) return false;
         } else {
@@ -824,81 +686,68 @@
     });
 
     filtered.sort((a, b) => (b.date_added || "").localeCompare(a.date_added || ""));
-
     page = 1;
-    document.getElementById("result-count").textContent =
-      `${filtered.length.toLocaleString()} jobs`;
+    document.getElementById("result-count").textContent = `${filtered.length.toLocaleString()} jobs`;
     updateSummaryLine(summaryData, filtered.length);
+    renderFilterChips();
     renderJobs();
   }
 
   function renderJobs() {
     const start = (page - 1) * PAGE_SIZE;
     const slice = filtered.slice(start, start + PAGE_SIZE);
-    const list  = document.getElementById("job-list");
+    const list = document.getElementById("job-list");
+    const searchQ = document.getElementById("search").value.trim();
 
     if (!filtered.length) {
-      list.innerHTML = `<div class="loading">No jobs match your filters.</div>`;
+      list.innerHTML = `<div class="loading-msg">No jobs match your filters.</div>`;
       document.getElementById("pagination").innerHTML = "";
       return;
     }
 
     list.innerHTML = slice.map((j, i) => {
-      const cardId = `job-card-${start + i}`;
       const isRemote = j.is_remote === "True" || j.is_remote === true;
       const isDirect = j.source === "direct";
       const sourceLabel = j.source === "ba_api" ? "BA Jobsuche"
         : j.source === "berlin_startups" ? "Berlin Startup Jobs"
         : j.source === "eures" ? "EURES"
-        : isDirect ? `🏢 ${j.ats || 'Direct'}`
+        : isDirect ? `${j.ats || 'Direct'}`
         : "Arbeitnow";
       const sourceClass = j.source === "ba_api" ? "source-ba"
         : j.source === "berlin_startups" ? "source-bsj"
         : j.source === "eures" ? "source-eures"
-        : isDirect ? "source-direct"
-        : "";
+        : isDirect ? "source-direct" : "";
       const url = fixEuresApplyUrl(j.job_url || j.url || "#");
 
       let workStyleBadge = "";
       if (j.work_style) {
-        if (j.work_style === "remote") workStyleBadge = `<span class="tag work-remote">🌐 Remote</span>`;
-        else if (j.work_style === "hybrid") workStyleBadge = `<span class="tag work-hybrid">🏢 Hybrid</span>`;
-        else if (j.work_style === "onsite") workStyleBadge = `<span class="tag work-onsite">📍 On-site</span>`;
+        if (j.work_style === "remote") workStyleBadge = `<span class="tag work-remote">Remote</span>`;
+        else if (j.work_style === "hybrid") workStyleBadge = `<span class="tag work-hybrid">Hybrid</span>`;
+        else if (j.work_style === "onsite") workStyleBadge = `<span class="tag work-onsite">On-site</span>`;
       } else {
-        workStyleBadge = isRemote ? `<span class="tag work-remote">🌐 Remote</span>` : `<span class="tag work-onsite">📍 On-site</span>`;
+        workStyleBadge = isRemote ? `<span class="tag work-remote">Remote</span>` : `<span class="tag work-onsite">On-site</span>`;
       }
 
       let langReqBadge = "";
       if (j.language_requirement) {
-        if (j.language_requirement === "english_only") {
-          langReqBadge = `<span class="tag lang-en">🇬🇧 English Only</span>`;
-        } else {
-          langReqBadge = `<span class="tag lang-de">🇩🇪 German Required</span>`;
-        }
+        langReqBadge = j.language_requirement === "english_only"
+          ? `<span class="tag lang-en">English Only</span>`
+          : `<span class="tag lang-de">German Required</span>`;
       } else {
         const isEn = j.is_english === "True" || j.is_english === true;
-        langReqBadge = isEn ? `<span class="tag lang-en">🇬🇧 English Only</span>` : `<span class="tag lang-de">🇩🇪 German Required</span>`;
+        langReqBadge = isEn ? `<span class="tag lang-en">English Only</span>` : `<span class="tag lang-de">German Required</span>`;
       }
 
-      const directBadge = isDirect ? `<span class="tag direct-apply">⚡ Direct Apply</span>` : "";
-
+      const directBadge = isDirect ? `<span class="tag direct-apply">Direct Apply</span>` : "";
       let regionBadge = "";
       if (j.region && j.region !== "Other" && j.region !== "Unspecified") {
-        regionBadge = `<span class="tag region-${j.region.toLowerCase().replace(/[^a-z0-9]+/g, '-')}">📍 ${esc(j.region)}</span>`;
+        regionBadge = `<span class="tag region-${j.region.toLowerCase().replace(/[^a-z0-9]+/g, '-')}">${esc(j.region)}</span>`;
       }
 
-      const typeTags = (j.job_types || "")
-        .split(",")
-        .map(t => t.trim())
-        .filter(Boolean)
-        .map(t => `<span class="tag type">${esc(TYPE_LABELS[t] || t)}</span>`)
-        .join("");
+      const typeTags = (j.job_types || "").split(",").map(t => t.trim()).filter(Boolean)
+        .map(t => `<span class="tag type">${esc(TYPE_LABELS[t] || t)}</span>`).join("");
 
-      const tagChips = (j.tags || '')
-        .split(',')
-        .map(t => t.trim())
-        .filter(t => t && t !== 'nan' && t.length < 40)
-        .slice(0, 5)
+      const tagChips = (j.tags || '').split(',').map(t => t.trim()).filter(t => t && t !== 'nan' && t.length < 40).slice(0, 4)
         .map(t => {
           let extraClass = 'clickable';
           if (t === 'Junior / Entry Level') extraClass += ' exp-junior';
@@ -910,42 +759,39 @@
           else if (t === 'Cloud / DevOps') extraClass += ' cat-devops';
           else if (t === 'Analytics / BI') extraClass += ' cat-analytics';
           else if (t === 'Forward Deployed') extraClass += ' cat-fd';
-          
           return `<span class="tag ${extraClass}" onclick="filterByTag('${esc(t)}', event)">${esc(t)}</span>`;
-        })
-        .join('');
+        }).join('');
 
       const rawDesc = j.description || '';
       const plainDesc = rawDesc.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
       const showDesc = (j.source === 'arbeitnow' || j.source === 'direct' || j.source === 'eures') && plainDesc.length > 10;
       const descSnippet = showDesc
-        ? `<div class="job-desc">${esc(plainDesc.slice(0, 180))}${plainDesc.length > 180 ? '…' : ''}</div>`
+        ? `<div class="job-desc">${highlightText(plainDesc.slice(0, 180), searchQ)}${plainDesc.length > 180 ? '…' : ''}</div>`
         : '';
 
+      const locDisplay = (j.location || '—').split(',')[0].trim();
+      const initials = companyInitials(j.company);
+
       return `
-        <div class="job-card" id="${cardId}">
-          <div class="job-info">
-            <div class="job-title" title="${esc(j.title)}">${esc(j.title)}</div>
-            <div class="job-company">${esc(j.company || '\u2014')}</div>
-            <div class="job-meta">
-              <span>📍 ${esc((j.location || '\u2014').split(',')[0].trim())}</span>
-              <span class="tag ${sourceClass}">${sourceLabel}</span>
-              ${directBadge}
-              ${regionBadge}
-              ${workStyleBadge}
-              ${langReqBadge}
-              ${typeTags}
-              ${tagChips}
-              <span>${j.date_added || ''}</span>
+        <article class="job-card" style="animation-delay:${(i % 8) * 0.04}s">
+          <div class="job-card-top">
+            <div class="company-avatar" title="${esc(j.company || '')}">${esc(initials)}</div>
+            <div class="job-card-info">
+              <div class="job-title" title="${esc(j.title)}">${highlightText(j.title, searchQ)}</div>
+              <div class="job-company">${highlightText(j.company || '—', searchQ)}</div>
+              <div class="job-location">📍 ${esc(locDisplay)}</div>
             </div>
-            ${descSnippet}
           </div>
-          <div class="btn-container">
-            <a class="apply-btn" href="${escUrl(url)}" target="_blank" rel="noopener noreferrer">
-              Apply →
-            </a>
+          <div class="job-tags">
+            <span class="tag ${sourceClass}">${sourceLabel}</span>
+            ${directBadge}${regionBadge}${workStyleBadge}${langReqBadge}${typeTags}${tagChips}
           </div>
-        </div>`;
+          ${descSnippet}
+          <div class="job-card-footer">
+            <span class="job-date">${j.date_added || ''}</span>
+            <a class="apply-btn" href="${escUrl(url)}" target="_blank" rel="noopener noreferrer">Apply →</a>
+          </div>
+        </article>`;
     }).join("");
 
     renderPagination();
@@ -965,10 +811,14 @@
 
   function goPage(p) { page = p; renderJobs(); window.scrollTo(0, 0); }
 
+  function filterByTag(tag, event) {
+    if (event) event.stopPropagation();
+    document.getElementById("search").value = tag;
+    applyFilters();
+  }
+
   function esc(s) {
-    return String(s || "")
-      .replace(/&/g,"&amp;").replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
   function escUrl(u) {
@@ -983,23 +833,28 @@
     return `https://europa.eu/eures/portal/jv-se/jv-details/${encodeURIComponent(id)}?jvDisplayLanguage=en&lang=en`;
   }
 
-  ["search","location"].forEach(id => {
-    document.getElementById(id).addEventListener("input", () => applyFilters());
+  let searchDebounce;
+  document.getElementById("search").addEventListener("input", () => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => applyFilters(), 200);
   });
-  ["work_style","language"].forEach(id => {
-    document.getElementById(id).addEventListener("change", loadJobs);
+  document.getElementById("location").addEventListener("input", () => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => applyFilters(), 200);
   });
-  document.getElementById("region").addEventListener("change", () => applyFilters());
-  document.getElementById("source").addEventListener("change", () => {
+
+  setupPillGroup("source-pills", "source", () => {
     document.getElementById("region").value = "";
     document.getElementById("location").value = "";
     document.getElementById("search").value = "";
     document.getElementById("experience_level").value = "";
     loadJobs();
   });
-  ["experience_level"].forEach(id => {
-    document.getElementById(id).addEventListener("change", () => applyFilters());
-  });
+  setupPillGroup("workstyle-pills", "work_style", loadJobs);
+  setupPillGroup("language-pills", "language", loadJobs);
+
+  document.getElementById("region").addEventListener("change", () => applyFilters());
+  document.getElementById("experience_level").addEventListener("change", () => applyFilters());
 
   document.getElementById("board-build").textContent = BOARD_BUILD;
   loadJobs();

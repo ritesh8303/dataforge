@@ -3,995 +3,517 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataForge — Labor Market Insights</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>DataForge — Job Intelligence Platform</title>
+  <meta name="description" content="DataForge is a Job Intelligence Platform aggregating and analyzing Europe-wide job data across BA Jobsuche, EURES, direct ATS feeds, Arbeitnow, and Berlin startups." />
+  <link rel="icon" href="Dataforge.png" type="image/png" />
+  <link rel="stylesheet" href="components/design-system.css" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .hero {
+      position: relative;
+      padding: var(--df-space-16) 0 var(--df-space-12);
+      text-align: center;
+      overflow: hidden;
     }
 
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #080a10;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 99px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
-
-    html, body {
-      background: #000000;
-      color: #f1f5f9;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      min-height: 100vh;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    #root {
-      max-width: 1320px;
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
       margin: 0 auto;
-      padding: 2rem 1.5rem 4rem;
     }
 
-    /* ── Header / Top Navigation ── */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 3rem;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      background: rgba(15, 23, 42, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      padding: 1.5rem 2rem;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    .hero-logo {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto var(--df-space-6);
+      animation: df-fadeIn 0.6s ease-out forwards;
     }
-    
-    .topbar-left h1 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 2rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #ffffff 20%, #a5b4fc 100%);
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.15;
+      margin-bottom: var(--df-space-4);
+      background: linear-gradient(135deg, #111827 30%, #4F46E5 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      letter-spacing: -0.03em;
+      background-clip: text;
     }
-    
-    .topbar-left p {
-      color: #94a3b8;
-      font-size: 0.85rem;
-      margin-top: 0.25rem;
-      font-weight: 400;
-      letter-spacing: 0.01em;
+
+    .hero-sub {
+      font-size: 1.125rem;
+      color: var(--df-text-secondary);
+      line-height: 1.7;
+      margin-bottom: var(--df-space-8);
+      max-width: 580px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    
-    .topbar-right {
+
+    .hero-cta {
       display: flex;
-      align-items: center;
-      gap: 1.25rem;
+      gap: var(--df-space-4);
+      justify-content: center;
       flex-wrap: wrap;
     }
-    
-    .nav-btn {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      color: #ffffff;
-      text-decoration: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      white-space: nowrap;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-      font-family: 'Outfit', sans-serif;
-      letter-spacing: 0.02em;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .nav-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
-      background: linear-gradient(135deg, #818cf8 0%, #5850ec 100%);
-    }
-    
-    .nav-btn:active {
-      transform: translateY(0);
-    }
 
-    .live-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-size: 0.78rem;
-      color: #cbd5e1;
-      background: rgba(30, 41, 59, 0.6);
-      padding: 0.5rem 1rem;
-      border-radius: 99px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      font-weight: 500;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 8px #10b981;
-      animation: pulse 2s infinite;
-      flex-shrink: 0;
-    }
-    
-    @keyframes pulse {
-      0% { transform: scale(0.95); opacity: 0.5; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-      70% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-      100% { transform: scale(0.95); opacity: 0.5; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-    }
-
-    /* ── KPI Grid ── */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 1.25rem;
-      margin-bottom: 2.5rem;
-    }
-    @media(max-width:1200px){ .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media(max-width:768px){ .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media(max-width:480px){ .kpi-grid { grid-template-columns: 1fr; } }
-
-    .kpi-card {
-      background: rgba(17, 24, 39, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 20px;
-      padding: 1.5rem;
+    .hero-preview {
+      margin-top: var(--df-space-12);
       position: relative;
+      z-index: 1;
+    }
+
+    .hero-preview-frame {
+      background: var(--df-bg-white);
+      border: 1px solid var(--df-border);
+      border-radius: var(--df-radius-xl);
+      box-shadow: var(--df-shadow-lg);
+      padding: var(--df-space-2);
+      max-width: 900px;
+      margin: 0 auto;
       overflow: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    
-    .kpi-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent, #6366f1) 0%, rgba(255,255,255,0.1) 100%);
-      opacity: 0.8;
-      transition: height 0.3s ease;
-    }
-    
-    .kpi-card:hover {
-      transform: translateY(-4px);
-      background: rgba(17, 24, 39, 0.55);
-      border-color: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.35), 0 0 15px -3px var(--accent, rgba(99, 102, 241, 0.2));
-    }
-    
-    .kpi-card:hover::before {
-      height: 6px;
-    }
-    
-    .kpi-card .label {
-      font-size: 0.72rem;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      margin-bottom: 0.75rem;
-      font-weight: 600;
-    }
-    
-    .kpi-card .value {
-      font-family: 'Outfit', sans-serif;
-      font-size: 2.1rem;
-      font-weight: 700;
-      color: #ffffff;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-    }
-    
-    .kpi-card .sub {
-      font-size: 0.72rem;
-      color: #64748b;
-      margin-top: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.01em;
     }
 
-    /* ── Layout Panels Grid ── */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1.8fr 1.2fr;
-      gap: 1.75rem;
-      margin-bottom: 2rem;
-    }
-    @media(max-width: 1024px) {
-      .main-grid { grid-template-columns: 1fr; }
+    .hero-preview-bar {
+      display: flex;
+      gap: 6px;
+      padding: var(--df-space-3) var(--df-space-4);
+      border-bottom: 1px solid var(--df-border);
     }
 
-    /* ── Glassmorphic Cards ── */
-    .card {
-      background: rgba(17, 24, 39, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 24px;
-      padding: 1.75rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      display: flex;
-      flex-direction: column;
-      transition: all 0.3s ease;
-      margin-bottom: 1.75rem;
-    }
-    
-    .card:last-child {
-      margin-bottom: 0;
-    }
-    
-    .card:hover {
-      border-color: rgba(255, 255, 255, 0.08);
-      background: rgba(17, 24, 39, 0.48);
-      box-shadow: 0 15px 35px -8px rgba(0, 0, 0, 0.4);
-    }
-    
-    .card-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-      padding-bottom: 0.75rem;
-    }
-
-    /* ── Trend chart ── */
-    .chart-wrap {
-      width: 100%;
-      height: 290px;
-      position: relative;
-    }
-    canvas.trend {
-      width: 100% !important;
-      height: 100% !important;
-      display: block;
-    }
-
-    /* ── Bar rows (Skills, Sources) ── */
-    .bar-row {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 0.85rem;
-    }
-    
-    .bar-row:last-child {
-      margin-bottom: 0;
-    }
-    
-    .bar-name {
-      font-size: 0.82rem;
-      color: #cbd5e1;
-      width: 120px;
-      flex-shrink: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-weight: 500;
-    }
-    
-    .bar-track {
-      flex: 1;
-      background: rgba(30, 41, 59, 0.4);
-      border-radius: 99px;
-      height: 8px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.02);
-    }
-    
-    .bar-fill {
-      height: 100%;
-      border-radius: 99px;
-      transition: width 1.2s cubic-bezier(0.1, 1, 0.1, 1);
-    }
-    
-    .bar-count {
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.82rem;
-      color: #64748b;
-      width: 45px;
-      text-align: right;
-      flex-shrink: 0;
-      font-weight: 600;
-    }
-
-    /* ── Donut (Remote Ratio) ── */
-    .donut-card-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      gap: 1.5rem;
-      width: 100%;
-      padding: 0.5rem 0;
-    }
-    @media(max-width: 400px) {
-      .donut-card-inner { flex-direction: column; }
-    }
-    
-    .donut-ring {
-      position: relative;
-      width: 130px;
-      height: 130px;
-      flex-shrink: 0;
-    }
-    
-    .donut-ring canvas {
-      width: 130px !important;
-      height: 130px !important;
-      display: block;
-    }
-    
-    .donut-center {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .donut-center .big {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #ffffff;
-      line-height: 1;
-    }
-    
-    .donut-center .small {
-      font-size: 0.6rem;
-      color: #64748b;
-      margin-top: 0.25rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-    }
-    
-    .donut-legend {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      flex: 1;
-    }
-    
-    .legend-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.8rem;
-    }
-    
-    .legend-left {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      color: #e2e8f0;
-    }
-    
-    .legend-dot {
+    .hero-preview-dot {
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      flex-shrink: 0;
-    }
-    
-    .legend-val {
-      font-family: 'Outfit', sans-serif;
-      color: #64748b;
-      font-weight: 700;
+      background: var(--df-border);
     }
 
-    /* ── Companies List ── */
-    .company-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
+    .hero-preview-dot:nth-child(1) { background: #FCA5A5; }
+    .hero-preview-dot:nth-child(2) { background: #FCD34D; }
+    .hero-preview-dot:nth-child(3) { background: #6EE7B7; }
+
+    .hero-preview-body {
+      padding: var(--df-space-6);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--df-space-4);
+      min-height: 180px;
     }
-    
-    .company-item {
+
+    .hero-preview-kpi {
+      background: var(--df-bg-subtle);
+      border-radius: var(--df-radius);
+      padding: var(--df-space-4);
+      text-align: left;
+    }
+
+    .hero-preview-kpi .val {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--df-text);
+    }
+
+    .hero-preview-kpi .lbl {
+      font-size: 0.7rem;
+      color: var(--df-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    .features-section {
+      padding: var(--df-space-16) var(--df-space-6);
+      max-width: var(--df-max-width);
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      padding: var(--df-space-6);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--df-radius);
+      background: var(--df-gradient-subtle);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0.75rem 1rem;
-      background: rgba(30, 41, 59, 0.2);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.02);
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: var(--df-space-4);
     }
-    
-    .company-item:hover {
-      background: rgba(30, 41, 59, 0.35);
-      border-color: rgba(255, 255, 255, 0.06);
-      transform: translateX(4px);
+
+    .feature-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: var(--df-space-2);
+      color: var(--df-text);
     }
-    
-    .company-info {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      min-width: 0;
+
+    .feature-card p {
+      font-size: 0.875rem;
+      color: var(--df-text-secondary);
+      line-height: 1.6;
     }
-    
-    .company-rank {
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 800;
-      color: #6366f1;
-      width: 22px;
+
+    .stats-section {
+      background: var(--df-bg-white);
+      border-top: 1px solid var(--df-border);
+      border-bottom: 1px solid var(--df-border);
+      padding: var(--df-space-12) var(--df-space-6);
+    }
+
+    .stats-inner {
+      max-width: var(--df-max-width);
+      margin: 0 auto;
       text-align: center;
     }
-    
-    .company-name {
-      font-size: 0.85rem;
-      color: #f1f5f9;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    
-    .company-count {
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.78rem;
+
+    .stat-item .num {
+      font-size: 2.25rem;
       font-weight: 700;
-      color: #34d399;
-      background: rgba(16, 185, 129, 0.1);
-      padding: 0.25rem 0.65rem;
-      border-radius: 8px;
-      border: 1px solid rgba(16, 185, 129, 0.15);
+      letter-spacing: -0.03em;
+      color: var(--df-text);
     }
 
-    /* ── Skeleton & Loading Animations ── */
-    .skeleton {
-      background: linear-gradient(90deg, rgba(31, 41, 55, 0.3) 25%, rgba(55, 65, 81, 0.4) 50%, rgba(31, 41, 55, 0.3) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite linear;
-      border-radius: 8px;
-      display: inline-block;
-      width: 80px;
-      height: 1.8rem;
-    }
-    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-
-    .error {
-      color: #f87171;
-      font-size: 0.85rem;
-      padding: 1rem 1.5rem;
-      background: rgba(127, 29, 29, 0.25);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      border-radius: 16px;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.1);
+    .stat-item .lbl {
+      font-size: 0.8125rem;
+      color: var(--df-text-secondary);
+      margin-top: var(--df-space-1);
     }
 
-    /* ── Footer ── */
-    .footer {
+    .pipeline-section {
+      padding: var(--df-space-16) var(--df-space-6);
+      max-width: var(--df-max-width);
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .preview-section {
+      padding: var(--df-space-16) var(--df-space-6);
+      background: var(--df-bg-subtle);
+    }
+
+    .preview-inner {
+      max-width: var(--df-max-width);
+      margin: 0 auto;
+    }
+
+    .preview-card {
+      text-align: center;
+      padding: var(--df-space-8) var(--df-space-6);
+    }
+
+    .preview-mock {
+      background: var(--df-bg-subtle);
+      border-radius: var(--df-radius);
+      height: 160px;
+      margin-bottom: var(--df-space-5);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-top: 4rem;
-      font-size: 0.78rem;
-      color: #64748b;
-      flex-wrap: wrap;
-      gap: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 2rem;
-    }
-    .footer a {
-      color: #94a3b8;
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-    .footer a:hover {
-      color: #6366f1;
+      justify-content: center;
+      font-size: 2.5rem;
+      border: 1px dashed var(--df-border);
     }
 
-    .kpi-info {
+    .preview-card h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: var(--df-space-2);
+    }
+
+    .preview-card p {
+      font-size: 0.875rem;
+      color: var(--df-text-secondary);
+      margin-bottom: var(--df-space-4);
+    }
+
+    .stat-skeleton {
       display: inline-block;
-      margin-left: 0.25rem;
-      font-size: 0.72rem;
-      color: #64748b;
-      cursor: help;
-      vertical-align: middle;
+      width: 80px;
+      height: 2rem;
+      border-radius: var(--df-radius-sm);
     }
   </style>
 </head>
 <body>
-<div id="root">
 
-  <!-- Top bar -->
-  <div class="topbar">
-    <div class="topbar-left">
-      <h1>DataForge Insights Dashboard</h1>
-      <p>Aggregated analytics across BA Jobsuche, EURES, Arbeitnow, direct ATS feeds, and Berlin startups</p>
-
+<!-- Navbar -->
+<nav class="df-navbar">
+  <div class="df-navbar-inner">
+    <a href="index.html" class="df-navbar-brand">
+      <img src="Dataforge.png" alt="DataForge" />
+      DataForge
+    </a>
+    <div class="df-navbar-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="jobs.html">Jobs</a>
+      <a href="agent.html">Career Matching Wizard</a>
     </div>
-    <div class="topbar-right">
-      <a class="nav-btn" href="jobs.html">🔍 Search Jobs →</a>
-      <a class="nav-btn" href="agent.html" style="--accent:#818cf8;background:linear-gradient(135deg, #818cf8 0%, #6366f1 100%)" title="Matches your resume against real job listings using skill-based scoring.">⚡ Career Matching Wizard →</a>
-      <div class="live-badge">
-        <span class="live-dot"></span>
-        <span id="last-updated">loading timestamp...</span>
+    <div class="df-navbar-actions">
+      <a href="jobs.html" class="df-btn df-btn-ghost df-btn-sm">Explore Jobs</a>
+      <a href="dashboard.html" class="df-btn df-btn-primary df-btn-sm">View Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="df-hero-grid"></div>
+  <div class="hero-content df-fade-in">
+    <img src="Dataforge.png" alt="DataForge" class="hero-logo" />
+    <h1>Job Intelligence Platform</h1>
+    <p class="hero-sub">
+      Aggregating and analyzing Europe-wide job intelligence across BA Jobsuche, EURES, direct ATS feeds, Arbeitnow, and Berlin startups.
+    </p>
+    <div class="hero-cta">
+      <a href="jobs.html" class="df-btn df-btn-primary df-btn-lg">Explore Jobs</a>
+      <a href="dashboard.html" class="df-btn df-btn-secondary df-btn-lg">View Job Intelligence Dashboard</a>
+    </div>
+  </div>
+
+  <div class="hero-preview df-fade-in df-fade-in-delay-2">
+    <div class="hero-preview-frame">
+      <div class="hero-preview-bar">
+        <span class="hero-preview-dot"></span>
+        <span class="hero-preview-dot"></span>
+        <span class="hero-preview-dot"></span>
       </div>
-    </div>
-  </div>
-
-  <div id="error-box" class="error" style="display:none"></div>
-
-  <!-- KPI Row (Clean 5-card row showing important insights) -->
-  <div class="kpi-grid">
-    <div class="kpi-card" style="--accent:#6366f1" title="Count of all active jobs in the Gold layer across five ingestion sources.">
-      <div class="label">Total Active Jobs</div>
-      <div class="value" id="kpi-total"><span class="skeleton"></span></div>
-      <div class="sub">aggregated database</div>
-    </div>
-    <div class="kpi-card" style="--accent:#10b981" title="New job IDs from the latest Silver pipeline run (pipeline_stats.new_jobs). Not the same as total jobs after a full re-ingest snapshot.">
-      <div class="label">New Since Last Run <span class="kpi-info" title="Incremental count from the latest pipeline transform, not total active jobs.">ⓘ</span></div>
-      <div class="value" id="kpi-today"><span class="skeleton"></span></div>
-      <div class="sub" id="kpi-today-sub">incremental · latest pipeline run</div>
-    </div>
-    <div class="kpi-card" style="--accent:#3b82f6" title="Jobs classified as Remote via work_style across all sources (excludes hybrid and on-site).">
-      <div class="label">Remote Openings <span class="kpi-info" title="work_style = remote across all five sources.">ⓘ</span></div>
-      <div class="value" id="kpi-remote"><span class="skeleton"></span></div>
-      <div class="sub">work_style · remote only</div>
-    </div>
-    <div class="kpi-card" style="--accent:#a78bfa" title="Based on job title keyword detection across all sources. Job board 'English only' uses the stricter language_requirement field.">
-      <div class="label">English Jobs (title-based) <span class="kpi-info" title="Title keyword heuristic. See strict count in subtitle.">ⓘ</span></div>
-      <div class="value" id="kpi-english"><span class="skeleton"></span></div>
-      <div class="sub" id="kpi-english-sub">title heuristic · all sources</div>
-    </div>
-    <div class="kpi-card" style="--accent:#fbbf24">
-      <div class="label">🔥 Top Skill</div>
-      <div class="value" id="kpi-top-skill-count"><span class="skeleton"></span></div>
-      <div class="sub" id="kpi-top-skill">loading...</div>
-    </div>
-  </div>
-
-  <!-- Main 2-Column Grid Layout -->
-  <div class="main-grid">
-    
-    <!-- Left Column (Visual Market Trends & Skills) -->
-    <div class="col-left">
-      
-      <!-- Trend Chart -->
-      <div class="card">
-        <div class="card-title">New Jobs Trend — Last 30 Days</div>
-        <div class="chart-wrap">
-          <canvas id="trend-chart" class="trend"></canvas>
+      <div class="hero-preview-body">
+        <div class="hero-preview-kpi">
+          <div class="val" id="hero-kpi-total">—</div>
+          <div class="lbl">Total Jobs</div>
+        </div>
+        <div class="hero-preview-kpi">
+          <div class="val" id="hero-kpi-remote">—</div>
+          <div class="lbl">Remote</div>
+        </div>
+        <div class="hero-preview-kpi">
+          <div class="val" id="hero-kpi-english">—</div>
+          <div class="lbl">English</div>
+        </div>
+        <div class="hero-preview-kpi">
+          <div class="val" id="hero-kpi-companies">—</div>
+          <div class="lbl">Companies</div>
         </div>
       </div>
-
-      <!-- Skills Demand Chart -->
-      <div class="card">
-        <div class="card-title">🔥 Real-Time Skill Demand (Top 8 Keywords)</div>
-        <div id="top-skills"></div>
-      </div>
-
     </div>
+  </div>
+</section>
 
-    <!-- Right Column (Sources, Distribution, and Top Employers) -->
-    <div class="col-right">
-
-      <!-- Remote Ratio Donut -->
-      <div class="card">
-        <div class="card-title">Remote vs On-site</div>
-        <div class="donut-card-inner">
-          <div class="donut-ring">
-            <canvas id="donut-remote"></canvas>
-            <div class="donut-center">
-              <span class="big" id="donut-remote-pct">—</span>
-              <span class="small">remote</span>
-            </div>
-          </div>
-          <div class="donut-legend" id="legend-remote"></div>
-        </div>
-      </div>
-
-      <!-- Country Distribution Donut -->
-      <div class="card">
-        <div class="card-title">Country Distribution</div>
-        <div class="donut-card-inner">
-          <div class="donut-ring">
-            <canvas id="donut-region"></canvas>
-            <div class="donut-center">
-              <span class="big" id="donut-region-pct">—</span>
-              <span class="small">top</span>
-            </div>
-          </div>
-          <div class="donut-legend" id="legend-region"></div>
-        </div>
-      </div>
-
-      <!-- Jobs by Source -->
-      <div class="card">
-        <div class="card-title">Jobs by Source</div>
-        <div id="source-bars"></div>
-      </div>
-
-      <!-- Top Companies list -->
-      <div class="card">
-        <div class="card-title">Top 5 Hiring Companies</div>
-        <div class="company-list" id="top-companies"></div>
-      </div>
-
+<!-- Features -->
+<section class="features-section">
+  <div class="df-section-header" style="text-align:center;margin-left:auto;margin-right:auto;">
+    <div class="df-section-eyebrow">Platform Capabilities</div>
+    <h2>Everything you need for job market intelligence</h2>
+    <p style="margin:0 auto;">From ingestion to insights — a complete serverless pipeline powering enterprise-grade analytics.</p>
+  </div>
+  <div class="df-grid-3" style="margin-top:var(--df-space-10);">
+    <div class="df-card df-card-hover feature-card df-fade-in">
+      <div class="feature-icon">⚡</div>
+      <h3>Real-time Job Aggregation</h3>
+      <p>Five sources unified daily — BA Jobsuche, EURES, Arbeitnow, direct ATS, and Berlin startup feeds.</p>
     </div>
-
+    <div class="df-card df-card-hover feature-card df-fade-in df-fade-in-delay-1">
+      <div class="feature-icon">🎯</div>
+      <h3>Career Matching Wizard</h3>
+      <p>Skill-based resume matching against live listings with match scores, gap analysis, and CSV export.</p>
+    </div>
+    <div class="df-card df-card-hover feature-card df-fade-in df-fade-in-delay-2">
+      <div class="feature-icon">📊</div>
+      <h3>Remote &amp; Skill Analytics</h3>
+      <p>Track remote vs on-site trends, top skills demand, and regional distribution across Europe.</p>
+    </div>
+    <div class="df-card df-card-hover feature-card df-fade-in">
+      <div class="feature-icon">🏢</div>
+      <h3>Company Intelligence</h3>
+      <p>Top hiring companies, source breakdowns, and pipeline health metrics at a glance.</p>
+    </div>
+    <div class="df-card df-card-hover feature-card df-fade-in df-fade-in-delay-1">
+      <div class="feature-icon">🌍</div>
+      <h3>Europe-wide Coverage</h3>
+      <p>Jobs across Germany and the EU with country filters, language requirements, and work style tags.</p>
+    </div>
+    <div class="df-card df-card-hover feature-card df-fade-in df-fade-in-delay-2">
+      <div class="feature-icon">☁️</div>
+      <h3>Serverless Architecture</h3>
+      <p>Lambda → S3 Bronze → Silver SCD → Gold → API Gateway. Zero servers, $0/month infrastructure.</p>
+    </div>
   </div>
+</section>
 
-  <!-- Footer -->
-  <div class="footer">
-    <span>Pipeline: Lambda → S3 Bronze → Silver (SCD Type 2) → Gold → API Gateway</span>
-    <span>DataForge · eu-central-1 · $0/month serverless</span>
+<!-- Live Stats -->
+<section class="stats-section">
+  <div class="stats-inner">
+    <div class="df-section-eyebrow">Live Data</div>
+    <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:var(--df-space-8);letter-spacing:-0.02em;">Platform at a glance</h2>
+    <div class="df-grid-4">
+      <div class="stat-item">
+        <div class="num" id="stat-total"><span class="df-skeleton stat-skeleton"></span></div>
+        <div class="lbl">Total Jobs</div>
+      </div>
+      <div class="stat-item">
+        <div class="num" id="stat-remote"><span class="df-skeleton stat-skeleton"></span></div>
+        <div class="lbl">Remote Jobs</div>
+      </div>
+      <div class="stat-item">
+        <div class="num" id="stat-english"><span class="df-skeleton stat-skeleton"></span></div>
+        <div class="lbl">English Jobs</div>
+      </div>
+      <div class="stat-item">
+        <div class="num" id="stat-companies"><span class="df-skeleton stat-skeleton"></span></div>
+        <div class="lbl">Active Companies</div>
+      </div>
+    </div>
   </div>
+</section>
 
-</div>
+<!-- Pipeline -->
+<section class="pipeline-section">
+  <div class="df-section-header" style="text-align:center;margin:0 auto var(--df-space-10);">
+    <div class="df-section-eyebrow">Data Pipeline</div>
+    <h2>From raw feeds to actionable insights</h2>
+    <p style="margin:0 auto;">A medallion architecture that transforms job data through every quality layer.</p>
+  </div>
+  <div class="df-pipeline">
+    <div class="df-pipeline-step df-card-hover">
+      <div class="icon">📥</div>
+      <div class="name">Ingest</div>
+      <div class="desc">5 source APIs</div>
+    </div>
+    <span class="df-pipeline-arrow">→</span>
+    <div class="df-pipeline-step df-card-hover">
+      <div class="icon">🥉</div>
+      <div class="name">Bronze</div>
+      <div class="desc">Raw Parquet</div>
+    </div>
+    <span class="df-pipeline-arrow">→</span>
+    <div class="df-pipeline-step df-card-hover">
+      <div class="icon">🥈</div>
+      <div class="name">Silver</div>
+      <div class="desc">SCD Type 2</div>
+    </div>
+    <span class="df-pipeline-arrow">→</span>
+    <div class="df-pipeline-step df-card-hover">
+      <div class="icon">🥇</div>
+      <div class="name">Gold</div>
+      <div class="desc">Analytics CSVs</div>
+    </div>
+    <span class="df-pipeline-arrow">→</span>
+    <div class="df-pipeline-step df-card-hover">
+      <div class="icon">🔌</div>
+      <div class="name">API</div>
+      <div class="desc">Gateway REST</div>
+    </div>
+    <span class="df-pipeline-arrow">→</span>
+    <div class="df-pipeline-step df-card-hover">
+      <div class="icon">✨</div>
+      <div class="name">UI</div>
+      <div class="desc">This product</div>
+    </div>
+  </div>
+</section>
+
+<!-- Previews -->
+<section class="preview-section">
+  <div class="preview-inner">
+    <div class="df-section-header" style="text-align:center;margin:0 auto var(--df-space-10);">
+      <div class="df-section-eyebrow">Product Preview</div>
+      <h2>Built for analysts and job seekers alike</h2>
+    </div>
+    <div class="df-grid-3">
+      <div class="df-card df-card-hover preview-card">
+        <div class="preview-mock">📊</div>
+        <h3>Job Intelligence Dashboard</h3>
+        <p>KPI cards, trend charts, skill demand, remote ratios, and top employers.</p>
+        <a href="dashboard.html" class="df-btn df-btn-secondary df-btn-sm">Open Dashboard →</a>
+      </div>
+      <div class="df-card df-card-hover preview-card">
+        <div class="preview-mock">🔍</div>
+        <h3>Job Intelligence Board</h3>
+        <p>Search, filter, and apply across thousands of listings with smart badges.</p>
+        <a href="jobs.html" class="df-btn df-btn-secondary df-btn-sm">Browse Jobs →</a>
+      </div>
+      <div class="df-card df-card-hover preview-card">
+        <div class="preview-mock">🎯</div>
+        <h3>Career Matching Wizard</h3>
+        <p>Paste your resume, set your goals, and get ranked matches with export.</p>
+        <a href="agent.html" class="df-btn df-btn-secondary df-btn-sm">Start Matching →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="df-footer">
+  <div class="df-footer-inner">
+    <div>
+      <div class="df-footer-brand">
+        <img src="Dataforge.png" alt="DataForge" />
+        DataForge
+      </div>
+      <p>DataForge — Job Intelligence Platform<br />eu-central-1 · Serverless · $0/month</p>
+    </div>
+    <div class="df-footer-links">
+      <strong style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--df-text-muted);">Product</strong>
+      <a href="dashboard.html">Job Intelligence Dashboard</a>
+      <a href="jobs.html">Job Intelligence Board</a>
+      <a href="agent.html">Career Matching Wizard</a>
+    </div>
+    <div class="df-footer-links">
+      <strong style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--df-text-muted);">APIs</strong>
+      <a href="https://2aww80hwgj.execute-api.eu-central-1.amazonaws.com/" target="_blank" rel="noopener">Metrics API</a>
+      <a href="https://2amv4immb0.execute-api.eu-central-1.amazonaws.com/" target="_blank" rel="noopener">Jobs API</a>
+      <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <div class="df-footer-links">
+      <strong style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--df-text-muted);">Version</strong>
+      <span>UI v2.0 · Light Theme</span>
+      <span id="footer-updated">Data loading...</span>
+    </div>
+  </div>
+</footer>
+
 <script>
   const METRICS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:8000/metrics"
     : "https://2aww80hwgj.execute-api.eu-central-1.amazonaws.com/";
-  const REFRESH_MS = 2 * 60 * 1000;
-  const SOURCE_LABELS = { arbeitnow: "Arbeitnow", ba_api: "BA Jobsuche", direct: "Direct Company", eures: "EURES", berlin_startups: "Berlin Startups" };
 
-
-  let trendChartInstance = null;
-  const donutInstances = {};
-
-  // ── Trend chart (Chart.js) ──────────────────────────────────────────────────
-  function drawTrend(trend) {
-    const canvas = document.getElementById("trend-chart");
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const labels = trend.map(d => d.date.slice(5)); // MM-DD
-    const counts = trend.map(d => d.count);
-
-    if (trendChartInstance) {
-      trendChartInstance.destroy();
-    }
-
-    const grad = ctx.createLinearGradient(0, 0, 0, 240);
-    grad.addColorStop(0, "rgba(99, 102, 241, 0.25)");
-    grad.addColorStop(1, "rgba(99, 102, 241, 0.0)");
-
-    trendChartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: counts,
-          borderColor: '#6366f1',
-          borderWidth: 2.5,
-          backgroundColor: grad,
-          fill: true,
-          tension: 0.35,
-          pointBackgroundColor: '#818cf8',
-          pointBorderColor: '#060813',
-          pointHoverRadius: 6,
-          pointHoverBackgroundColor: '#6366f1',
-          pointHoverBorderColor: '#fff',
-          pointRadius: 2,
-          pointHitRadius: 10
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: 'rgba(15, 23, 42, 0.95)',
-            titleFont: { family: 'Outfit', size: 11, weight: 'bold' },
-            bodyFont: { family: 'Inter', size: 11 },
-            borderColor: 'rgba(99, 102, 241, 0.2)',
-            borderWidth: 1,
-            padding: 8,
-            cornerRadius: 6,
-            displayColors: false,
-            callbacks: {
-              label: function(context) {
-                return `🔥 ${context.parsed.y.toLocaleString()} new jobs`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: {
-              color: '#475569',
-              font: { family: 'Inter', size: 9 },
-              maxTicksLimit: 8
-            }
-          },
-          y: {
-            grid: { color: 'rgba(255, 255, 255, 0.03)' },
-            ticks: {
-              color: '#475569',
-              font: { family: 'Inter', size: 9 }
-            }
-          }
-        }
-      }
-    });
-  }
-
-  // ── Bar rows ───────────────────────────────────────────────────────────────
-  function renderBars(id, items, nameKey, countKey, color) {
-    const max = items[0]?.[countKey] || 1;
+  function setText(id, val) {
     const el = document.getElementById(id);
-    if (!el) return;
-    el.innerHTML = items.map(item => `
-      <div class="bar-row">
-        <span class="bar-name" title="${esc(item[nameKey])}">${esc(item[nameKey])}</span>
-        <div class="bar-track">
-          <div class="bar-fill" style="width:${(item[countKey]/max)*100}%;background:${color}"></div>
-        </div>
-        <span class="bar-count">${Number(item[countKey]).toLocaleString()}</span>
-      </div>`).join("");
+    if (el) el.textContent = val;
   }
 
-  // ── Donut rendering (Chart.js) ─────────────────────────────────────────────
-  function renderDonut(canvasId, pctId, legendId, slices, defaultLabel = "") {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-
-    const labels = slices.map(s => s.label);
-    const values = slices.map(s => s.value);
-    const colors = slices.map(s => s.color);
-
-    const total = values.reduce((s, x) => s + x, 0);
-    
-    let pctVal = 0;
-    let pctLabel = defaultLabel;
-    if (canvasId === "donut-remote") {
-      pctVal = total ? Math.round((values[0] / total) * 100) : 0;
-      pctLabel = "remote";
-    } else {
-      const maxVal = Math.max(...values);
-      pctVal = total ? Math.round((maxVal / total) * 100) : 0;
-      const maxSlice = slices.find(s => s.value === maxVal);
-      pctLabel = maxSlice ? maxSlice.label.split(" ")[0].toLowerCase() : "western";
-    }
-
-    const pctEl = document.getElementById(pctId);
-    if (pctEl) pctEl.textContent = pctVal + "%";
-    
-    const labelEl = pctEl ? pctEl.nextElementSibling : null;
-    if (labelEl) labelEl.textContent = pctLabel;
-
-    if (donutInstances[canvasId]) {
-      donutInstances[canvasId].destroy();
-    }
-
-    donutInstances[canvasId] = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: values,
-          backgroundColor: colors,
-          borderColor: 'rgba(13, 17, 29, 0.8)',
-          borderWidth: 2,
-          hoverOffset: 3
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '76%',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: 'rgba(15, 23, 42, 0.95)',
-            titleFont: { family: 'Outfit', size: 10, weight: 'bold' },
-            bodyFont: { family: 'Inter', size: 10 },
-            borderColor: 'rgba(255, 255, 255, 0.05)',
-            borderWidth: 1,
-            padding: 6,
-            cornerRadius: 5,
-            displayColors: true
-          }
-        }
-      }
-    });
-
-    const legendEl = document.getElementById(legendId);
-    if (legendEl) {
-      legendEl.innerHTML = slices.map(s => `
-        <div class="legend-row">
-          <div class="legend-left">
-            <span class="legend-dot" style="background:${s.color}"></span>
-            <span>${esc(s.label)}</span>
-          </div>
-          <span class="legend-val">${s.value.toLocaleString()}</span>
-        </div>`).join("");
-    }
-  }
-
-  // ── Render all ─────────────────────────────────────────────────────────────
-  function render(data) {
-    const rv = data.remote_vs_onsite || {};
-    const rc = data.remote_counts || {};
-
-    const setEl = (id, val) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = val;
-    };
-
-    setEl("kpi-total", (data.total_jobs || 0).toLocaleString());
-
-    const incrNew = data.pipeline_stats?.new_jobs;
-    const newDisplay = (incrNew != null && incrNew !== "") ? Number(incrNew) : (data.new_today || 0);
-    setEl("kpi-today", newDisplay.toLocaleString());
-    const todaySub = document.getElementById("kpi-today-sub");
-    if (todaySub) {
-      const runAt = data.pipeline_stats?.run_at;
-      todaySub.textContent = runAt
-        ? `incremental · run ${new Date(runAt).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}`
-        : "incremental · latest pipeline run";
-    }
-
-    setEl("kpi-remote", (rc.remote != null ? rc.remote : (rv["Remote"] || 0)).toLocaleString());
-
-    const englishTitle = data.english_jobs_title_based ?? data.english_jobs ?? data.description_insights?.english_jobs ?? 0;
-    const englishStrict = data.english_jobs_strict;
-    setEl("kpi-english", Number(englishTitle).toLocaleString());
-    const englishSub = document.getElementById("kpi-english-sub");
-    if (englishSub) {
-      englishSub.textContent = englishStrict != null
-        ? `title heuristic · strict filter: ${Number(englishStrict).toLocaleString()}`
-        : "title heuristic · all sources";
-    }
-
-    if (data.top_skills?.length) {
-      setEl("kpi-top-skill-count", data.top_skills[0].count.toLocaleString() + " postings");
-      setEl("kpi-top-skill", "#1: " + data.top_skills[0].skill);
-    }
-    
-    setEl("last-updated", "Updated " + new Date(data.last_updated).toLocaleString([], {dateStyle:"medium", timeStyle:"short"}));
-
-    if (data.trend?.length) {
-      drawTrend(data.trend);
-    }
-
-    if (data.top_skills?.length) {
-      renderBars("top-skills", data.top_skills.slice(0, 8), "skill", "count", "#fbbf24");
-    }
-
-    // Top Companies as interactive List Items
-    const compEl = document.getElementById("top-companies");
-    if (compEl && data.top_companies?.length) {
-      compEl.innerHTML = data.top_companies.slice(0, 5).map((c, i) => `
-        <div class="company-item">
-          <div class="company-info">
-            <span class="company-rank">#${i+1}</span>
-            <span class="company-name" title="${esc(c.company)}">${esc(c.company)}</span>
-          </div>
-          <span class="company-count">${c.count.toLocaleString()} jobs</span>
-        </div>
-      `).join("");
-    }
-
-    // Source bars
-    const srcEntries = Object.entries(data.jobs_by_source || {}).sort((a,b) => b[1]-a[1]);
-    const srcMax = srcEntries[0]?.[1] || 1;
-    const srcBarsEl = document.getElementById("source-bars");
-    if (srcBarsEl) {
-      srcBarsEl.innerHTML = srcEntries.map(([src, count]) => `
-        <div class="bar-row">
-          <span class="bar-name">${SOURCE_LABELS[src] ?? src}</span>
-          <div class="bar-track">
-            <div class="bar-fill" style="width:${(count/srcMax)*100}%;background:#6366f1"></div>
-          </div>
-          <span class="bar-count">${count.toLocaleString()}</span>
-        </div>`).join("");
-    }
-
-    const rg = data.jobs_by_region || {};
-
-    renderDonut("donut-remote", "donut-remote-pct", "legend-remote", [
-      { value: rv["Remote"]   || 0, color: "#3b82f6", label: "Remote"  },
-      { value: rv["Hybrid"]   || 0, color: "#8b5cf6", label: "Hybrid"  },
-      { value: rv["On-site"]  || 0, color: "#1e293b", label: "On-site" },
-    ], "remote");
-
-    // Dynamic country slices
-    const sortedRg = Object.entries(rg)
-      .map(([label, value]) => ({ label, value }))
-      .sort((a, b) => b.value - a.value);
-
-    const maxSlices = 4;
-    const slices = [];
-    let otherCount = 0;
-    const colors = ["#6366f1", "#f472b6", "#fbbf24", "#10b981", "#38bdf8", "#818cf8"];
-    const otherColor = "#64748b";
-
-    for (let i = 0; i < sortedRg.length; i++) {
-      const item = sortedRg[i];
-      if (item.label === "Other" || item.label === "Unspecified") {
-        otherCount += item.value;
-        continue;
-      }
-      if (slices.length < maxSlices) {
-        slices.push({
-          label: item.label,
-          value: item.value,
-          color: colors[slices.length % colors.length]
-        });
-      } else {
-        otherCount += item.value;
-      }
-    }
-    if (otherCount > 0) {
-      slices.push({
-        label: "Other / Unspecified",
-        value: otherCount,
-        color: otherColor
-      });
-    }
-    slices.sort((a, b) => b.value - a.value);
-
-    renderDonut("donut-region", "donut-region-pct", "legend-region", slices, "top");
-  }
-
-  function esc(s) {
-    return String(s||"")
-      .replace(/&/g,"&amp;").replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-  }
-
-  async function fetchMetrics() {
+  async function loadStats() {
     try {
       const res = await fetch(METRICS_API_URL);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error("API unavailable");
       const data = await res.json();
-      document.getElementById("error-box").style.display = "none";
-      render(data);
-    } catch(e) {
-      document.getElementById("error-box").style.display = "block";
-      document.getElementById("error-box").textContent = `⚠ ${e.message}`;
+
+      const total = (data.total_jobs || 0).toLocaleString();
+      const remote = (data.remote_counts?.remote ?? data.remote_vs_onsite?.Remote ?? 0).toLocaleString();
+      const english = Number(data.english_jobs_title_based ?? data.english_jobs ?? 0).toLocaleString();
+      const companies = (data.top_companies?.length ? data.top_companies.reduce((s, c) => s + 1, 0) : 0);
+      const companyCount = data.top_companies ? new Set(data.top_companies.map(c => c.company)).size + "+" : "—";
+
+      ["stat-total", "hero-kpi-total"].forEach(id => setText(id, total));
+      ["stat-remote", "hero-kpi-remote"].forEach(id => setText(id, remote));
+      ["stat-english", "hero-kpi-english"].forEach(id => setText(id, english));
+      setText("stat-companies", companyCount);
+      setText("hero-kpi-companies", companyCount);
+
+      if (data.last_updated) {
+        setText("footer-updated", "Updated " + new Date(data.last_updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }));
+      }
+    } catch (_) {
+      ["stat-total","stat-remote","stat-english","stat-companies","hero-kpi-total","hero-kpi-remote","hero-kpi-english","hero-kpi-companies"].forEach(id => setText(id, "—"));
+      setText("footer-updated", "Connect to API for live data");
     }
   }
 
-  fetchMetrics();
-  setInterval(fetchMetrics, REFRESH_MS);
+  loadStats();
 </script>
 </body>
 </html>

@@ -4,838 +4,516 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DataForge — Career Matching Wizard</title>
+  <meta name="description" content="DataForge Career Matching Wizard — rule-based resume matching against live job listings with skill scoring and export." />
+  <link rel="icon" href="Dataforge.png" type="image/png" />
+  <link rel="stylesheet" href="components/design-system.css" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .wizard-header {
+      margin-bottom: var(--df-space-8);
     }
 
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #080a10;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 99px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
-
-    html, body {
-      background: #000000;
-      color: #f1f5f9;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      min-height: 100vh;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-
-    #root {
-      max-width: 1320px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem 5rem;
-    }
-
-    /* ── Header ── */
-    .header {
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      padding-bottom: 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .header-left h1 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 2.2rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: -0.02em;
-    }
-
-    .header-left p {
-      color: #94a3b8;
-      font-size: 0.9rem;
-      margin-top: 0.4rem;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.25rem;
-      font-size: 0.85rem;
-    }
-
-    .nav-links a {
-      color: #818cf8;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.25s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .nav-links a:hover {
-      color: #6366f1;
-      transform: translateY(-1px);
-    }
-
-    /* ── Wizard Card ── */
-    .card {
-      background: rgba(17, 24, 39, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 24px;
-      padding: 2rem;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      margin-bottom: 2rem;
-      transition: all 0.3s ease;
-    }
-
-    .card:hover {
-      border-color: rgba(99, 102, 241, 0.2);
-    }
-
-    .card-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.3rem;
+    .wizard-header h1 {
+      font-size: 1.75rem;
       font-weight: 700;
-      margin-bottom: 1.5rem;
-      background: linear-gradient(135deg, #ffffff 40%, #c7d2fe 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      letter-spacing: -0.03em;
     }
 
-    /* ── Step-by-Step Forms ── */
-    .step-container {
-      display: none;
-      animation: fadeIn 0.4s ease forwards;
-    }
-
-    .step-container.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    label {
-      font-size: 0.8rem;
-      color: #94a3b8;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      display: block;
-      margin-bottom: 0.6rem;
-    }
-
-    textarea, input[type="text"] {
-      width: 100%;
-      background: rgba(30, 41, 59, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      color: #f1f5f9;
-      padding: 1rem;
+    .wizard-header p {
+      color: var(--df-text-secondary);
       font-size: 0.9rem;
-      font-family: inherit;
-      outline: none;
-      transition: all 0.25s ease;
-      line-height: 1.5;
+      margin-top: var(--df-space-1);
     }
 
-    textarea:focus, input[type="text"]:focus {
-      border-color: #6366f1;
-      background: rgba(30, 41, 59, 0.55);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    .wizard-card {
+      background: var(--df-bg-white);
+      border: 1px solid var(--df-border);
+      border-radius: var(--df-radius-lg);
+      padding: var(--df-space-8);
+      box-shadow: var(--df-shadow-sm);
+      margin-bottom: var(--df-space-6);
+    }
+
+    .wizard-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: var(--df-space-5);
+      color: var(--df-text);
+    }
+
+    .step-container { display: none; animation: df-fadeIn 0.4s ease forwards; }
+    .step-container.active { display: block; }
+
+    .chat-card {
+      background: var(--df-bg-subtle);
+      border-radius: var(--df-radius);
+      padding: var(--df-space-5);
+      border: 1px solid var(--df-border);
+      margin-bottom: var(--df-space-5);
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--df-space-3);
+    }
+
+    .chat-bubble {
+      max-width: 85%;
+      padding: var(--df-space-3) var(--df-space-4);
+      border-radius: var(--df-radius);
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+
+    .chat-bubble.agent {
+      background: var(--df-bg-white);
+      color: var(--df-text);
+      border: 1px solid var(--df-border);
+      align-self: flex-start;
+      border-top-left-radius: 4px;
+    }
+
+    .chat-bubble.user {
+      background: rgba(79,70,229,0.08);
+      color: var(--df-primary-dark);
+      border: 1px solid rgba(79,70,229,0.15);
+      align-self: flex-end;
+      border-top-right-radius: 4px;
     }
 
     .btn-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 1.5rem;
-      gap: 1rem;
+      margin-top: var(--df-space-5);
+      gap: var(--df-space-4);
     }
 
-    .primary-btn {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 0.8rem 1.75rem;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: 'Outfit', sans-serif;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .primary-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
-      background: linear-gradient(135deg, #818cf8 0%, #5850ec 100%);
-    }
-
-    .secondary-btn {
-      background: rgba(30, 41, 59, 0.5);
-      color: #cbd5e1;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 0.8rem 1.5rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: 'Outfit', sans-serif;
-      transition: all 0.25s ease;
-    }
-
-    .secondary-btn:hover {
-      background: rgba(30, 41, 59, 0.75);
-      border-color: rgba(255, 255, 255, 0.15);
-      color: #ffffff;
-    }
-
-    /* ── Progress Indicators ── */
-    .progress-bar-container {
-      width: 100%;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 99px;
-      margin-bottom: 2rem;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #6366f1, #c084fc);
-      width: 25%;
-      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .step-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-      font-size: 0.72rem;
-      color: #64748b;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .step-label.active {
-      color: #a5b4fc;
-    }
-
-    /* ── Recruiter Chat Simulated Interface ── */
-    .recruiter-chat-card {
-      background: rgba(30, 41, 59, 0.2);
-      border-radius: 16px;
-      padding: 1.25rem;
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      margin-bottom: 1.5rem;
-      max-height: 250px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .chat-bubble {
-      max-width: 80%;
-      padding: 0.85rem 1.15rem;
-      border-radius: 16px;
-      font-size: 0.85rem;
-      line-height: 1.5;
-    }
-
-    .chat-bubble.agent {
-      background: #1e293b;
-      color: #cbd5e1;
-      border-top-left-radius: 4px;
-      align-self: flex-start;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .chat-bubble.user {
-      background: rgba(99, 102, 241, 0.2);
-      color: #e0e7ff;
-      border-top-right-radius: 4px;
-      align-self: flex-end;
-      border: 1px solid rgba(99, 102, 241, 0.3);
-    }
-
-    /* ── Scanning Loader ── */
     .scanner-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 4rem 1rem;
+      padding: var(--df-space-12) var(--df-space-4);
       text-align: center;
     }
 
     .pulse-ring {
-      width: 80px;
-      height: 80px;
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
-      background: rgba(99, 102, 241, 0.15);
-      border: 2px solid #6366f1;
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+      background: rgba(79,70,229,0.08);
+      border: 2px solid var(--df-primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
-      animation: scanPulse 1.8s infinite ease-in-out;
-      margin-bottom: 1.5rem;
-    }
-
-    @keyframes scanPulse {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.5); }
-      70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(99, 102, 241, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+      font-size: 1.5rem;
+      animation: df-pulse 1.8s infinite ease-in-out;
+      margin-bottom: var(--df-space-5);
     }
 
     .scanner-status {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--df-text);
+      margin-bottom: var(--df-space-2);
     }
 
     .scanner-log {
-      font-size: 0.8rem;
-      color: #64748b;
+      font-size: 0.8125rem;
+      color: var(--df-text-secondary);
       min-height: 1.2rem;
     }
 
-    /* ── Spreadsheet Layout & Styling ── */
-    .spreadsheet-panel {
-      display: none;
-      animation: fadeIn 0.5s ease forwards;
+    .results-panel { display: none; animation: df-fadeIn 0.5s ease forwards; }
+    .results-panel.active { display: block; }
+
+    .report-panel {
+      background: var(--df-gradient-subtle);
+      border: 1px solid rgba(79,70,229,0.15);
+      border-radius: var(--df-radius-lg);
+      padding: var(--df-space-6);
+      margin-bottom: var(--df-space-8);
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: var(--df-space-8);
     }
 
-    .spreadsheet-panel.active {
-      display: block;
+    @media (max-width: 768px) {
+      .report-panel { grid-template-columns: 1fr; }
     }
 
-    .spreadsheet-actions {
+    .report-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--df-primary);
+      margin-bottom: var(--df-space-3);
+    }
+
+    .report-text {
+      font-size: 0.875rem;
+      color: var(--df-text-secondary);
+      line-height: 1.65;
+    }
+
+    .report-badge-list {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.25rem;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: var(--df-space-2);
+      margin-top: var(--df-space-4);
     }
 
-    .spreadsheet-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(10px);
-      margin-bottom: 2rem;
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.78rem;
-      text-align: left;
-      min-width: 1800px; /* Force scroll to show all 15 columns elegantly */
-    }
-
-    th {
-      background: rgba(30, 41, 59, 0.8);
-      color: #94a3b8;
-      font-weight: 700;
-      padding: 0.85rem 1rem;
-      text-transform: uppercase;
-      font-size: 0.68rem;
-      letter-spacing: 0.06em;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      position: sticky;
-      top: 0;
-    }
-
-    td {
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      color: #cbd5e1;
-      vertical-align: middle;
-    }
-
-    tr:hover td {
-      background: rgba(30, 41, 59, 0.25);
-      color: #ffffff;
-    }
-
-    /* Column Specific Styles */
-    .cell-score {
-      font-weight: 800;
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.9rem;
-    }
-    .cell-score.high { color: #34d399; }
-    .cell-score.med { color: #fbbf24; }
-    .cell-score.low { color: #f87171; }
-
-    .cell-title {
-      font-weight: 600;
-      color: #ffffff;
-    }
-
-    .badge-tier {
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.68rem;
-      font-weight: 700;
-      border: 1px solid rgba(255, 255, 255, 0.03);
-    }
-    .badge-tier.faang { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.25); }
-    .badge-tier.product { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-color: rgba(59, 130, 246, 0.25); }
-    .badge-tier.startup { background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.25); }
-    .badge-tier.midtier { background: rgba(100, 116, 139, 0.15); color: #94a3b8; border-color: rgba(100, 116, 139, 0.25); }
-
-    .badge-type {
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.68rem;
-      font-weight: 600;
-    }
-    .badge-type.remote { background: rgba(16, 185, 129, 0.12); color: #34d399; }
-    .badge-type.hybrid { background: rgba(99, 102, 241, 0.12); color: #818cf8; }
-    .badge-type.onsite { background: rgba(100, 116, 139, 0.12); color: #94a3b8; }
-
-    .badge-pri {
-      padding: 0.25rem 0.55rem;
-      border-radius: 6px;
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .badge-pri.high { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.25); }
-    .badge-pri.medium { background: rgba(30, 41, 59, 0.5); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.04); }
-
-    .table-apply-btn {
-      background: rgba(99, 102, 241, 0.15);
-      color: #a5b4fc;
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      padding: 0.35rem 0.75rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.72rem;
-      transition: all 0.2s ease;
-      display: inline-block;
-      text-align: center;
-    }
-    .table-apply-btn:hover {
-      background: #6366f1;
-      color: #ffffff;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
-    }
-
-    /* ── Grouped Results Cards ── */
     .results-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-      margin-bottom: 3rem;
+      gap: var(--df-space-5);
+      margin-bottom: var(--df-space-8);
     }
-    @media(max-width: 1024px) {
+
+    @media (max-width: 1024px) {
       .results-grid { grid-template-columns: 1fr; }
     }
 
-    .group-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .group-card-header {
-      padding: 0.25rem 0.5rem;
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      border-bottom: 2px solid var(--accent, #6366f1);
-      padding-bottom: 0.5rem;
-      margin-bottom: 0.5rem;
+    .group-header {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      padding-bottom: var(--df-space-3);
+      margin-bottom: var(--df-space-3);
+      border-bottom: 2px solid var(--accent, var(--df-primary));
+      color: var(--df-text);
     }
 
     .mini-job-card {
-      background: rgba(30, 41, 59, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 16px;
-      padding: 1.25rem;
-      transition: all 0.25s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+      background: var(--df-bg-white);
+      border: 1px solid var(--df-border);
+      border-radius: var(--df-radius);
+      padding: var(--df-space-4);
+      margin-bottom: var(--df-space-3);
+      transition: all var(--df-transition-fast);
     }
+
     .mini-job-card:hover {
-      border-color: var(--accent, rgba(99, 102, 241, 0.3));
-      background: rgba(30, 41, 59, 0.45);
+      border-color: rgba(79,70,229,0.25);
       transform: translateY(-2px);
+      box-shadow: var(--df-shadow-sm);
     }
 
     .mini-card-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 1rem;
-    }
-
-    .mini-score {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: #34d399;
+      gap: var(--df-space-3);
+      margin-bottom: var(--df-space-2);
     }
 
     .mini-title {
-      font-size: 0.88rem;
+      font-size: 0.875rem;
       font-weight: 600;
-      color: #ffffff;
-      line-height: 1.3;
+      color: var(--df-text);
+      line-height: 1.35;
     }
 
     .mini-company {
-      font-size: 0.78rem;
-      color: #94a3b8;
+      font-size: 0.8125rem;
+      color: var(--df-text-secondary);
+      margin-bottom: var(--df-space-2);
     }
 
     .mini-meta {
-      font-size: 0.7rem;
-      color: #64748b;
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      margin-top: 0.25rem;
+      font-size: 0.75rem;
+      color: var(--df-text-muted);
+      margin-bottom: var(--df-space-2);
     }
 
     .mini-reason {
       font-size: 0.75rem;
-      color: #cbd5e1;
-      background: rgba(15, 23, 42, 0.3);
-      padding: 0.5rem 0.75rem;
-      border-radius: 8px;
-      border-left: 2px solid var(--accent, #6366f1);
-      margin-top: 0.25rem;
+      color: var(--df-text-secondary);
+      background: var(--df-bg-subtle);
+      padding: var(--df-space-2) var(--df-space-3);
+      border-radius: var(--df-radius-sm);
+      border-left: 2px solid var(--accent, var(--df-primary));
     }
 
-    /* ── Recruiter Report Header Panel ── */
-    .recruiter-report-panel {
-      background: rgba(99, 102, 241, 0.06);
-      border: 1px solid rgba(99, 102, 241, 0.15);
-      border-radius: 20px;
-      padding: 1.5rem 1.75rem;
-      margin-bottom: 2.5rem;
-      display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: 2rem;
-    }
-    @media(max-width: 768px) {
-      .recruiter-report-panel { grid-template-columns: 1fr; gap: 1.5rem; }
-    }
-
-    .report-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: #a5b4fc;
-      margin-bottom: 0.75rem;
+    .spreadsheet-actions {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.5rem;
-    }
-
-    .report-text {
-      font-size: 0.82rem;
-      color: #cbd5e1;
-      line-height: 1.6;
-    }
-
-    .report-badge-list {
-      display: flex;
+      margin-bottom: var(--df-space-5);
       flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: 0.85rem;
+      gap: var(--df-space-4);
+    }
+
+    .spreadsheet-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--df-text);
+    }
+
+    .badge-tier {
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--df-radius-full);
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+
+    .badge-tier.faang { background: var(--df-error-bg); color: var(--df-error); }
+    .badge-tier.product { background: rgba(37,99,235,0.08); color: #2563EB; }
+    .badge-tier.startup { background: var(--df-success-bg); color: var(--df-success); }
+    .badge-tier.midtier { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
+
+    .badge-type {
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--df-radius-full);
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+
+    .badge-type.remote { background: var(--df-success-bg); color: var(--df-success); }
+    .badge-type.hybrid { background: rgba(79,70,229,0.08); color: var(--df-primary); }
+    .badge-type.onsite { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
+
+    .badge-pri {
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--df-radius-full);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-pri.high { background: rgba(217,119,6,0.1); color: var(--df-warning); }
+    .badge-pri.medium { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
+
+    .table-apply-btn {
+      background: rgba(79,70,229,0.08);
+      color: var(--df-primary);
+      border: 1px solid rgba(79,70,229,0.2);
+      padding: 0.3rem 0.65rem;
+      border-radius: var(--df-radius-sm);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.75rem;
+      transition: all var(--df-transition-fast);
+    }
+
+    .table-apply-btn:hover {
+      background: var(--df-primary);
+      color: #fff;
     }
 
     .sample-btn {
-      font-size: 0.72rem;
-      color: #818cf8;
-      background: transparent;
+      font-size: 0.75rem;
+      color: var(--df-primary);
+      background: none;
       border: none;
       cursor: pointer;
       text-decoration: underline;
-      font-weight: 600;
-      transition: color 0.2s ease;
-    }
-    .sample-btn:hover {
-      color: #6366f1;
+      font-weight: 500;
+      margin-left: var(--df-space-2);
     }
 
-    .footer {
+    .cell-title { font-weight: 600; color: var(--df-text); }
+
+    .skills-cell {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 4rem;
-      font-size: 0.78rem;
-      color: #64748b;
       flex-wrap: wrap;
-      gap: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 2rem;
-    }
-    .footer a {
-      color: #94a3b8;
-      text-decoration: none;
-    }
-    .footer a:hover {
-      color: #6366f1;
+      gap: 4px;
+      max-width: 200px;
     }
   </style>
 </head>
 <body>
-<div id="root">
-  <!-- Header -->
-  <div class="header">
-    <div class="header-left">
-      <h1>Career Matching Wizard</h1>
-      <p>Matches your resume against real job listings using skill-based scoring across Germany &amp; Europe</p>
+
+<nav class="df-navbar">
+  <div class="df-navbar-inner">
+    <a href="index.html" class="df-navbar-brand">
+      <img src="Dataforge.png" alt="DataForge" />
+      DataForge
+    </a>
+    <div class="df-navbar-links">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="jobs.html">Jobs</a>
+      <a href="agent.html" class="active">Career Matching Wizard</a>
     </div>
-    <div class="nav-links">
-      <a href="index.html">← Analytics Dashboard</a>
-      <a href="jobs.html">🔍 Search Jobs Board</a>
+    <div class="df-navbar-actions">
+      <a href="jobs.html" class="df-btn df-btn-ghost df-btn-sm">Job Intelligence Board</a>
     </div>
+  </div>
+</nav>
+
+<div class="df-page df-fade-in">
+  <div class="wizard-header">
+    <h1>Career Matching Wizard</h1>
+    <p>Rule-based resume matching against live job listings using skill scoring across Germany &amp; Europe</p>
   </div>
 
-  <!-- Progress Bar -->
-  <div class="step-labels">
-    <span class="step-label active" id="lbl-step-1">1. Resume Analysis</span>
-    <span class="step-label" id="lbl-step-2">2. dream role</span>
-    <span class="step-label" id="lbl-step-3">3. target location</span>
-    <span class="step-label" id="lbl-step-4">4. Recruiter Report</span>
+  <!-- Stepper -->
+  <div class="df-stepper" id="stepper">
+    <div class="df-step active" id="step-ind-1">
+      <span class="df-step-num">1</span>
+      <span class="df-step-label">Resume</span>
+    </div>
+    <div class="df-step-line" id="line-1"></div>
+    <div class="df-step" id="step-ind-2">
+      <span class="df-step-num">2</span>
+      <span class="df-step-label">Dream Role</span>
+    </div>
+    <div class="df-step-line" id="line-2"></div>
+    <div class="df-step" id="step-ind-3">
+      <span class="df-step-num">3</span>
+      <span class="df-step-label">Location</span>
+    </div>
+    <div class="df-step-line" id="line-3"></div>
+    <div class="df-step" id="step-ind-4">
+      <span class="df-step-num">4</span>
+      <span class="df-step-label">Results</span>
+    </div>
   </div>
-  <div class="progress-bar-container">
-    <div class="progress-fill" id="progress-fill"></div>
+  <div class="df-progress-bar">
+    <div class="df-progress-fill" id="progress-fill" style="width:25%"></div>
   </div>
 
-  <!-- Wizard Wizard Box -->
-  <div class="card" id="wizard-card">
-    
-    <!-- Step 1: Resume Upload / Paste -->
+  <!-- Wizard -->
+  <div class="wizard-card" id="wizard-card">
+
     <div class="step-container active" id="step-1">
-      <div class="card-title">📄 Step 1: Upload or Paste Your Resume</div>
-      <div style="margin-bottom:1rem">
-        <label for="resume-text">Resume Profile Content
-          <button class="sample-btn" type="button" onclick="loadSampleResume()">[Load Sample Python Developer Resume]</button>
-        </label>
-        <textarea id="resume-text" placeholder="Paste the text contents of your resume, skills profile, or career history here..."></textarea>
-      </div>
+      <div class="wizard-card-title">Step 1 — Upload or Paste Your Resume</div>
+      <label class="df-label" for="resume-text">
+        Resume Profile Content
+        <button class="sample-btn" type="button" onclick="loadSampleResume()">Load sample resume</button>
+      </label>
+      <textarea id="resume-text" class="df-textarea" rows="10" placeholder="Paste the text contents of your resume, skills profile, or career history here..."></textarea>
       <div class="btn-row" style="justify-content:flex-end">
-        <button class="primary-btn" onclick="goToStep(2)">Continue to Role →</button>
+        <button class="df-btn df-btn-primary" onclick="goToStep(2)">Continue to Role →</button>
       </div>
     </div>
 
-    <!-- Step 2: Dream Role -->
     <div class="step-container" id="step-2">
-      <div class="card-title">🎯 Step 2: What is your dream role or ideal target role?</div>
-      
-      <div class="recruiter-chat-card" id="chat-box-role">
+      <div class="wizard-card-title">Step 2 — What is your dream role?</div>
+      <div class="chat-card" id="chat-box-role">
         <div class="chat-bubble agent">
-          "Hi! I've scanned your resume profile. What is your ideal or target role? For example: Senior Backend Engineer, AI Engineer, MLOps, or Data Scientist?"
+          Hi! I've scanned your resume profile. What is your ideal or target role? For example: Senior Backend Engineer, Data Engineer, MLOps, or Data Scientist?
         </div>
       </div>
-
-      <div style="margin-bottom:1.5rem">
-        <label for="input-role">Target Job Title</label>
-        <input type="text" id="input-role" placeholder="e.g. Data Engineer, AI Developer, Python Engineer" />
-      </div>
-
+      <label class="df-label" for="input-role">Target Job Title</label>
+      <input type="text" id="input-role" class="df-input" placeholder="e.g. Data Engineer, Python Developer, MLOps Engineer" />
       <div class="btn-row">
-        <button class="secondary-btn" onclick="goToStep(1)">← Back</button>
-        <button class="primary-btn" onclick="submitRole()">Continue to Location →</button>
+        <button class="df-btn df-btn-secondary" onclick="goToStep(1)">← Back</button>
+        <button class="df-btn df-btn-primary" onclick="submitRole()">Continue to Location →</button>
       </div>
     </div>
 
-    <!-- Step 3: Target Location -->
     <div class="step-container" id="step-3">
-      <div class="card-title">📍 Step 3: What location(s) are you targeting?</div>
-      
-      <div class="recruiter-chat-card" id="chat-box-loc">
+      <div class="wizard-card-title">Step 3 — What location(s) are you targeting?</div>
+      <div class="chat-card" id="chat-box-loc">
         <div class="chat-bubble agent">
-          "Perfect! Now, what location or working arrangement are you targeting for this role? You can say things like 'Germany', 'Munich', 'Remote only', 'Europe', or 'Hybrid in Berlin'."
+          Perfect! Now, what location or working arrangement are you targeting? You can say things like 'Germany', 'Munich', 'Remote only', 'Europe', or 'Hybrid in Berlin'.
         </div>
       </div>
-
-      <div style="margin-bottom:1.5rem">
-        <label for="input-loc">Preferred Locations / Work Style</label>
-        <input type="text" id="input-loc" placeholder="e.g. Remote, Berlin, Munich, Germany" />
-      </div>
-
+      <label class="df-label" for="input-loc">Preferred Locations / Work Style</label>
+      <input type="text" id="input-loc" class="df-input" placeholder="e.g. Remote, Berlin, Munich, Germany" />
       <div class="btn-row">
-        <button class="secondary-btn" onclick="goToStep(2)">← Back</button>
-        <button class="primary-btn" onclick="submitLocation()" title="Matches your resume against real job listings using skill-based scoring.">⚡ Run Career Match</button>
+        <button class="df-btn df-btn-secondary" onclick="goToStep(2)">← Back</button>
+        <button class="df-btn df-btn-primary" onclick="submitLocation()">Run Career Match →</button>
       </div>
     </div>
 
-    <!-- Step 4: Loading Screen (Simulated AI Scan) -->
     <div class="step-container" id="step-4">
       <div class="scanner-wrap">
         <div class="pulse-ring">🔍</div>
         <div class="scanner-status" id="scanner-status">Analyzing Resume Profile...</div>
-        <div class="scanner-log" id="scanner-log">Parsing tech stack & years of experience...</div>
+        <div class="scanner-log" id="scanner-log">Parsing tech stack &amp; years of experience...</div>
       </div>
     </div>
-
   </div>
 
-  <!-- Step 5: Dashboard Spreadsheet / Results -->
-  <div class="spreadsheet-panel" id="results-panel">
-    
-    <!-- Recruiter Summary report -->
-    <div class="recruiter-report-panel">
+  <!-- Results -->
+  <div class="results-panel" id="results-panel">
+
+    <div class="report-panel">
       <div>
-        <div class="report-title">👔 Career Match Summary Report</div>
+        <div class="report-title">Career Match Summary Report</div>
         <div class="report-text" id="report-summary">Loading recruiter summary...</div>
         <div class="report-badge-list" id="report-marketable-skills"></div>
       </div>
-      <div style="border-left: 1px solid rgba(255,255,255,0.06); padding-left: 1.5rem">
-        <div class="report-title">🎯 Niche Opportunity Insights</div>
+      <div style="border-left:1px solid var(--df-border);padding-left:var(--df-space-6);">
+        <div class="report-title">Niche Opportunity Insights</div>
         <div class="report-text" id="report-niche">Loading career insights...</div>
       </div>
     </div>
 
-    <!-- Grouped recommendations columns -->
     <div class="results-grid">
-      <!-- Strongest Matches -->
-      <div class="group-column">
-        <div class="group-card-header" style="--accent:#34d399">
-          🟢 Top 5 Strongest Matches
-        </div>
-        <div class="group-list" id="group-strongest"></div>
+      <div>
+        <div class="group-header" style="--accent:#059669">Top 5 Strongest Matches</div>
+        <div id="group-strongest"></div>
       </div>
-
-      <!-- Stretch Opportunities -->
-      <div class="group-column">
-        <div class="group-card-header" style="--accent:#fbbf24">
-          🟡 Top 5 Stretch Opportunities
-        </div>
-        <div class="group-list" id="group-stretch"></div>
+      <div>
+        <div class="group-header" style="--accent:#D97706">Top 5 Stretch Opportunities</div>
+        <div id="group-stretch"></div>
       </div>
-
-      <!-- Safest / Highest Callback -->
-      <div class="group-column">
-        <div class="group-card-header" style="--accent:#60a5fa">
-          🔵 Top 5 Safest Options
-        </div>
-        <div class="group-list" id="group-safest"></div>
+      <div>
+        <div class="group-header" style="--accent:#2563EB">Top 5 Safest Options</div>
+        <div id="group-safest"></div>
       </div>
     </div>
 
-    <!-- Complete 15-column Interactive Spreadsheet -->
-    <div class="card" style="padding:1.5rem">
+    <div class="wizard-card">
       <div class="spreadsheet-actions">
-        <div class="spreadsheet-title">📊 Complete 15-Column Career Match Spreadsheet</div>
-        <button class="primary-btn" onclick="exportSpreadsheetCSV()" style="font-size:0.78rem;padding:0.5rem 1rem">
-          📥 Export Spreadsheet (.CSV)
-        </button>
+        <div class="spreadsheet-title">Complete Career Match Results</div>
+        <button class="df-btn df-btn-primary df-btn-sm" onclick="exportSpreadsheetCSV()">Export Spreadsheet (.CSV)</button>
       </div>
-      <div class="table-container">
-        <table id="spreadsheet-table">
+      <div class="df-table-wrap">
+        <table class="df-table" id="spreadsheet-table">
           <thead>
             <tr>
-              <th>Match Score (%)</th>
+              <th>Match Score</th>
               <th>Job Title</th>
               <th>Company</th>
               <th>Company Tier</th>
               <th>Location</th>
               <th>Work Type</th>
-              <th>Posted Date</th>
-              <th>Experience Match Summary</th>
-              <th>Key Skills Match</th>
-              <th>Why This Fits Me</th>
-              <th>Application Link</th>
+              <th>Posted</th>
+              <th>Experience Match</th>
+              <th>Skills Match</th>
+              <th>Why This Fits</th>
+              <th>Apply</th>
               <th>Easy Apply</th>
-              <th>Priority Level</th>
-              <th>Compensation Insight</th>
-              <th>Notes / Concerns</th>
+              <th>Priority</th>
+              <th>Compensation</th>
+              <th>Notes</th>
             </tr>
           </thead>
-          <tbody id="spreadsheet-body">
-            <!-- Row items populated dynamically -->
-          </tbody>
+          <tbody id="spreadsheet-body"></tbody>
         </table>
       </div>
-      <div style="text-align:center">
-        <button class="secondary-btn" onclick="resetWizard()" style="font-size:0.8rem;padding:0.5rem 1rem">
-          🔄 Scan New Profile
-        </button>
+      <div style="text-align:center;margin-top:var(--df-space-6);">
+        <button class="df-btn df-btn-secondary df-btn-sm" onclick="resetWizard()">Scan New Profile</button>
       </div>
     </div>
-
-  </div>
-
-  <!-- Footer -->
-  <div class="footer">
-    <span>Pipeline: Lambda → S3 Bronze → Silver (SCD Type 2) → Gold → API Gateway</span>
-    <span>DataForge · eu-central-1 · $0/month serverless</span>
   </div>
 </div>
+
+<footer class="df-footer">
+  <div class="df-footer-inner">
+    <div>
+      <div class="df-footer-brand"><img src="Dataforge.png" alt="" /> DataForge</div>
+      <p>DataForge — Job Intelligence Platform · Career Matching Wizard · Rule-based scoring</p>
+    </div>
+    <div class="df-footer-links">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="jobs.html">Job Intelligence Board</a>
+    </div>
+  </div>
+</footer>
 
 <script>
   const JOBS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:8000/jobs"
     : "https://2amv4immb0.execute-api.eu-central-1.amazonaws.com/";
-  
+
   let currentStep = 1;
   let resumeContent = "";
   let dreamRole = "";
   let targetLoc = "";
-  
   let scannedJobs = [];
   let userSkills = [];
   let userSeniority = "mid";
@@ -860,8 +538,37 @@
     startup: ["bending spoons", "simovative", "delivery hero", "bmw", "bosch group", "siemens energy", "celonis", "bwi", "sap"]
   };
 
+  function updateStepper(stepNum) {
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById(`step-ind-${i}`);
+      el.classList.remove("active", "done");
+      if (i < stepNum) el.classList.add("done");
+      else if (i === stepNum) el.classList.add("active");
+    }
+    for (let i = 1; i <= 3; i++) {
+      const line = document.getElementById(`line-${i}`);
+      if (line) line.classList.toggle("done", i < stepNum);
+    }
+    const pct = stepNum === 1 ? 25 : stepNum === 2 ? 50 : stepNum === 3 ? 75 : 100;
+    document.getElementById("progress-fill").style.width = pct + "%";
+  }
+
+  function scoreBarHtml(score) {
+    const cls = score >= 75 ? "high" : score >= 40 ? "med" : "low";
+    return `<div class="df-score-bar">
+      <div class="df-score-bar-track"><div class="df-score-bar-fill ${cls}" style="width:${score}%"></div></div>
+      <span class="df-score-val ${cls}">${score}%</span>
+    </div>`;
+  }
+
+  function skillChipsHtml(skillsStr) {
+    if (!skillsStr) return "—";
+    return skillsStr.split(",").map(s => s.trim()).filter(Boolean)
+      .map(s => `<span class="df-skill-chip">${esc(s)}</span>`).join("");
+  }
+
   function loadSampleResume() {
-    document.getElementById("resume-text").value = 
+    document.getElementById("resume-text").value =
       "Senior Software Engineer specializing in Python development and Cloud Infrastructure.\n\n" +
       "Core Technologies: Python, SQL, PostgreSQL, AWS (S3, Lambda, EC2), Docker, Terraform, Git, Pandas.\n\n" +
       "Experience:\n" +
@@ -874,70 +581,35 @@
   function goToStep(stepNum) {
     if (stepNum === 2) {
       resumeContent = document.getElementById("resume-text").value.trim();
-      if (!resumeContent) {
-        alert("Please paste your resume text before continuing!");
-        return;
-      }
+      if (!resumeContent) { alert("Please paste your resume text before continuing!"); return; }
       userSkills = extractSkills(resumeContent);
       userSeniority = detectSeniority(resumeContent);
     }
-    
-    // Deactivate previous steps
     document.querySelectorAll(".step-container").forEach(el => el.classList.remove("active"));
-    document.querySelectorAll(".step-label").forEach(el => el.classList.remove("active"));
-    
-    // Activate target step
     document.getElementById(`step-${stepNum}`).classList.add("active");
-    
-    // Update progress fill
-    const pct = (stepNum === 1) ? 25 : (stepNum === 2) ? 50 : (stepNum === 3) ? 75 : 100;
-    document.getElementById("progress-fill").style.width = pct + "%";
-    
-    for (let i = 1; i <= stepNum; i++) {
-      document.getElementById(`lbl-step-${i}`).classList.add("active");
-    }
+    updateStepper(stepNum);
     currentStep = stepNum;
   }
 
   function submitRole() {
     dreamRole = document.getElementById("input-role").value.trim();
-    if (!dreamRole) {
-      alert("Please specify your target job title!");
-      return;
-    }
-    
-    // Add user bubble
-    const roleChat = document.getElementById("chat-box-role");
-    roleChat.innerHTML += `<div class="chat-bubble user">"I am looking for a ${dreamRole} position."</div>`;
-    
-    setTimeout(() => {
-      goToStep(3);
-    }, 450);
+    if (!dreamRole) { alert("Please specify your target job title!"); return; }
+    document.getElementById("chat-box-role").innerHTML += `<div class="chat-bubble user">I am looking for a ${esc(dreamRole)} position.</div>`;
+    setTimeout(() => goToStep(3), 450);
   }
 
   function submitLocation() {
     targetLoc = document.getElementById("input-loc").value.trim();
-    if (!targetLoc) {
-      alert("Please specify your preferred location!");
-      return;
-    }
-    
-    const locChat = document.getElementById("chat-box-loc");
-    locChat.innerHTML += `<div class="chat-bubble user">"I want to work in: ${targetLoc}."</div>`;
-    
-    setTimeout(() => {
-      goToStep(4);
-      runScraperAgentSimulation();
-    }, 450);
+    if (!targetLoc) { alert("Please specify your preferred location!"); return; }
+    document.getElementById("chat-box-loc").innerHTML += `<div class="chat-bubble user">I want to work in: ${esc(targetLoc)}.</div>`;
+    setTimeout(() => { goToStep(4); runScraperAgentSimulation(); }, 450);
   }
 
   function extractSkills(text) {
     const textLower = text.toLowerCase();
     const skills = new Set();
     for (const [kw, canonical] of Object.entries(CANONICAL_SKILL_MAP)) {
-      if (textLower.includes(kw)) {
-        skills.add(canonical);
-      }
+      if (textLower.includes(kw)) skills.add(canonical);
     }
     return Array.from(skills);
   }
@@ -961,13 +633,12 @@
   async function runScraperAgentSimulation() {
     const statusEl = document.getElementById("scanner-status");
     const logEl = document.getElementById("scanner-log");
-
     const steps = [
       { status: "Analyzing Resume Profile...", log: "Extracting skills inventory, years of experience, and seniority level..." },
       { status: "Consulting Search Matrix...", log: `Interpreting target role: "${dreamRole}" and location boundaries: "${targetLoc}"...` },
-      { status: "Querying AWS Data Lakehouse...", log: "Invoking metrics APIs & jobs search engine on S3 S3 buckets..." },
+      { status: "Querying AWS Data Lakehouse...", log: "Invoking metrics APIs & jobs search engine on S3 buckets..." },
       { status: "Recruiter Analysis Scoring...", log: "Processing candidate-to-job match matrix, matching tags and descriptions..." },
-      { status: "Complete!", log: "Compiling 15-column matching report..." }
+      { status: "Complete!", log: "Compiling career match report..." }
     ];
 
     for (let i = 0; i < steps.length - 1; i++) {
@@ -976,30 +647,24 @@
       await new Promise(resolve => setTimeout(resolve, 800));
     }
 
-    // Call S3 backend jobs API
     try {
       const params = new URLSearchParams({ limit: 800, sort: 'newest', status: 'active' });
       params.set("search", dreamRole);
-      
       const res = await fetch(`${JOBS_API_URL}?${params}`);
       if (!res.ok) throw new Error("API call failed");
       const data = await res.json();
       scannedJobs = data.jobs || [];
     } catch(e) {
-      console.warn("API call failed, falling back to local fallback search", e);
+      console.warn("API call failed", e);
     }
 
-    // Process and score listings
     const processedJobs = scannedJobs.map(j => {
       const jobText = `${j.title || ''} ${j.tags || ''} ${j.description || ''}`.toLowerCase();
-      
-      // Calculate Skill Match (60%)
       const jobSkills = extractSkills(jobText);
       const matched = jobSkills.filter(s => userSkills.includes(s));
       const missing = jobSkills.filter(s => !userSkills.includes(s));
       const skillScore = jobSkills.length ? (matched.length / jobSkills.length) * 100 : 80;
 
-      // Seniority Match (20%)
       const titleLower = (j.title || "").toLowerCase();
       let jobSeniority = "mid";
       if (titleLower.includes("lead") || titleLower.includes("principal") || titleLower.includes("staff")) jobSeniority = "lead";
@@ -1012,27 +677,21 @@
         seniorityScore = Math.max(20, 100 - Math.abs(lvls.indexOf(userSeniority) - lvls.indexOf(jobSeniority)) * 40);
       }
 
-      // Location / Filter Fit (20%)
       let locScore = 80;
       const targetLocLower = targetLoc.toLowerCase();
       const jobLocLower = (j.location || "").toLowerCase();
-      if (targetLocLower.includes("remote") && (j.work_style === "remote" || j.is_remote === true || j.is_remote === "True")) {
-        locScore = 100;
-      } else if (jobLocLower.includes(targetLocLower) || targetLocLower.includes(jobLocLower)) {
-        locScore = 100;
-      }
+      if (targetLocLower.includes("remote") && (j.work_style === "remote" || j.is_remote === true || j.is_remote === "True")) locScore = 100;
+      else if (jobLocLower.includes(targetLocLower) || targetLocLower.includes(jobLocLower)) locScore = 100;
 
       const matchPct = Math.round((skillScore * 0.60) + (seniorityScore * 0.20) + (locScore * 0.20));
       const tier = determineCompanyTier(j.company);
-      
+
       let priority = "Medium";
-      if (matchPct >= 75 && (tier === "FAANG" || tier === "Top Product" || tier === "Strong Startup")) {
-        priority = "High";
-      }
+      if (matchPct >= 75 && (tier === "FAANG" || tier === "Top Product" || tier === "Strong Startup")) priority = "High";
 
       let comp = "Market Standard";
       if (j.salary && j.salary !== "nan") comp = j.salary;
-      else if (tier === "FAANG" || tier === "Top Product") comp = "Top-tier Package / High Compensation";
+      else if (tier === "FAANG" || tier === "Top Product") comp = "Top-tier Package";
 
       let notes = "";
       if (j.language_requirement === "german_required" || (!j.language_requirement && (j.is_english === "False" || j.is_english === false))) {
@@ -1040,105 +699,84 @@
       }
 
       return {
-        score: matchPct,
-        title: j.title,
-        company: j.company || "Unknown",
-        tier: tier,
+        score: matchPct, title: j.title, company: j.company || "Unknown", tier,
         location: j.location ? j.location.split(",")[0].trim() : "Europe",
         work_type: j.work_style ? j.work_style.charAt(0).toUpperCase() + j.work_style.slice(1) : (j.is_remote === true ? "Remote" : "Onsite"),
         date: j.date_added || "Recent",
-        exp_summary: `Candidate profile (${userSeniority}) matches job description complexity (${jobSeniority}).`,
+        exp_summary: `Candidate (${userSeniority}) matches job complexity (${jobSeniority}).`,
         skills_match: matched.join(", ") || "General Engineering",
         missing_skills: missing,
         why_fits: `Strong overlap with your skills in ${matched.slice(0, 3).join(", ")}. Matches target title.`,
         url: fixEuresApplyUrl(j.job_url || j.url || "#"),
         easy_apply: (j.source === "arbeitnow" || j.source === "direct") ? "Yes" : "No",
-        priority: priority,
-        compensation: comp,
-        notes: notes
+        priority, compensation: comp, notes
       };
     });
 
-    // Sort by Match Score
     processedJobs.sort((a, b) => b.score - a.score);
 
-    // Populate Report Summary Panels
-    document.getElementById("report-summary").innerHTML = 
+    document.getElementById("report-summary").innerHTML =
       `Based on your resume, we analyzed your profile as a <strong>${userSeniority.toUpperCase()}</strong> developer ` +
       `with strong skills in <strong>${userSkills.slice(0, 4).join(", ")}</strong>. ` +
-      `We found <strong>${processedJobs.length} active opportunities</strong> that match your criteria.`;
-    
-    document.getElementById("report-marketable-skills").innerHTML = userSkills.map(s => 
-      `<span class="skill-tag" style="background:rgba(99,102,241,0.2)">${s}</span>`
+      `We found <strong>${processedJobs.length} active opportunities</strong> matching your criteria.`;
+
+    document.getElementById("report-marketable-skills").innerHTML = userSkills.map(s =>
+      `<span class="df-skill-chip">${esc(s)}</span>`
     ).join("");
 
-    document.getElementById("report-niche").innerHTML = 
+    document.getElementById("report-niche").innerHTML =
       `Your strongest marketable niche is in <strong>${userSkills.includes("AWS") || userSkills.includes("Docker") ? "Cloud Infrastructure / Python Backend" : "Application Development"}</strong>. ` +
       `You are most likely to be shortlisted by <strong>Strong Startups and Top Product companies</strong> looking for fast execution.`;
 
-    // Populate Group Columns
-    const strongest = processedJobs.slice(0, 5);
-    const stretch = processedJobs.filter(j => j.score >= 50 && (j.tier === "FAANG" || j.tier === "Top Product")).slice(0, 5);
-    const safest = processedJobs.filter(j => j.score >= 65 && j.tier === "Mid-tier").slice(0, 5);
+    renderGroupColumn("group-strongest", processedJobs.slice(0, 5), "#059669");
+    renderGroupColumn("group-stretch", processedJobs.filter(j => j.score >= 50 && (j.tier === "FAANG" || j.tier === "Top Product")).slice(0, 5), "#D97706");
+    renderGroupColumn("group-safest", processedJobs.filter(j => j.score >= 65 && j.tier === "Mid-tier").slice(0, 5), "#2563EB");
 
-    renderGroupColumn("group-strongest", strongest, "#34d399");
-    renderGroupColumn("group-stretch", stretch, "#fbbf24");
-    renderGroupColumn("group-safest", safest, "#60a5fa");
-
-    // Populate Spreadsheet Table
-    const tableBody = document.getElementById("spreadsheet-body");
-    tableBody.innerHTML = processedJobs.map(j => {
-      const scoreClass = j.score >= 75 ? "high" : j.score >= 40 ? "med" : "low";
+    document.getElementById("spreadsheet-body").innerHTML = processedJobs.map(j => {
       const tierClass = j.tier === "FAANG" ? "faang" : j.tier === "Top Product" ? "product" : j.tier === "Strong Startup" ? "startup" : "midtier";
       const workClass = j.work_type.toLowerCase();
       const priClass = j.priority.toLowerCase();
-
       return `
         <tr>
-          <td class="cell-score ${scoreClass}">${j.score}%</td>
+          <td>${scoreBarHtml(j.score)}</td>
           <td class="cell-title">${esc(j.title)}</td>
           <td>${esc(j.company)}</td>
           <td><span class="badge-tier ${tierClass}">${j.tier}</span></td>
-          <td>📍 ${esc(j.location)}</td>
+          <td>${esc(j.location)}</td>
           <td><span class="badge-type ${workClass}">${j.work_type}</span></td>
           <td>${esc(j.date)}</td>
-          <td style="max-width:250px">${esc(j.exp_summary)}</td>
-          <td style="max-width:200px;color:#a5b4fc">${esc(j.skills_match)}</td>
-          <td style="max-width:250px">${esc(j.why_fits)}</td>
+          <td style="max-width:200px">${esc(j.exp_summary)}</td>
+          <td><div class="skills-cell">${skillChipsHtml(j.skills_match)}</div></td>
+          <td style="max-width:220px">${esc(j.why_fits)}</td>
           <td><a class="table-apply-btn" href="${escUrl(j.url)}" target="_blank" rel="noopener noreferrer">Apply →</a></td>
           <td>${j.easy_apply}</td>
           <td><span class="badge-pri ${priClass}">${j.priority}</span></td>
-          <td style="color:#34d399;font-weight:600">${esc(j.compensation)}</td>
-          <td style="max-width:180px;color:#f87171">${esc(j.notes || "-")}</td>
-        </tr>
-      `;
+          <td style="color:var(--df-success);font-weight:600">${esc(j.compensation)}</td>
+          <td style="max-width:160px;color:var(--df-error)">${esc(j.notes || "—")}</td>
+        </tr>`;
     }).join("");
 
-    // Hide Wizard & Show Results
     document.getElementById("wizard-card").style.display = "none";
     document.getElementById("results-panel").classList.add("active");
+    updateStepper(4);
   }
 
   function renderGroupColumn(elementId, jobs, color) {
     const el = document.getElementById(elementId);
-    if (jobs.length === 0) {
-      el.innerHTML = `<div style="color:#64748b;font-size:0.8rem;text-align:center;padding:1.5rem">No matches found for this bucket.</div>`;
+    if (!jobs.length) {
+      el.innerHTML = `<div style="color:var(--df-text-muted);font-size:0.8125rem;text-align:center;padding:var(--df-space-6)">No matches found.</div>`;
       return;
     }
     el.innerHTML = jobs.map(j => `
-      <div class="mini-job-card" style="--accent: ${color}">
+      <div class="mini-job-card">
         <div class="mini-card-top">
           <div class="mini-title">${esc(j.title)}</div>
-          <div class="mini-score">${j.score}%</div>
+          ${scoreBarHtml(j.score)}
         </div>
         <div class="mini-company">${esc(j.company)}</div>
-        <div class="mini-meta">
-          <span>📍 ${esc(j.location)}</span> · 
-          <span>${esc(j.work_type)}</span>
-        </div>
-        <div class="mini-reason">${esc(j.why_fits)}</div>
-      </div>
-    `).join("");
+        <div class="mini-meta">${esc(j.location)} · ${esc(j.work_type)}</div>
+        <div class="mini-reason" style="border-left-color:${color}">${esc(j.why_fits)}</div>
+      </div>`).join("");
   }
 
   function exportSpreadsheetCSV() {
@@ -1148,18 +786,14 @@
       let row = [], cols = table.rows[i].cells;
       for (let j = 0; j < cols.length; j++) {
         let text = cols[j].innerText.replace(/"/g, '""');
-        if (cols[j].querySelector("a")) {
-          text = cols[j].querySelector("a").href;
-        }
+        if (cols[j].querySelector("a")) text = cols[j].querySelector("a").href;
         row.push('"' + text + '"');
       }
       csv.push(row.join(","));
     }
-    const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
-    const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `DataForge_Career_Matching_Wizard_${new Date().toISOString().slice(0,10)}.csv`);
+    link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv.join("\n"));
+    link.download = `DataForge_Career_Match_${new Date().toISOString().slice(0,10)}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1169,20 +803,17 @@
     document.getElementById("results-panel").classList.remove("active");
     document.getElementById("wizard-card").style.display = "block";
     goToStep(1);
-    
     document.getElementById("resume-text").value = "";
     document.getElementById("input-role").value = "";
     document.getElementById("input-loc").value = "";
-    document.getElementById("chat-box-role").innerHTML = 
-      `<div class="chat-bubble agent">Hi! I've scanned your resume profile. What is your ideal or target role? For example: Senior Backend Engineer, AI Engineer, MLOps, or Data Scientist?</div>`;
-    document.getElementById("chat-box-loc").innerHTML = 
+    document.getElementById("chat-box-role").innerHTML =
+      `<div class="chat-bubble agent">Hi! I've scanned your resume profile. What is your ideal or target role? For example: Senior Backend Engineer, Data Engineer, MLOps, or Data Scientist?</div>`;
+    document.getElementById("chat-box-loc").innerHTML =
       `<div class="chat-bubble agent">Perfect! Now, what location or working arrangement are you targeting for this role? You can say things like 'Germany', 'Munich', 'Remote only', 'Europe', or 'Hybrid in Berlin'.</div>`;
   }
 
   function esc(s) {
-    return String(s || "")
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   function escUrl(u) {

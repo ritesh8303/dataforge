@@ -30,11 +30,11 @@
 
 ### 1.1 Non-Technical Explanation
 
-**DataForge** is an automated system that collects job postings from multiple European sources (German federal job board, EU mobility portal, startup boards, company career pages, and more), cleans and deduplicates them, and presents them through:
+**DataForge** is a **Job Intelligence Platform** that aggregates, processes, and analyzes 10,000+ jobs across Europe using a multi-source ETL pipeline. It collects job postings from multiple European sources (German federal job board, EU mobility portal, startup boards, company career pages, and more), cleans and deduplicates them, and presents them through:
 
-- A **live analytics dashboard** (trends, skills, locations, sources)
-- A **searchable job board** with filters (source, country, remote, language)
-- An **AI-style career matcher** (client-side resume matching against live jobs)
+- A **Job Intelligence Dashboard** (trends, skills, locations, sources)
+- A **Job Intelligence Board** with filters (source, country, remote, language)
+- A **Career Matching Wizard** — rule-based job intelligence matching (client-side resume matching against live jobs)
 
 The system runs **without traditional servers**. It uses AWS Lambda (short-lived functions), S3 storage, and a static website on GitHub Pages. Costs are designed to stay within AWS Free Tier where possible.
 
@@ -142,8 +142,8 @@ Competing commercial aggregators exist (LinkedIn, Indeed, Glassdoor) but are clo
                    ▼
         ┌──────────────────────────┐
         │ GitHub Pages (docs/)     │
-        │ index.html │ jobs.html   │
-        │ agent.html               │
+        │ index.html │ dashboard.html │
+        │ jobs.html  │ agent.html     │
         └──────────────────────────┘
 ```
 
@@ -151,7 +151,7 @@ Competing commercial aggregators exist (LinkedIn, Indeed, Glassdoor) but are clo
 
 | Layer | Technology | Responsibility |
 |-------|------------|----------------|
-| **Frontend** | Static HTML/CSS/JS (`docs/`) | Dashboard, job board, career agent UI |
+| **Frontend** | Static HTML/CSS/JS (`docs/`) | Landing page, Job Intelligence Dashboard, Job Intelligence Board, Career Matching Wizard |
 | **API layer** | AWS API Gateway HTTP API | Routes `GET /` to Lambda proxies |
 | **Compute** | AWS Lambda (Python 3.11) | Ingest, transform, aggregate, serve APIs |
 | **Storage** | AWS S3 (3 buckets) | Bronze, Silver, Gold data |
@@ -479,12 +479,16 @@ Role `dataforge-lambda-role-dev` with bucket-scoped S3 policies and SSM read on 
 
 ### 3.5 `docs/` — Frontend
 
-#### `docs/index.html` — Analytics Dashboard
+#### `docs/index.html` — Landing Page (Job Intelligence Platform)
+- Product homepage with live stats, feature overview, and data pipeline visualization
+- Fetches `METRICS_API_URL` for hero and stats section KPIs
+
+#### `docs/dashboard.html` — Job Intelligence Dashboard
 - Fetches `METRICS_API_URL` every 2 minutes
 - Renders KPI cards, Chart.js trend line, doughnut charts, bar charts
 - Uses: `total_jobs`, `new_today`, `trend`, `jobs_by_source`, `jobs_by_region`, `top_skills`, `remote_vs_onsite`, `description_insights`, `top_companies`
 
-#### `docs/jobs.html` — Job Board
+#### `docs/jobs.html` — Job Intelligence Board
 - Fetches `JOBS_API_URL` with paginated loading (2000 jobs/page)
 - Filters: source, work style, language, region, city, search, experience
 - Renders 25 jobs/page with Apply links
@@ -494,7 +498,7 @@ Role `dataforge-lambda-role-dev` with bucket-scoped S3 policies and SSM read on 
 - 4-step wizard: resume → dream role → location → results
 - Fetches up to 800 jobs matching dream role search
 - `extractSkills()`, `detectSeniority()`, weighted match score (60% skills, 20% seniority, 20% location)
-- No backend LLM — heuristic matching only
+- Rule-based job intelligence matching — heuristic scoring only (no backend LLM)
 
 #### `docs/.gitkeep`
 Placeholder to retain empty docs directory in git.
@@ -656,7 +660,7 @@ Regex patterns add system tags: `AI / ML`, `Data Engineering`, `Cloud / DevOps`,
 
 ## 5. KPIs, Metrics, and Calculations
 
-### 5.1 Dashboard KPIs (`docs/index.html`)
+### 5.1 Dashboard KPIs (`docs/dashboard.html`)
 
 #### Total Jobs
 - **Definition:** Count of active jobs in `all_jobs.csv`
@@ -715,7 +719,7 @@ Regex patterns add system tags: `AI / ML`, `Data Engineering`, `Cloud / DevOps`,
 - **Source:** `pipeline_stats.csv` written by Silver transformer
 - **Fields:** `new_jobs`, `updated_jobs`, `unchanged_jobs`, `total_silver`, `run_at`
 
-### 5.2 Job Board KPIs (`jobs_api` response)
+### 5.2 Job Intelligence Board KPIs (`jobs_api` response)
 
 | KPI | Meaning |
 |-----|---------|
@@ -907,9 +911,10 @@ All frontends are **single-page HTML files** with embedded CSS and JavaScript (n
 
 | File | Role |
 |------|------|
-| `index.html` | Analytics dashboard |
-| `jobs.html` | Searchable job board |
-| `agent.html` | Resume matching wizard |
+| `index.html` | Landing page (Job Intelligence Platform) |
+| `dashboard.html` | Job Intelligence Dashboard |
+| `jobs.html` | Job Intelligence Board |
+| `agent.html` | Career Matching Wizard |
 
 ### 8.2 State Management
 
@@ -934,7 +939,7 @@ let page = 1;          // Pagination
 
 ### 8.4 User Interaction Flow
 
-**Job Board:**
+**Job Intelligence Board:**
 ```
 Page load → loadJobs() → fetch API → applyFilters() → renderJobs()
 User changes source → reset filters → loadJobs()
@@ -1086,7 +1091,7 @@ User selects EURES filter
 
 ### 13.3 Features
 - Email alerts for new jobs matching saved searches
-- Real LLM integration in `agent.html` (optional backend)
+- Enhanced matching backend for Career Matching Wizard (optional)
 - Salary extraction and compensation analytics
 - Multi-language UI (DE/EN)
 - OAuth admin panel for ingestor configuration
