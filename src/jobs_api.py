@@ -9,6 +9,7 @@ s3 = boto3.client("s3")
 
 _cache = {"data": None, "ts": 0}
 CACHE_TTL = 300  # 5 minutes
+MAX_LIMIT = 2000
 
 CORS_HEADERS = {
     "Access-Control-Allow-Origin": os.environ.get("ALLOWED_ORIGIN", "*"),
@@ -20,17 +21,18 @@ CORS_HEADERS = {
 }
 
 
-def _load_jobs():
-    bucket = os.environ["GOLD_BUCKET"]
-    key = os.environ.get("GOLD_KEY", "all_jobs.csv")
-    obj = s3.get_object(Bucket=bucket, Key=key)
-    content = obj["Body"].read().decode("utf-8-sig")
-    return list(csv.DictReader(StringIO(content)))
+def _job_work_style(job):
+    """Return normalized work_style for a job (remote / hybrid / onsite)."""
+    ws = (job.get("work_style") or "").lower().strip()
+    if ws in ("remote", "hybrid", "onsite"):
+        return ws
+    # Legacy rows without work_style: map is_remote only
+    if str(job.get("is_remote", "")).lower() == "true":
+        return "remote"
+    return "onsite"
 
 
 def _is_options(event):
-    # API Gateway v2 (HTTP API) uses requestContext.http.method
-    # API Gateway v1 (REST API) uses httpMethod
     method = event.get("requestContext", {}).get("http", {}).get("method") or event.get("httpMethod") or ""
     return method.upper() == "OPTIONS"
 
@@ -39,7 +41,6 @@ def lambda_handler(event, context):
     if _is_options(event):
         return {"statusCode": 200, "headers": CORS_HEADERS, "body": ""}
 
-    # Support both API GW v1 (queryStringParameters) and v2 (same key)
     params = event.get("queryStringParameters") or {}
     search = (params.get("search") or "").lower().strip()
     source = (params.get("source") or "").lower().strip()
@@ -50,10 +51,20 @@ def lambda_handler(event, context):
     language_req = (params.get("language_req") or "").lower().strip()
     work_style = (params.get("work_style") or "").lower().strip()
     region = (params.get("region") or "").lower().strip()
-    sort = (params.get("sort") or "newest").lower().strip()  # newest | oldest
-    status = (params.get("status") or "active").lower().strip()  # active | expired
-    max_limit = 12000
-    limit = min(int(params.get("limit", 500)), max_limit)
+    sort = (params.get("sort") or "newest").lower().strip()
+    status = (params.get("status") or "active").lower().strip()
+
+    # Legacy remote=true|false maps to work_style (standard taxonomy)
+    if remote == "true" and not work_style:
+        work_style = "remote"
+    elif remote == "false" and not work_style:
+        work_style = "onsite"
+
+    try:
+        requested_limit = int(params.get("limit", 500))
+    except (TypeError, ValueError):
+        requested_limit = 500
+    limit = min(max(requested_limit, 0), MAX_LIMIT)
     offset = max(int(params.get("offset", 0)), 0)
 
     cache_key = status
@@ -81,10 +92,6 @@ def lambda_handler(event, context):
         jobs = [j for j in jobs if location in j.get("location", "").lower()]
     if source:
         jobs = [j for j in jobs if j.get("source", "").lower() == source]
-    if remote == "true":
-        jobs = [j for j in jobs if j.get("is_remote", "").lower() == "true"]
-    elif remote == "false":
-        jobs = [j for j in jobs if j.get("is_remote", "").lower() != "true"]
     if job_type:
         jobs = [j for j in jobs if job_type in j.get("job_types", "").lower()]
     if experience:
@@ -102,30 +109,16 @@ def lambda_handler(event, context):
             for j in jobs
             if j.get("language_requirement", "").lower() == language_req
             or (
-                # Fallback for legacy CSV data in S3
                 not j.get("language_requirement")
                 and language_req == "english_only"
                 and (j.get("is_english", "").lower() == "true" or j.get("is_english") is True)
             )
         ]
     if work_style:
-        jobs = [
-            j
-            for j in jobs
-            if j.get("work_style", "").lower() == work_style
-            or (
-                # Fallback for legacy CSV data in S3
-                not j.get("work_style")
-                and (
-                    (work_style == "remote" and j.get("is_remote", "").lower() == "true")
-                    or (work_style == "onsite" and j.get("is_remote", "").lower() != "true")
-                )
-            )
-        ]
+        jobs = [j for j in jobs if _job_work_style(j) == work_style]
     if region:
         jobs = [j for j in jobs if j.get("region", "").lower() == region]
 
-    # Sort by date
     reverse = sort != "oldest"
     jobs = sorted(jobs, key=lambda j: j.get("date_added", ""), reverse=reverse)
 
@@ -138,12 +131,14 @@ def lambda_handler(event, context):
     kpis = {
         "total": len(all_jobs),
         "new_today": sum(1 for j in all_jobs if j.get("date_added", "") == today),
-        "remote": sum(1 for j in all_jobs if j.get("is_remote", "").lower() == "true"),
+        "remote": sum(1 for j in all_jobs if _job_work_style(j) == "remote"),
         "filtered": filtered_count,
         "returned": returned_count,
         "truncated": has_more,
         "offset": offset,
         "limit": limit,
+        "requested_limit": requested_limit,
+        "applied_limit": limit,
     }
 
     return {

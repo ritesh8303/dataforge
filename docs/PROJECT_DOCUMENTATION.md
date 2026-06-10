@@ -65,7 +65,7 @@ The project targets the **labour market intelligence** domain, specifically:
 
 - **Germany** — strong public employment APIs (Bundesagentur für Arbeit)
 - **EU mobility** — EURES cross-border vacancies
-- **Tech hiring** — startup boards, ATS APIs (Greenhouse, Lever), and community sources (Hacker News)
+- **Tech hiring** — startup boards and ATS APIs (Greenhouse, Lever, SmartRecruiters, and more)
 
 Competing commercial aggregators exist (LinkedIn, Indeed, Glassdoor) but are closed, expensive, or geographically narrow. DataForge is an **open, serverless, reproducible pipeline** optimized for European data roles.
 
@@ -88,8 +88,8 @@ Competing commercial aggregators exist (LinkedIn, Indeed, Glassdoor) but are clo
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           DATA SOURCES (External)                          │
-│  Arbeitnow API │ BA Jobsuche │ EURES API │ HN API │ Berlin RSS │ ATS APIs  │
-│  │ Apify/Indeed │ Company career pages (10 ATS families)                      │
+│  Arbeitnow API │ BA Jobsuche │ EURES API │ Berlin RSS │ Direct ATS APIs      │
+│  (5 active sources — company career pages across 10 ATS families)           │
 └───────────────┬─────────────────────────────────────────────────────────────┘
                 │
     ┌───────────┼───────────┬──────────────────────┐
@@ -219,7 +219,6 @@ There is **no traditional application server**, **no relational database**, and 
 
 **External APIs:**
 - BA Jobsuche: public `X-API-Key: jobboerse-jobsuche`
-- Apify: token from SSM `/dataforge/dev/apify_credentials`
 - GitHub redeploy: token from env or SSM `/dataforge/dev/github_token`
 
 ### 2.6 Request–Response Lifecycle (Jobs API Example)
@@ -261,7 +260,7 @@ dataforge/
 
 #### `README.md`
 - **Purpose:** Project introduction, architecture diagram, data sources, local run commands, Terraform instructions.
-- **Connections:** References `scripts/`, `terraform/`, Gold CSV list, Apify SSM config format.
+- **Connections:** References `scripts/`, `terraform/`, Gold CSV list.
 
 #### `pyproject.toml`
 - **Purpose:** Ruff lint configuration (line length 120, excludes bundled `src/` vendor dirs).
@@ -356,14 +355,6 @@ Runtime pip deps for Lambda deployment: `pydantic`, `requests`, `typing_extensio
 | **URL format** | `/jv-details/{encoded_id}?jvDisplayLanguage={lang}` |
 | **Output** | `eures/ingested_at={date}/jobs.parquet` |
 
-#### `src/ingest_hn.py`
-| Item | Detail |
-|------|--------|
-| **Purpose** | Bronze ingestor delegating to `HackerNewsFetcher` |
-| **Limits** | 35 jobstories + 60 "Who is hiring" comments |
-| **Filter** | EU-only via `is_in_europe()` in fetcher |
-| **Output** | `hacker_news/ingested_at={date}/jobs.parquet` |
-
 #### `src/ingest_berlin_startups.py`
 | Item | Detail |
 |------|--------|
@@ -382,17 +373,6 @@ Runtime pip deps for Lambda deployment: `pydantic`, `requests`, `typing_extensio
 | **Cap** | `MAX_JOBS_PER_COMPANY=2000` |
 | **Filter** | `_is_europe_job()` per posting |
 | **Output** | `direct_careers/ingested_at={date}/jobs.parquet`, `source=direct` |
-
-#### `src/ingest_apify.py`
-| Item | Detail |
-|------|--------|
-| **Purpose** | Pull Indeed scrape results from Apify actor task datasets |
-| **Flow** | Trigger new run → fetch latest SUCCEEDED run → download dataset items |
-| **Filter** | `indeed` task only; `is_in_europe()` in `normalize_job_item` |
-| **Skip** | If `DISABLE_APIFY=true` or missing SSM credentials |
-| **Output** | `apify_indeed/ingested_at={date}/jobs.parquet`, `source=indeed` |
-
----
 
 #### `src/silver_transformer.py`
 | Function | Purpose |
@@ -450,7 +430,6 @@ Runtime pip deps for Lambda deployment: `pydantic`, `requests`, `typing_extensio
 |-------|-----|--------|
 | `ArbeitnowFetcher` | `arbeitnow.com/api/job-board-api` | 2 pages |
 | `BAFetcher` | `rest.arbeitsagentur.de/.../v4/jobs` | Full pagination, 100/page |
-| `HackerNewsFetcher` | Firebase HN API | 35 stories, 60 comments |
 | `BerlinStartupJobsFetcher` | 2 RSS feeds | All items, tech filter |
 | `get_fetcher(source)` | Factory | — |
 
@@ -532,7 +511,7 @@ Placeholder to retain empty docs directory in git.
 | `query_duckdb.py` | Ad-hoc DuckDB SQL on local `data/gold/*.csv` |
 | `visualize_gold.py` | Matplotlib dashboard PNG → `data/gold/job_market_dashboard.png` |
 | `run_local_api.py` | HTTP server `:8000` mocking S3, serving docs + Lambda handlers |
-| `run_ingestor_local.py` | CLI: `python scripts/run_ingestor_local.py {ba\|arbeitnow\|hn\|berlin\|apify\|direct\|eures}` |
+| `run_ingestor_local.py` | CLI: `python scripts/run_ingestor_local.py {ba\|arbeitnow\|berlin\|direct\|eures}` |
 | `backfill_silver.py` | One-time Bronze JSON → Silver SCD backfill |
 
 ---
@@ -566,7 +545,6 @@ Placeholder to retain empty docs directory in git.
 | `test_architecture_smoke.py` | Pydantic TypedDict validation smoke |
 | `test_eures_ingestor.py` | EURES location, tags, URL, retry, handler |
 | `test_company_careers.py` | ATS URL detection, fetch mocks, Europe filter |
-| `test_apify_ingestor.py` | Indeed item normalization |
 | `test_ba_model.py` | BA Pydantic validation |
 | `test_europe_filter.py` | `is_in_europe`, `classify_region` parametrized |
 | `test_jobs_api_local.py` | Jobs API filters with mocked S3 |
@@ -583,7 +561,7 @@ Placeholder to retain empty docs directory in git.
 
 **Steps (per ingestor):**
 1. Extract fields with source-specific key fallbacks (`title` / `positionName` / `jobTitle`).
-2. Assign stable `job_id` with source prefix (`eures_`, `apify_`, `direct_{ats}_`, `hn_job_`, etc.).
+2. Assign stable `job_id` with source prefix (`eures_`, `direct_{ats}_`, `bsj_`, `ba_`, etc.).
 3. Coerce `remote` to boolean via flags or keyword heuristics.
 4. Flatten list fields (`tags`, `job_types`) to comma-separated strings for Parquet.
 5. Set `source` identifier and `ingested_at` ISO timestamp.
@@ -598,7 +576,7 @@ def row_is_in_europe(r):
     return is_in_europe(location, title, description)
 ```
 
-**Rationale:** BA, Arbeitnow, Berlin, EURES are inherently EU-focused. Direct, HN, Indeed require geo validation to avoid US-only noise.
+**Rationale:** BA, Arbeitnow, Berlin, and EURES are inherently EU-focused. Direct ATS feeds require geo validation to avoid US-only noise.
 
 ### 4.3 Semantic Deduplication (Bronze Batch)
 
@@ -660,7 +638,6 @@ Regex patterns add system tags: `AI / ML`, `Data Engineering`, `Cloud / DevOps`,
 | Stage | Rule |
 |-------|------|
 | Silver `validate_jobs` | `title`, `company`, `url` must be non-empty strings |
-| Apify ingest | Skip if `normalize_job_item` returns None (non-Europe) |
 | Company careers | Skip if `_is_europe_job` fails |
 | EURES | Skip items without `id` or `title` after normalization |
 | SCD quality gate | Abort small Bronze batch against large Silver |
@@ -672,8 +649,7 @@ Regex patterns add system tags: `AI / ML`, `Data Engineering`, `Cloud / DevOps`,
 | Ingestors | try/except → HTTP 500 JSON `{"error": message}` |
 | Transformer | Re-raise Silver read failures; abort on quality anomaly |
 | Gold generator | try/except → HTTP 500; continues if optional CSV missing in metrics |
-| Fetchers | Per-item try/except with warning logs (HN comments) |
-| Apify | Skip if credentials missing (HTTP 200 with skip message) |
+| Fetchers | Per-item try/except with warning logs |
 | GitHub redeploy | Silent skip if `GITHUB_TOKEN` missing |
 
 ---
@@ -1044,10 +1020,10 @@ Step 4: fetch jobs → score each → sort → render cards + table → CSV expo
 | UTC Time | Event |
 |----------|-------|
 | 04:00 | GitHub Action: EURES ingest → Bronze → invoke transformer |
-| 07:00 | Lambda ingestors: Arbeitnow, BA, Direct, HN, Berlin |
+| 07:00 | Lambda ingestors: Arbeitnow, BA, Direct, Berlin |
+| 04:00 / 20:00 | GitHub Action: EURES scraper → Bronze |
 | 07:30 | Transformer: Bronze → Silver SCD |
-| 07:30+ | S3 trigger: Gold generator → 11 CSVs |
-| 08:00 | Apify ingestor: trigger Indeed scrape, pull yesterday's dataset |
+| 07:30+ | S3 trigger: Gold generator → 12 CSVs |
 | 08:30 | `publish_gold.yml`: download CSVs → commit `data/gold/` |
 | 12:00 / 16:00 | Repeat ingest + transform cycles |
 
@@ -1083,9 +1059,7 @@ User selects EURES filter
 |----------|----------|
 | Empty Bronze day | Transformer exits 200 "No Bronze files found" |
 | Small Bronze batch vs large Silver | `DATA_QUALITY_ANOMALY` exception — abort to protect Silver |
-| Missing Apify credentials | Ingest returns 200 skip message |
 | EURES API retry | `AntigravityClient` 3 retries with exponential backoff |
-| HN item fetch failure | Warning log; continue other items |
 | Silver Parquet read corruption | Warning per file; continue other files |
 | Gold CSV missing in metrics | `pipeline_stats` optional; others required |
 | API response > 10MB | Mitigated by pagination (2000 jobs/page) |
@@ -1103,7 +1077,7 @@ User selects EURES filter
 - Migrate Gold serving to **Athena** or **DuckDB on S3** for SQL queries beyond CSV size limits
 - **Step Functions** orchestration replacing chained cron assumptions
 - **SQS queue** between ingest and transform for backpressure
-- **Increase Arbeitnow/Indeed coverage** (pagination, more Apify tasks)
+- **Increase Arbeitnow/EURES coverage** (pagination, more keywords)
 
 ### 13.2 Performance
 - **CloudFront** in front of API Gateway with short TTL
@@ -1119,7 +1093,7 @@ User selects EURES filter
 
 ### 13.4 Data Quality
 - Use `validate_ba_response` in BA fetch path
-- Expand `source_priority` to include `indeed`
+- Expand direct ATS company registry coverage
 - Automated data quality tests in CI (row counts, null rates)
 - Great Expectations or similar validation framework
 
@@ -1139,9 +1113,7 @@ User selects EURES filter
 | `direct` | Company career ATS feeds | ~2,000+ |
 | `eures` | EU EURES portal | ~1,200 |
 | `arbeitnow` | Arbeitnow API (2 pages) | ~300 |
-| `indeed` | Apify Indeed scraper | ~25 |
 | `berlin_startups` | Berlin RSS | ~15 |
-| `hacker_news` | HN jobstories + Who is hiring | ~10 |
 
 ---
 
@@ -1155,12 +1127,9 @@ User selects EURES filter
 | `LOCAL_RUN` | `save_parquet` local mode |
 | `ALLOWED_ORIGIN` | Metrics API CORS |
 | `GOLD_KEY` | Jobs API (default `all_jobs.csv`) |
-| `APIFY_TOKEN`, `APIFY_TASKS`, `SSM_APIFY_PARAMETER_NAME` | Apify ingestor |
 | `EURES_MAX_PAGES_PER_KEYWORD` | EURES ingestor |
 | `COMPANY_CAREERS_*` | Company careers ingestor |
 | `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO` | Gold generator redeploy |
-| `DISABLE_APIFY` | Skip Apify ingest |
-
 ---
 
 *End of document.*

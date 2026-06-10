@@ -34,12 +34,32 @@ def _is_tech_job(title: str, description: str) -> bool:
     return bool(_DESC_TECH_RE.search(desc_lower))
 
 
+def _company_from_berlin_slug(link: str) -> Optional[str]:
+    """Extract employer name from Berlin Startup Jobs URL slug (company suffix)."""
+    try:
+        slug = urlparse(link).path.strip("/").split("/")[-1]
+        if not slug:
+            return None
+        parts = slug.split("-")
+        best: Optional[str] = None
+        for n in range(1, min(6, len(parts) + 1)):
+            chunk = parts[-n:]
+            name = " ".join(w.capitalize() for w in chunk)
+            company = normalize_company(name)
+            if company:
+                best = company
+        return best
+    except Exception:
+        return None
+
+
 def _parse_title_company(title_text: str, link: str) -> Tuple[str, Optional[str]]:
     """Extract job title and company from RSS title patterns."""
     title = title_text.strip()
     company: Optional[str] = None
 
-    for sep in (" // ", " — ", " – ", " - ", " at "):
+    # 1. Explicit separators in RSS title (highest priority)
+    for sep in (" // ", " — ", " – ", " - ", " at ", " @ ", " | "):
         if sep in title_text:
             parts = title_text.rsplit(sep, 1)
             title = parts[0].strip()
@@ -50,20 +70,12 @@ def _parse_title_company(title_text: str, link: str) -> Tuple[str, Optional[str]
     if company:
         return title, company
 
-    # URL slug fallback: .../engineering/senior-backend-developer-company-name/
-    try:
-        path = urlparse(link).path.strip("/")
-        slug = path.split("/")[-1] if path else ""
-        if slug:
-            slug_parts = slug.split("-")
-            if len(slug_parts) >= 2:
-                # Heuristic: last 2-4 tokens often contain company name
-                candidate = " ".join(p.capitalize() for p in slug_parts[-3:])
-                company = normalize_company(candidate)
-    except Exception:
-        pass
+    # 2. URL slug suffix (Berlin Startup Jobs puts company at end of slug)
+    company = _company_from_berlin_slug(link)
+    if company:
+        return title, company
 
-    return title, company
+    return title, None
 
 
 class ArbeitnowFetcher:
@@ -227,7 +239,7 @@ class BerlinStartupJobsFetcher:
                             "url": link,
                             "description": description,
                             "remote": remote,
-                            "tags": "Startup,Berlin",
+                            "tags": "Berlin,tech",
                             "job_types": "full_time",
                             "source": "berlin_startups",
                         }

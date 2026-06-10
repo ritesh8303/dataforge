@@ -789,12 +789,12 @@
       }
       
       if (workStyle) {
-        if (j.work_style) {
-          if (j.work_style !== workStyle) return false;
+        const ws = (j.work_style || "").toLowerCase();
+        if (ws) {
+          if (ws !== workStyle) return false;
         } else {
-          const isRemote = j.is_remote === "True" || j.is_remote === true;
-          if (workStyle === "remote" && !isRemote) return false;
-          if (workStyle === "onsite" && isRemote) return false;
+          const legacy = (j.is_remote === "True" || j.is_remote === true) ? "remote" : "onsite";
+          if (legacy !== workStyle) return false;
         }
       }
       

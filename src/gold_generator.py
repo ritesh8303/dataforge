@@ -468,9 +468,14 @@ def lambda_handler(event, context):
             .head(20)
         )
 
-        # 7. Active vs expired
-        df["status"] = df["is_current"].apply(lambda x: "Active" if x else "Expired")
-        active_vs_expired = df.groupby("status").size().reset_index(name="job_count")
+        # 7. Active vs expired — Active count must match filtered all_jobs (single source of truth)
+        expired_count = int((df["is_current"] == False).sum())
+        active_vs_expired = pd.DataFrame(
+            [
+                {"status": "Active", "job_count": len(current)},
+                {"status": "Expired", "job_count": expired_count},
+            ]
+        )
 
         # 8. Top skills from tags (Arbeitnow) + title keywords (both sources)
         from collections import Counter
@@ -599,7 +604,7 @@ def lambda_handler(event, context):
             ]
         )
 
-        quality_metrics = compute_quality_metrics(df)
+        quality_metrics = compute_quality_metrics(current)
         data_quality_report = pd.DataFrame([quality_metrics])
 
         gold_base = f"s3://{gold_bucket}"

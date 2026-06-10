@@ -108,6 +108,22 @@ def test_jobs_api_filters(mock_s3):
     assert len(body["jobs"]) == 2
     assert {j["job_id"] for j in body["jobs"]} == {"3", "5"}
 
+    # Test 11: Legacy remote=true uses work_style taxonomy (jobs 2 and 4 are remote)
+    event = {"queryStringParameters": {"remote": "true"}}
+    res = lambda_handler(event, None)
+    body = json.loads(res["body"])
+    assert len(body["jobs"]) == 2
+    assert {j["job_id"] for j in body["jobs"]} == {"2", "4"}
+
+    # Test 12: Limit cap — request 12000, applied 2000, no error
+    event = {"queryStringParameters": {"limit": "12000"}}
+    res = lambda_handler(event, None)
+    assert res["statusCode"] == 200
+    body = json.loads(res["body"])
+    assert body["kpis"]["requested_limit"] == 12000
+    assert body["kpis"]["applied_limit"] == 2000
+    assert len(body["jobs"]) == 5
+
     print("All jobs API filter tests passed successfully!")
 
 
