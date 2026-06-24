@@ -25,15 +25,16 @@ resource "aws_iam_role_policy" "lambda_dlq_policy" {
 }
 
 resource "aws_lambda_function" "this" {
-  filename         = data.archive_file.lambda_zip.output_path
-  function_name    = var.function_name
-  role             = var.lambda_role_arn
-  handler          = var.handler
-  runtime          = "python3.11"
-  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  timeout          = var.timeout
-  memory_size      = var.memory_size
-  layers           = var.layers
+  filename                       = data.archive_file.lambda_zip.output_path
+  function_name                  = var.function_name
+  role                           = var.lambda_role_arn
+  handler                        = var.handler
+  runtime                        = "python3.11"
+  source_code_hash               = data.archive_file.lambda_zip.output_base64sha256
+  timeout                        = var.timeout
+  memory_size                    = var.memory_size
+  layers                         = var.layers
+  reserved_concurrent_executions = var.reserved_concurrent_executions >= 0 ? var.reserved_concurrent_executions : null
 
   dead_letter_config {
     target_arn = aws_sqs_queue.lambda_dlq.arn

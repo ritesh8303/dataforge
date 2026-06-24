@@ -2,8 +2,8 @@ name: EURES Ingestion Scraper
 
 on:
   schedule:
-    - cron: '0 4 * * *'   # 04:00 UTC — morning pipeline
-    - cron: '0 20 * * *'  # 20:00 UTC ≈ 22:00 Europe/Berlin (CEST); 21:00 CET in winter
+    - cron: '0 4 * * *'   # 04:00 UTC — ready for 07:30 transformer
+    - cron: '0 20 * * *'  # 20:00 UTC — ready for 20:30 transformer
   workflow_dispatch:     # Allows manual trigger from GitHub UI
 
 jobs:
@@ -43,23 +43,4 @@ jobs:
           print(result)
           if result.get('statusCode') != 200:
             raise SystemExit(f\"EURES ingest failed: {result}\")
-          "
-
-      - name: Trigger Silver transformer
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: eu-central-1
-        run: |
-          python -c "
-          import boto3, json
-          from datetime import datetime, timezone
-          date = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-          client = boto3.client('lambda', region_name='eu-central-1')
-          client.invoke(
-              FunctionName='dataforge-transformer',
-              InvocationType='Event',
-              Payload=json.dumps({'date': date}),
-          )
-          print(f'Triggered dataforge-transformer for ingested_at={date}')
           "

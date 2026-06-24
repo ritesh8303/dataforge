@@ -166,7 +166,7 @@ module "transformer_lambda" {
     GOLD_BUCKET   = module.s3_gold.bucket_id
     BRONZE_BUCKET = module.s3_bronze.bucket_id
   }
-  layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  layers                 = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   bronze_bucket_arn      = module.s3_bronze.arn
   enable_schedule        = true
   schedule_expression    = "cron(30 7,12,16 * * ? *)"
@@ -183,16 +183,16 @@ module "gold_lambda" {
   lambda_role_arn  = module.iam.lambda_role_arn
   lambda_role_name = module.iam.lambda_role_name
   source_dir       = "../src"
-  memory_size      = 512
-  timeout          = 300
+  memory_size      = 2048
+  timeout          = 900
   layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   env_vars = {
     SILVER_PATH = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
     GOLD_BUCKET = module.s3_gold.bucket_id
   }
-  bronze_bucket_arn = module.s3_bronze.arn
-  enable_alerts     = true
-  alert_email       = var.alert_email
+  bronze_bucket_arn              = module.s3_bronze.arn
+  enable_alerts                  = true
+  alert_email                    = var.alert_email
 }
 
 # --- 4. AUTOMATION & TRIGGERS ---

@@ -2,8 +2,9 @@ import json
 import os
 import shutil
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
-import awswrangler as wr
+import boto3
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -24,6 +25,31 @@ def _flatten_for_parquet(df: pd.DataFrame) -> pd.DataFrame:
     return flat
 
 
+def _parse_s3_uri(path: str) -> tuple[str, str]:
+    parsed = urlparse(path)
+    return parsed.netloc, parsed.path.lstrip("/")
+
+
+def _write_parquet_table(table: pa.Table, path: str) -> str:
+    """Write a PyArrow table to a local path or s3:// URI (single file)."""
+    if path.startswith("s3://"):
+        bucket, key = _parse_s3_uri(path)
+        buffer = pa.BufferOutputStream()
+        pq.write_table(table, buffer, compression="snappy", use_dictionary=False)
+        boto3.client("s3").put_object(Bucket=bucket, Key=key, Body=buffer.getvalue().to_pybytes())
+        return path
+
+    parent = os.path.dirname(path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    elif os.path.isfile(path):
+        os.remove(path)
+    pq.write_table(table, path, compression="snappy", use_dictionary=False)
+    return path
+
+
 def save_parquet(df, path, source):
     """
     Saves a DataFrame as Parquet (Snappy, single file, PyArrow-compatible).
@@ -38,21 +64,10 @@ def save_parquet(df, path, source):
         local_dir = os.path.join("data", "bronze", source, f"ingested_at={date_str}")
         os.makedirs(local_dir, exist_ok=True)
         local_path = os.path.join(local_dir, "jobs.parquet")
-        if os.path.isdir(local_path):
-            shutil.rmtree(local_path)
-        elif os.path.isfile(local_path):
-            os.remove(local_path)
-        pq.write_table(table, local_path, compression="snappy", use_dictionary=False)
-        print(f"Successfully saved {len(flat_df)} jobs locally to: {local_path}")
-        return local_path
+        written = _write_parquet_table(table, local_path)
+        print(f"Successfully saved {len(flat_df)} jobs locally to: {written}")
+        return written
 
-    wr.s3.to_parquet(
-        df=flat_df,
-        path=path,
-        index=False,
-        compression="snappy",
-        dataset=False,
-        pyarrow_additional_kwargs={"use_dictionary": False},
-    )
-    print(f"Successfully saved {len(flat_df)} jobs to S3: {path}")
-    return path
+    written = _write_parquet_table(table, path)
+    print(f"Successfully saved {len(flat_df)} jobs to S3: {written}")
+    return written

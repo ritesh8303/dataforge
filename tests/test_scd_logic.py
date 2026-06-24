@@ -202,3 +202,47 @@ def test_scd_s3_read_error_raises():
             assert False, "Should have raised RuntimeError"
         except RuntimeError as e:
             assert "Failed to read Silver layer" in str(e)
+
+
+def test_scd_silver_read_anomaly_blocks_empty_active():
+    """Active partition files that read as empty must abort."""
+    bronze_data = pd.DataFrame([_make_bronze_row("job_001", "Data Engineer")])
+    active_key = "s3://dummy/silver.parquet/is_current=True/part.parquet"
+    inactive_key = "s3://dummy/silver.parquet/is_current=False/part.parquet"
+
+    def _read_parquet(path):
+        if "is_current=True" in path:
+            return pd.DataFrame()
+        inactive = bronze_data.copy()
+        inactive["hash_key"] = "abc123"
+        inactive["scd_start_date"] = pd.Timestamp("2025-01-14", tz="UTC")
+        inactive["scd_end_date"] = pd.Timestamp("2025-01-15", tz="UTC")
+        inactive["is_current"] = False
+        return inactive
+
+    with (
+        patch("src.silver_transformer.wr.s3.read_parquet", side_effect=_read_parquet),
+        patch(
+            "src.silver_transformer.wr.s3.list_objects",
+            side_effect=lambda path: [active_key] if "is_current=True" in path else [inactive_key],
+        ),
+        patch("src.silver_transformer.wr.s3.to_parquet"),
+    ):
+        try:
+            process_scd_type_2(bronze_data, "s3://dummy/silver.parquet/")
+            assert False, "Should have raised ValueError"
+        except ValueError as e:
+            assert "SILVER_READ_ANOMALY" in str(e)
+
+
+def test_bronze_vs_silver_micro_batch_guard():
+    from src.silver_transformer import _validate_bronze_vs_silver
+
+    try:
+        _validate_bronze_vs_silver(50, 20000)
+        assert False, "Should have raised ValueError"
+    except ValueError as e:
+        assert "DATA_QUALITY_ANOMALY" in str(e)
+
+    # Daily Bronze is smaller than cumulative Silver — must not abort.
+    _validate_bronze_vs_silver(9976, 21064)

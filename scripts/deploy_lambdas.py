@@ -21,6 +21,15 @@ FUNCTIONS = [
     "dataforge-jobs-api",
 ]
 
+# Only the transformer must be single-flight; account concurrency limits may block more.
+CONCURRENCY = {
+    "dataforge-transformer": 1,
+}
+
+LAMBDA_CONFIG = {
+    "dataforge-gold-generator": {"Timeout": 900, "MemorySize": 2048},
+}
+
 
 def build_zip() -> Path:
     if ZIP_PATH.exists():
@@ -41,6 +50,18 @@ def main():
     for fn in FUNCTIONS:
         resp = lc.update_function_code(FunctionName=fn, ZipFile=payload)
         print(f"  OK {fn} -> {resp['LastModified']} ({resp['CodeSize']} bytes)")
+
+    for fn, limit in CONCURRENCY.items():
+        try:
+            lc.put_function_concurrency(FunctionName=fn, ReservedConcurrentExecutions=limit)
+            print(f"  OK {fn} reserved concurrency -> {limit}")
+        except Exception as exc:
+            print(f"  WARN {fn} concurrency not set ({exc}); S3 lock in transformer is the fallback")
+
+    for fn, cfg in LAMBDA_CONFIG.items():
+        lc.update_function_configuration(FunctionName=fn, **cfg)
+        print(f"  OK {fn} config -> {cfg}")
+
     print(f"Deployed {len(FUNCTIONS)} functions.")
 
 

@@ -54,3 +54,9 @@ variable "extra_schedule_rules" {
   default     = []
   description = "Additional EventBridge cron rules for the same Lambda (e.g. evening pipeline run)."
 }
+
+variable "reserved_concurrent_executions" {
+  type        = number
+  default     = -1
+  description = "Reserved concurrency for this Lambda (-1 = account default, 0 = disabled)."
+}

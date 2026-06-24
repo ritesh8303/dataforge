@@ -9,6 +9,15 @@ from pathlib import Path
 _SRC_DIR = Path(__file__).resolve().parents[1]
 
 
+def _is_src_on_path(entry: str) -> bool:
+    if not entry:
+        return False
+    try:
+        return Path(entry).resolve() == _SRC_DIR.resolve()
+    except OSError:
+        return entry == "src" or entry.endswith("/src") or entry.endswith("\\src")
+
+
 def import_site_package(name: str):
     """
     Import `name` from site-packages even if an incomplete vendored copy exists in src/.
@@ -20,8 +29,7 @@ def import_site_package(name: str):
     src_str = str(_SRC_DIR)
 
     if shadow.is_dir():
-        while src_str in sys.path:
-            sys.path.remove(src_str)
+        sys.path[:] = [p for p in sys.path if not _is_src_on_path(p)]
         for key in list(sys.modules):
             if key == name or key.startswith(f"{name}."):
                 del sys.modules[key]
@@ -29,5 +37,5 @@ def import_site_package(name: str):
     try:
         return importlib.import_module(name)
     finally:
-        if src_str not in sys.path:
+        if not any(_is_src_on_path(p) for p in sys.path):
             sys.path.insert(0, src_str)
