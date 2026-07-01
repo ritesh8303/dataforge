@@ -1,16 +1,17 @@
 ﻿region,job_count
-Germany,18612
+Germany,18483
 France,3032
-Belgium,861
+Belgium,891
 Sweden,848
-Other,693
+Other,694
 Norway,651
 Switzerland,572
 Czechia,465
-United Kingdom,396
-Spain,274
+United Kingdom,399
+Spain,275
 Hungary,246
-Unspecified,189
+Unspecified,190
+Belarus,172
 Poland,154
 Portugal,142
 Austria,137
@@ -25,7 +26,6 @@ Greece,39
 Denmark,38
 Bulgaria,33
 Ukraine,17
-Belarus,17
 Slovakia,12
 Luxembourg,11
 Cyprus,10
