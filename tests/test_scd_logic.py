@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 from src.silver_transformer import process_scd_type_2
 from unittest.mock import patch
 
@@ -10,6 +11,15 @@ try:
 except ImportError:
     _NoFilesFound = type("NoFilesFound", (Exception,), {})
 
+
+@pytest.fixture(autouse=True)
+def _noop_silver_s3_maintenance():
+    """Silver purge/clear use boto3 directly; keep unit tests offline."""
+    with (
+        patch("src.silver_transformer._purge_inactive_silver", return_value=0),
+        patch("src.silver_transformer._clear_inactive_silver", return_value=0),
+    ):
+        yield
 
 def _make_bronze_row(job_id, title, company="DataForge", location="Berlin", source="arbeitnow"):
     return {
@@ -193,15 +203,23 @@ def test_scd_missing_job_id_raises():
 
 
 def test_scd_s3_read_error_raises():
-    """A real S3 error raises RuntimeError — not silently treated as first run."""
+    """Unreadable active Silver files must abort — not silently treated as first run."""
     bronze_data = pd.DataFrame([_make_bronze_row("job_001", "Data Engineer")])
+    active_key = "s3://dummy/silver.parquet/is_current=True/part.parquet"
 
-    with patch("src.silver_transformer.wr.s3.read_parquet", side_effect=Exception("S3 AccessDenied")):
+    with (
+        patch("src.silver_transformer.wr.s3.read_parquet", side_effect=Exception("S3 AccessDenied")),
+        patch(
+            "src.silver_transformer.wr.s3.list_objects",
+            side_effect=lambda path: [active_key] if "is_current=True" in path else [],
+        ),
+        patch("src.silver_transformer.wr.s3.to_parquet"),
+    ):
         try:
             process_scd_type_2(bronze_data, "s3://dummy/silver.parquet")
-            assert False, "Should have raised RuntimeError"
-        except RuntimeError as e:
-            assert "Failed to read Silver layer" in str(e)
+            assert False, "Should have raised ValueError"
+        except ValueError as e:
+            assert "SILVER_READ_ANOMALY" in str(e)
 
 
 def test_scd_silver_read_anomaly_blocks_empty_active():
