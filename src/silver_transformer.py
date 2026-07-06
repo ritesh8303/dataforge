@@ -456,7 +456,6 @@ def lambda_handler(event, context):
 
     event = event if isinstance(event, dict) else {}
     force_rebuild = bool(event.get("force_rebuild"))
-    history_days = int(event.get("history_days", BRONZE_HISTORY_DAYS))
 
     lock_held = False
     try:
