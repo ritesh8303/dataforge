@@ -21,6 +21,95 @@ BRONZE_SOURCE_PREFIXES = (
 # Reserved for future tuning; not used for daily SCD (Bronze snapshot < cumulative Silver).
 MIN_BRONZE_ACTIVE_RATIO = float(os.environ.get("MIN_BRONZE_ACTIVE_RATIO", "0.6"))
 LOCK_TTL_SECONDS = int(os.environ.get("TRANSFORMER_LOCK_TTL_SECONDS", "900"))
+INACTIVE_RETENTION_DAYS = int(os.environ.get("SILVER_INACTIVE_RETENTION_DAYS", "30"))
+BRONZE_HISTORY_DAYS = int(os.environ.get("BRONZE_HISTORY_DAYS", "14"))
+STALE_LOCK_SECONDS = int(os.environ.get("TRANSFORMER_STALE_LOCK_SECONDS", "620"))
+
+
+def _parse_s3_uri(uri: str) -> tuple[str, str]:
+    without_scheme = uri.removeprefix("s3://")
+    bucket, _, key = without_scheme.partition("/")
+    return bucket, key
+
+
+def _list_silver_objects(path: str) -> list[str]:
+    try:
+        return wr.s3.list_objects(path=path) or []
+    except wr.exceptions.NoFilesFound:
+        return []
+    except Exception as exc:
+        print(f"Warning: Failed to list Silver objects at {path}: {exc}")
+        return []
+
+
+def _delete_s3_keys(bucket: str, keys: list[str]) -> int:
+    if not keys:
+        return 0
+    s3 = boto3.client("s3")
+    deleted = 0
+    for i in range(0, len(keys), 1000):
+        batch = keys[i : i + 1000]
+        resp = s3.delete_objects(
+            Bucket=bucket,
+            Delete={"Objects": [{"Key": key} for key in batch], "Quiet": True},
+        )
+        deleted += len(resp.get("Deleted", []))
+    return deleted
+
+
+def _inactive_prefix(silver_path: str) -> tuple[str, str]:
+    bucket, key_prefix = _parse_s3_uri(silver_path)
+    return bucket, f"{key_prefix}is_current=False/"
+
+
+def _purge_inactive_silver(silver_path: str, max_age_days: int = INACTIVE_RETENTION_DAYS) -> int:
+    """Delete inactive SCD history files older than max_age_days to limit S3 LIST/GET costs."""
+    bucket, prefix = _inactive_prefix(silver_path)
+    s3 = boto3.client("s3")
+    cutoff = datetime.now(timezone.utc).timestamp() - (max_age_days * 86400)
+    stale_keys: list[str] = []
+    paginator = s3.get_paginator("list_objects_v2")
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+        for obj in page.get("Contents", []):
+            if obj["LastModified"].timestamp() < cutoff:
+                stale_keys.append(obj["Key"])
+    deleted = _delete_s3_keys(bucket, stale_keys)
+    if deleted:
+        print(f"Purged {deleted} inactive Silver files older than {max_age_days} days.")
+    return deleted
+
+
+def _clear_inactive_silver(silver_path: str) -> int:
+    """Remove all inactive Silver partition files (used before force rebuild)."""
+    bucket, prefix = _inactive_prefix(silver_path)
+    s3 = boto3.client("s3")
+    keys: list[str] = []
+    paginator = s3.get_paginator("list_objects_v2")
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+        keys.extend(obj["Key"] for obj in page.get("Contents", []))
+    deleted = _delete_s3_keys(bucket, keys)
+    if deleted:
+        print(f"Cleared {deleted} inactive Silver files before rebuild.")
+    return deleted
+
+
+def _read_silver_partition(objects: list[str], *, is_current: bool) -> tuple[pd.DataFrame, int]:
+    dfs = []
+    rows_read = 0
+    for path in objects:
+        if not path:
+            continue
+        try:
+            df_part = wr.s3.read_parquet(path=path)
+            if not df_part.empty:
+                df_part["is_current"] = is_current
+                dfs.append(df_part)
+                rows_read += len(df_part)
+        except Exception as exc:
+            print(f"Warning: Failed to read Silver file {path}: {exc}")
+    if not dfs:
+        return pd.DataFrame(), 0
+    return pd.concat(dfs, ignore_index=True), rows_read
 
 def slugify(text):
     if pd.isna(text) or not text:
@@ -137,6 +226,30 @@ def load_bronze_for_date(bronze_bucket: str, date_str: str) -> pd.DataFrame:
     return prepare_bronze_df(raw)
 
 
+def load_latest_bronze_snapshot(bronze_bucket: str) -> pd.DataFrame:
+    """Load the newest Bronze partition as the active job universe (for Silver rebuild)."""
+    try:
+        all_bronze_files = wr.s3.list_objects(path=f"s3://{bronze_bucket}/")
+    except Exception as exc:
+        print(f"Error listing Bronze bucket for latest snapshot: {exc}")
+        return pd.DataFrame()
+
+    dates = sorted(
+        {
+            path.split("ingested_at=")[1].split("/")[0]
+            for path in all_bronze_files
+            if "ingested_at=" in path and path.endswith(".parquet")
+        },
+        reverse=True,
+    )
+    for date_str in dates:
+        day_df = load_bronze_for_date(bronze_bucket, date_str)
+        if not day_df.empty:
+            print(f"Latest Bronze snapshot: {date_str} ({len(day_df)} jobs).")
+            return day_df
+    return pd.DataFrame()
+
+
 def load_bronze_history(bronze_bucket: str, days: int = 21) -> pd.DataFrame:
     """Merge Bronze partitions from the last N days, keeping the latest row per job_id."""
     from datetime import timedelta
@@ -193,7 +306,7 @@ def _validate_silver_read(
             f"0 active rows were read while {inactive_rows} inactive rows exist. "
             f"Another transformer may be writing Silver. Aborting."
         )
-    if active_rows == 0 and inactive_rows > 1000:
+    if active_rows == 0 and inactive_files > 0 and inactive_rows > 1000:
         raise ValueError(
             f"SILVER_READ_ANOMALY: Silver has {inactive_rows} historical records but "
             f"0 active records. Refusing to overwrite active Silver."
@@ -267,10 +380,16 @@ def _acquire_transformer_lock(silver_path: str) -> None:
             modified = modified.replace(tzinfo=timezone.utc)
         age = (datetime.now(timezone.utc) - modified).total_seconds()
         if age < LOCK_TTL_SECONDS:
-            raise ValueError(
-                f"PIPELINE_LOCK: Another transformer run holds the lock ({int(age)}s old). "
-                f"Skipping to prevent concurrent Silver writes."
-            )
+            if age >= STALE_LOCK_SECONDS:
+                print(
+                    f"Breaking stale transformer lock ({int(age)}s old) "
+                    f"from a previous crashed run."
+                )
+            else:
+                raise ValueError(
+                    f"PIPELINE_LOCK: Another transformer run holds the lock ({int(age)}s old). "
+                    f"Skipping to prevent concurrent Silver writes."
+                )
     except ClientError as exc:
         code = exc.response.get("Error", {}).get("Code", "")
         if code not in {"404", "NoSuchKey", "NotFound", "403"}:
@@ -297,15 +416,46 @@ def lambda_handler(event, context):
     if not bronze_bucket:
         raise ValueError("BRONZE_BUCKET environment variable is not set.")
 
+    event = event if isinstance(event, dict) else {}
+    force_rebuild = bool(event.get("force_rebuild"))
+    history_days = int(event.get("history_days", BRONZE_HISTORY_DAYS))
+
     lock_held = False
     try:
         _acquire_transformer_lock(silver_path)
         lock_held = True
 
+        if force_rebuild:
+            print("Force rebuild requested — loading latest Bronze snapshot.")
+            bronze_df = load_latest_bronze_snapshot(bronze_bucket)
+            if bronze_df.empty:
+                bronze_df = load_bronze_history(bronze_bucket, history_days)
+            if bronze_df.empty:
+                print("Force rebuild: no Bronze data found. Exiting.")
+                return {"statusCode": 200, "body": "No Bronze data available for rebuild."}
+            process_scd_type_2(bronze_df, silver_path, gold_bucket, force_rebuild=True)
+            return {"statusCode": 200, "body": "Silver force rebuild completed."}
+
         today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        if isinstance(event, dict) and event.get("date"):
+        if event.get("date"):
             today_str = event["date"]
             print(f"Manual date override detected: running for date {today_str}")
+
+        active_objects = _list_silver_objects(f"{silver_path}is_current=True/")
+        inactive_objects = _list_silver_objects(f"{silver_path}is_current=False/")
+        if not active_objects and inactive_objects:
+            print(
+                f"Auto-healing Silver: 0 active files, {len(inactive_objects)} inactive — "
+                "rebuilding from latest Bronze snapshot."
+            )
+            bronze_df = load_latest_bronze_snapshot(bronze_bucket)
+            if bronze_df.empty:
+                bronze_df = load_bronze_for_date(bronze_bucket, today_str)
+            if bronze_df.empty:
+                print(f"No Bronze data available for auto-heal on {today_str}. Exiting.")
+                return {"statusCode": 200, "body": f"No Bronze data for auto-heal on {today_str}."}
+            process_scd_type_2(bronze_df, silver_path, gold_bucket, force_rebuild=True)
+            return {"statusCode": 200, "body": "Silver auto-heal rebuild completed."}
 
         bronze_df = load_bronze_for_date(bronze_bucket, today_str)
         if bronze_df.empty:
@@ -364,7 +514,12 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None, *, force_rebuil
     bronze_df["scd_end_date"] = pd.to_datetime(pd.Series(pd.NaT, index=bronze_df.index), utc=True)
     bronze_df["is_current"] = True
 
-    # 2. Load existing Silver data
+    if force_rebuild:
+        _clear_inactive_silver(silver_path)
+    else:
+        _purge_inactive_silver(silver_path)
+
+    # 2. Load existing Silver data (active partition only — inactive is append-only history)
     silver_exists = False
     silver_df = pd.DataFrame()
     active_objects: list = []
@@ -374,42 +529,11 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None, *, force_rebuil
         active_path = f"{silver_path}is_current=True/"
         inactive_path = f"{silver_path}is_current=False/"
 
-        dfs = []
-        active_objects = []
-        active_rows_read = 0
+        active_objects = _list_silver_objects(active_path)
+        inactive_objects = [] if force_rebuild else _list_silver_objects(inactive_path)
+
+        silver_df, active_rows_read = _read_silver_partition(active_objects, is_current=True)
         inactive_rows_read = 0
-        try:
-            active_objects = wr.s3.list_objects(path=active_path)
-        except wr.exceptions.NoFilesFound:
-            pass
-
-        inactive_objects = []
-        try:
-            inactive_objects = wr.s3.list_objects(path=inactive_path)
-        except wr.exceptions.NoFilesFound:
-            pass
-
-        for f in active_objects:
-            if f:
-                try:
-                    df_part = wr.s3.read_parquet(path=f)
-                    if not df_part.empty:
-                        df_part["is_current"] = True
-                        dfs.append(df_part)
-                        active_rows_read += len(df_part)
-                except Exception as ex:
-                    print(f"Warning: Failed to read active file {f}: {ex}")
-
-        for f in inactive_objects:
-            if f:
-                try:
-                    df_part = wr.s3.read_parquet(path=f)
-                    if not df_part.empty:
-                        df_part["is_current"] = False
-                        dfs.append(df_part)
-                        inactive_rows_read += len(df_part)
-                except Exception as ex:
-                    print(f"Warning: Failed to read inactive file {f}: {ex}")
 
         if not force_rebuild:
             _validate_silver_read(
@@ -419,11 +543,10 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None, *, force_rebuil
                 len(inactive_objects),
             )
 
-        if dfs:
-            silver_df = pd.concat(dfs, ignore_index=True)
+        if not silver_df.empty:
             silver_df["is_current"] = silver_df["is_current"].astype(bool)
             silver_exists = True
-            print(f"Loaded {len(silver_df)} existing Silver records.")
+            print(f"Loaded {len(silver_df)} active Silver records.")
             if not silver_df.empty:
                 for date_col in ["scd_start_date", "scd_end_date"]:
                     if date_col in silver_df.columns:
@@ -475,11 +598,27 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None, *, force_rebuil
             mode="overwrite",
         )
         print(f"Initial load complete. Wrote {len(bronze_df)} records to Silver.")
+        if gold_bucket:
+            today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            stats = pd.DataFrame(
+                [
+                    {
+                        "date": today,
+                        "new_jobs": len(bronze_df),
+                        "updated_jobs": 0,
+                        "unchanged_jobs": 0,
+                        "total_silver": len(bronze_df),
+                        "run_at": datetime.now(timezone.utc).isoformat(),
+                    }
+                ]
+            )
+            wr.s3.to_csv(stats, path=f"s3://{gold_bucket}/pipeline_stats.csv", index=False)
+            print(f"Pipeline stats written to Gold: new={len(bronze_df)}, updated=0")
         return
 
-    # 3. Separate current from historical Silver records
+    # 3. Separate current from historical Silver records (inactive history not loaded on normal runs)
     current_silver = silver_df[silver_df["is_current"]].copy()
-    historical_records = silver_df[~silver_df["is_current"]].copy()
+    historical_records = pd.DataFrame()
     current_silver_count = len(current_silver)
 
     # 4. Detect changes by merging on job_id

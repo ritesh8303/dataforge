@@ -50,7 +50,7 @@ resource "aws_lambda_function" "this" {
 
 resource "aws_cloudwatch_log_group" "this" {
   name              = "/aws/lambda/${var.function_name}"
-  retention_in_days = 7
+  retention_in_days = 3
 }
 
 # CloudWatch alarm — triggers SNS when Lambda errors > 0

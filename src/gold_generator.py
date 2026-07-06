@@ -621,7 +621,12 @@ def lambda_handler(event, context):
         wr.s3.to_csv(description_insights, path=f"{gold_base}/description_insights.csv", index=False)
         wr.s3.to_csv(data_quality_report, path=f"{gold_base}/data_quality_report.csv", index=False)
 
-        msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 12"
+        from metrics_payload import upload_metrics_json
+
+        upload_metrics_json(gold_bucket)
+        print("Metrics snapshot written to metrics.json")
+
+        msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 13"
         print(msg)
         _trigger_github_redeploy(len(current))
         return {"statusCode": 200, "body": json.dumps({"message": msg})}

@@ -4,8 +4,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '30 8 * * *'    # ~30 min after morning ingest (08:00 UTC)
-    - cron: '0 21 * * *'     # ~30 min after evening ingest (22:00 Europe/Berlin ≈ 20:00 UTC)
+    - cron: '0 21 * * *'     # ~30 min after evening ingest (20:30 UTC)
   repository_dispatch:
     types: [gold_data_updated]
   workflow_dispatch:

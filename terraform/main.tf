@@ -53,18 +53,7 @@ resource "aws_ssm_parameter" "ba_api_keys" {
 
 # --- 3. COMPUTE LAYER ---
 
-# Evening pipeline: 22:00 German time ≈ 20:00 UTC (CEST) / 21:00 CET in winter.
-locals {
-  evening_ingest_schedule = {
-    expression  = "cron(0 20 * * ? *)"
-    name_suffix = "evening"
-  }
-  evening_transformer_schedule = {
-    expression  = "cron(30 20 * * ? *)"
-    name_suffix = "evening"
-  }
-}
-
+# Single daily pipeline run at 20:00 UTC (~22:00 CEST) to minimize Lambda + S3 costs.
 # Arbeitnow Ingestor
 module "ingestion_lambda" {
   source           = "./modules/lambda"
@@ -82,7 +71,6 @@ module "ingestion_lambda" {
   }
   bronze_bucket_arn      = module.s3_bronze.arn
   enable_schedule        = true
-  extra_schedule_rules   = [local.evening_ingest_schedule]
   alert_email            = var.alert_email
 }
 
@@ -102,7 +90,6 @@ module "ba_ingestor" {
   memory_size          = 512
   timeout              = 300
   enable_schedule      = true
-  extra_schedule_rules = [local.evening_ingest_schedule]
   alert_email          = var.alert_email
 }
 
@@ -125,7 +112,6 @@ module "company_ingestor" {
   }
   bronze_bucket_arn      = module.s3_bronze.arn
   enable_schedule        = true
-  extra_schedule_rules   = [local.evening_ingest_schedule]
   enable_alerts          = true
   alert_email            = var.alert_email
 }
@@ -146,7 +132,6 @@ module "berlin_startups_ingestor" {
   }
   bronze_bucket_arn      = module.s3_bronze.arn
   enable_schedule        = true
-  extra_schedule_rules   = [local.evening_ingest_schedule]
   alert_email            = var.alert_email
 }
 
@@ -159,8 +144,8 @@ module "transformer_lambda" {
   lambda_role_arn  = module.iam.lambda_role_arn
   lambda_role_name = module.iam.lambda_role_name
   source_dir       = "../src"
-  memory_size      = 512
-  timeout          = 300
+  memory_size      = 2048
+  timeout          = 600
   env_vars = {
     SILVER_PATH   = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
     GOLD_BUCKET   = module.s3_gold.bucket_id
@@ -169,8 +154,7 @@ module "transformer_lambda" {
   layers                 = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   bronze_bucket_arn      = module.s3_bronze.arn
   enable_schedule        = true
-  schedule_expression    = "cron(30 7,12,16 * * ? *)"
-  extra_schedule_rules   = [local.evening_transformer_schedule]
+  schedule_expression    = "cron(30 20 * * ? *)"
   enable_alerts          = true
   alert_email            = var.alert_email
 }

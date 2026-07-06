@@ -10,7 +10,7 @@ resource "aws_s3_bucket_versioning" "this" {
   }
 }
 
-# Auto-delete objects older than 30 days to stay within free tier 5GB
+# Auto-delete objects older than 14 days to stay within free tier and limit storage costs
 resource "aws_s3_bucket_lifecycle_configuration" "this" {
   bucket = aws_s3_bucket.this.id
   rule {
@@ -18,7 +18,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "this" {
     status = "Enabled"
     filter {}
     expiration {
-      days = 30
+      days = 14
     }
   }
 }

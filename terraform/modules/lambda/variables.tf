@@ -43,7 +43,7 @@ variable "alert_email" {
 
 variable "schedule_expression" {
   type    = string
-  default = "cron(0 7,12,16 * * ? *)"
+  default = "cron(0 20 * * ? *)"
 }
 
 variable "extra_schedule_rules" {
