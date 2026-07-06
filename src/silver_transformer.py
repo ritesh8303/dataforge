@@ -180,7 +180,7 @@ def load_bronze_parquet_paths(paths: list[str]) -> pd.DataFrame:
     return pd.concat(dfs, ignore_index=True)
 
 
-def prepare_bronze_df(bronze_df: pd.DataFrame) -> pd.DataFrame:
+def _normalize_bronze_before_dedup(bronze_df: pd.DataFrame) -> pd.DataFrame:
     if bronze_df.empty:
         return bronze_df
 
@@ -215,24 +215,62 @@ def prepare_bronze_df(bronze_df: pd.DataFrame) -> pd.DataFrame:
         bronze_df = bronze_df[bronze_df.apply(row_is_in_europe, axis=1)].copy()
         print(f"Europe safety gate filtering: kept {len(bronze_df)} out of {initial_len} jobs.")
 
-    return deduplicate_bronze(bronze_df)
+    return bronze_df
 
 
-def load_bronze_for_date(bronze_bucket: str, date_str: str) -> pd.DataFrame:
+def _ensure_semantic_job_ids(df: pd.DataFrame) -> pd.DataFrame:
+    if df.empty:
+        return df
+    df = df.copy()
+    df["semantic_key"] = df.apply(
+        lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}",
+        axis=1,
+    )
+    df["job_id"] = df["semantic_key"]
+    return df.drop(columns=["semantic_key"], errors="ignore")
+
+
+def _source_pull_index_from_normalized(normalized: pd.DataFrame) -> tuple[dict[str, set[str]], set[str]]:
+    if normalized.empty or "source" not in normalized.columns:
+        return {}, set()
+    ids_df = _ensure_semantic_job_ids(normalized)
+    sources_in_pull = set(ids_df["source"].astype(str))
+    index = {
+        str(source): set(group["job_id"].astype(str))
+        for source, group in ids_df.groupby("source")
+    }
+    return index, sources_in_pull
+
+
+def prepare_bronze_df(bronze_df: pd.DataFrame) -> pd.DataFrame:
+    normalized = _normalize_bronze_before_dedup(bronze_df)
+    if normalized.empty:
+        return normalized
+    return deduplicate_bronze(_ensure_semantic_job_ids(normalized))
+
+
+def load_bronze_for_date(bronze_bucket: str, date_str: str) -> tuple[pd.DataFrame, dict[str, set[str]], set[str]]:
     print(f"Searching for Bronze files matching partition ingested_at={date_str}...")
     paths = _bronze_paths_for_date(bronze_bucket, date_str)
     print(f"Found {len(paths)} Bronze files for date {date_str}: {paths}")
     raw = load_bronze_parquet_paths(paths)
-    return prepare_bronze_df(raw)
+    normalized = _normalize_bronze_before_dedup(raw)
+    source_pull_index, sources_in_pull = _source_pull_index_from_normalized(normalized)
+    if normalized.empty:
+        return normalized, source_pull_index, sources_in_pull
+    bronze_df = deduplicate_bronze(_ensure_semantic_job_ids(normalized))
+    return bronze_df, source_pull_index, sources_in_pull
 
 
-def load_latest_bronze_snapshot(bronze_bucket: str) -> pd.DataFrame:
+def load_latest_bronze_snapshot(
+    bronze_bucket: str,
+) -> tuple[pd.DataFrame, dict[str, set[str]], set[str]]:
     """Load the newest Bronze partition as the active job universe (for Silver rebuild)."""
     try:
         all_bronze_files = wr.s3.list_objects(path=f"s3://{bronze_bucket}/")
     except Exception as exc:
         print(f"Error listing Bronze bucket for latest snapshot: {exc}")
-        return pd.DataFrame()
+        return pd.DataFrame(), {}, set()
 
     dates = sorted(
         {
@@ -243,11 +281,11 @@ def load_latest_bronze_snapshot(bronze_bucket: str) -> pd.DataFrame:
         reverse=True,
     )
     for date_str in dates:
-        day_df = load_bronze_for_date(bronze_bucket, date_str)
-        if not day_df.empty:
-            print(f"Latest Bronze snapshot: {date_str} ({len(day_df)} jobs).")
-            return day_df
-    return pd.DataFrame()
+        bronze_df, source_index, sources_in_pull = load_bronze_for_date(bronze_bucket, date_str)
+        if not bronze_df.empty:
+            print(f"Latest Bronze snapshot: {date_str} ({len(bronze_df)} jobs).")
+            return bronze_df, source_index, sources_in_pull
+    return pd.DataFrame(), {}, set()
 
 
 def load_bronze_history(bronze_bucket: str, days: int = 21) -> pd.DataFrame:
@@ -258,7 +296,7 @@ def load_bronze_history(bronze_bucket: str, days: int = 21) -> pd.DataFrame:
     frames = []
     for offset in range(days):
         date_str = (today - timedelta(days=offset)).strftime("%Y-%m-%d")
-        day_df = load_bronze_for_date(bronze_bucket, date_str)
+        day_df, _, _ = load_bronze_for_date(bronze_bucket, date_str)
         if not day_df.empty:
             frames.append(day_df)
 
@@ -427,13 +465,22 @@ def lambda_handler(event, context):
 
         if force_rebuild:
             print("Force rebuild requested — loading latest Bronze snapshot.")
-            bronze_df = load_latest_bronze_snapshot(bronze_bucket)
+            bronze_df, source_pull_index, sources_in_pull = load_latest_bronze_snapshot(bronze_bucket)
             if bronze_df.empty:
-                bronze_df = load_bronze_history(bronze_bucket, history_days)
+                bronze_df, source_pull_index, sources_in_pull = load_bronze_for_date(
+                    bronze_bucket, datetime.now(timezone.utc).strftime("%Y-%m-%d")
+                )
             if bronze_df.empty:
                 print("Force rebuild: no Bronze data found. Exiting.")
                 return {"statusCode": 200, "body": "No Bronze data available for rebuild."}
-            process_scd_type_2(bronze_df, silver_path, gold_bucket, force_rebuild=True)
+            process_scd_type_2(
+                bronze_df,
+                silver_path,
+                gold_bucket,
+                force_rebuild=True,
+                source_pull_index=source_pull_index,
+                sources_in_pull=sources_in_pull,
+            )
             return {"statusCode": 200, "body": "Silver force rebuild completed."}
 
         today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -448,21 +495,36 @@ def lambda_handler(event, context):
                 f"Auto-healing Silver: 0 active files, {len(inactive_objects)} inactive — "
                 "rebuilding from latest Bronze snapshot."
             )
-            bronze_df = load_latest_bronze_snapshot(bronze_bucket)
+            bronze_df, source_pull_index, sources_in_pull = load_latest_bronze_snapshot(bronze_bucket)
             if bronze_df.empty:
-                bronze_df = load_bronze_for_date(bronze_bucket, today_str)
+                bronze_df, source_pull_index, sources_in_pull = load_bronze_for_date(
+                    bronze_bucket, today_str
+                )
             if bronze_df.empty:
                 print(f"No Bronze data available for auto-heal on {today_str}. Exiting.")
                 return {"statusCode": 200, "body": f"No Bronze data for auto-heal on {today_str}."}
-            process_scd_type_2(bronze_df, silver_path, gold_bucket, force_rebuild=True)
+            process_scd_type_2(
+                bronze_df,
+                silver_path,
+                gold_bucket,
+                force_rebuild=True,
+                source_pull_index=source_pull_index,
+                sources_in_pull=sources_in_pull,
+            )
             return {"statusCode": 200, "body": "Silver auto-heal rebuild completed."}
 
-        bronze_df = load_bronze_for_date(bronze_bucket, today_str)
+        bronze_df, source_pull_index, sources_in_pull = load_bronze_for_date(bronze_bucket, today_str)
         if bronze_df.empty:
             print(f"No new Bronze files found for date {today_str}. Exiting.")
             return {"statusCode": 200, "body": f"No Bronze files found for date {today_str}."}
 
-        process_scd_type_2(bronze_df, silver_path, gold_bucket)
+        process_scd_type_2(
+            bronze_df,
+            silver_path,
+            gold_bucket,
+            source_pull_index=source_pull_index,
+            sources_in_pull=sources_in_pull,
+        )
         return {"statusCode": 200, "body": "Silver transformer execution completed."}
     finally:
         if lock_held:
@@ -481,7 +543,46 @@ def generate_hash(df, cols):
     )
 
 
-def process_scd_type_2(bronze_df, silver_path, gold_bucket=None, *, force_rebuild: bool = False):
+def _expire_jobs_missing_from_source_pull(
+    current_silver: pd.DataFrame,
+    source_pull_index: dict[str, set[str]],
+    sources_in_pull: set[str],
+    now: datetime,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Expire active jobs whose source was ingested today but no longer lists them."""
+    if current_silver.empty or not sources_in_pull:
+        return current_silver, pd.DataFrame()
+
+    keep_rows = []
+    expired_rows = []
+    for _, row in current_silver.iterrows():
+        source = str(row.get("source", ""))
+        if source not in sources_in_pull:
+            keep_rows.append(row)
+            continue
+        job_id = str(row["job_id"])
+        if job_id in source_pull_index.get(source, set()):
+            keep_rows.append(row)
+            continue
+        expired = row.copy()
+        expired["is_current"] = False
+        expired["scd_end_date"] = now
+        expired_rows.append(expired)
+
+    still_active = pd.DataFrame(keep_rows) if keep_rows else pd.DataFrame(columns=current_silver.columns)
+    source_expired = pd.DataFrame(expired_rows) if expired_rows else pd.DataFrame(columns=current_silver.columns)
+    return still_active, source_expired
+
+
+def process_scd_type_2(
+    bronze_df,
+    silver_path,
+    gold_bucket=None,
+    *,
+    force_rebuild: bool = False,
+    source_pull_index: dict[str, set[str]] | None = None,
+    sources_in_pull: set[str] | None = None,
+):
     """
     Implements SCD Type 2 logic:
     1. Identifies new records.
@@ -621,6 +722,26 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None, *, force_rebuil
     historical_records = pd.DataFrame()
     current_silver_count = len(current_silver)
 
+    if source_pull_index is None or sources_in_pull is None:
+        if "source" in bronze_df.columns and not bronze_df.empty:
+            source_pull_index = {
+                str(source): set(group["job_id"].astype(str))
+                for source, group in bronze_df.groupby("source")
+            }
+            sources_in_pull = set(source_pull_index.keys())
+        else:
+            source_pull_index, sources_in_pull = {}, set()
+
+    current_silver, source_expired = _expire_jobs_missing_from_source_pull(
+        current_silver, source_pull_index, sources_in_pull, now
+    )
+    source_expired_ids = set(source_expired["job_id"].astype(str)) if not source_expired.empty else set()
+    if source_expired_ids:
+        print(
+            f"Source-pull expiration: {len(source_expired_ids)} jobs removed from active Silver "
+            f"(no longer returned by their source in today's ingest)."
+        )
+
     # 4. Detect changes by merging on job_id
     merged = pd.merge(
         current_silver[["job_id", "hash_key"]],
@@ -641,6 +762,8 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None, *, force_rebuil
     expired_records = current_silver[current_silver["job_id"].isin(changed_ids)].copy()
     expired_records["is_current"] = False
     expired_records["scd_end_date"] = now
+    if not source_expired.empty:
+        expired_records = pd.concat([expired_records, source_expired], ignore_index=True)
 
     # Case B — new job_id not in Silver at all → insert
     new_mask = merged["hash_key_old"].isna()
@@ -650,7 +773,7 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None, *, force_rebuil
     insert_ids = set(new_ids + changed_ids)
     new_inserts = bronze_df[bronze_df["job_id"].isin(insert_ids)].copy()
 
-    # 5. Unchanged current records — keep as-is
+    # 5. Unchanged current records — keep as-is (excluding hash-updated and source-expired)
     unchanged_silver = current_silver[~current_silver["job_id"].isin(changed_ids)].copy()
 
     _validate_scd_result(
@@ -695,6 +818,7 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None, *, force_rebuil
     print(
         f"SCD Type 2 complete. "
         f"New: {len(new_ids)}, Updated: {len(changed_ids)}, "
+        f"Expired (missing from source): {len(source_expired_ids)}, "
         f"Unchanged: {len(unchanged_silver)}, "
         f"Total Silver records (reconstructed): {len(final_df)}"
     )
@@ -708,6 +832,7 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None, *, force_rebuil
                     "date": today,
                     "new_jobs": len(new_ids),
                     "updated_jobs": len(changed_ids),
+                    "expired_jobs": len(source_expired_ids),
                     "unchanged_jobs": len(unchanged_silver),
                     "total_silver": len(final_df),
                     "run_at": datetime.now(timezone.utc).isoformat(),
@@ -715,4 +840,7 @@ def process_scd_type_2(bronze_df, silver_path, gold_bucket=None, *, force_rebuil
             ]
         )
         wr.s3.to_csv(stats, path=f"s3://{gold_bucket}/pipeline_stats.csv", index=False)
-        print(f"Pipeline stats written to Gold: new={len(new_ids)}, updated={len(changed_ids)}")
+        print(
+            f"Pipeline stats written to Gold: new={len(new_ids)}, "
+            f"updated={len(changed_ids)}, expired={len(source_expired_ids)}"
+        )

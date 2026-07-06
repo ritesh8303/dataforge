@@ -73,6 +73,7 @@ def build_metrics_payload(bucket: str) -> dict:
     pipeline_stats = {
         "new_jobs": int(stats.get("new_jobs", 0)),
         "updated_jobs": int(stats.get("updated_jobs", 0)),
+        "expired_jobs": int(stats.get("expired_jobs", 0)),
         "run_at": stats.get("run_at", ""),
     }
 

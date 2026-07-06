@@ -264,3 +264,47 @@ def test_bronze_vs_silver_micro_batch_guard():
 
     # Daily Bronze is smaller than cumulative Silver — must not abort.
     _validate_bronze_vs_silver(9976, 21064)
+
+
+def test_scd_source_pull_expiration():
+    """Active jobs missing from their source's daily Bronze pull are expired."""
+    existing_row = _make_bronze_row("job_001", "Data Engineer", source="arbeitnow")
+    existing_silver = pd.DataFrame([existing_row])
+    existing_silver["hash_key"] = "abc123"
+    existing_silver["scd_start_date"] = pd.Timestamp("2025-01-14", tz="UTC")
+    existing_silver["scd_end_date"] = pd.NaT
+    existing_silver["is_current"] = True
+    existing_silver["job_id"] = "sem_dataforge_data-engineer_berlin"
+
+    # Today's pull has arbeitnow ingested but this job is gone from the source feed.
+    empty_bronze = pd.DataFrame(
+        columns=["job_id", "title", "company", "location", "source", "url", "ingested_at"]
+    )
+    source_pull_index = {"arbeitnow": set()}
+    sources_in_pull = {"arbeitnow"}
+
+    with (
+        patch("src.silver_transformer.wr.s3.read_parquet", return_value=existing_silver),
+        patch(
+            "src.silver_transformer.wr.s3.list_objects",
+            side_effect=lambda path: ["file"] if "is_current=True" in path else [],
+        ),
+        patch("src.silver_transformer.wr.s3.to_parquet") as mock_write,
+    ):
+        process_scd_type_2(
+            empty_bronze,
+            "s3://dummy/silver.parquet/",
+            source_pull_index=source_pull_index,
+            sources_in_pull=sources_in_pull,
+        )
+
+        active_writes = [
+            call for call in mock_write.call_args_list if "is_current=True" in str(call)
+        ]
+        inactive_writes = [
+            call for call in mock_write.call_args_list if "is_current=False" in str(call)
+        ]
+        assert active_writes, "Expected active partition write"
+        assert inactive_writes, "Expected inactive partition write for expired job"
+        active_df = active_writes[-1][1].get("df") if "df" in active_writes[-1][1] else active_writes[-1][0][0]
+        assert len(active_df) == 0
