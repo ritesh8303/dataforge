@@ -634,6 +634,8 @@ def process_scd_type_2(
 
         silver_df, active_rows_read = _read_silver_partition(active_objects, is_current=True)
         inactive_rows_read = 0
+        if not force_rebuild and inactive_objects:
+            _, inactive_rows_read = _read_silver_partition(inactive_objects, is_current=False)
 
         if not force_rebuild:
             _validate_silver_read(
