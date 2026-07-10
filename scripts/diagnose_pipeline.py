@@ -1,6 +1,4 @@
 """Diagnose pipeline state: Bronze partitions, Gold stats, Lambda logs."""
-import csv
-import io
 import json
 from datetime import date, timedelta
 
