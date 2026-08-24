@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "this" {
-  bucket = var.bucket_name
-  force_destroy = true
+  bucket        = var.bucket_name
+  force_destroy = var.force_destroy
 }
 
 resource "aws_s3_bucket_versioning" "this" {
@@ -10,15 +10,17 @@ resource "aws_s3_bucket_versioning" "this" {
   }
 }
 
-# Auto-delete objects older than 14 days to stay within free tier and limit storage costs
+# Optional expiry: only raw layers should auto-delete. Buckets holding SCD
+# history must NOT expire objects, or the lifecycle silently erases history.
 resource "aws_s3_bucket_lifecycle_configuration" "this" {
+  count  = var.expiration_days == null ? 0 : 1
   bucket = aws_s3_bucket.this.id
   rule {
     id     = "expire-old-objects"
     status = "Enabled"
     filter {}
     expiration {
-      days = 14
+      days = var.expiration_days
     }
   }
 }
@@ -43,4 +45,16 @@ resource "aws_s3_bucket_public_access_block" "this" {
 variable "bucket_name" {
   description = "The name of the bucket"
   type        = string
+}
+
+variable "force_destroy" {
+  description = "Allow terraform destroy to delete a non-empty bucket. Keep false for data buckets."
+  type        = bool
+  default     = false
+}
+
+variable "expiration_days" {
+  description = "Days after which objects expire. null disables the lifecycle rule entirely."
+  type        = number
+  default     = null
 }

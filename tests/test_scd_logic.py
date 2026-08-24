@@ -57,6 +57,8 @@ def test_scd_first_run():
                 df["is_current"] = True
             elif "is_current=False" in path:
                 df["is_current"] = False
+            else:
+                continue  # skip non-partition writes (gold trigger marker, stats)
             dfs.append(df)
         result_df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
@@ -94,6 +96,8 @@ def test_scd_unchanged_record():
                 df["is_current"] = True
             elif "is_current=False" in path:
                 df["is_current"] = False
+            else:
+                continue  # skip non-partition writes (gold trigger marker, stats)
             dfs.append(df)
         result_df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
@@ -103,9 +107,13 @@ def test_scd_unchanged_record():
 
 
 def test_scd_updated_record():
-    """Job source changes — old record expired, new version inserted under same semantic key."""
-    old_bronze = pd.DataFrame([_make_bronze_row("job_001", "Data Engineer", source="arbeitnow")])
-    new_bronze = pd.DataFrame([_make_bronze_row("job_001", "Data Engineer", source="ba_api")])
+    """Job attributes change (job_types) — old record expired, new version inserted."""
+    old_bronze = pd.DataFrame(
+        [{**_make_bronze_row("job_001", "Data Engineer"), "job_types": "full-time"}]
+    )
+    new_bronze = pd.DataFrame(
+        [{**_make_bronze_row("job_001", "Data Engineer"), "job_types": "part-time"}]
+    )
 
     with (
         patch("src.silver_transformer.wr.s3.read_parquet", side_effect=_NoFilesFound),
@@ -123,6 +131,8 @@ def test_scd_updated_record():
                 df["is_current"] = True
             elif "is_current=False" in path:
                 df["is_current"] = False
+            else:
+                continue  # skip non-partition writes (gold trigger marker, stats)
             dfs.append(df)
         existing_silver = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
@@ -142,6 +152,8 @@ def test_scd_updated_record():
                 df["is_current"] = True
             elif "is_current=False" in path:
                 df["is_current"] = False
+            else:
+                continue  # skip non-partition writes (gold trigger marker, stats)
             dfs.append(df)
         result_df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
@@ -150,9 +162,103 @@ def test_scd_updated_record():
         current = result_df[result_df["is_current"]]
         assert len(expired) == 1
         assert len(current) == 1
-        assert expired.iloc[0]["source"] == "arbeitnow"
-        assert current.iloc[0]["source"] == "ba_api"
+        assert expired.iloc[0]["job_types"] == "full-time"
+        assert current.iloc[0]["job_types"] == "part-time"
         assert pd.notna(expired.iloc[0]["scd_end_date"])
+
+
+def test_scd_source_flip_is_not_an_update():
+    """The same semantic job re-appearing under a different source must not churn history."""
+    old_bronze = pd.DataFrame([_make_bronze_row("job_001", "Data Engineer", source="arbeitnow")])
+    new_bronze = pd.DataFrame([_make_bronze_row("job_001", "Data Engineer", source="ba_api")])
+
+    with (
+        patch("src.silver_transformer.wr.s3.read_parquet", side_effect=_NoFilesFound),
+        patch("src.silver_transformer.wr.s3.list_objects", return_value=[]),
+        patch("src.silver_transformer.wr.s3.to_parquet") as mock_write,
+    ):
+        process_scd_type_2(old_bronze, "s3://dummy/silver.parquet")
+
+        dfs = []
+        for call in mock_write.call_args_list:
+            df = call[1].get("df") if "df" in call[1] else call[0][0]
+            path = call[1].get("path") if "path" in call[1] else call[0][1]
+            df = df.copy()
+            if "is_current=True" in path:
+                df["is_current"] = True
+            elif "is_current=False" in path:
+                df["is_current"] = False
+            else:
+                continue  # skip non-partition writes (gold trigger marker, stats)
+            dfs.append(df)
+        existing_silver = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
+
+    with (
+        patch("src.silver_transformer.wr.s3.read_parquet", return_value=existing_silver),
+        patch("src.silver_transformer.wr.s3.list_objects", side_effect=lambda path: ["file"] if "is_current=True" in path else []),
+        patch("src.silver_transformer.wr.s3.to_parquet") as mock_write,
+    ):
+        process_scd_type_2(new_bronze, "s3://dummy/silver.parquet")
+
+        dfs = []
+        for call in mock_write.call_args_list:
+            df = call[1].get("df") if "df" in call[1] else call[0][0]
+            path = call[1].get("path") if "path" in call[1] else call[0][1]
+            df = df.copy()
+            if "is_current=True" in path:
+                df["is_current"] = True
+            elif "is_current=False" in path:
+                df["is_current"] = False
+            else:
+                continue  # skip non-partition writes (gold trigger marker, stats)
+            dfs.append(df)
+        result_df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
+
+        # No expired version, no new version — the original record survives untouched.
+        assert len(result_df) == 1
+        assert result_df["is_current"].all()
+        assert result_df.iloc[0]["source"] == "arbeitnow"
+
+
+def test_scd_source_pull_grace_period():
+    """A job missing from today's pull but seen recently stays active (grace window)."""
+    existing_row = _make_bronze_row("job_001", "Data Engineer", source="arbeitnow")
+    existing_silver = pd.DataFrame([existing_row])
+    existing_silver["hash_key"] = "abc123"
+    existing_silver["scd_start_date"] = pd.Timestamp("2025-01-14", tz="UTC")
+    existing_silver["scd_end_date"] = pd.NaT
+    existing_silver["is_current"] = True
+    existing_silver["job_id"] = "sem_dataforge_data-engineer_berlin"
+    # Seen yesterday — within the 2-day grace window.
+    existing_silver["last_seen_at"] = (
+        pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=1)
+    ).isoformat()
+
+    empty_bronze = pd.DataFrame(
+        columns=["job_id", "title", "company", "location", "source", "url", "ingested_at"]
+    )
+
+    with (
+        patch("src.silver_transformer.wr.s3.read_parquet", return_value=existing_silver),
+        patch(
+            "src.silver_transformer.wr.s3.list_objects",
+            side_effect=lambda path: ["file"] if "is_current=True" in path else [],
+        ),
+        patch("src.silver_transformer.wr.s3.to_parquet") as mock_write,
+    ):
+        process_scd_type_2(
+            empty_bronze,
+            "s3://dummy/silver.parquet/",
+            source_pull_index={"arbeitnow": set()},
+            sources_in_pull={"arbeitnow"},
+        )
+
+        active_writes = [
+            call for call in mock_write.call_args_list if "is_current=True" in str(call)
+        ]
+        assert active_writes, "Expected active partition write"
+        active_df = active_writes[-1][1].get("df") if "df" in active_writes[-1][1] else active_writes[-1][0][0]
+        assert len(active_df) == 1, "Job within grace window must stay active"
 
 
 def test_scd_new_job_added():
@@ -182,6 +288,8 @@ def test_scd_new_job_added():
                 df["is_current"] = True
             elif "is_current=False" in path:
                 df["is_current"] = False
+            else:
+                continue  # skip non-partition writes (gold trigger marker, stats)
             dfs.append(df)
         result_df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
 
@@ -275,6 +383,10 @@ def test_scd_source_pull_expiration():
     existing_silver["scd_end_date"] = pd.NaT
     existing_silver["is_current"] = True
     existing_silver["job_id"] = "sem_dataforge_data-engineer_berlin"
+    # Last confirmed by its source well beyond the grace window.
+    existing_silver["last_seen_at"] = (
+        pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=10)
+    ).isoformat()
 
     # Today's pull has arbeitnow ingested but this job is gone from the source feed.
     empty_bronze = pd.DataFrame(

@@ -7,21 +7,21 @@ A serverless Data Lakehouse built on AWS for processing and analyzing German and
 ## Architecture
 
 ```
-EventBridge (4× daily: 07:00 / 12:00 / 16:00 / 20:00 UTC — 20:00 ≈ 22:00 CEST)
+EventBridge (daily at 20:00 UTC ≈ 22:00 CEST)
   ├── dataforge-ingestor        → Arbeitnow API (paginated, ~900 jobs)
-  ├── dataforge-ba-ingestor     → BA Jobsuche API (8 queries, ~5000 jobs)
+  ├── dataforge-ba-ingestor     → BA Jobsuche API (multi-query, ~5000 jobs)
   ├── dataforge-company-ingestor→ Direct ATS career feeds (configurable companies)
   ├── dataforge-berlin-startups-ingestor → Berlin Startup Jobs RSS
-  └── GitHub Action (04:00 + 20:00 UTC) → EURES EU job portal API
+  └── GitHub Action (04:00 + 19:15 UTC) → EURES EU job portal API
             │
             ▼ S3 upload (.parquet)
-      dataforge-bronze-dev-eu-central-1 (Bronze Bucket)
+      dataforge-bronze-dev-eu-central-1 (Bronze Bucket, 14-day expiry)
             │
-            ▼ EventBridge transformer (4× daily: :30 past each ingest hour)
-      dataforge-transformer     → SCD Type 2 → Silver Layer (.parquet)
+            ▼ EventBridge transformer (daily at 20:30 UTC)
+      dataforge-transformer     → SCD Type 2 → Silver Layer (.parquet, history retained)
             │
-            ▼ S3 trigger (ObjectCreated)
-      dataforge-gold-generator  → 12 Gold CSVs (.csv)
+            ▼ S3 trigger (gold_trigger/ completion marker)
+      dataforge-gold-generator  → 12 analytics CSVs + metrics.json
             │
             ▼ S3 upload & GitHub Actions publishing
       GitHub Pages Website      ← Static UI hosted from /docs
@@ -33,7 +33,7 @@ EventBridge (4× daily: 07:00 / 12:00 / 16:00 / 20:00 UTC — 20:00 ≈ 22:00 CE
 ### Layers
 - **Bronze** — Raw Parquet files partitioned by date, one file per source per day.
 - **Silver** — Deduplicated, SCD Type 2 history tracking all job changes, creations, and expirations over time.
-- **Gold** — 12 analytics-ready CSVs refreshed automatically after every Silver update, pushed to S3 and compiled for visualization.
+- **Gold** — 12 analytics-ready CSVs plus a `metrics.json` snapshot, refreshed automatically after every Silver update, pushed to S3 and compiled for visualization.
 
 ### Gold Outputs
 | File | Description |
@@ -54,7 +54,7 @@ EventBridge (4× daily: 07:00 / 12:00 / 16:00 / 20:00 UTC — 20:00 ≈ 22:00 CE
 ## Tech Stack
 - **Infrastructure**: Terraform (IaC) — remote state on S3 + DynamoDB locking
 - **Presentation**: **GitHub Pages** static site hosting (`/docs` directory) consuming serverless REST APIs
-- **Compute**: AWS Lambda (Python 3.11) — 7 functions (4 ingestors, transformer, gold generator, 2 APIs) + EURES via GitHub Actions
+- **Compute**: AWS Lambda (Python 3.11) — 8 functions (4 ingestors, transformer, gold generator, 2 APIs) + EURES via GitHub Actions
 - **API Entry**: AWS API Gateway (HTTP APIs) routing requests to the metrics and jobs search Lambdas
 - **Storage**: AWS S3 — Bronze, Silver, Gold buckets
 - **Data Processing**: Pandas, AWS SDK for Pandas (awswrangler)
@@ -70,20 +70,16 @@ EventBridge (4× daily: 07:00 / 12:00 / 16:00 / 20:00 UTC — 20:00 ≈ 22:00 CE
   Ashby, Workable, SmartRecruiters, Recruitee, Personio XML, Workday CXS,
   Comeet, and Pinpoint.
 - **Berlin Startup Jobs** — RSS feeds (engineering, product, internships)
-- **EURES** — EU job mobility portal API (GitHub Actions at 04:00 and 20:00 UTC).
+- **EURES** — EU job mobility portal API (GitHub Actions at 04:00 and 19:15 UTC; the evening run starts early because GitHub cron can lag, guaranteeing data lands before the 20:30 transformer).
 
-### Pipeline schedule (4 runs per day)
+### Pipeline schedule (1 full run per day, to stay comfortably inside the free tier)
 
 | UTC | Local (CEST) | What runs |
 |-----|--------------|-----------|
-| 07:00 | 09:00 | All ingestors |
-| 07:30 | 09:30 | Silver transformer → Gold (S3 trigger) |
-| 12:00 | 14:00 | All ingestors |
-| 12:30 | 14:30 | Silver transformer → Gold |
-| 16:00 | 18:00 | All ingestors |
-| 16:30 | 18:30 | Silver transformer → Gold |
-| 20:00 | **22:00** | All ingestors + EURES (GitHub) |
-| 20:30 | 22:30 | Silver transformer → Gold |
+| 04:00 | 06:00 | EURES ingest (GitHub Actions) |
+| 19:15 | 21:15 | EURES ingest (GitHub Actions, early margin for cron lag) |
+| 20:00 | **22:00** | All Lambda ingestors |
+| 20:30 | 22:30 | Silver transformer → Gold (triggered by completion marker) |
 | 21:00 | 23:00 | Gold CSV publish to GitHub (backup sync) |
 
 Direct company targets can be supplied without changing code:
@@ -106,8 +102,10 @@ built-in seed list.
 ## Cost Efficiency
 Runs entirely within the **AWS Free Tier**:
 - SSM Parameter Store instead of Secrets Manager
-- Lambda + DuckDB instead of Glue or Athena
-- S3 Standard within 5GB limits
+- Lambda + Pandas (awswrangler) instead of Glue or Athena; DuckDB for local analysis
+- S3 Standard within 5GB limits — Bronze auto-expires after 14 days; Silver keeps
+  full SCD history (bounded by the transformer's inactive-retention purge)
+- GitHub Actions authenticates to AWS via OIDC role assumption (no stored keys)
 
 ## Project Layout
 
@@ -117,7 +115,7 @@ dataforge/
 ├── terraform/     # AWS infrastructure (S3, Lambda, API Gateway)
 ├── docs/          # GitHub Pages UI (landing, dashboard, job board, Career Matching Wizard)
 ├── scripts/       # Local dev and ops tooling
-├── data/gold/     # Committed Gold CSV snapshots (refreshed by CI)
+├── data/gold/     # Committed Gold aggregate CSVs (refreshed by CI; large row-level CSVs stay in S3 only)
 ├── tests/         # Unit and integration tests
 └── .github/       # CI, EURES scraper, Gold publish, Pages deploy
 ```

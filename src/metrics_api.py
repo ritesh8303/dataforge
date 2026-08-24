@@ -23,16 +23,26 @@ def lambda_handler(event, context):
     ):
         return {"statusCode": 200, "headers": CORS_HEADERS, "body": ""}
 
-    bucket = os.environ["GOLD_BUCKET"]
+    try:
+        bucket = os.environ["GOLD_BUCKET"]
 
-    now = time.time()
-    if _cache["data"] is None or (now - _cache["ts"]) > CACHE_TTL:
-        snapshot = load_metrics_json(bucket)
-        _cache["data"] = snapshot if snapshot is not None else build_metrics_payload(bucket)
-        _cache["ts"] = now
+        now = time.time()
+        if _cache["data"] is None or (now - _cache["ts"]) > CACHE_TTL:
+            snapshot = load_metrics_json(bucket)
+            _cache["data"] = snapshot if snapshot is not None else build_metrics_payload(bucket)
+            _cache["ts"] = now
 
-    return {
-        "statusCode": 200,
-        "headers": CORS_HEADERS,
-        "body": json.dumps(_cache["data"]),
-    }
+        return {
+            "statusCode": 200,
+            "headers": CORS_HEADERS,
+            "body": json.dumps(_cache["data"]),
+        }
+    except Exception as e:
+        # Return CORS headers on failure too, so the browser surfaces a real
+        # error instead of an opaque CORS failure when S3/Gold is unavailable.
+        print(f"metrics_api request failed: {e}")
+        return {
+            "statusCode": 500,
+            "headers": CORS_HEADERS,
+            "body": json.dumps({"error": "Internal error, please retry shortly."}),
+        }

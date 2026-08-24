@@ -1,5 +1,4 @@
 import os
-import json
 import re
 import pandas as pd
 from datetime import datetime, timezone
@@ -19,7 +18,8 @@ def _looks_remote(*values):
 
 def lambda_handler(event, context):
     """
-    Fetch jobs from BA API using OAuth2 and store them in the Bronze bucket.
+    Fetch jobs from the public BA Jobsuche API (static public API key, no OAuth)
+    and store them in the Bronze bucket.
     """
     bucket = os.environ.get("BRONZE_BUCKET")
     is_local = os.environ.get("LOCAL_RUN") == "true"
@@ -119,6 +119,6 @@ def lambda_handler(event, context):
         return {"statusCode": 200, "body": f"Successfully ingested {len(df)} jobs from BA."}
 
     except Exception as e:
-        error_msg = f"BA API ingestion failed: {str(e)}"
-        print(error_msg)
-        return {"statusCode": 500, "body": json.dumps({"error": error_msg})}
+        # Re-raise so EventBridge marks the invocation failed and the DLQ/alarms fire.
+        print(f"BA API ingestion failed: {str(e)}")
+        raise

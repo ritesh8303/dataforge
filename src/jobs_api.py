@@ -40,7 +40,20 @@ def _is_options(event):
 def lambda_handler(event, context):
     if _is_options(event):
         return {"statusCode": 200, "headers": CORS_HEADERS, "body": ""}
+    try:
+        return _handle(event)
+    except Exception as e:
+        # Return CORS headers on failure too, so the browser surfaces a real
+        # error instead of an opaque CORS failure when S3/Gold is unavailable.
+        print(f"jobs_api request failed: {e}")
+        return {
+            "statusCode": 500,
+            "headers": CORS_HEADERS,
+            "body": json.dumps({"error": "Internal error, please retry shortly."}),
+        }
 
+
+def _handle(event):
     params = event.get("queryStringParameters") or {}
     search = (params.get("search") or "").lower().strip()
     source = (params.get("source") or "").lower().strip()
@@ -65,7 +78,10 @@ def lambda_handler(event, context):
     except (TypeError, ValueError):
         requested_limit = 500
     limit = min(max(requested_limit, 0), MAX_LIMIT)
-    offset = max(int(params.get("offset", 0)), 0)
+    try:
+        offset = max(int(params.get("offset", 0)), 0)
+    except (TypeError, ValueError):
+        offset = 0
 
     cache_key = status
     now = time.time()
@@ -144,5 +160,5 @@ def lambda_handler(event, context):
     return {
         "statusCode": 200,
         "headers": CORS_HEADERS,
-        "body": json.dumps({"jobs": page, "kpis": kpis, "cached_at": _cache["ts"]}),
+        "body": json.dumps({"jobs": page, "kpis": kpis, "cached_at": _cache.get(cache_key + "_ts", 0)}),
     }

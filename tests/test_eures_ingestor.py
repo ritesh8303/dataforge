@@ -6,7 +6,7 @@ import pandas as pd
 
 from src import ingest_eures
 from src.ingest_eures import (
-    AntigravityClient,
+    RetryingHttpClient,
     _job_url,
     build_search_payload,
     extract_location,
@@ -72,7 +72,7 @@ class TestEuresIngestor(unittest.TestCase):
         self.assertIn("jvDisplayLanguage=en", job["url"])
 
     @patch("src.ingest_eures.requests.Session.post")
-    def test_antigravity_client_retry(self, mock_post):
+    def test_retrying_http_client_retry(self, mock_post):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_post.side_effect = [
@@ -81,12 +81,12 @@ class TestEuresIngestor(unittest.TestCase):
             mock_response,
         ]
 
-        client = AntigravityClient(retries=3, backoff_factor=0.1)
+        client = RetryingHttpClient(retries=3, backoff_factor=0.1)
         res = client.post("http://dummy.url", json_payload={})
         self.assertEqual(res, mock_response)
         self.assertEqual(mock_post.call_count, 3)
 
-    @patch("src.ingest_eures.antigravity.Client")
+    @patch("src.ingest_eures.RetryingHttpClient")
     @patch("processing.utils.save_parquet")
     @patch.dict("os.environ", {"BRONZE_BUCKET": "test-bucket", "LOCAL_RUN": "false"})
     def test_lambda_handler_success(self, mock_save, mock_client_class):

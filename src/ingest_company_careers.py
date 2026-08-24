@@ -46,8 +46,9 @@ HEADERS = {
 # A small global seed keeps local/dev runs useful. Production scale should come
 # from COMPANY_CAREERS_CONFIG_S3_URI or COMPANY_CAREERS_CONFIG.
 DEFAULT_TARGETS: list[dict[str, Any]] = [
-    {"company": "Zalando", "careers_url": "https://boards.greenhouse.io/zalando"},
-    {"company": "N26", "careers_url": "https://boards.greenhouse.io/n26group"},
+    # Zalando left Greenhouse (board 404s as of Aug 2026); they run a custom careers platform.
+    {"company": "N26", "careers_url": "https://boards.greenhouse.io/n26"},
+    {"company": "HelloFresh", "careers_url": "https://boards.greenhouse.io/hellofresh"},
     {"company": "Celonis", "careers_url": "https://boards.greenhouse.io/celonis"},
     {"company": "Personio", "careers_url": "https://boards.greenhouse.io/personio"},
     {"company": "Stripe", "careers_url": "https://boards.greenhouse.io/stripe"},

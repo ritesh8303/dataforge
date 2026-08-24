@@ -24,6 +24,13 @@ LOCK_TTL_SECONDS = int(os.environ.get("TRANSFORMER_LOCK_TTL_SECONDS", "900"))
 INACTIVE_RETENTION_DAYS = int(os.environ.get("SILVER_INACTIVE_RETENTION_DAYS", "30"))
 BRONZE_HISTORY_DAYS = int(os.environ.get("BRONZE_HISTORY_DAYS", "14"))
 STALE_LOCK_SECONDS = int(os.environ.get("TRANSFORMER_STALE_LOCK_SECONDS", "620"))
+# A job missing from its source's daily pull is only expired after this many
+# consecutive calendar days, so one transient feed/board failure does not
+# mass-expire jobs that are still open.
+EXPIRE_GRACE_DAYS = int(os.environ.get("SILVER_EXPIRE_GRACE_DAYS", "2"))
+# Completion marker (bucket-root prefix); the Gold S3 trigger is scoped to it so
+# Gold never fires while Silver partitions are half-written.
+GOLD_TRIGGER_PREFIX = "gold_trigger/"
 
 
 def _parse_s3_uri(uri: str) -> tuple[str, str]:
@@ -338,12 +345,6 @@ def _validate_silver_read(
             f"SILVER_READ_ANOMALY: Inactive partition lists {inactive_files} file(s) but "
             f"0 inactive rows were read. Aborting."
         )
-    if active_files > 0 and active_rows == 0 and inactive_rows > 1000:
-        raise ValueError(
-            f"SILVER_READ_ANOMALY: Active partition lists {active_files} file(s) but "
-            f"0 active rows were read while {inactive_rows} inactive rows exist. "
-            f"Another transformer may be writing Silver. Aborting."
-        )
     if active_rows == 0 and inactive_files > 0 and inactive_rows > 1000:
         raise ValueError(
             f"SILVER_READ_ANOMALY: Silver has {inactive_rows} historical records but "
@@ -442,6 +443,18 @@ def _acquire_transformer_lock(silver_path: str) -> None:
 def _release_transformer_lock(silver_path: str) -> None:
     bucket, lock_key = _lock_key_for_silver(silver_path)
     boto3.client("s3").delete_object(Bucket=bucket, Key=lock_key)
+
+
+def _write_gold_trigger_marker(silver_path: str, now: datetime) -> None:
+    """Write the completion marker that triggers the Gold generator.
+
+    The S3 notification is scoped to GOLD_TRIGGER_PREFIX, so Gold only runs
+    once per transform, and only after both Silver partitions are fully written.
+    """
+    bucket, _ = _parse_s3_uri(silver_path)
+    marker = pd.DataFrame([{"run_completed_at": now.isoformat()}])
+    wr.s3.to_parquet(df=marker, path=f"s3://{bucket}/{GOLD_TRIGGER_PREFIX}run_complete.parquet")
+    print("Gold trigger marker written.")
 
 
 def lambda_handler(event, context):
@@ -548,28 +561,55 @@ def _expire_jobs_missing_from_source_pull(
     sources_in_pull: set[str],
     now: datetime,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Expire active jobs whose source was ingested today but no longer lists them."""
+    """Expire active jobs whose source was ingested today but no longer lists them.
+
+    Grace period: a job is only expired after it has been missing from its
+    source for EXPIRE_GRACE_DAYS consecutive calendar days (tracked via the
+    last_seen_at column), so a single transient board/feed failure does not
+    mass-expire jobs that are still open.
+    """
     if current_silver.empty or not sources_in_pull:
         return current_silver, pd.DataFrame()
 
-    keep_rows = []
-    expired_rows = []
-    for _, row in current_silver.iterrows():
-        source = str(row.get("source", ""))
-        if source not in sources_in_pull:
-            keep_rows.append(row)
-            continue
-        job_id = str(row["job_id"])
-        if job_id in source_pull_index.get(source, set()):
-            keep_rows.append(row)
-            continue
-        expired = row.copy()
-        expired["is_current"] = False
-        expired["scd_end_date"] = now
-        expired_rows.append(expired)
+    df = current_silver.copy()
+    sources = df["source"].astype(str) if "source" in df.columns else pd.Series("", index=df.index)
+    job_ids = df["job_id"].astype(str)
 
-    still_active = pd.DataFrame(keep_rows) if keep_rows else pd.DataFrame(columns=current_silver.columns)
-    source_expired = pd.DataFrame(expired_rows) if expired_rows else pd.DataFrame(columns=current_silver.columns)
+    in_pull = sources.isin(sources_in_pull)
+    listed = pd.Series(
+        [jid in source_pull_index.get(src, set()) for src, jid in zip(sources, job_ids)],
+        index=df.index,
+    )
+
+    now_ts = pd.Timestamp(now)
+    if "last_seen_at" in df.columns:
+        last_seen = pd.to_datetime(df["last_seen_at"], errors="coerce", utc=True)
+    else:
+        last_seen = pd.to_datetime(pd.Series(pd.NaT, index=df.index), utc=True)
+    # Rows without last_seen_at (pre-migration) count as just-seen: they become
+    # eligible for expiry only after a full grace window has elapsed.
+    last_seen = last_seen.fillna(now_ts)
+
+    days_missing = (now_ts.normalize() - last_seen.dt.normalize()).dt.days
+    missing = in_pull & ~listed
+    expire_mask = missing & (days_missing >= EXPIRE_GRACE_DAYS)
+
+    # Jobs listed today get a fresh last_seen_at; grace-pending rows keep theirs.
+    df["last_seen_at"] = last_seen.apply(lambda t: t.isoformat())
+    df.loc[in_pull & listed, "last_seen_at"] = now_ts.isoformat()
+
+    grace_pending = int((missing & ~expire_mask).sum())
+    if grace_pending:
+        print(
+            f"Source-pull grace: {grace_pending} jobs missing from today's pull, "
+            f"kept within the {EXPIRE_GRACE_DAYS}-day grace window."
+        )
+
+    source_expired = df[expire_mask].copy()
+    if not source_expired.empty:
+        source_expired["is_current"] = False
+        source_expired["scd_end_date"] = now
+    still_active = df[~expire_mask].copy()
     return still_active, source_expired
 
 
@@ -590,8 +630,11 @@ def process_scd_type_2(
     """
     now = datetime.now(timezone.utc)
 
-    # Columns used to detect changes — all present after Bronze normalization
-    attr_cols = ["title", "company", "location", "source", "job_types", "url"]
+    # Columns used to detect changes. source/url are intentionally excluded:
+    # cross-source dedup can flip the winning source for the same semantic job
+    # (e.g. when one board fails transiently), and that must not count as an
+    # update or it churns the SCD history.
+    attr_cols = ["title", "company", "location", "job_types"]
 
     # Validate that job_id exists — both ingestors now produce this column
     if "job_id" not in bronze_df.columns:
@@ -613,6 +656,7 @@ def process_scd_type_2(
     bronze_df["scd_start_date"] = now
     bronze_df["scd_end_date"] = pd.to_datetime(pd.Series(pd.NaT, index=bronze_df.index), utc=True)
     bronze_df["is_current"] = True
+    bronze_df["last_seen_at"] = now.isoformat()
 
     if force_rebuild:
         _clear_inactive_silver(silver_path)
@@ -667,8 +711,9 @@ def process_scd_type_2(
                         ),
                         axis=1,
                     )
-            if not silver_df.empty and "hash_key" not in silver_df.columns:
-                print("Missing 'hash_key' in old Silver schema. Dynamically generating hash keys...")
+            if not silver_df.empty:
+                # Always recompute against the current attr_cols so a change to
+                # the hash formula never masquerades as a mass job update.
                 silver_df["hash_key"] = generate_hash(silver_df, attr_cols)
         else:
             print("Silver layer is empty. Performing initial load.")
@@ -716,6 +761,7 @@ def process_scd_type_2(
             )
             wr.s3.to_csv(stats, path=f"s3://{gold_bucket}/pipeline_stats.csv", index=False)
             print(f"Pipeline stats written to Gold: new={len(bronze_df)}, updated=0")
+        _write_gold_trigger_marker(silver_path, now)
         return
 
     # 3. Separate current from historical Silver records (inactive history not loaded on normal runs)
@@ -845,3 +891,5 @@ def process_scd_type_2(
             f"Pipeline stats written to Gold: new={len(new_ids)}, "
             f"updated={len(changed_ids)}, expired={len(source_expired_ids)}"
         )
+
+    _write_gold_trigger_marker(silver_path, now)

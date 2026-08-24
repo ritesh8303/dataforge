@@ -116,9 +116,6 @@ class BAFetcher:
 
     JOBS_URL = "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v4/jobs"
 
-    def __init__(self, ssm_parameter_name: str = None):
-        pass
-
     def fetch_jobs(self, query: str = "Data Engineer") -> Dict[str, Any]:
         """Fetches all pages of jobs from BA public API."""
         headers = {"X-API-Key": "jobboerse-jobsuche", "Accept": "application/json"}

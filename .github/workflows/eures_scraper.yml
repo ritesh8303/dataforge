@@ -2,9 +2,16 @@ name: EURES Ingestion Scraper
 
 on:
   schedule:
-    - cron: '0 4 * * *'   # 04:00 UTC — ready for 07:30 transformer
-    - cron: '0 20 * * *'  # 20:00 UTC — ready for 20:30 transformer
+    - cron: '0 4 * * *'   # 04:00 UTC — morning snapshot for the same-day partition
+    # 19:15 UTC (not 20:00): GitHub cron starts are often 5-15+ min late, and the
+    # 20:30 transformer only reads today's partition once — this guarantees the
+    # evening EURES pull lands before the transformer runs.
+    - cron: '15 19 * * *'
   workflow_dispatch:     # Allows manual trigger from GitHub UI
+
+permissions:
+  id-token: write   # OIDC token for AWS role assumption
+  contents: read
 
 jobs:
   scrape:
@@ -13,6 +20,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::942361733704:role/dataforge-github-actions-dev
+          aws-region: eu-central-1
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -29,9 +42,6 @@ jobs:
       - name: Run EURES Ingestion Script
         id: ingest
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: eu-central-1
           BRONZE_BUCKET: dataforge-bronze-dev-eu-central-1
           LOCAL_RUN: "false"
         run: |

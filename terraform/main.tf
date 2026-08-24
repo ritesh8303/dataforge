@@ -20,36 +20,35 @@ provider "aws" {
   region = "eu-central-1"
 }
 
+# Bronze holds raw daily pulls — safe to expire after 14 days (Silver is the system of record).
 module "s3_bronze" {
-  source      = "./modules/s3"
-  bucket_name = "dataforge-bronze-dev-eu-central-1"
+  source          = "./modules/s3"
+  bucket_name     = "dataforge-bronze-dev-eu-central-1"
+  expiration_days = 14
 }
 
+# Silver holds SCD Type 2 history — never lifecycle-expire it; the transformer's
+# SILVER_INACTIVE_RETENTION_DAYS purge is the only retention mechanism.
 module "s3_silver" {
   source      = "./modules/s3"
   bucket_name = "dataforge-silver-dev-eu-central-1"
 }
 
+# Gold is small and overwritten in place every run — no expiry needed.
 module "s3_gold" {
   source      = "./modules/s3"
   bucket_name = "dataforge-gold-dev-eu-central-1"
 }
 
-# --- 2. PERMISSIONS & SECURITY (Free SSM Tier) ---
+# --- 2. PERMISSIONS & SECURITY ---
 module "iam" {
   source       = "./modules/iam"
   project_name = "dataforge"
   environment  = "dev"
 }
 
-# BA API is fully public — no credentials needed
-# SSM Standard String is free (SecureString costs $0.05/month)
-resource "aws_ssm_parameter" "ba_api_keys" {
-  name        = "/dataforge/dev/ba_api_credentials"
-  description = "BA API public key (no auth required)"
-  type        = "String"
-  value       = "jobboerse-jobsuche"
-}
+# BA API is fully public — the static key "jobboerse-jobsuche" is hardcoded in
+# the fetcher, so no SSM parameter or credentials are needed.
 
 # --- 3. COMPUTE LAYER ---
 
@@ -66,12 +65,11 @@ module "ingestion_lambda" {
   memory_size      = 512
   timeout          = 300
   env_vars = {
-    BRONZE_BUCKET      = module.s3_bronze.bucket_id
-    SSM_PARAMETER_NAME = aws_ssm_parameter.ba_api_keys.name
+    BRONZE_BUCKET = module.s3_bronze.bucket_id
   }
-  bronze_bucket_arn      = module.s3_bronze.arn
-  enable_schedule        = true
-  alert_email            = var.alert_email
+  bronze_bucket_arn = module.s3_bronze.arn
+  enable_schedule   = true
+  alert_email       = var.alert_email
 }
 
 # BA (Federal) Ingestor
@@ -83,14 +81,13 @@ module "ba_ingestor" {
   lambda_role_name = module.iam.lambda_role_name
   source_dir       = "../src"
   env_vars = {
-    BRONZE_BUCKET      = module.s3_bronze.bucket_id
-    SSM_PARAMETER_NAME = aws_ssm_parameter.ba_api_keys.name
+    BRONZE_BUCKET = module.s3_bronze.bucket_id
   }
   layers          = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
-  memory_size          = 512
-  timeout              = 300
-  enable_schedule      = true
-  alert_email          = var.alert_email
+  memory_size     = 512
+  timeout         = 300
+  enable_schedule = true
+  alert_email     = var.alert_email
 }
 
 # Company Careers Direct Ingestor (Greenhouse + Lever + Workable + SmartRecruiters)
@@ -110,29 +107,29 @@ module "company_ingestor" {
     COMPANY_CAREERS_CONFIG_URL    = var.company_careers_config_url
     COMPANY_CAREERS_CONFIG_MODE   = var.company_careers_config_mode
   }
-  bronze_bucket_arn      = module.s3_bronze.arn
-  enable_schedule        = true
-  enable_alerts          = true
-  alert_email            = var.alert_email
+  bronze_bucket_arn = module.s3_bronze.arn
+  enable_schedule   = true
+  enable_alerts     = true
+  alert_email       = var.alert_email
 }
 
 # Berlin Startup Jobs Ingestor
 module "berlin_startups_ingestor" {
-  source            = "./modules/lambda"
-  function_name     = "dataforge-berlin-startups-ingestor"
-  handler           = "ingest_berlin_startups.lambda_handler"
-  lambda_role_arn   = module.iam.lambda_role_arn
-  lambda_role_name  = module.iam.lambda_role_name
-  source_dir        = "../src"
-  layers            = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
-  memory_size       = 512
-  timeout           = 300
+  source           = "./modules/lambda"
+  function_name    = "dataforge-berlin-startups-ingestor"
+  handler          = "ingest_berlin_startups.lambda_handler"
+  lambda_role_arn  = module.iam.lambda_role_arn
+  lambda_role_name = module.iam.lambda_role_name
+  source_dir       = "../src"
+  layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  memory_size      = 512
+  timeout          = 300
   env_vars = {
     BRONZE_BUCKET = module.s3_bronze.bucket_id
   }
-  bronze_bucket_arn      = module.s3_bronze.arn
-  enable_schedule        = true
-  alert_email            = var.alert_email
+  bronze_bucket_arn = module.s3_bronze.arn
+  enable_schedule   = true
+  alert_email       = var.alert_email
 }
 
 
@@ -151,12 +148,12 @@ module "transformer_lambda" {
     GOLD_BUCKET   = module.s3_gold.bucket_id
     BRONZE_BUCKET = module.s3_bronze.bucket_id
   }
-  layers                 = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
-  bronze_bucket_arn      = module.s3_bronze.arn
-  enable_schedule        = true
-  schedule_expression    = "cron(30 20 * * ? *)"
-  enable_alerts          = true
-  alert_email            = var.alert_email
+  layers              = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  bronze_bucket_arn   = module.s3_bronze.arn
+  enable_schedule     = true
+  schedule_expression = "cron(30 20 * * ? *)"
+  enable_alerts       = true
+  alert_email         = var.alert_email
 }
 
 # Gold Generator (runs after Silver is updated)
@@ -174,20 +171,23 @@ module "gold_lambda" {
     SILVER_PATH = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
     GOLD_BUCKET = module.s3_gold.bucket_id
   }
-  bronze_bucket_arn              = module.s3_bronze.arn
-  enable_alerts                  = true
-  alert_email                    = var.alert_email
+  bronze_bucket_arn = module.s3_bronze.arn
+  enable_alerts     = true
+  alert_email       = var.alert_email
 }
 
 # --- 4. AUTOMATION & TRIGGERS ---
 
 
-# Silver .parquet write → gold generator
+# Transform-complete marker → gold generator. Scoped to the marker prefix so
+# Gold fires exactly once per run, only after both Silver partitions are
+# fully written (not on every intermediate partition file).
 resource "aws_s3_bucket_notification" "on_silver_upload" {
   bucket = module.s3_silver.bucket_id
   lambda_function {
     lambda_function_arn = module.gold_lambda.lambda_function_arn
     events              = ["s3:ObjectCreated:*"]
+    filter_prefix       = "gold_trigger/"
     filter_suffix       = ".parquet"
   }
   depends_on = [module.gold_lambda]

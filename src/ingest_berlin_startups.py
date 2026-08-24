@@ -1,5 +1,4 @@
 import os
-import json
 import pandas as pd
 from datetime import datetime, timezone
 from processing.fetchers import BerlinStartupJobsFetcher
@@ -48,6 +47,6 @@ def lambda_handler(event, context):
         return {"statusCode": 200, "body": f"Successfully ingested {len(df)} jobs."}
 
     except Exception as e:
-        error_msg = f"Berlin Startup Jobs ingestion failed: {str(e)}"
-        print(error_msg)
-        return {"statusCode": 500, "body": json.dumps({"error": error_msg})}
+        # Re-raise so EventBridge marks the invocation failed and the DLQ/alarms fire.
+        print(f"Berlin Startup Jobs ingestion failed: {str(e)}")
+        raise

@@ -15,10 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write   # OIDC token for AWS role assumption
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::942361733704:role/dataforge-github-actions-dev
+          aws-region: eu-central-1
 
       - uses: actions/setup-python@v5
         with:
@@ -28,19 +35,18 @@ jobs:
         run: pip install awswrangler pandas
 
       - name: Download Gold from S3
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: eu-central-1
         run: python scripts/download_all.py
 
       - name: Regenerate dashboard PNG
         run: pip install matplotlib && python scripts/visualize_gold.py
 
+      # Adding the directory (not *.csv) skips gitignored files: the large
+      # all_jobs.csv / expired_jobs.csv are excluded so git history does not
+      # grow by ~6 MB per day — S3 (and Silver history) is the system of record.
       - name: Commit and push data
         run: |
           git config user.name "dataforge-bot"
           git config user.email "actions@github.com"
-          git add data/gold/*.csv data/gold/job_market_dashboard.png
+          git add data/gold/
           git diff --staged --quiet || git commit -m "chore: refresh gold data $(date -u +%Y-%m-%d)"
           git push origin main

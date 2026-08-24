@@ -40,10 +40,8 @@ def compute_quality_metrics(df: pd.DataFrame) -> Dict[str, Any]:
 
     invalid_source = 0
     if "source" in active.columns:
-        invalid_source = int(
-            active["source"].isin(REMOVED_SOURCES).sum()
-            + (~active["source"].isin(VALID_SOURCES)).sum()
-        )
+        # Removed sources are already outside VALID_SOURCES — one check, no double count.
+        invalid_source = int((~active["source"].isin(VALID_SOURCES)).sum())
 
     remote_in_country_dimension = 0
     if "region" in active.columns:

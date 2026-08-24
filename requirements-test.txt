@@ -6,3 +6,4 @@ boto3
 awswrangler
 pydantic
 typing_extensions
+requests

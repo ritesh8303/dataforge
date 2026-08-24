@@ -35,12 +35,19 @@ src/bin/
 src/*.so
 src/*.pyd
 
-# Local pipeline outputs (Gold snapshots in data/gold/ are committed intentionally)
+# Local pipeline outputs (small Gold aggregates in data/gold/ are committed intentionally)
 data/bronze/
 data/silver/
+# Large row-level Gold CSVs: rewritten daily, would bloat git history ~6 MB/day
+data/gold/all_jobs.csv
+data/gold/expired_jobs.csv
 
 # Temp debug files
 event.json
 out.txt
 response.json
 response2.json
+tmp_*
+
+# Terraform plan artifacts (binary, machine-specific — never commit)
+*.tfplan

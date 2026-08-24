@@ -4,7 +4,7 @@ import pandas as pd
 import awswrangler as wr
 import re
 from processing.data_quality import validate_region_taxonomy
-from processing.europe_filter import classify_region, normalize_region_bucket
+from processing.europe_filter import COUNTRY_MAPPING, classify_region, normalize_region_bucket
 from processing.company_normalize import normalize_company
 from processing.data_quality import compute_quality_metrics, REMOVED_SOURCES, VALID_SOURCES
 
@@ -423,7 +423,19 @@ def lambda_handler(event, context):
         )
 
         # 3. Top locations — take first part before comma to clean "Berlin, Berlin, Germany" → "Berlin"
-        current["location_clean"] = current["location"].str.split(",").str[0].str.strip()
+        def clean_location_label(value):
+            # Strip NUTS/region codes in parentheses, e.g. "MT (MT001)" → "MT"
+            text = re.sub(r"\s*\([^)]*\)", "", str(value)).strip()
+            # Map bare ISO country codes to country names, e.g. "MT" → "Malta"
+            if len(text) <= 3:
+                mapped = COUNTRY_MAPPING.get(text.lower())
+                if mapped:
+                    return mapped
+            return text
+
+        current["location_clean"] = (
+            current["location"].str.split(",").str[0].str.strip().apply(clean_location_label)
+        )
         top_locations = (
             current[current["location_clean"].notna() & (current["location_clean"] != "")]
             .groupby("location_clean")
@@ -538,6 +550,8 @@ def lambda_handler(event, context):
             "FastAPI",
         ]
         skill_pattern = re.compile(r"\b(" + "|".join(re.escape(s) for s in SKILL_KEYWORDS) + r")\b", re.IGNORECASE)
+        # Canonical display labels so matches render as "AWS"/"SQL"/"LLM", not "Aws"/"Sql"/"Llm"
+        skill_canonical = {s.lower(): s for s in SKILL_KEYWORDS}
 
         # Patterns for description-derived KPIs
         english_pattern = re.compile(
@@ -573,7 +587,7 @@ def lambda_handler(event, context):
                 )
             )
             for match in skill_pattern.finditer(combined):
-                skill_counter[match.group().title()] += 1
+                skill_counter[skill_canonical[match.group().lower()]] += 1
 
         for _, row in arbeitnow_jobs.iterrows():
             raw_desc = str(row.get("description", ""))
@@ -632,9 +646,9 @@ def lambda_handler(event, context):
         return {"statusCode": 200, "body": json.dumps({"message": msg})}
 
     except Exception as e:
-        error_msg = f"Gold generation failed: {str(e)}"
-        print(error_msg)
-        return {"statusCode": 500, "body": json.dumps({"error": error_msg})}
+        # Re-raise so the async S3-triggered invocation is retried and the DLQ/alarms fire.
+        print(f"Gold generation failed: {str(e)}")
+        raise
 
 
 def _trigger_github_redeploy(active_count):

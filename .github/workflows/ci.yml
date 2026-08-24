@@ -29,7 +29,21 @@ jobs:
         run: |
           pip install -r requirements-test.txt
 
+      # Full suite except the live end-to-end test, which invokes real AWS
+      # Lambdas and needs credentials (run manually via scripts, not CI).
       - name: Run tests
         env:
           PYTHONPATH: .
-        run: pytest tests/test_scd_logic.py tests/test_architecture_smoke.py tests/test_eures_ingestor.py tests/test_company_normalize.py tests/test_gold_detection.py tests/test_berlin_fetcher.py -v --tb=short
+        run: pytest tests/ --ignore=tests/test_e2e_pipeline.py -v --tb=short
+
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - name: Terraform fmt
+        run: terraform -chdir=terraform fmt -check -recursive
+      - name: Terraform init (no backend)
+        run: terraform -chdir=terraform init -backend=false
+      - name: Terraform validate
+        run: terraform -chdir=terraform validate

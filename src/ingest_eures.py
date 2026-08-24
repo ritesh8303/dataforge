@@ -13,7 +13,6 @@ import logging
 import os
 import re
 import sys
-import types
 import time
 import uuid
 from datetime import datetime, timezone
@@ -25,15 +24,7 @@ from processing.site_imports import import_site_package
 
 requests = import_site_package("requests")
 
-# Standard library antigravity opens a browser — shim a retry-enabled HTTP client instead.
-if "antigravity" not in sys.modules:
-    antigravity_mock = types.ModuleType("antigravity")
-    sys.modules["antigravity"] = antigravity_mock
-
-import antigravity  # noqa: E402
-
-
-class AntigravityClient:
+class RetryingHttpClient:
     """Retry-enabled HTTP client used for EURES API POST requests."""
 
     def __init__(self, retries=3, backoff_factor=2):
@@ -61,8 +52,6 @@ class AntigravityClient:
                 time.sleep(self.backoff_factor**attempt)
         raise last_error
 
-
-antigravity.Client = AntigravityClient
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
@@ -269,7 +258,7 @@ def normalize_eures_job(item):
 
 def fetch_eures_jobs(client=None, keywords=None, results_per_page=50, max_pages=None, session_id=None):
     """Fetch and deduplicate EURES postings — one keyword search at a time (API ANDs keywords)."""
-    client = client or antigravity.Client(retries=3, backoff_factor=2)
+    client = client or RetryingHttpClient(retries=3, backoff_factor=2)
     keywords = keywords or SEARCH_KEYWORDS
     session_id = session_id or str(uuid.uuid4())
     if max_pages is None:
