@@ -5,16 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DataForge — Job Intelligence Platform</title>
   <meta name="description" content="DataForge is a Job Intelligence Platform aggregating and analyzing Europe-wide job data across BA Jobsuche, EURES, direct ATS feeds, Arbeitnow, and Berlin startups." />
-  <link rel="icon" href="Dataforge.png" type="image/png" />
+  <link rel="icon" href="df-logo.png" type="image/png" />
   <link rel="stylesheet" href="components/design-system.css" />
   <meta name="theme-color" content="#05060d" />
   <style>
     .hero-content { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; }
     .hero-logo {
-      width: 84px; height: 84px; margin: 0 auto var(--df-space-5);
+      width: 104px; height: 104px; margin: 0 auto var(--df-space-5);
       animation: df-fadeIn 0.7s ease-out forwards;
-      filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.55));
-      border-radius: 22px;
+      filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.55)) drop-shadow(0 8px 18px rgba(0,0,0,0.45));
+      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(34,211,238,0.1) 45%, transparent 70%);
+      object-fit: contain;
     }
     .hero-sub { font-size: 1.15rem; line-height: 1.75; margin-bottom: var(--df-space-8); max-width: 620px; margin-left: auto; margin-right: auto; color: var(--df-text-secondary); }
     .hero-cta { display: flex; gap: var(--df-space-4); justify-content: center; flex-wrap: wrap; }
@@ -84,7 +85,7 @@
 <nav class="df-navbar">
   <div class="df-navbar-inner">
     <a href="index.html" class="df-navbar-brand">
-      <img src="Dataforge.png" alt="DataForge" />
+      <img src="df-logo.png" alt="DataForge" />
       DataForge
     </a>
     <div class="df-navbar-links">
@@ -104,7 +105,7 @@
 <section class="df-hero">
   <div class="df-hero-grid"></div>
   <div class="hero-content df-fade-in">
-    <img src="Dataforge.png" alt="DataForge" class="hero-logo" />
+    <img src="df-logo.png" alt="DataForge" class="hero-logo" />
     <div class="df-status-pill"><span class="df-live-dot"></span> Neural engine live</div>
     <h1>Job intelligence,<br>forged in motion</h1>
     <p class="hero-sub">
@@ -307,7 +308,7 @@
   <div class="df-footer-inner">
     <div>
       <div class="df-footer-brand">
-        <img src="Dataforge.png" alt="DataForge" />
+        <img src="df-logo.png" alt="DataForge" />
         DataForge
       </div>
       <p>DataForge — Job Intelligence Platform<br />eu-central-1 · Serverless · $0/month</p>
