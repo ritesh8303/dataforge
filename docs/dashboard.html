@@ -6,10 +6,11 @@
   <title>DataForge — Job Intelligence Dashboard</title>
   <meta name="description" content="DataForge Job Intelligence Dashboard — aggregated analytics across BA Jobsuche, EURES, Arbeitnow, direct ATS feeds, and Berlin startups." />
   <link rel="icon" href="Dataforge.png" type="image/png" />
+  <meta name="theme-color" content="#05060d" />
   <link rel="stylesheet" href="components/design-system.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { background: linear-gradient(180deg, var(--df-bg) 0%, var(--df-bg-secondary) 100%); }
+    body { background: transparent; }
     .dash-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: var(--df-space-6); margin-bottom: var(--df-space-8); }
     .dash-header p { font-size: 0.9rem; margin-top: var(--df-space-1); }
     .dash-header-actions { display: flex; align-items: center; gap: var(--df-space-3); flex-wrap: wrap; }
@@ -167,31 +168,31 @@
 
   <!-- KPI Grid -->
   <div class="df-grid-5" style="margin-bottom:var(--df-space-8);">
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#7AA8FF,#A78BFA);--kpi-tint:linear-gradient(145deg,rgba(122,168,255,0.15),rgba(167,139,250,0.08));" title="Count of all active jobs in the Gold layer across five ingestion sources.">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.16),rgba(167,139,250,0.08));" title="Count of all active jobs in the Gold layer across five ingestion sources.">
       <div class="df-kpi-icon">📊</div>
       <div class="df-kpi-label">Total Active Jobs</div>
       <div class="df-kpi-value" id="kpi-total"><span class="df-skeleton kpi-skeleton"></span></div>
       <div class="df-kpi-sub">aggregated database</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#6EE7D2,#7AA8FF);--kpi-tint:linear-gradient(145deg,rgba(110,231,210,0.18),rgba(122,168,255,0.06));" title="New job IDs from the latest Silver pipeline run.">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.16),rgba(34,211,238,0.06));" title="New job IDs from the latest Silver pipeline run.">
       <div class="df-kpi-icon">🆕</div>
       <div class="df-kpi-label">New Since Last Run <span class="kpi-info" title="Incremental count from the latest pipeline transform.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-today"><span class="df-skeleton kpi-skeleton"></span></div>
       <div class="df-kpi-sub" id="kpi-today-sub">incremental · latest pipeline run</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#7AA8FF,#6EE7D2);--kpi-tint:linear-gradient(145deg,rgba(122,168,255,0.12),rgba(110,231,210,0.1));">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#2dd4bf);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.12),rgba(45,212,191,0.1));">
       <div class="df-kpi-icon">🌐</div>
       <div class="df-kpi-label">Remote Openings <span class="kpi-info" title="work_style = remote across all five sources.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-remote"><span class="df-skeleton kpi-skeleton"></span></div>
       <div class="df-kpi-sub">work_style · remote only</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#A78BFA,#F9A8D4);--kpi-tint:linear-gradient(145deg,rgba(167,139,250,0.14),rgba(249,168,212,0.08));">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#a78bfa,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(167,139,250,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🇬🇧</div>
       <div class="df-kpi-label">English Jobs <span class="kpi-info" title="Title keyword heuristic.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-english"><span class="df-skeleton kpi-skeleton"></span></div>
       <div class="df-kpi-sub" id="kpi-english-sub">title heuristic · all sources</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#FDBA74,#F9A8D4);--kpi-tint:linear-gradient(145deg,rgba(253,186,116,0.15),rgba(249,168,212,0.08));">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#fb923c,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(251,146,60,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🔥</div>
       <div class="df-kpi-label">Top Skill</div>
       <div class="df-kpi-value" id="kpi-top-skill-count"><span class="df-skeleton kpi-skeleton"></span></div>
@@ -280,11 +281,11 @@
   const donutInstances = {};
 
   const CHART_COLORS = {
-    grid: 'rgba(120,130,180,0.08)',
-    tick: '#9CA3AF',
-    tooltip: { bg: 'rgba(255,255,255,0.95)', border: 'rgba(120,130,180,0.2)', text: '#1F2937' }
+    grid: 'rgba(148,163,184,0.1)',
+    tick: '#94a3b8',
+    tooltip: { bg: 'rgba(10,12,24,0.94)', border: 'rgba(34,211,238,0.28)', text: '#f4f7ff' }
   };
-  const PASTEL = { blue: '#7AA8FF', purple: '#A78BFA', mint: '#6EE7D2', pink: '#F9A8D4', peach: '#FDBA74', gray: '#C5CDE8' };
+  const PASTEL = { blue: '#22d3ee', purple: '#a78bfa', mint: '#2dd4bf', pink: '#f472b6', peach: '#fb923c', gray: '#64748b' };
 
   function drawTrend(trend) {
     const canvas = document.getElementById("trend-chart");
@@ -296,7 +297,7 @@
     if (trendChartInstance) trendChartInstance.destroy();
 
     const grad = ctx.createLinearGradient(0, 0, 0, 240);
-    grad.addColorStop(0, "rgba(122, 168, 255, 0.2)");
+    grad.addColorStop(0, "rgba(34, 211, 238, 0.32)");
     grad.addColorStop(1, "rgba(167, 139, 250, 0)");
 
     trendChartInstance = new Chart(ctx, {
@@ -311,7 +312,7 @@
           fill: true,
           tension: 0.35,
           pointBackgroundColor: PASTEL.purple,
-          pointBorderColor: '#FFFFFF',
+          pointBorderColor: '#0a0c16',
           pointHoverRadius: 5,
           pointRadius: 2,
           pointHitRadius: 10
@@ -393,7 +394,7 @@
       type: 'doughnut',
       data: {
         labels,
-        datasets: [{ data: values, backgroundColor: colors, borderColor: '#FFFFFF', borderWidth: 2, hoverOffset: 4 }]
+        datasets: [{ data: values, backgroundColor: colors, borderColor: '#05060d', borderWidth: 2, hoverOffset: 4 }]
       },
       options: {
         responsive: true,

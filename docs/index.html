@@ -7,34 +7,74 @@
   <meta name="description" content="DataForge is a Job Intelligence Platform aggregating and analyzing Europe-wide job data across BA Jobsuche, EURES, direct ATS feeds, Arbeitnow, and Berlin startups." />
   <link rel="icon" href="Dataforge.png" type="image/png" />
   <link rel="stylesheet" href="components/design-system.css" />
+  <meta name="theme-color" content="#05060d" />
   <style>
-    .hero-content { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
-    .hero-logo { width: 72px; height: 72px; margin: 0 auto var(--df-space-6); animation: df-fadeIn 0.6s ease-out forwards; }
-    .hero-sub { font-size: 1.125rem; line-height: 1.75; margin-bottom: var(--df-space-8); max-width: 580px; margin-left: auto; margin-right: auto; }
+    .hero-content { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; }
+    .hero-logo {
+      width: 84px; height: 84px; margin: 0 auto var(--df-space-5);
+      animation: df-fadeIn 0.7s ease-out forwards;
+      filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.55));
+      border-radius: 22px;
+    }
+    .hero-sub { font-size: 1.15rem; line-height: 1.75; margin-bottom: var(--df-space-8); max-width: 620px; margin-left: auto; margin-right: auto; color: var(--df-text-secondary); }
     .hero-cta { display: flex; gap: var(--df-space-4); justify-content: center; flex-wrap: wrap; }
-    .hero-preview { margin-top: var(--df-space-12); position: relative; z-index: 1; }
-    .hero-preview-frame { background: var(--df-glass); backdrop-filter: blur(12px); border: 1px solid var(--df-border); border-radius: var(--df-radius-xl); box-shadow: var(--df-shadow-lg); padding: var(--df-space-2); max-width: 900px; margin: 0 auto; overflow: hidden; }
+    .hero-preview-frame {
+      background: linear-gradient(165deg, rgba(22, 26, 48, 0.85), rgba(10, 12, 24, 0.78));
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--df-border);
+      border-radius: var(--df-radius-xl);
+      box-shadow: var(--df-shadow-lg), 0 0 60px rgba(34, 211, 238, 0.12), inset 0 1px 0 rgba(255,255,255,0.06);
+      padding: var(--df-space-2);
+      overflow: hidden;
+    }
     .hero-preview-bar { display: flex; gap: 6px; padding: var(--df-space-3) var(--df-space-4); border-bottom: 1px solid var(--df-border); }
-    .hero-preview-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .hero-preview-dot:nth-child(1) { background: var(--df-pink); }
-    .hero-preview-dot:nth-child(2) { background: var(--df-peach); }
-    .hero-preview-dot:nth-child(3) { background: var(--df-mint); }
+    .hero-preview-dot { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+    .hero-preview-dot:nth-child(1) { background: var(--df-pink); color: var(--df-pink); }
+    .hero-preview-dot:nth-child(2) { background: var(--df-peach); color: var(--df-peach); }
+    .hero-preview-dot:nth-child(3) { background: var(--df-mint); color: var(--df-mint); }
     .hero-preview-body { padding: var(--df-space-6); display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--df-space-4); min-height: 180px; }
-    .hero-preview-kpi { background: var(--df-gradient-subtle); border-radius: var(--df-radius); padding: var(--df-space-4); text-align: left; border: 1px solid var(--df-border); }
-    .hero-preview-kpi .val { font-size: 1.25rem; font-weight: 700; color: var(--df-text); }
-    .hero-preview-kpi .lbl { font-size: 0.7rem; color: var(--df-text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+    .hero-preview-kpi {
+      background: linear-gradient(160deg, rgba(34, 211, 238, 0.1), rgba(167, 139, 250, 0.08));
+      border-radius: var(--df-radius);
+      padding: var(--df-space-4);
+      text-align: left;
+      border: 1px solid var(--df-border);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    .hero-preview-kpi .val { font-size: 1.35rem; font-weight: 800; color: var(--df-text); font-family: Syne, Outfit, sans-serif; }
+    .hero-preview-kpi .lbl { font-size: 0.7rem; color: var(--df-text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
     .features-section { max-width: var(--df-max-width); margin: 0 auto; }
-    .feature-icon { width: 44px; height: 44px; border-radius: var(--df-radius); background: var(--df-gradient-subtle); border: 1px solid var(--df-border); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: var(--df-space-4); }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 16px;
+      background: var(--df-gradient-subtle); border: 1px solid var(--df-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; margin-bottom: var(--df-space-4);
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.12);
+    }
     .feature-card p { font-size: 0.875rem; line-height: 1.65; }
     .stats-inner { max-width: var(--df-max-width); margin: 0 auto; text-align: center; }
-    .stat-item .num { font-size: 2.25rem; font-weight: 700; letter-spacing: -0.03em; color: var(--df-text); }
+    .stat-item .num { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.04em; color: var(--df-text); font-family: Syne, sans-serif; }
     .stat-item .lbl { font-size: 0.8125rem; margin-top: var(--df-space-1); }
     .pipeline-section { max-width: var(--df-max-width); margin: 0 auto; text-align: center; }
     .preview-inner { max-width: var(--df-max-width); margin: 0 auto; }
     .preview-card { text-align: center; }
-    .preview-mock { background: var(--df-gradient-subtle); border-radius: var(--df-radius); height: 160px; margin-bottom: var(--df-space-5); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; border: 1px dashed var(--df-border); }
+    .preview-mock {
+      background: var(--df-gradient-subtle); border-radius: var(--df-radius);
+      height: 160px; margin-bottom: var(--df-space-5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; border: 1px solid var(--df-border);
+      box-shadow: inset 0 0 40px rgba(34, 211, 238, 0.08);
+    }
     .preview-card p { font-size: 0.875rem; margin-bottom: var(--df-space-4); }
     .stat-skeleton { display: inline-block; width: 80px; height: 2rem; border-radius: var(--df-radius-sm); }
+    .ticker {
+      overflow: hidden; border-top: 1px solid var(--df-border); border-bottom: 1px solid var(--df-border);
+      background: rgba(8, 10, 22, 0.55); padding: 0.85rem 0;
+    }
+    .ticker-track { display: flex; gap: 2.5rem; width: max-content; animation: ticker 28s linear infinite; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--df-text-muted); }
+    .ticker-track span { white-space: nowrap; }
+    .ticker-track span::before { content: '✦'; color: var(--df-blue); margin-right: 0.65rem; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
     @media (max-width: 640px) { .hero-preview-body { grid-template-columns: repeat(2, 1fr); } }
   </style>
 </head>
@@ -65,44 +105,59 @@
   <div class="df-hero-grid"></div>
   <div class="hero-content df-fade-in">
     <img src="Dataforge.png" alt="DataForge" class="hero-logo" />
-    <h1>Job Intelligence Platform</h1>
+    <div class="df-status-pill"><span class="df-live-dot"></span> Neural engine live</div>
+    <h1>Job intelligence,<br>forged in motion</h1>
     <p class="hero-sub">
-      Aggregating and analyzing Europe-wide job intelligence across BA Jobsuche, EURES, direct ATS feeds, Arbeitnow, and Berlin startups.
+      A generative-grade command surface for Europe-wide roles — BA Jobsuche, EURES, ATS feeds, Arbeitnow, and Berlin startups, streamed into one 3D workspace.
     </p>
     <div class="hero-cta">
-      <a href="jobs.html" class="df-btn df-btn-primary df-btn-lg">Explore Jobs</a>
-      <a href="dashboard.html" class="df-btn df-btn-secondary df-btn-lg">View Job Intelligence Dashboard</a>
+      <a href="jobs.html" class="df-btn df-btn-primary df-btn-lg">Launch Job Board</a>
+      <a href="dashboard.html" class="df-btn df-btn-secondary df-btn-lg">Enter Dashboard</a>
     </div>
   </div>
 
-  <div class="hero-preview df-fade-in df-fade-in-delay-2">
-    <div class="hero-preview-frame">
-      <div class="hero-preview-bar">
-        <span class="hero-preview-dot"></span>
-        <span class="hero-preview-dot"></span>
-        <span class="hero-preview-dot"></span>
-      </div>
-      <div class="hero-preview-body">
-        <div class="hero-preview-kpi">
-          <div class="val" id="hero-kpi-total">—</div>
-          <div class="lbl">Total Jobs</div>
+  <div class="df-hero-stage df-fade-in df-fade-in-delay-2">
+    <div class="df-hero-ring"></div>
+    <div class="df-hero-ring df-hero-ring-2"></div>
+    <div class="df-sat df-sat-1"><div class="k">Signal</div><div class="v">Live Gold layer</div></div>
+    <div class="df-sat df-sat-2"><div class="k">Coverage</div><div class="v">EU · 5 sources</div></div>
+    <div class="df-sat df-sat-3"><div class="k">Match</div><div class="v">Skill-scored</div></div>
+    <div class="df-hero-deck">
+      <div class="hero-preview-frame">
+        <div class="hero-preview-bar">
+          <span class="hero-preview-dot"></span>
+          <span class="hero-preview-dot"></span>
+          <span class="hero-preview-dot"></span>
         </div>
-        <div class="hero-preview-kpi">
-          <div class="val" id="hero-kpi-remote">—</div>
-          <div class="lbl">Remote</div>
-        </div>
-        <div class="hero-preview-kpi">
-          <div class="val" id="hero-kpi-english">—</div>
-          <div class="lbl">English</div>
-        </div>
-        <div class="hero-preview-kpi">
-          <div class="val" id="hero-kpi-companies">—</div>
-          <div class="lbl">Companies</div>
+        <div class="hero-preview-body">
+          <div class="hero-preview-kpi">
+            <div class="val" id="hero-kpi-total">—</div>
+            <div class="lbl">Total Jobs</div>
+          </div>
+          <div class="hero-preview-kpi">
+            <div class="val" id="hero-kpi-remote">—</div>
+            <div class="lbl">Remote</div>
+          </div>
+          <div class="hero-preview-kpi">
+            <div class="val" id="hero-kpi-english">—</div>
+            <div class="lbl">English</div>
+          </div>
+          <div class="hero-preview-kpi">
+            <div class="val" id="hero-kpi-companies">—</div>
+            <div class="lbl">Companies</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>BA Jobsuche</span><span>EURES</span><span>Arbeitnow</span><span>Direct ATS</span><span>Berlin Startups</span><span>Remote radar</span><span>Skill demand</span><span>Career matching</span>
+    <span>BA Jobsuche</span><span>EURES</span><span>Arbeitnow</span><span>Direct ATS</span><span>Berlin Startups</span><span>Remote radar</span><span>Skill demand</span><span>Career matching</span>
+  </div>
+</div>
 
 <!-- Features -->
 <section class="df-section features-section df-section-alt df-reveal">
@@ -271,7 +326,7 @@
     </div>
     <div class="df-footer-links">
       <strong style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--df-text-muted);">Version</strong>
-      <span>UI v2.0 · Light Theme</span>
+      <span>UI v3.0 · Neural 3D</span>
       <span id="footer-updated">Data loading...</span>
     </div>
   </div>
