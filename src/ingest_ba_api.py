@@ -92,18 +92,31 @@ def lambda_handler(event, context):
             inplace=True,
         )
 
-        # Construct apply URL from job_id (refnr)
-        df["url"] = "https://www.arbeitsagentur.de/jobsuche/jobdetail/" + df["job_id"].astype(str)
+        # Prefer BA-provided apply URL when present (external postings).
+        if "externe_url" in df.columns:
+            external = df["externe_url"].fillna("").astype(str)
+            fallback = "https://www.arbeitsagentur.de/jobsuche/jobdetail/" + df["job_id"].astype(str)
+            df["url"] = external.where(external.str.startswith("http"), fallback)
+            df.drop(columns=["externe_url"], inplace=True)
+        else:
+            df["url"] = "https://www.arbeitsagentur.de/jobsuche/jobdetail/" + df["job_id"].astype(str)
 
         if "company" in df.columns:
             df["company"] = df["company"].apply(lambda c: normalize_company(c) or "")
 
         title_col = df["title"] if "title" in df.columns else pd.Series([""] * len(df))
         loc_col = df["location"] if "location" in df.columns else pd.Series([""] * len(df))
+        homeoffice = (
+            df["homeoffice"].fillna(False).astype(bool)
+            if "homeoffice" in df.columns
+            else pd.Series([False] * len(df))
+        )
         df["remote"] = [
-            _looks_remote(t, loc, "")
-            for t, loc in zip(title_col, loc_col)
+            bool(ho) or _looks_remote(t, loc, "")
+            for ho, t, loc in zip(homeoffice, title_col, loc_col)
         ]
+        if "homeoffice" in df.columns:
+            df.drop(columns=["homeoffice"], inplace=True)
 
         # Add source and ingestion timestamp
         df["source"] = "ba_api"

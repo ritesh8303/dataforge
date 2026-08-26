@@ -114,11 +114,44 @@ class ArbeitnowFetcher:
 class BAFetcher:
     """Fetcher for the Bundesagentur fur Arbeit public Jobsuche API (no auth required)."""
 
-    JOBS_URL = "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v4/jobs"
+    # v4/jobs started returning 403 in Aug 2026; v6 is the current public search endpoint.
+    JOBS_URL = "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs"
+
+    @staticmethod
+    def _normalize_job(job: Dict[str, Any]) -> Dict[str, Any]:
+        """Map v6 (or legacy v4) job payloads onto the fields ingest_ba_api expects."""
+        locs = job.get("stellenlokationen") or []
+        adresse: Dict[str, Any] = {}
+        if locs and isinstance(locs[0], dict):
+            adresse = locs[0].get("adresse") or {}
+        elif isinstance(job.get("arbeitsort"), dict):
+            adresse = job["arbeitsort"]
+
+        eintritt = job.get("eintrittszeitraum") or {}
+        return {
+            "refnr": job.get("referenznummer") or job.get("refnr") or "",
+            "titel": (job.get("stellenangebotsTitel") or job.get("titel") or "").strip(),
+            "arbeitgeber": job.get("firma") or job.get("arbeitgeber") or "",
+            "eintrittsdatum": eintritt.get("von") or job.get("eintrittsdatum") or "",
+            "modifikationsTimestamp": job.get("aenderungsdatum")
+            or job.get("modifikationsTimestamp")
+            or "",
+            "arbeitsort": {
+                "plz": str(adresse.get("plz") or ""),
+                "ort": adresse.get("ort") or "",
+                "region": adresse.get("region") or "",
+            },
+            "externe_url": job.get("externeURL") or "",
+            "homeoffice": bool(job.get("homeofficemoeglich")),
+        }
 
     def fetch_jobs(self, query: str = "Data Engineer") -> Dict[str, Any]:
         """Fetches all pages of jobs from BA public API."""
-        headers = {"X-API-Key": "jobboerse-jobsuche", "Accept": "application/json"}
+        headers = {
+            "X-API-Key": "jobboerse-jobsuche",
+            "Accept": "application/json",
+            "User-Agent": "Jobsuche/1.0 (DataForge; research)",
+        }
 
         all_jobs = []
         page = 1
@@ -130,10 +163,10 @@ class BAFetcher:
             response = requests.get(self.JOBS_URL, headers=headers, params=params, timeout=15)
             response.raise_for_status()
             raw_data = response.json()
-            jobs = raw_data.get("stellenangebote", [])
-            if not jobs:
+            raw_jobs = raw_data.get("ergebnisliste") or raw_data.get("stellenangebote") or []
+            if not raw_jobs:
                 break
-            all_jobs.extend(jobs)
+            all_jobs.extend(self._normalize_job(job) for job in raw_jobs)
             max_results = raw_data.get("maxErgebnisse", 0)
             if len(all_jobs) >= max_results:
                 break

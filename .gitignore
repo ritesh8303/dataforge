@@ -51,3 +51,6 @@ tmp_*
 
 # Terraform plan artifacts (binary, machine-specific — never commit)
 *.tfplan
+
+# Never vendor requests into Lambda zip (shadows AWSSDKPandas layer)
+src/requests/
