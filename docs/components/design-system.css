@@ -2,7 +2,7 @@
    DataForge Design System — Neural 3D / Generative AI
    ═══════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&display=swap');
 
 :root {
   --df-bg: #05060d;
@@ -79,6 +79,9 @@
   --df-nav-height: 72px;
   --df-mx: 50vw;
   --df-my: 30vh;
+
+  --df-font-serif: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --df-font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -93,22 +96,24 @@ html {
 body {
   background: var(--df-bg);
   color: var(--df-text-secondary);
-  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 0.9375rem;
-  line-height: 1.65;
+  font-family: var(--df-font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
+  font-feature-settings: 'cv11', 'ss01';
 }
 
 h1, h2, h3, h4 {
   color: var(--df-text);
-  letter-spacing: -0.035em;
+  letter-spacing: -0.02em;
+  font-family: var(--df-font-serif);
+  font-optical-sizing: auto;
 }
 
-h1, h2 { font-family: 'Syne', 'Outfit', sans-serif; }
-h1 { font-size: clamp(2rem, 5.4vw, 3.6rem); font-weight: 800; line-height: 1.08; }
-h2 { font-size: 1.6rem; font-weight: 700; }
-h3 { font-size: 1.08rem; font-weight: 600; }
+h1 { font-size: clamp(2.15rem, 5.2vw, 3.75rem); font-weight: 400; line-height: 1.12; }
+h2 { font-size: 1.65rem; font-weight: 400; line-height: 1.25; }
+h3 { font-size: 1.1rem; font-weight: 500; font-family: var(--df-font-sans); letter-spacing: -0.015em; }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: #07080f; }
@@ -264,10 +269,10 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
   gap: var(--df-space-3);
   text-decoration: none;
   color: var(--df-text);
-  font-weight: 800;
-  font-size: 1.08rem;
-  letter-spacing: -0.03em;
-  font-family: 'Syne', sans-serif;
+  font-weight: 500;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  font-family: var(--df-font-serif);
 }
 
 .df-navbar-brand img {
@@ -338,8 +343,8 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
   gap: var(--df-space-2);
   padding: 0.7rem 1.35rem;
   font-size: 0.875rem;
-  font-weight: 600;
-  font-family: inherit;
+  font-weight: 500;
+  font-family: var(--df-font-sans);
   border-radius: var(--df-radius-full);
   border: 1px solid transparent;
   cursor: pointer;
@@ -499,11 +504,11 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
 
 .df-kpi-value {
   font-size: 1.8rem;
-  font-weight: 800;
+  font-weight: 400;
   color: var(--df-text);
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   line-height: 1.2;
-  font-family: 'Syne', sans-serif;
+  font-family: var(--df-font-serif);
 }
 
 .df-kpi-sub {
@@ -516,9 +521,9 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
 .df-section-header { margin-bottom: var(--df-space-10); }
 
 .df-section-header h2 {
-  font-size: clamp(1.6rem, 3vw, 2.15rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-size: clamp(1.7rem, 3vw, 2.25rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
   margin-bottom: var(--df-space-3);
 }
 
@@ -843,10 +848,10 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
   display: flex;
   align-items: center;
   gap: var(--df-space-3);
-  font-weight: 800;
+  font-weight: 500;
   color: var(--df-text);
   margin-bottom: var(--df-space-2);
-  font-family: 'Syne', sans-serif;
+  font-family: var(--df-font-serif);
 }
 
 .df-footer-brand img { width: 28px; height: 28px; filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.4)); }
@@ -1173,7 +1178,7 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
 }
 
 .df-sat .k { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--df-text-muted); }
-.df-sat .v { font-size: 0.95rem; font-weight: 700; color: var(--df-text); margin-top: 2px; font-family: 'Syne', sans-serif; }
+.df-sat .v { font-size: 0.95rem; font-weight: 500; color: var(--df-text); margin-top: 2px; font-family: var(--df-font-serif); }
 
 .df-sat-1 { top: 6%; left: -2%; animation-delay: 0s; }
 .df-sat-2 { top: 2%; right: -1%; animation-delay: 1.2s; }
