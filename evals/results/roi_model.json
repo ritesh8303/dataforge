@@ -1,0 +1,32 @@
+{
+  "assumptions": {
+    "cost_per_match_usd": 0.0002,
+    "cost_per_enriched_job_usd": 0.0005,
+    "price_freemium_match_usd": 0.0,
+    "price_premium_match_usd": 0.02,
+    "price_b2b_report_monthly_usd": 199.0,
+    "price_enrichment_per_1k_jobs_usd": 5.0,
+    "fixed_infra_monthly_usd": 3.0
+  },
+  "scenarios": {
+    "freemium_match_api": {
+      "revenue_per_1k_matches": 0.0,
+      "cost_per_1k_matches": 0.2,
+      "break_even_mau": Infinity
+    },
+    "premium_match_api": {
+      "revenue_per_1k_matches": 20.0,
+      "cost_per_1k_matches": 0.2,
+      "margin_per_1k": 19.8
+    },
+    "b2b_labour_reports": {
+      "monthly_price": 199.0,
+      "customers_to_cover_infra": 1
+    },
+    "usage_based_enrichment": {
+      "revenue_per_1k_jobs": 5.0,
+      "cost_per_1k_jobs": 0.5,
+      "margin_per_1k": 4.5
+    }
+  }
+}

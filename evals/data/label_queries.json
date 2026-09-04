@@ -1,0 +1,23 @@
+[
+  {
+    "query_id": "q01",
+    "resume_excerpt": "Senior Python developer with AWS, Spark, Airflow, 6 years experience building data pipelines",
+    "dream_role": "Data Engineer",
+    "location": "Berlin",
+    "relevant_job_ids": ["sem_example_python_berlin", "sem_data_engineer_aws"]
+  },
+  {
+    "query_id": "q02",
+    "resume_excerpt": "Machine Learning engineer PyTorch TensorFlow NLP LLM RAG experience",
+    "dream_role": "Machine Learning Engineer",
+    "location": "Remote",
+    "relevant_job_ids": ["sem_ml_engineer_remote", "sem_nlp_llm"]
+  },
+  {
+    "query_id": "q03",
+    "resume_excerpt": "Junior data analyst SQL Excel Power BI Tableau",
+    "dream_role": "Data Analyst",
+    "location": "Munich",
+    "relevant_job_ids": ["sem_analyst_munich", "sem_bi_analyst"]
+  }
+]

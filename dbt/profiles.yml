@@ -1,0 +1,7 @@
+dataforge:
+  target: ci
+  outputs:
+    ci:
+      type: duckdb
+      path: dbt/dataforge.duckdb
+      threads: 4

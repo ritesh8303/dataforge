@@ -1,149 +1,81 @@
 # DataForge
 
-**DataForge** is a **Job Intelligence Platform** that aggregates, processes, and analyzes 10,000+ jobs across Europe using a multi-source ETL pipeline.
+Live European **job-intelligence lakehouse**: five sources → medallion on AWS → Gold analytics → APIs → GitHub Pages.
 
-A serverless Data Lakehouse built on AWS for processing and analyzing German and European job market vacancies — delivered through a Job Intelligence Dashboard, Job Intelligence Board, and Career Matching Wizard.
+**Live:** [Dashboard](https://ritesh8303.github.io/dataforge/) · **Code:** this repo  
+**Thesis:** UE Applied Sciences M.Sc. Data Science — [`docs/thesis/`](docs/thesis/)
+
+> I run a production medallion pipeline (Bronze / Silver SCD2 / Gold) with ingest validation, quality metrics, Terraform, and CI. Analytics engineering (dbt on Gold) is in-repo. GenAI matching/enrichment is **integrating** — not the public production story yet.
+
+| | |
+|---|---|
+| **Shipped** | Multi-source ETL, Pydantic gates, SCD Type 2, Gold CSVs + quality report, Terraform, GitHub Actions, Pages UI, Jobs/Metrics APIs |
+| **In this repo now** | Layer contracts, data dictionary, Gold quality gate in CI, **real dbt** (DuckDB) on Gold aggregates |
+| **Integrating (in repo, not AWS-applied)** | `src/ai_gateway/`, enrichment, match API, `evals/`, `terraform/ai.tf` — do not CV as deployed |
+| **Planned** | Persisted vector DB, LangGraph agent, honest eval report, full Docker lakehouse demo, EU AI Act 1-pager |
+
+Details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/DATA_DICTIONARY.md`](docs/DATA_DICTIONARY.md) · [`docs/ROADMAP.md`](docs/ROADMAP.md)
 
 ## Architecture
 
 ```
 EventBridge (daily at 20:00 UTC ≈ 22:00 CEST)
-  ├── dataforge-ingestor        → Arbeitnow API (paginated, ~900 jobs)
-  ├── dataforge-ba-ingestor     → BA Jobsuche API (multi-query, ~5000 jobs)
-  ├── dataforge-company-ingestor→ Direct ATS career feeds (configurable companies)
+  ├── dataforge-ingestor        → Arbeitnow API
+  ├── dataforge-ba-ingestor     → BA Jobsuche API
+  ├── dataforge-company-ingestor→ Direct ATS career feeds
   ├── dataforge-berlin-startups-ingestor → Berlin Startup Jobs RSS
-  └── GitHub Action (04:00 + 19:15 UTC) → EURES EU job portal API
+  └── GitHub Action (04:00 + 19:15 UTC) → EURES
             │
-            ▼ S3 upload (.parquet)
-      dataforge-bronze-dev-eu-central-1 (Bronze Bucket, 14-day expiry)
+            ▼ S3 Parquet
+      Bronze (14-day expiry) → Silver SCD Type 2 → Gold CSVs
             │
-            ▼ EventBridge transformer (daily at 20:30 UTC)
-      dataforge-transformer     → SCD Type 2 → Silver Layer (.parquet, history retained)
-            │
-            ▼ S3 trigger (gold_trigger/ completion marker)
-      dataforge-gold-generator  → 12 analytics CSVs + metrics.json
-            │
-            ▼ S3 upload & GitHub Actions publishing
-      GitHub Pages Website      ← Static UI hosted from /docs
-            │
-            ▼ Dynamic API Requests
-      AWS API Gateway           → dataforge-metrics & dataforge-jobs-api (Lambdas)
+            ▼
+      GitHub Pages (docs/)  +  API Gateway (metrics + jobs search)
 ```
 
 ### Layers
-- **Bronze** — Raw Parquet files partitioned by date, one file per source per day.
-- **Silver** — Deduplicated, SCD Type 2 history tracking all job changes, creations, and expirations over time.
-- **Gold** — 12 analytics-ready CSVs plus a `metrics.json` snapshot, refreshed automatically after every Silver update, pushed to S3 and compiled for visualization.
 
-### Gold Outputs
-| File | Description |
-|---|---|
-| `all_jobs.csv` | All active jobs with title, company, location, source, date (trimmed descriptions) |
-| `expired_jobs.csv` | Historically expired jobs with duration dates (`date_added`, `date_expired`) |
-| `top_locations.csv` | Top 20 European cities by job count (cleaned) |
-| `top_companies.csv` | Top 20 hiring companies |
-| `jobs_by_source.csv` | Active postings breakdown by ingestion source |
-| `remote_vs_onsite.csv` | Remote / hybrid / on-site breakdown across all sources |
-| `data_quality_report.csv` | Completeness, uniqueness, freshness, and schema validation metrics |
-| `jobs_trend.csv` | True new jobs added per day based on their initial appearance date |
-| `active_vs_expired.csv` | Database summary tracking active vs historically expired jobs |
-| `top_skills.csv` | Top 20 extracted technical skills from tags and job descriptions |
-| `description_insights.csv`| Stopword ratios, home office mentions, and benefit visibility statistics |
-| `pipeline_stats.csv` | Ingestion metrics tracking new, updated, and unchanged jobs per run |
+- **Bronze** — raw Parquet, one file per source per day.
+- **Silver** — deduplicated SCD Type 2 history.
+- **Gold** — analytics CSVs + `metrics.json`. Row-level `all_jobs` stays in S3; small aggregates are committed under `data/gold/` for dbt/CI.
 
-## Tech Stack
-- **Infrastructure**: Terraform (IaC) — remote state on S3 + DynamoDB locking
-- **Presentation**: **GitHub Pages** static site hosting (`/docs` directory) consuming serverless REST APIs
-- **Compute**: AWS Lambda (Python 3.11) — 8 functions (4 ingestors, transformer, gold generator, 2 APIs) + EURES via GitHub Actions
-- **API Entry**: AWS API Gateway (HTTP APIs) routing requests to the metrics and jobs search Lambdas
-- **Storage**: AWS S3 — Bronze, Silver, Gold buckets
-- **Data Processing**: Pandas, AWS SDK for Pandas (awswrangler)
-- **Monitoring**: CloudWatch Alarms → SNS email, SQS DLQ on all Lambdas
-- **CI/CD**: GitHub Actions (runs test suites, generates reports, deploys Pages)
+## Tech stack
 
-## Data Sources
-- **Arbeitnow** — Public German job board API, no auth required
-- **BA Jobsuche** — Official Federal Employment Agency API, no auth required
-  - Queries: Data Engineer, Data Scientist, Data Analyst, Machine Learning,
-    Business Intelligence, Data Architect, MLOps, Analytics Engineer
-- **Direct company feeds** — Public career-page feeds from Greenhouse, Lever,
-  Ashby, Workable, SmartRecruiters, Recruitee, Personio XML, Workday CXS,
-  Comeet, and Pinpoint.
-- **Berlin Startup Jobs** — RSS feeds (engineering, product, internships)
-- **EURES** — EU job mobility portal API (GitHub Actions at 04:00 and 19:15 UTC; the evening run starts early because GitHub cron can lag, guaranteeing data lands before the 20:30 transformer).
+- **IaC:** Terraform (S3 backend + DynamoDB lock)
+- **Compute:** AWS Lambda (Python 3.11) + EURES via GitHub Actions
+- **Storage:** S3 Bronze / Silver / Gold (`eu-central-1`)
+- **Analytics engineering:** dbt-core + DuckDB on Gold snapshots (same marts; warehouse adapter later)
+- **CI:** Ruff, Pytest, Terraform validate, quality gate, `dbt run && dbt test`
+- **UI:** GitHub Pages (`docs/`)
 
-### Pipeline schedule (1 full run per day, to stay comfortably inside the free tier)
+## Data sources
 
-| UTC | Local (CEST) | What runs |
-|-----|--------------|-----------|
-| 04:00 | 06:00 | EURES ingest (GitHub Actions) |
-| 19:15 | 21:15 | EURES ingest (GitHub Actions, early margin for cron lag) |
-| 20:00 | **22:00** | All Lambda ingestors |
-| 20:30 | 22:30 | Silver transformer → Gold (triggered by completion marker) |
-| 21:00 | 23:00 | Gold CSV publish to GitHub (backup sync) |
+Arbeitnow · BA Jobsuche · company ATS feeds (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Recruitee, Personio, Workday, Comeet, Pinpoint) · Berlin Startup Jobs RSS · EURES.
 
-Direct company targets can be supplied without changing code:
+## Local — quality + dbt (industry DE slice)
 
-```json
-{
-  "companies": [
-    {"company": "Example", "careers_url": "https://boards.greenhouse.io/example"},
-    {"company": "Example EU", "careers_url": "https://jobs.eu.lever.co/example"},
-    {"company": "Example Workday", "careers_url": "https://example.wd3.myworkdayjobs.com/External"}
-  ]
-}
-```
-
-Set `COMPANY_CAREERS_CONFIG_S3_URI=s3://bucket/company-careers.json` for a
-large registry, or `COMPANY_CAREERS_CONFIG` for inline JSON. Use
-`COMPANY_CAREERS_CONFIG_MODE=replace` when the registry should replace the
-built-in seed list.
-
-## Cost Efficiency
-Runs entirely within the **AWS Free Tier**:
-- SSM Parameter Store instead of Secrets Manager
-- Lambda + Pandas (awswrangler) instead of Glue or Athena; DuckDB for local analysis
-- S3 Standard within 5GB limits — Bronze auto-expires after 14 days; Silver keeps
-  full SCD history (bounded by the transformer's inactive-retention purge)
-- GitHub Actions authenticates to AWS via OIDC role assumption (no stored keys)
-
-## Project Layout
-
-```
-dataforge/
-├── src/           # Lambda handlers and shared processing code
-├── terraform/     # AWS infrastructure (S3, Lambda, API Gateway)
-├── docs/          # GitHub Pages UI (landing, dashboard, job board, Career Matching Wizard)
-├── scripts/       # Local dev and ops tooling
-├── data/gold/     # Committed Gold aggregate CSVs (refreshed by CI; large row-level CSVs stay in S3 only)
-├── tests/         # Unit and integration tests
-└── .github/       # CI, EURES scraper, Gold publish, Pages deploy
-```
-
-## Jobs API pagination
-
-The live Jobs API returns paginated JSON (default up to 2,000 jobs per request). Single
-responses above ~5,000 jobs can exceed AWS Lambda payload limits and return HTTP 500.
-The GitHub Pages Job Intelligence Board loads the full dataset in chunks automatically; clients should
-use `offset` and `limit` query parameters for complete results.
-
-## Running Locally
+From the repo root (Python 3.11):
 
 ```bash
-# Download latest Gold CSVs from S3
-python scripts/download_all.py
+pip install -r requirements-test.txt -r requirements-analytics.txt
+python scripts/check_quality_gate.py
+dbt run --project-dir dbt --profiles-dir dbt
+dbt test --project-dir dbt --profiles-dir dbt
+pytest tests/ --ignore=tests/test_e2e_pipeline.py
+```
 
-# Regenerate local dashboard PNG from data/gold/
-python scripts/visualize_gold.py
+Docker (Gold analytics only — not the AWS pipeline):
 
-# Run an ingestor locally (writes to data/bronze/)
+```bash
+docker compose run --rm analytics
+```
+
+## Local — pipeline tooling
+
+```bash
+python scripts/download_all.py              # Gold CSVs from S3
 python scripts/run_ingestor_local.py eures
-
-# Local API server using data/gold/ CSVs
 python scripts/run_local_api.py
-
-# Backfill Silver from existing Bronze files in S3
-python scripts/backfill_silver.py
 ```
 
 ## Infrastructure
@@ -154,3 +86,22 @@ terraform init
 terraform plan
 terraform apply
 ```
+
+`terraform/ai.tf` (match API / enrichment) is in git as WIP. It is **not applied** on AWS until you run `terraform apply` and can demo it. Do not list it as production.
+
+## Layout
+
+```
+src/            Lambda handlers + processing (Pydantic, SCD, Gold, quality)
+terraform/      AWS lakehouse
+dbt/            Real dbt project on Gold aggregates (DuckDB)
+docs/           Pages UI + architecture / dictionary / thesis exposé
+scripts/        Local ops + quality gate
+data/gold/      Committed Gold aggregates (not all_jobs)
+tests/          Pytest (skip live AWS e2e in CI)
+evals/          Thesis eval harness (local; expand before claiming metrics)
+```
+
+## Cost
+
+Designed for AWS Free Tier: SSM not Secrets Manager, Lambda + Pandas instead of Glue, Bronze 14-day expiry, GitHub OIDC (no long-lived AWS keys in Actions).

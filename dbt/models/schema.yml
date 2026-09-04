@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: stg_jobs_by_source
+    description: Gold jobs grouped by ingest source.
+    columns:
+      - name: source
+        tests:
+          - not_null
+          - unique
+          - accepted_values:
+              arguments:
+                values: ["ba_api", "direct", "eures", "arbeitnow", "berlin_startups"]
+      - name: job_count
+        tests:
+          - not_null
+
+  - name: stg_jobs_by_region
+    columns:
+      - name: region
+        tests:
+          - not_null
+          - unique
+      - name: job_count
+        tests:
+          - not_null
+
+  - name: stg_quality_report
+    columns:
+      - name: total_jobs
+        tests:
+          - not_null
+      - name: schema_validation_pass
+        tests:
+          - not_null
+
+  - name: stg_top_skills
+    columns:
+      - name: skill
+        tests:
+          - not_null
+          - unique
+
+  - name: mart_source_share
+    description: Source mix for BI; single Gold truth, no duplicated KPI logic in the dashboard.
+    columns:
+      - name: source
+        tests:
+          - not_null
+          - unique
+      - name: source_share
+        tests:
+          - not_null
+
+  - name: mart_quality_kpis
+    description: Latest Gold quality snapshot for interviews and thesis evaluation tables.
+    columns:
+      - name: total_jobs
+        tests:
+          - not_null

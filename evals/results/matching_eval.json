@@ -1,0 +1,61 @@
+{
+  "embedding_avg_ndcg@10": 1.0,
+  "heuristic_avg_ndcg@10": 1.0,
+  "details": {
+    "embedding": [
+      {
+        "query_id": "q01",
+        "ndcg@10": 1.0,
+        "p@5": 0.4
+      },
+      {
+        "query_id": "q02",
+        "ndcg@10": 1.0,
+        "p@5": 0.4
+      },
+      {
+        "query_id": "q03",
+        "ndcg@10": 1.0,
+        "p@5": 0.4
+      }
+    ],
+    "heuristic": [
+      {
+        "query_id": "q01",
+        "ndcg@10": 1.0,
+        "p@5": 0.4
+      },
+      {
+        "query_id": "q02",
+        "ndcg@10": 1.0,
+        "p@5": 0.4
+      },
+      {
+        "query_id": "q03",
+        "ndcg@10": 1.0,
+        "p@5": 0.4
+      }
+    ]
+  },
+  "cost_summary": {
+    "total_cost_usd": 1.1e-05,
+    "total_calls": 10,
+    "avg_latency_ms": 186.47,
+    "by_provider": {
+      "bedrock": {
+        "calls": 10,
+        "cost_usd": 1.0500000000000001e-05,
+        "latency_ms": 1864.7038000017346,
+        "failures": 0
+      }
+    },
+    "by_task": {
+      "embed": {
+        "calls": 10,
+        "cost_usd": 1.0500000000000001e-05,
+        "latency_ms": 1864.7038000017346,
+        "failures": 0
+      }
+    }
+  }
+}

@@ -51,6 +51,15 @@ tmp_*
 
 # Terraform plan artifacts (binary, machine-specific — never commit)
 *.tfplan
+tfplan
+
+# dbt / DuckDB local artifacts
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/*.duckdb
+dbt/*.duckdb.wal
+dbt/.user.yml
 
 # Never vendor requests into Lambda zip (shadows AWSSDKPandas layer)
 src/requests/

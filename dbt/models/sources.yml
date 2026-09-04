@@ -1,0 +1,40 @@
+version: 2
+
+sources:
+  - name: gold
+    schema: main
+    description: Committed Gold aggregate CSVs. Same grain as S3 Gold marts; not the row-level all_jobs extract.
+    tables:
+      - name: jobs_by_source
+        config:
+          external_location: "read_csv_auto('data/gold/jobs_by_source.csv')"
+      - name: jobs_by_region
+        config:
+          external_location: "read_csv_auto('data/gold/jobs_by_region.csv')"
+      - name: data_quality_report
+        config:
+          external_location: "read_csv_auto('data/gold/data_quality_report.csv')"
+      - name: pipeline_stats
+        config:
+          external_location: "read_csv_auto('data/gold/pipeline_stats.csv')"
+      - name: top_skills
+        config:
+          external_location: "read_csv_auto('data/gold/top_skills.csv')"
+      - name: remote_vs_onsite
+        config:
+          external_location: "read_csv_auto('data/gold/remote_vs_onsite.csv')"
+      - name: top_companies
+        config:
+          external_location: "read_csv_auto('data/gold/top_companies.csv')"
+      - name: top_locations
+        config:
+          external_location: "read_csv_auto('data/gold/top_locations.csv')"
+      - name: jobs_trend
+        config:
+          external_location: "read_csv_auto('data/gold/jobs_trend.csv')"
+      - name: active_vs_expired
+        config:
+          external_location: "read_csv_auto('data/gold/active_vs_expired.csv')"
+      - name: description_insights
+        config:
+          external_location: "read_csv_auto('data/gold/description_insights.csv')"

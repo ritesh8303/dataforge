@@ -69,3 +69,29 @@ def validate_region_taxonomy(regions) -> None:
     values = set(str(r).strip() for r in regions)
     if "Remote" in values:
         raise ValueError("Invalid country classification: Remote found in country dimension")
+
+
+# Internship / CI contracts on Gold quality_report rows (not ingest-time Pydantic).
+MAX_MISSING_TITLE_RATE = 0.01
+MAX_MISSING_COMPANY_RATE = 0.01
+MAX_DUPLICATE_JOB_ID_RATE = 0.0
+
+
+def evaluate_gold_quality_row(row: Dict[str, Any]) -> list[str]:
+    """Return human-readable failures; empty list means the quality gate passed."""
+    failures: list[str] = []
+    passed = str(row.get("schema_validation_pass", "")).strip().lower() in {"true", "1"}
+    if not passed:
+        failures.append("schema_validation_pass is not true")
+    if float(row.get("missing_title_rate", 1)) > MAX_MISSING_TITLE_RATE:
+        failures.append(f"missing_title_rate {row.get('missing_title_rate')} > {MAX_MISSING_TITLE_RATE}")
+    if float(row.get("missing_company_rate", 1)) > MAX_MISSING_COMPANY_RATE:
+        failures.append(f"missing_company_rate {row.get('missing_company_rate')} > {MAX_MISSING_COMPANY_RATE}")
+    if float(row.get("duplicate_job_id_rate", 1)) > MAX_DUPLICATE_JOB_ID_RATE:
+        failures.append(f"duplicate_job_id_rate {row.get('duplicate_job_id_rate')} > {MAX_DUPLICATE_JOB_ID_RATE}")
+    if int(row.get("invalid_source_count", 1)) != 0:
+        failures.append(f"invalid_source_count={row.get('invalid_source_count')}")
+    if int(row.get("remote_in_country_dimension", 1)) != 0:
+        failures.append("region taxonomy: Remote found in country dimension")
+    return failures
+

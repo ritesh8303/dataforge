@@ -47,3 +47,19 @@ jobs:
         run: terraform -chdir=terraform init -backend=false
       - name: Terraform validate
         run: terraform -chdir=terraform validate
+
+  analytics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install analytics deps
+        run: pip install -r requirements-test.txt -r requirements-analytics.txt
+      - name: Gold quality gate
+        run: python scripts/check_quality_gate.py
+      - name: dbt run and test (DuckDB)
+        run: |
+          dbt run --project-dir dbt --profiles-dir dbt
+          dbt test --project-dir dbt --profiles-dir dbt
