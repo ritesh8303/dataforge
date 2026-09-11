@@ -24,18 +24,18 @@ resource "aws_iam_role_policy" "lambda_main_policy" {
         Effect = "Allow"
         Action = ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"]
         Resource = [
-          "arn:aws:s3:::dataforge-bronze-dev-eu-central-1/*",
-          "arn:aws:s3:::dataforge-silver-dev-eu-central-1/*",
-          "arn:aws:s3:::dataforge-gold-dev-eu-central-1/*"
+          "${var.bronze_bucket_arn}/*",
+          "${var.silver_bucket_arn}/*",
+          "${var.gold_bucket_arn}/*"
         ]
       },
       {
         Effect = "Allow"
         Action = ["s3:ListBucket"]
         Resource = [
-          "arn:aws:s3:::dataforge-bronze-dev-eu-central-1",
-          "arn:aws:s3:::dataforge-silver-dev-eu-central-1",
-          "arn:aws:s3:::dataforge-gold-dev-eu-central-1"
+          var.bronze_bucket_arn,
+          var.silver_bucket_arn,
+          var.gold_bucket_arn
         ]
       },
       {

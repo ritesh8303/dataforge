@@ -1,3 +1,8 @@
+# Optional thesis AI layer (enrichment + match API).
+# Terraform only loads *.tf — this file is ignored until you rename it to ai.tf.
+# Keep it off for the Germany account cutover so Bedrock/AI cost does not start
+# on a fresh apply.
+
 # ai.tf — Thesis AI layer: enrichment + match API
 # Separate from main.tf to avoid touching existing pipeline infrastructure.
 

@@ -24,7 +24,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::942361733704:role/dataforge-github-actions-dev
+          role-to-assume: arn:aws:iam::366945363779:role/dataforge-github-actions-dev
           aws-region: eu-central-1
 
       - name: Set up Python 3.11
@@ -42,7 +42,7 @@ jobs:
       - name: Run EURES Ingestion Script
         id: ingest
         env:
-          BRONZE_BUCKET: dataforge-bronze-dev-eu-central-1
+          BRONZE_BUCKET: dataforge-bronze-dev-366945363779
           LOCAL_RUN: "false"
         run: |
           python -c "

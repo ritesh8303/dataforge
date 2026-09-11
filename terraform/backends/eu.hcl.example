@@ -1,0 +1,6 @@
+# Copy to eu.hcl and replace YOUR_NEW_ACCOUNT_ID (12 digits).
+bucket         = "dataforge-terraform-state-YOUR_NEW_ACCOUNT_ID"
+key            = "dataforge/terraform.tfstate"
+region         = "eu-central-1"
+dynamodb_table = "dataforge-terraform-locks"
+encrypt        = true

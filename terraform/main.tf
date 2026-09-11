@@ -7,8 +7,10 @@ terraform {
       version = "~> 5.0"
     }
   }
+  # Bucket is account-specific. Pass it at init:
+  #   terraform init -backend-config=backends/eu.hcl
+  #   terraform init -backend-config=backends/india.hcl
   backend "s3" {
-    bucket         = "dataforge-terraform-state-942361733704"
     key            = "dataforge/terraform.tfstate"
     region         = "eu-central-1"
     dynamodb_table = "dataforge-terraform-locks"
@@ -20,10 +22,19 @@ provider "aws" {
   region = "eu-central-1"
 }
 
+data "aws_caller_identity" "current" {}
+
+locals {
+  account_id    = data.aws_caller_identity.current.account_id
+  bronze_bucket = "dataforge-bronze-dev-${local.account_id}"
+  silver_bucket = "dataforge-silver-dev-${local.account_id}"
+  gold_bucket   = "dataforge-gold-dev-${local.account_id}"
+}
+
 # Bronze holds raw daily pulls — safe to expire after 14 days (Silver is the system of record).
 module "s3_bronze" {
   source          = "./modules/s3"
-  bucket_name     = "dataforge-bronze-dev-eu-central-1"
+  bucket_name     = local.bronze_bucket
   expiration_days = 14
 }
 
@@ -31,20 +42,23 @@ module "s3_bronze" {
 # SILVER_INACTIVE_RETENTION_DAYS purge is the only retention mechanism.
 module "s3_silver" {
   source      = "./modules/s3"
-  bucket_name = "dataforge-silver-dev-eu-central-1"
+  bucket_name = local.silver_bucket
 }
 
 # Gold is small and overwritten in place every run — no expiry needed.
 module "s3_gold" {
   source      = "./modules/s3"
-  bucket_name = "dataforge-gold-dev-eu-central-1"
+  bucket_name = local.gold_bucket
 }
 
 # --- 2. PERMISSIONS & SECURITY ---
 module "iam" {
-  source       = "./modules/iam"
-  project_name = "dataforge"
-  environment  = "dev"
+  source            = "./modules/iam"
+  project_name      = "dataforge"
+  environment       = "dev"
+  bronze_bucket_arn = module.s3_bronze.arn
+  silver_bucket_arn = module.s3_silver.arn
+  gold_bucket_arn   = module.s3_gold.arn
 }
 
 # BA API is fully public — the static key "jobboerse-jobsuche" is hardcoded in
@@ -199,4 +213,20 @@ resource "aws_lambda_permission" "allow_silver_s3" {
   function_name = module.gold_lambda.lambda_function_arn
   principal     = "s3.amazonaws.com"
   source_arn    = module.s3_silver.arn
+}
+
+output "account_id" {
+  value = local.account_id
+}
+
+output "bronze_bucket" {
+  value = local.bronze_bucket
+}
+
+output "silver_bucket" {
+  value = local.silver_bucket
+}
+
+output "gold_bucket" {
+  value = local.gold_bucket
 }

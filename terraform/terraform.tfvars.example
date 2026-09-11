@@ -3,6 +3,9 @@
 alert_email = "your-email@example.com"
 environment = "dev"
 
+# After copying backends/eu.hcl.example → backends/eu.hcl:
+#   terraform init -reconfigure -backend-config=backends/eu.hcl
+
 # Optional: point the direct careers ingestor at a large registry.
 # company_careers_config_s3_uri = "s3://dataforge-config/company-careers.json"
 # company_careers_config_mode   = "append" # or "replace"

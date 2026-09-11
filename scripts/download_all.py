@@ -10,7 +10,8 @@ import awswrangler as wr
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from paths import GOLD_DIR
 
-GOLD_BUCKET = "s3://dataforge-gold-dev-eu-central-1"
+_gold = os.environ.get("GOLD_BUCKET", "dataforge-gold-dev-eu-central-1")
+GOLD_BUCKET = _gold if _gold.startswith("s3://") else f"s3://{_gold}"
 
 GOLD_FILES = [
     "all_jobs.csv",

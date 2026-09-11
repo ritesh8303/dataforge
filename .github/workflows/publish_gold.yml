@@ -24,7 +24,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::942361733704:role/dataforge-github-actions-dev
+          role-to-assume: arn:aws:iam::366945363779:role/dataforge-github-actions-dev
           aws-region: eu-central-1
 
       - uses: actions/setup-python@v5
@@ -35,6 +35,8 @@ jobs:
         run: pip install awswrangler pandas
 
       - name: Download Gold from S3
+        env:
+          GOLD_BUCKET: dataforge-gold-dev-366945363779
         run: python scripts/download_all.py
 
       - name: Regenerate dashboard PNG

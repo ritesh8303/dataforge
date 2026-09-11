@@ -38,6 +38,7 @@ src/*.pyd
 # Local pipeline outputs (small Gold aggregates in data/gold/ are committed intentionally)
 data/bronze/
 data/silver/
+.migrate/
 # Large row-level Gold CSVs: rewritten daily, would bloat git history ~6 MB/day
 data/gold/all_jobs.csv
 data/gold/expired_jobs.csv
