@@ -1,8 +1,8 @@
-# Monthly spend cap alert — email when approaching $1/month budget.
+# Monthly spend alerts — email via AWS Budgets (works without CloudWatch billing prefs).
 resource "aws_budgets_budget" "monthly" {
   name         = "dataforge-monthly-budget"
   budget_type  = "COST"
-  limit_amount = "1"
+  limit_amount = var.monthly_budget_usd
   limit_unit   = "USD"
   time_unit    = "MONTHLY"
 
@@ -22,7 +22,23 @@ resource "aws_budgets_budget" "monthly" {
 
   notification {
     comparison_operator        = "GREATER_THAN"
+    threshold                  = 50
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "ACTUAL"
+    subscriber_email_addresses = [var.alert_email]
+  }
+
+  notification {
+    comparison_operator        = "GREATER_THAN"
     threshold                  = 80
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "ACTUAL"
+    subscriber_email_addresses = [var.alert_email]
+  }
+
+  notification {
+    comparison_operator        = "GREATER_THAN"
+    threshold                  = 100
     threshold_type             = "PERCENTAGE"
     notification_type          = "ACTUAL"
     subscriber_email_addresses = [var.alert_email]
