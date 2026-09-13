@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — DataForge</title>
+  <meta name="description" content="How DataForge turns public EU job postings into a medallion lakehouse with frugal GenAI matching for interns, working students, and juniors." />
+  <link rel="icon" href="df-logo.png" type="image/png" />
+  <link rel="stylesheet" href="components/design-system.css" />
+  <style>
+    .about-wrap { max-width: 760px; margin: 0 auto; padding: var(--df-space-10) var(--df-space-4) var(--df-space-16); }
+    .about-wrap h1 { font-family: var(--df-font-serif); font-weight: 400; font-size: clamp(2rem, 4vw, 2.75rem); margin: var(--df-space-6) 0 var(--df-space-4); }
+    .about-wrap h2 { font-size: 1.15rem; margin: var(--df-space-10) 0 var(--df-space-3); color: var(--df-text); }
+    .about-wrap p, .about-wrap li { color: var(--df-text-secondary); line-height: 1.7; font-size: 0.95rem; }
+    .about-wrap ul { padding-left: 1.2rem; margin: 0 0 var(--df-space-4); }
+    .about-eyebrow { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--df-text-muted); }
+    .about-cta { display: flex; gap: var(--df-space-3); flex-wrap: wrap; margin-top: var(--df-space-8); }
+  </style>
+</head>
+<body>
+<nav class="df-navbar">
+  <div class="df-navbar-inner">
+    <a href="index.html" class="df-navbar-brand">
+      <img src="df-logo.png" alt="DataForge" />
+      DataForge
+    </a>
+    <div class="df-navbar-links">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="jobs.html">Jobs</a>
+      <a href="agent.html">Career Matching Wizard</a>
+      <a href="about.html" class="active">About</a>
+    </div>
+  </div>
+</nav>
+
+<main class="about-wrap">
+  <p class="about-eyebrow">Portfolio · UE M.Sc. thesis reference</p>
+  <h1>Problem → pipeline → AI → bio</h1>
+  <p>
+    Public job boards are noisy for <strong>interns, working students, and juniors</strong> in Germany/EU —
+    especially when visa stance, English-OK signals, and entry-level wording are buried in long JDs.
+    DataForge turns free sources into a measurable lakehouse and an advisory match surface.
+  </p>
+
+  <h2>1. Pipeline</h2>
+  <ul>
+    <li>Bronze → Silver (SCD2) → Gold on AWS S3 (<code>eu-central-1</code>)</li>
+    <li>Sources: Arbeitnow, BA, EURES, ATS/Personio, Berlin startups, Himalayas, HN Who’s Hiring</li>
+    <li>dbt + DuckDB on Gold aggregates; quality gate in CI</li>
+  </ul>
+
+  <h2>2. AI matching (frugal)</h2>
+  <ul>
+    <li>Rules-first enrichment; Bedrock Nova / Titan when ambiguous</li>
+    <li>Hybrid BM25 + dense (LanceDB-on-S3 helper) + RRF</li>
+    <li>FastAPI Match API with PII redaction and cited <code>job_id</code> explanations</li>
+    <li>Optional multi-agent graph (Supervisor → Retriever → Scorer → Explainer → Critic) + MCP tools</li>
+    <li>Kill switch, daily € budget, HITL queue for low confidence</li>
+  </ul>
+
+  <h2>3. Honest limits</h2>
+  <p>
+    Visa flags are advisory, not legal advice. Match URLs go live only after <code>terraform/ai.tf</code> is applied.
+    See <a href="https://github.com/ritesh8303/dataforge/blob/main/docs/RESPONSIBLE_AI.md">RESPONSIBLE_AI.md</a>
+    and the living <a href="https://github.com/ritesh8303/dataforge/blob/main/docs/ROADMAP.md">ROADMAP</a>.
+  </p>
+
+  <h2>4. Bio</h2>
+  <p>
+    Built by Ritesh Rakesh Jadhav as a hireable DE + applied GenAI portfolio that also packages the
+    University of Europe (Potsdam) M.Sc. Data Science thesis (RQ1–RQ4).
+  </p>
+
+  <div class="about-cta">
+    <a class="df-btn df-btn-primary" href="agent.html">Try match wizard</a>
+    <a class="df-btn df-btn-secondary" href="dashboard.html">Open dashboard</a>
+    <a class="df-btn df-btn-ghost" href="https://github.com/ritesh8303/dataforge">GitHub</a>
+  </div>
+</main>
+<script src="components/ui.js"></script>
+</body>
+</html>

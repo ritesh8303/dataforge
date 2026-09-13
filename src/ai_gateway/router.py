@@ -2,14 +2,23 @@ from __future__ import annotations
 
 from typing import Any
 
-from ai_gateway.config import TASK_PROFILES
+from ai_gateway.config import TASK_PROFILES, ai_enabled, daily_budget_usd
 from ai_gateway.cost_logger import CostLogger
 from ai_gateway.providers.anthropic_provider import AnthropicProvider
+from ai_gateway.providers.azure import AzureOpenAIProvider
 from ai_gateway.providers.bedrock_provider import BedrockProvider
 from ai_gateway.providers.local import LocalProvider
 from ai_gateway.providers.openai_provider import OpenAIProvider
 from ai_gateway.providers.base import BaseProvider, validate_json_response
 from ai_gateway.types import EmbeddingResponse, ProviderResponse, TaskProfile
+
+
+class AIDisabledError(RuntimeError):
+    """Raised when AI_ENABLED kill switch is off."""
+
+
+class BudgetExceededError(RuntimeError):
+    """Raised when daily AI spend budget is exhausted."""
 
 
 class ModelRouter:
@@ -22,11 +31,20 @@ class ModelRouter:
             "openai": OpenAIProvider(),
             "anthropic": AnthropicProvider(),
             "bedrock": BedrockProvider(),
+            "azure": AzureOpenAIProvider(),
         }
 
     def get_profile(self, task: str) -> TaskProfile:
         cfg = TASK_PROFILES.get(task, TASK_PROFILES["summarize"])
         return TaskProfile(name=task, **cfg)
+
+    def _guard(self) -> None:
+        if not ai_enabled():
+            raise AIDisabledError("AI_ENABLED=false — kill switch active")
+        spent = float(self.cost_logger.summary().get("total_cost_usd", 0.0) or 0.0)
+        budget = daily_budget_usd()
+        if spent >= budget:
+            raise BudgetExceededError(f"AI daily budget exceeded: ${spent:.4f} >= ${budget:.4f}")
 
     def _ordered_providers(self, profile: TaskProfile) -> list[BaseProvider]:
         ordered: list[BaseProvider] = []
@@ -39,6 +57,7 @@ class ModelRouter:
         return ordered
 
     def complete(self, task: str, prompt: str, system: str = "", **kwargs: Any) -> ProviderResponse:
+        self._guard()
         profile = self.get_profile(task)
         kwargs.setdefault("json_mode", profile.require_json)
         kwargs.setdefault("task", task)
@@ -90,6 +109,7 @@ class ModelRouter:
         return resp
 
     def embed(self, task: str, text: str, **kwargs: Any) -> EmbeddingResponse:
+        self._guard()
         profile = self.get_profile(task if task in TASK_PROFILES else "embed")
         last_error = ""
         for provider in self._ordered_providers(profile):

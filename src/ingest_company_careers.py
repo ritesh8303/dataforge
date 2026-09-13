@@ -43,53 +43,71 @@ HEADERS = {
 }
 
 
-# A small global seed keeps local/dev runs useful. Production scale should come
-# from COMPANY_CAREERS_CONFIG_S3_URI or COMPANY_CAREERS_CONFIG.
-DEFAULT_TARGETS: list[dict[str, Any]] = [
-    # Zalando left Greenhouse (board 404s as of Aug 2026); they run a custom careers platform.
-    {"company": "N26", "careers_url": "https://boards.greenhouse.io/n26"},
-    {"company": "HelloFresh", "careers_url": "https://boards.greenhouse.io/hellofresh"},
-    {"company": "Celonis", "careers_url": "https://boards.greenhouse.io/celonis"},
-    {"company": "Personio", "careers_url": "https://boards.greenhouse.io/personio"},
-    {"company": "Stripe", "careers_url": "https://boards.greenhouse.io/stripe"},
-    {"company": "Databricks", "careers_url": "https://boards.greenhouse.io/databricks"},
-    {"company": "Contentful", "careers_url": "https://boards.greenhouse.io/contentful"},
-    {"company": "Figma", "careers_url": "https://boards.greenhouse.io/figma"},
-    {"company": "Pinterest", "careers_url": "https://boards.greenhouse.io/pinterest"},
-    {"company": "Reddit", "careers_url": "https://boards.greenhouse.io/reddit"},
-    {"company": "SpaceX", "careers_url": "https://boards.greenhouse.io/spacex"},
-    {"company": "Robinhood", "careers_url": "https://boards.greenhouse.io/robinhood"},
-    {"company": "Asana", "careers_url": "https://boards.greenhouse.io/asana"},
-    {"company": "Twitch", "careers_url": "https://boards.greenhouse.io/twitch"},
-    {"company": "Vercel", "careers_url": "https://boards.greenhouse.io/vercel"},
-    {"company": "Cloudflare", "careers_url": "https://boards.greenhouse.io/cloudflare"},
-    {"company": "Trade Republic", "careers_url": "https://boards.greenhouse.io/traderepublic"},
-    {"company": "Airbnb", "careers_url": "https://boards.greenhouse.io/airbnb"},
-    {"company": "Palantir", "careers_url": "https://jobs.lever.co/palantir"},
-    {"company": "Aircall", "careers_url": "https://jobs.lever.co/aircall"},
-    {"company": "Coupa", "careers_url": "https://jobs.lever.co/coupa"},
-    {"company": "Anthropic", "careers_url": "https://jobs.ashbyhq.com/Anthropic"},
-    {"company": "Ashby", "careers_url": "https://jobs.ashbyhq.com/Ashby"},
-    {"company": "Linear", "careers_url": "https://jobs.ashbyhq.com/linear"},
-    {"company": "Supabase", "careers_url": "https://jobs.ashbyhq.com/supabase"},
-    {"company": "PostHog", "careers_url": "https://jobs.ashbyhq.com/posthog"},
-    {"company": "Railway", "careers_url": "https://jobs.ashbyhq.com/railway"},
-    {"company": "Modal", "careers_url": "https://jobs.ashbyhq.com/modal"},
-    {"company": "Ramp", "careers_url": "https://jobs.ashbyhq.com/ramp"},
-    {"company": "Qonto", "ats": "workable", "slug": "qonto"},
-    {"company": "Ledger", "ats": "workable", "slug": "ledger"},
-    {"company": "WorkMotion", "ats": "workable", "slug": "workmotion"},
-    {"company": "Storyteq", "ats": "workable", "slug": "storyteq"},
-    {"company": "IT Labs", "ats": "workable", "slug": "it-labs"},
-    {"company": "SmartRecruiters", "careers_url": "https://careers.smartrecruiters.com/SmartRecruiters"},
-    {"company": "Visa", "careers_url": "https://careers.smartrecruiters.com/Visa"},
-    {"company": "Delivery Hero", "careers_url": "https://careers.smartrecruiters.com/DeliveryHero"},
-    {"company": "Canva", "careers_url": "https://careers.smartrecruiters.com/Canva"},
-    {"company": "Bosch Group", "careers_url": "https://careers.smartrecruiters.com/BoschGroup"},
-    {"company": "Bunq", "careers_url": "https://bunq.recruitee.com"},
-    {"company": "Workday", "careers_url": "https://workday.wd5.myworkdayjobs.com/Workday"},
-    {"company": "Pinpoint", "careers_url": "https://workwithus.pinpointhq.com"},
-]
+def _load_json_targets(path: str) -> list[dict[str, Any]]:
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+        return data if isinstance(data, list) else []
+    except Exception as exc:
+        logger.warning("Could not load targets from %s: %s", path, exc)
+        return []
+
+
+def _repo_config_path(*parts: str) -> str:
+    return os.path.join(os.path.dirname(__file__), "..", "config", "sources", *parts)
+
+
+def _default_dach_targets() -> list[dict[str, Any]]:
+    """DACH-focused ATS boards (tech employers). US-only boards removed."""
+    path = os.environ.get("DACH_ATS_CONFIG") or _repo_config_path("dach_ats.json")
+    loaded = _load_json_targets(path)
+    if loaded:
+        return loaded
+    # Hardcoded fallback if config file missing in Lambda package.
+    return [
+        {"company": "N26", "careers_url": "https://boards.greenhouse.io/n26"},
+        {"company": "HelloFresh", "careers_url": "https://boards.greenhouse.io/hellofresh"},
+        {"company": "Celonis", "careers_url": "https://boards.greenhouse.io/celonis"},
+        {"company": "Personio", "careers_url": "https://boards.greenhouse.io/personio"},
+        {"company": "Contentful", "careers_url": "https://boards.greenhouse.io/contentful"},
+        {"company": "Trade Republic", "careers_url": "https://boards.greenhouse.io/traderepublic"},
+        {"company": "GetYourGuide", "careers_url": "https://boards.greenhouse.io/getyourguide"},
+        {"company": "Delivery Hero", "careers_url": "https://careers.smartrecruiters.com/DeliveryHero"},
+        {"company": "SumUp", "careers_url": "https://boards.greenhouse.io/sumup"},
+        {"company": "Taxfix", "careers_url": "https://boards.greenhouse.io/taxfix"},
+        {"company": "Babbel", "careers_url": "https://boards.greenhouse.io/babbel"},
+        {"company": "DeepL", "careers_url": "https://jobs.ashbyhq.com/deepl"},
+        {"company": "Qonto", "ats": "workable", "slug": "qonto"},
+        {"company": "Bunq", "careers_url": "https://bunq.recruitee.com"},
+        {"company": "Bosch Group", "careers_url": "https://careers.smartrecruiters.com/BoschGroup"},
+    ]
+
+
+def _personio_targets_from_config() -> list[dict[str, Any]]:
+    path = os.environ.get("PERSONIO_TENANTS_CONFIG") or _repo_config_path("personio_tenants.json")
+    tenants = _load_json_targets(path)
+    out: list[dict[str, Any]] = []
+    for row in tenants:
+        slug = str(row.get("slug") or "").strip()
+        if not slug:
+            continue
+        tld = str(row.get("tld") or "de").strip().lstrip(".")
+        out.append(
+            {
+                "company": row.get("company") or slug,
+                "ats": "personio",
+                "slug": slug,
+                "tld": tld,
+                "language": row.get("language", "en"),
+                "careers_url": f"https://{slug}.jobs.personio.{tld}",
+            }
+        )
+    return out
+
+
+# Seed list: DACH ATS boards + Personio XML tenants. Production can still
+# override via COMPANY_CAREERS_CONFIG_S3_URI / COMPANY_CAREERS_CONFIG.
+DEFAULT_TARGETS: list[dict[str, Any]] = _default_dach_targets() + _personio_targets_from_config()
 
 
 def _clean_text(value: Any) -> str:
@@ -567,10 +585,32 @@ def fetch_recruitee(entry: dict[str, Any]) -> list[dict[str, Any]]:
 def fetch_personio(entry: dict[str, Any]) -> list[dict[str, Any]]:
     slug = entry["slug"]
     company = _company(entry, slug)
-    params = {"language": entry.get("language", "en")} if entry.get("language", "en") else None
-    text = _request_text(f"https://{slug}.jobs.personio.com/xml", params=params)
+    tld = str(entry.get("tld") or "de").strip().lstrip(".")
+    language = entry.get("language", "en")
+    params = {"language": language} if language else None
+
+    # Prefer configured TLD, then fall back to the other common Personio host.
+    host_candidates = [f"https://{slug}.jobs.personio.{tld}/xml"]
+    other = "com" if tld == "de" else "de"
+    host_candidates.append(f"https://{slug}.jobs.personio.{other}/xml")
+
+    text = ""
+    used_host = host_candidates[0]
+    last_exc: Exception | None = None
+    for host in host_candidates:
+        try:
+            text = _request_text(host, params=params)
+            used_host = host
+            break
+        except Exception as exc:
+            last_exc = exc
+            continue
+    if not text:
+        raise last_exc or RuntimeError(f"Personio feed failed for {slug}")
+
     root = ET.fromstring(text)
     results = []
+    public_base = used_host.rsplit("/xml", 1)[0]
 
     for job in list(root):
         fields = {child.tag.split("}", 1)[-1].lower(): _clean_text("".join(child.itertext())) for child in list(job)}
@@ -585,6 +625,9 @@ def fetch_personio(entry: dict[str, Any]) -> list[dict[str, Any]]:
                 fields.get("description"),
                 fields.get("profile"),
                 fields.get("recruitingcategory"),
+                fields.get("seniority"),
+                fields.get("salaryinformation"),
+                fields.get("yearsofexperience"),
             ],
             "\n",
         )
@@ -596,13 +639,15 @@ def fetch_personio(entry: dict[str, Any]) -> list[dict[str, Any]]:
                 raw_id=raw_id,
                 title=title,
                 location=location,
-                url=fields.get("url") or f"https://{slug}.jobs.personio.com/job/{raw_id}",
+                url=fields.get("url") or f"{public_base}/job/{raw_id}",
                 description=description,
                 job_types=fields.get("employmenttype") or fields.get("schedule"),
                 department=fields.get("department", ""),
                 published_at=fields.get("createdat") or fields.get("publishedat", ""),
                 modified_at=fields.get("updatedat", ""),
                 remote=fields.get("workplace") == "remote" or _looks_remote(location, description),
+                tags=[fields.get("seniority", ""), fields.get("yearsofexperience", "")],
+                salary=fields.get("salaryinformation", ""),
             )
         )
     return [job for job in results if job["title"]]
@@ -794,7 +839,13 @@ def _load_s3_json(uri: str) -> Any:
 
 def load_company_targets() -> list[dict[str, Any]]:
     use_defaults = os.environ.get("COMPANY_CAREERS_USE_DEFAULTS", "true").lower() != "false"
-    targets = [_normalize_target(t) for t in DEFAULT_TARGETS] if use_defaults else []
+    targets: list[dict[str, Any]] = []
+    if use_defaults:
+        for raw in DEFAULT_TARGETS:
+            try:
+                targets.append(_normalize_target(raw))
+            except Exception as exc:
+                logger.warning("Skipping default target %s: %s", raw.get("company") or raw, exc)
 
     s3_uri = os.environ.get("COMPANY_CAREERS_CONFIG_S3_URI", "").strip()
     config_url = os.environ.get("COMPANY_CAREERS_CONFIG_URL", "").strip()

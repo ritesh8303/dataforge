@@ -1,0 +1,62 @@
+{
+  "n_jobs": 30,
+  "live_providers": false,
+  "rules": {
+    "avg_latency_ms": 0.12,
+    "cost_usd": 0.0,
+    "p50_latency_ms": 0.12
+  },
+  "note": "CI default = rules-only Pareto point. Run with --live-providers under budget for Bedrock/OpenAI/Anthropic points (thesis RQ2).",
+  "rows_sample": [
+    {
+      "job_id": "sem_eval_000_ai_ml_da",
+      "rules": {
+        "provider": "rules",
+        "latency_ms": 0.19,
+        "cost_usd": 0.0,
+        "field": "ai_ml_data_science",
+        "ok": true
+      }
+    },
+    {
+      "job_id": "sem_eval_001_ai_ml_da",
+      "rules": {
+        "provider": "rules",
+        "latency_ms": 0.14,
+        "cost_usd": 0.0,
+        "field": "ai_ml_data_science",
+        "ok": true
+      }
+    },
+    {
+      "job_id": "sem_eval_002_ai_ml_da",
+      "rules": {
+        "provider": "rules",
+        "latency_ms": 0.09,
+        "cost_usd": 0.0,
+        "field": "ai_ml_data_science",
+        "ok": true
+      }
+    },
+    {
+      "job_id": "sem_eval_003_ai_ml_da",
+      "rules": {
+        "provider": "rules",
+        "latency_ms": 0.12,
+        "cost_usd": 0.0,
+        "field": "ai_ml_data_science",
+        "ok": true
+      }
+    },
+    {
+      "job_id": "sem_eval_004_ai_ml_da",
+      "rules": {
+        "provider": "rules",
+        "latency_ms": 0.11,
+        "cost_usd": 0.0,
+        "field": "ai_ml_data_science",
+        "ok": true
+      }
+    }
+  ]
+}

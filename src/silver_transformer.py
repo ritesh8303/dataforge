@@ -8,8 +8,11 @@ import os
 import re
 from processing.europe_filter import is_in_europe
 from processing.company_normalize import normalize_company
+from enrichment.rules_de_en import classify_field
 
-VALID_SOURCES = frozenset({"ba_api", "direct", "eures", "arbeitnow", "berlin_startups"})
+VALID_SOURCES = frozenset(
+    {"ba_api", "direct", "eures", "arbeitnow", "berlin_startups", "himalayas", "hn_whoishiring"}
+)
 REMOVED_SOURCES = frozenset({"indeed", "hacker_news"})
 BRONZE_SOURCE_PREFIXES = (
     "arbeitnow",
@@ -17,6 +20,8 @@ BRONZE_SOURCE_PREFIXES = (
     "direct_careers",
     "berlin_startups",
     "eures",
+    "himalayas",
+    "hn_whoishiring",
 )
 # Reserved for future tuning; not used for daily SCD (Bronze snapshot < cumulative Silver).
 MIN_BRONZE_ACTIVE_RATIO = float(os.environ.get("MIN_BRONZE_ACTIVE_RATIO", "0.6"))
@@ -211,7 +216,7 @@ def _normalize_bronze_before_dedup(bronze_df: pd.DataFrame) -> pd.DataFrame:
 
         def row_is_in_europe(r):
             source = r.get("source", "")
-            if source in ("ba_api", "arbeitnow", "berlin_startups", "eures"):
+            if source in ("ba_api", "arbeitnow", "berlin_startups", "eures", "himalayas", "hn_whoishiring"):
                 return True
             return is_in_europe(
                 location_str=r.get("location", ""),
@@ -221,6 +226,20 @@ def _normalize_bronze_before_dedup(bronze_df: pd.DataFrame) -> pd.DataFrame:
 
         bronze_df = bronze_df[bronze_df.apply(row_is_in_europe, axis=1)].copy()
         print(f"Europe safety gate filtering: kept {len(bronze_df)} out of {initial_len} jobs.")
+
+    # Rule-based tech / field pre-filter (free; LLM only later for ambiguous).
+    if not bronze_df.empty:
+        field_rows = bronze_df.apply(
+            lambda r: classify_field(
+                title=str(r.get("title", "")),
+                description=str(r.get("description", "")),
+                tags=str(r.get("tags", "")),
+            ),
+            axis=1,
+        )
+        bronze_df["is_tech"] = field_rows.map(lambda x: bool(x.get("is_tech")))
+        bronze_df["field_rule"] = field_rows.map(lambda x: x.get("field_rule", "non_tech"))
+        bronze_df["ai_field_rule"] = field_rows.map(lambda x: x.get("field", "non_tech"))
 
     return bronze_df
 
@@ -376,17 +395,42 @@ def deduplicate_bronze(df):
     if df.empty:
         return df
 
-    # Create semantic key
+    # Create semantic key (+ description hash fragment for near-duplicate diagnostics)
+    df = df.copy()
     df["semantic_key"] = df.apply(
-        lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}", axis=1
+        lambda r: f"sem_{slugify(r.get('company'))}_{slugify(r.get('title'))}_{slugify(r.get('location', ''))}",
+        axis=1,
     )
+    df["desc_hash"] = (
+        df["description"]
+        .fillna("")
+        .astype(str)
+        .str.slice(0, 500)
+        .map(lambda t: hashlib.sha1(t.encode("utf-8", errors="ignore")).hexdigest()[:10])
+    )
+    df["dedup_key"] = df["semantic_key"] + "_" + df["desc_hash"]
 
-    # Prioritize sources: direct > eures > arbeitnow > berlin_startups > ba_api
-    source_priority = {"direct": 0, "eures": 1, "arbeitnow": 2, "berlin_startups": 3, "ba_api": 4}
+    # Prioritize sources: direct > eures > arbeitnow > berlin_startups > himalayas > hn > ba_api
+    source_priority = {
+        "direct": 0,
+        "eures": 1,
+        "arbeitnow": 2,
+        "berlin_startups": 3,
+        "himalayas": 4,
+        "hn_whoishiring": 5,
+        "ba_api": 6,
+    }
     df["priority"] = df["source"].map(lambda s: source_priority.get(s, 9))
 
     # Calculate description length to keep the most detailed posting
     df["desc_len"] = df["description"].fillna("").astype(str).str.len()
+
+    # Collect source attribution before dropping losers
+    attribution = (
+        df.groupby("semantic_key")["source"]
+        .apply(lambda s: ",".join(sorted({str(x) for x in s if str(x)})))
+        .to_dict()
+    )
 
     # Sort by priority, then description length
     df = df.sort_values(by=["priority", "desc_len"], ascending=[True, False])
@@ -396,9 +440,10 @@ def deduplicate_bronze(df):
 
     # Override job_id with the semantic key for cross-source persistence matching
     df_dedup["job_id"] = df_dedup["semantic_key"]
+    df_dedup["source_attribution"] = df_dedup["semantic_key"].map(attribution)
 
     # Drop temporary columns
-    df_dedup.drop(columns=["semantic_key", "priority", "desc_len"], inplace=True)
+    df_dedup.drop(columns=["semantic_key", "priority", "desc_len", "desc_hash"], inplace=True, errors="ignore")
     return df_dedup
 
 

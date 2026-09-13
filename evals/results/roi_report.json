@@ -1,0 +1,32 @@
+{
+  "model_scenario": {
+    "scenario": "1000_jobs_rules_first_plus_100_matches",
+    "assumptions": {
+      "enrich_sample_rate_llm": 0.3,
+      "tokens_enrich_in_out": [
+        1200,
+        250
+      ],
+      "tokens_embed_in": 400,
+      "fx_eur_per_usd": 0.92
+    },
+    "cost_usd": {
+      "enrich_llm_only_full": 0.077,
+      "enrich_rules_first": 0.0231,
+      "embeddings": 0.044,
+      "total": 0.0671,
+      "per_enriched_job": 2.3e-05,
+      "per_match_request_embed_share": 4e-05
+    },
+    "cost_eur_approx": {
+      "total": 0.0617,
+      "per_enriched_job": 2.1e-05
+    },
+    "models": {
+      "enrich": "amazon.nova-micro-v1:0",
+      "embed": "amazon.titan-embed-text-v2:0"
+    }
+  },
+  "live_summary": null,
+  "note": "Prefer live CostLogger JSON when available; model_scenario is thesis-order-of-magnitude."
+}

@@ -357,6 +357,11 @@ def lambda_handler(event, context):
                 "work_style",
                 "language_requirement",
                 "region",
+                "is_tech",
+                "field_rule",
+                "ai_field_rule",
+                "source_attribution",
+                "dedup_key",
             ]
             if c in current.columns
         ]
@@ -399,6 +404,11 @@ def lambda_handler(event, context):
                 "work_style",
                 "language_requirement",
                 "region",
+                "is_tech",
+                "field_rule",
+                "ai_field_rule",
+                "source_attribution",
+                "dedup_key",
             ]
             if c in expired_raw.columns
         ]

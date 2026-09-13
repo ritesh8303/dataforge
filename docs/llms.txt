@@ -1,0 +1,19 @@
+# DataForge
+
+> European tech job intelligence lakehouse with measurable GenAI matching.
+
+## For agents / LLMs
+
+- Jobs JSON: `GET /jobs?limit=50&search=data+engineer` (header `X-API-Key` when configured)
+- Match JSON: `POST /match` with body `{resume, dream_role, location, method, visa_status, german_level, entry_level_only, english_ok_only}`
+- Match Markdown: same endpoints with `Accept: text/markdown`
+- OpenAPI: `/docs` and `/openapi.json`
+- Optional Cursor MCP tools wrap these HTTPS endpoints (see `mcp/` when Phase D ships)
+
+## Scope
+
+Tech roles only (AI/ML, software, data, cloud/DevOps, cybersecurity, SAP, …), with emphasis on internship, working-student, and junior / no-experience roles. Visa-stance and language flags are advisory — not legal advice.
+
+## Attribution
+
+Aggregates public feeds (Arbeitnow, BA Jobsuche, EURES, Berlin Startup Jobs, company ATS, Himalayas, HN Who-is-hiring). See `docs/DATA_SOURCING.md`.

@@ -1,0 +1,18 @@
+# Container image for Match Lambda (avoids zip size limits with FastAPI stack).
+# Build: docker build -f Dockerfile.match -t dataforge-match .
+# Push to ECR and point terraform Match Lambda at the image URI.
+
+FROM public.ecr.aws/lambda/python:3.11
+
+COPY src/requirements.txt ${LAMBDA_TASK_ROOT}/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY src/ ${LAMBDA_TASK_ROOT}/
+COPY prompts/ ${LAMBDA_TASK_ROOT}/prompts/
+COPY config/ ${LAMBDA_TASK_ROOT}/config/
+
+# Optional LangGraph (multi-agent). Comment out to keep image lean.
+RUN pip install --no-cache-dir 'langgraph>=0.2.0' || true
+
+# Mangum-wrapped FastAPI
+CMD ["match_api.lambda_handler"]
