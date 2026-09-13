@@ -13,7 +13,11 @@
 ## RQ2 — Provider / rules trade-offs
 
 - Rules baseline: `evals/run_enrichment_rules_eval.py` + `evals/run_rq2_pareto.py` (CI: rules point).
-- Live Bedrock / OpenAI / Anthropic Pareto: run `evals/run_rq2_pareto.py --live-providers --limit 200` under budget; fill table in appendix.
+- Live Bedrock attempt (2026-09-13): `eu.amazon.nova-micro-v1:0` via inference profile.
+  - Titan Text Express is **EOL** on this account.
+  - Nova Micro invoke hit **ThrottlingException: Too many tokens per day** (account free-tier / low quota).
+  - Enrichment schedule paused (`AI_ENABLED=false`, `enable_schedule=false`) to free quota.
+  - Re-run: `AWS_PROFILE=dataforge-germany BEDROCK_COMPLETION_MODEL=eu.amazon.nova-micro-v1:0 py -3 evals/run_rq2_pareto.py --live-providers --provider bedrock --limit 40`
 - Residency: Bedrock `eu-central-1` preferred for EU processing narrative.
 
 ## RQ3 — Hybrid match vs rule wizard
@@ -44,4 +48,4 @@ Obligation → control table: `docs/RESPONSIBLE_AI.md`. Visa signals advisory + 
 
 ## Status honesty
 
-Lakehouse APIs + Pages + **Match Function URL** are live on EU (`366945363779`). Enrichment Lambda is scheduled (sample rate 0.1). Multi-agent works via `method=agent` on the same URL.
+Lakehouse APIs + Pages + **Match Function URL** are live on EU (`366945363779`). Match requires `X-API-Key` (see gitignored `aws-keys-do-not-commit.txt`). Enrichment Lambda schedule is **paused** until Bedrock daily token quota recovers. Multi-agent works via `method=agent` on the same URL (with API key).

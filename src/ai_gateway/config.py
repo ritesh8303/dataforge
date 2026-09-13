@@ -21,7 +21,9 @@ MODEL_PRICING: dict[str, ModelPricing] = {
     "amazon.titan-text-express-v1": ModelPricing(0.0002, 0.0006),
     # Approximate Bedrock on-demand (update from AWS pricing page for thesis appendix)
     "amazon.nova-micro-v1:0": ModelPricing(0.000035, 0.00014),
+    "eu.amazon.nova-micro-v1:0": ModelPricing(0.000035, 0.00014),
     "amazon.nova-lite-v1:0": ModelPricing(0.00006, 0.00024),
+    "eu.amazon.nova-lite-v1:0": ModelPricing(0.00006, 0.00024),
     "local-tfidf": ModelPricing(0.0, 0.0),
     "local-heuristic": ModelPricing(0.0, 0.0),
 }

@@ -544,7 +544,10 @@
   const MATCH_API_URL = window.DATAFORGE_MATCH_API_URL || (isLocal
     ? "http://localhost:8001"
     : "https://22oqvlj4pyl4geb2lzgeisnquy0dscjk.lambda-url.eu-central-1.on.aws/");
-  const MATCH_API_KEY = window.DATAFORGE_MATCH_API_KEY || "";
+  // Never commit the key. For local/demo: window.DATAFORGE_MATCH_API_KEY = "…" or ?api_key=
+  const MATCH_API_KEY = window.DATAFORGE_MATCH_API_KEY
+    || new URLSearchParams(window.location.search).get("api_key")
+    || "";
 
   let currentStep = 1;
   let resumeContent = "";

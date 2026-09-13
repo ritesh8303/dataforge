@@ -38,4 +38,19 @@ py -3 mcp/server.py
 }
 ```
 
-Replace `DATAFORGE_API_BASE` with the live Function URL from `terraform/eu-outputs.json` (`match_function_url`).
+## Auth
+
+Production Match requires `X-API-Key` when `MATCH_API_KEY` is set on the Lambda.
+
+```bash
+set DATAFORGE_API_BASE=https://22oqvlj4pyl4geb2lzgeisnquy0dscjk.lambda-url.eu-central-1.on.aws/
+set DATAFORGE_API_KEY=<from aws-keys-do-not-commit.txt>
+```
+
+Or in Cursor MCP `env`:
+
+```json
+"DATAFORGE_API_KEY": "<your key>"
+```
+
+Do not commit the key. Local Match (`scripts/run_match_api_local.py`) leaves the key unset by default.

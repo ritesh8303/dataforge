@@ -31,8 +31,8 @@ class BedrockProvider(BaseProvider):
             return False
 
     def complete(self, prompt: str, system: str = "", model: str | None = None, **kwargs) -> ProviderResponse:
-        model = model or get_env("BEDROCK_COMPLETION_MODEL", "amazon.titan-text-express-v1")
-        if model.startswith("anthropic."):
+        model = model or get_env("BEDROCK_COMPLETION_MODEL", "eu.amazon.nova-micro-v1:0")
+        if model.startswith("anthropic.") or ".anthropic." in model:
             body = {
                 "anthropic_version": "bedrock-2023-05-31",
                 "max_tokens": kwargs.get("max_tokens", 1024),
@@ -40,6 +40,17 @@ class BedrockProvider(BaseProvider):
             }
             if system:
                 body["system"] = system
+        elif "nova" in model:
+            body = {
+                "schemaVersion": "messages-v1",
+                "messages": [{"role": "user", "content": [{"text": prompt[:6000]}]}],
+                "inferenceConfig": {
+                    "maxTokens": kwargs.get("max_tokens", 512),
+                    "temperature": kwargs.get("temperature", 0.1),
+                },
+            }
+            if system:
+                body["system"] = [{"text": system[:2000]}]
         else:
             full = f"{system}\n\n{prompt}" if system else prompt
             body = {
@@ -60,8 +71,23 @@ class BedrockProvider(BaseProvider):
             payload = json.loads(res["body"].read())
             if "results" in payload:
                 text = payload["results"][0]["outputText"]
-            elif "content" in payload:
-                text = payload["content"][0]["text"]
+            elif "content" in payload and isinstance(payload["content"], list):
+                # Anthropic-style or Nova message content blocks
+                parts = []
+                for block in payload["content"]:
+                    if isinstance(block, dict) and "text" in block:
+                        parts.append(block["text"])
+                    elif isinstance(block, str):
+                        parts.append(block)
+                text = "".join(parts) if parts else json.dumps(payload)
+            elif "output" in payload and isinstance(payload["output"], dict):
+                # Nova messages-v1
+                msg = payload["output"].get("message") or {}
+                parts = []
+                for block in msg.get("content") or []:
+                    if isinstance(block, dict) and block.get("text"):
+                        parts.append(block["text"])
+                text = "".join(parts) if parts else json.dumps(payload)
             else:
                 text = json.dumps(payload)
             est_in = len(prompt.split())
