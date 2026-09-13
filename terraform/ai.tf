@@ -23,11 +23,11 @@ module "enrichment_lambda" {
     EMBEDDING_INDEX_KEY       = "embedding_index.json"
     AI_ENRICHMENT_SAMPLE_RATE = "0.1"
     INDEX_BUILD_LIMIT         = "500"
-    AI_ENABLED                = "true"
+    AI_ENABLED                = "false"
   }
   bronze_bucket_arn   = module.s3_bronze.arn
-  enable_schedule     = true
-  schedule_expression = "cron(0 21 * * ? *)" # 21:00 UTC, after Gold (~20:30)
+  enable_schedule     = false
+  schedule_expression = "cron(0 21 * * ? *)" # paused until Bedrock daily token quota recovers
   enable_alerts       = true
   alert_email         = var.alert_email
 }
