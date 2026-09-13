@@ -1,0 +1,131 @@
+{
+  "n": 150,
+  "field": {
+    "per_class": {
+      "ai_ml_data_science": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 72.0
+      },
+      "business_intelligence": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 6.0
+      },
+      "data_analytics": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 18.0
+      },
+      "data_engineering": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 54.0
+      }
+    },
+    "macro_f1": 1.0,
+    "micro_f1": 1.0,
+    "n": 150.0,
+    "support_total": 150.0
+  },
+  "seniority": {
+    "per_class": {
+      "internship": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 27.0
+      },
+      "junior": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24.0
+      },
+      "mid": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24.0
+      },
+      "senior": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24.0
+      },
+      "trainee_graduate": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 24.0
+      },
+      "working_student": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 27.0
+      }
+    },
+    "macro_f1": 1.0,
+    "micro_f1": 1.0,
+    "n": 150.0,
+    "support_total": 150.0
+  },
+  "visa_stance": {
+    "per_class": {
+      "eu_citizens_only": {
+        "precision": 0.7576,
+        "recall": 1.0,
+        "f1": 0.8621,
+        "support": 50.0
+      },
+      "existing_permit_required": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 16.0
+      },
+      "not_mentioned": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 16.0
+      },
+      "relocation_support": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 34.0
+      },
+      "sponsorship_offered": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 34.0
+      }
+    },
+    "macro_f1": 0.7724,
+    "micro_f1": 0.8933,
+    "n": 150.0,
+    "support_total": 150.0
+  },
+  "field_confusion": {
+    "ai_ml_data_science": {
+      "ai_ml_data_science": 72
+    },
+    "data_engineering": {
+      "data_engineering": 54
+    },
+    "data_analytics": {
+      "data_analytics": 18
+    },
+    "business_intelligence": {
+      "business_intelligence": 6
+    }
+  }
+}

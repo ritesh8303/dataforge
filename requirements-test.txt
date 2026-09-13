@@ -7,3 +7,7 @@ awswrangler
 pydantic
 typing_extensions
 requests
+fastapi
+mangum
+httpx
+uvicorn

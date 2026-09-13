@@ -1,0 +1,6 @@
+{
+  "n_queries": 30,
+  "hybrid_avg_citation_validity": 1.0,
+  "agent_avg_citation_validity": 1.0,
+  "note": "Local-provider ablation; Bedrock sample optional later for thesis appendix."
+}

@@ -1,0 +1,866 @@
+[
+  {
+    "job_id": "sem_eval_000_ai_ml_da",
+    "title": "Internship Machine Learning Engineer (m/w/d)",
+    "company": "N26",
+    "location": "Berlin",
+    "description": "internship Praktikum for students. PyTorch NLP LLM RAG model training evaluation. Location Berlin. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "ai_ml_data_science,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_001_ai_ml_da",
+    "title": "Internship Machine Learning Engineer (m/w/d)",
+    "company": "Celonis",
+    "location": "Munich",
+    "description": "internship Praktikum for students. PyTorch NLP LLM RAG model training evaluation. Location Munich. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "ai_ml_data_science,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_002_ai_ml_da",
+    "title": "Internship Machine Learning Engineer (m/w/d)",
+    "company": "Trade Republic",
+    "location": "Hamburg",
+    "description": "internship Praktikum for students. PyTorch NLP LLM RAG model training evaluation. Location Hamburg. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_003_ai_ml_da",
+    "title": "Werkstudent Machine Learning Engineer (m/w/d)",
+    "company": "DeepL",
+    "location": "Cologne",
+    "description": "Werkstudent working student 20h/week. PyTorch NLP LLM RAG model training evaluation. Location Cologne. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "ai_ml_data_science,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_004_ai_ml_da",
+    "title": "Werkstudent Machine Learning Engineer (m/w/d)",
+    "company": "Personio",
+    "location": "Frankfurt",
+    "description": "Werkstudent working student 20h/week. PyTorch NLP LLM RAG model training evaluation. Location Frankfurt. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "ai_ml_data_science,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_005_ai_ml_da",
+    "title": "Werkstudent Machine Learning Engineer (m/w/d)",
+    "company": "SumUp",
+    "location": "Stuttgart",
+    "description": "Werkstudent working student 20h/week. PyTorch NLP LLM RAG model training evaluation. Location Stuttgart. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_006_ai_ml_da",
+    "title": "Graduate Machine Learning Engineer (m/w/d)",
+    "company": "Babbel",
+    "location": "Remote",
+    "description": "Berufseinsteiger graduate trainee entry-level. PyTorch NLP LLM RAG model training evaluation. Location Remote. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "ai_ml_data_science,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_007_ai_ml_da",
+    "title": "Graduate Machine Learning Engineer (m/w/d)",
+    "company": "GetYourGuide",
+    "location": "Remote / EU",
+    "description": "Berufseinsteiger graduate trainee entry-level. PyTorch NLP LLM RAG model training evaluation. Location Remote / EU. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "ai_ml_data_science,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_008_ai_ml_da",
+    "title": "Graduate Machine Learning Engineer (m/w/d)",
+    "company": "Delivery Hero",
+    "location": "Berlin",
+    "description": "Berufseinsteiger graduate trainee entry-level. PyTorch NLP LLM RAG model training evaluation. Location Berlin. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_009_ai_ml_da",
+    "title": "Junior Machine Learning Engineer (m/w/d)",
+    "company": "Bosch",
+    "location": "Munich",
+    "description": "Junior 0-1 years experience. PyTorch NLP LLM RAG model training evaluation. Location Munich. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "ai_ml_data_science,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_010_ai_ml_da",
+    "title": "Junior Machine Learning Engineer (m/w/d)",
+    "company": "SAP",
+    "location": "Hamburg",
+    "description": "Junior 0-1 years experience. PyTorch NLP LLM RAG model training evaluation. Location Hamburg. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "ai_ml_data_science,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_011_ai_ml_da",
+    "title": "Junior Machine Learning Engineer (m/w/d)",
+    "company": "Infineon",
+    "location": "Cologne",
+    "description": "Junior 0-1 years experience. PyTorch NLP LLM RAG model training evaluation. Location Cologne. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_012_ai_ml_da",
+    "title": "Mid-level Machine Learning Engineer (m/w/d)",
+    "company": "Enpal",
+    "location": "Frankfurt",
+    "description": "3+ years experience required. PyTorch NLP LLM RAG model training evaluation. Location Frankfurt. English is the working language. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_013_ai_ml_da",
+    "title": "Mid-level Machine Learning Engineer (m/w/d)",
+    "company": "Aleph Alpha",
+    "location": "Stuttgart",
+    "description": "3+ years experience required. PyTorch NLP LLM RAG model training evaluation. Location Stuttgart. Flie\u00dfend Deutsch (C1) erforderlich. Valid German work permit required.",
+    "tags": "ai_ml_data_science,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_014_ai_ml_da",
+    "title": "Mid-level Machine Learning Engineer (m/w/d)",
+    "company": "Parloa",
+    "location": "Remote",
+    "description": "3+ years experience required. PyTorch NLP LLM RAG model training evaluation. Location Remote. Flie\u00dfend Deutsch (C1) erforderlich.",
+    "tags": "ai_ml_data_science,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_015_ai_ml_da",
+    "title": "Senior Machine Learning Engineer (m/w/d)",
+    "company": "Taxfix",
+    "location": "Remote / EU",
+    "description": "Senior 5+ years experience lead. PyTorch NLP LLM RAG model training evaluation. Location Remote / EU. English is the working language. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_016_ai_ml_da",
+    "title": "Senior Machine Learning Engineer (m/w/d)",
+    "company": "Sennder",
+    "location": "Berlin",
+    "description": "Senior 5+ years experience lead. PyTorch NLP LLM RAG model training evaluation. Location Berlin. Flie\u00dfend Deutsch (C1) erforderlich. Valid German work permit required.",
+    "tags": "ai_ml_data_science,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_017_ai_ml_da",
+    "title": "Senior Machine Learning Engineer (m/w/d)",
+    "company": "Adjust",
+    "location": "Munich",
+    "description": "Senior 5+ years experience lead. PyTorch NLP LLM RAG model training evaluation. Location Munich. Flie\u00dfend Deutsch (C1) erforderlich.",
+    "tags": "ai_ml_data_science,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_018_ai_ml_da",
+    "title": "Internship Data Scientist (m/w/d)",
+    "company": "Contentful",
+    "location": "Hamburg",
+    "description": "internship Praktikum for students. statistics sklearn causal inference A/B testing Python. Location Hamburg. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "ai_ml_data_science,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_019_ai_ml_da",
+    "title": "Internship Data Scientist (m/w/d)",
+    "company": "Qonto",
+    "location": "Cologne",
+    "description": "internship Praktikum for students. statistics sklearn causal inference A/B testing Python. Location Cologne. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "ai_ml_data_science,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_020_ai_ml_da",
+    "title": "Internship Data Scientist (m/w/d)",
+    "company": "N26",
+    "location": "Frankfurt",
+    "description": "internship Praktikum for students. statistics sklearn causal inference A/B testing Python. Location Frankfurt. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_021_ai_ml_da",
+    "title": "Werkstudent Data Scientist (m/w/d)",
+    "company": "Celonis",
+    "location": "Stuttgart",
+    "description": "Werkstudent working student 20h/week. statistics sklearn causal inference A/B testing Python. Location Stuttgart. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "ai_ml_data_science,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_022_ai_ml_da",
+    "title": "Werkstudent Data Scientist (m/w/d)",
+    "company": "Trade Republic",
+    "location": "Remote",
+    "description": "Werkstudent working student 20h/week. statistics sklearn causal inference A/B testing Python. Location Remote. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "ai_ml_data_science,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_023_ai_ml_da",
+    "title": "Werkstudent Data Scientist (m/w/d)",
+    "company": "DeepL",
+    "location": "Remote / EU",
+    "description": "Werkstudent working student 20h/week. statistics sklearn causal inference A/B testing Python. Location Remote / EU. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_024_ai_ml_da",
+    "title": "Graduate Data Scientist (m/w/d)",
+    "company": "Personio",
+    "location": "Berlin",
+    "description": "Berufseinsteiger graduate trainee entry-level. statistics sklearn causal inference A/B testing Python. Location Berlin. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "ai_ml_data_science,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_025_ai_ml_da",
+    "title": "Graduate Data Scientist (m/w/d)",
+    "company": "SumUp",
+    "location": "Munich",
+    "description": "Berufseinsteiger graduate trainee entry-level. statistics sklearn causal inference A/B testing Python. Location Munich. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "ai_ml_data_science,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_026_ai_ml_da",
+    "title": "Graduate Data Scientist (m/w/d)",
+    "company": "Babbel",
+    "location": "Hamburg",
+    "description": "Berufseinsteiger graduate trainee entry-level. statistics sklearn causal inference A/B testing Python. Location Hamburg. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_027_ai_ml_da",
+    "title": "Junior Data Scientist (m/w/d)",
+    "company": "GetYourGuide",
+    "location": "Cologne",
+    "description": "Junior 0-1 years experience. statistics sklearn causal inference A/B testing Python. Location Cologne. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "ai_ml_data_science,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_028_ai_ml_da",
+    "title": "Junior Data Scientist (m/w/d)",
+    "company": "Delivery Hero",
+    "location": "Frankfurt",
+    "description": "Junior 0-1 years experience. statistics sklearn causal inference A/B testing Python. Location Frankfurt. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "ai_ml_data_science,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_029_ai_ml_da",
+    "title": "Junior Data Scientist (m/w/d)",
+    "company": "Bosch",
+    "location": "Stuttgart",
+    "description": "Junior 0-1 years experience. statistics sklearn causal inference A/B testing Python. Location Stuttgart. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_030_ai_ml_da",
+    "title": "Mid-level Data Scientist (m/w/d)",
+    "company": "SAP",
+    "location": "Remote",
+    "description": "3+ years experience required. statistics sklearn causal inference A/B testing Python. Location Remote. English is the working language. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_031_ai_ml_da",
+    "title": "Mid-level Data Scientist (m/w/d)",
+    "company": "Infineon",
+    "location": "Remote / EU",
+    "description": "3+ years experience required. statistics sklearn causal inference A/B testing Python. Location Remote / EU. Flie\u00dfend Deutsch (C1) erforderlich. Valid German work permit required.",
+    "tags": "ai_ml_data_science,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_032_ai_ml_da",
+    "title": "Mid-level Data Scientist (m/w/d)",
+    "company": "Enpal",
+    "location": "Berlin",
+    "description": "3+ years experience required. statistics sklearn causal inference A/B testing Python. Location Berlin. Flie\u00dfend Deutsch (C1) erforderlich.",
+    "tags": "ai_ml_data_science,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_033_ai_ml_da",
+    "title": "Senior Data Scientist (m/w/d)",
+    "company": "Aleph Alpha",
+    "location": "Munich",
+    "description": "Senior 5+ years experience lead. statistics sklearn causal inference A/B testing Python. Location Munich. English is the working language. Only for EU citizens. No visa sponsorship.",
+    "tags": "ai_ml_data_science,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_034_ai_ml_da",
+    "title": "Senior Data Scientist (m/w/d)",
+    "company": "Parloa",
+    "location": "Hamburg",
+    "description": "Senior 5+ years experience lead. statistics sklearn causal inference A/B testing Python. Location Hamburg. Flie\u00dfend Deutsch (C1) erforderlich. Valid German work permit required.",
+    "tags": "ai_ml_data_science,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_035_ai_ml_da",
+    "title": "Senior Data Scientist (m/w/d)",
+    "company": "Taxfix",
+    "location": "Cologne",
+    "description": "Senior 5+ years experience lead. statistics sklearn causal inference A/B testing Python. Location Cologne. Flie\u00dfend Deutsch (C1) erforderlich.",
+    "tags": "ai_ml_data_science,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_036_data_eng",
+    "title": "Internship Data Engineer (m/w/d)",
+    "company": "Sennder",
+    "location": "Frankfurt",
+    "description": "internship Praktikum for students. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Frankfurt. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_engineering,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_037_data_eng",
+    "title": "Internship Data Engineer (m/w/d)",
+    "company": "Adjust",
+    "location": "Stuttgart",
+    "description": "internship Praktikum for students. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Stuttgart. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_engineering,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_038_data_eng",
+    "title": "Internship Data Engineer (m/w/d)",
+    "company": "Contentful",
+    "location": "Remote",
+    "description": "internship Praktikum for students. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Remote. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_039_data_eng",
+    "title": "Werkstudent Data Engineer (m/w/d)",
+    "company": "Qonto",
+    "location": "Remote / EU",
+    "description": "Werkstudent working student 20h/week. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Remote / EU. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_engineering,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_040_data_eng",
+    "title": "Werkstudent Data Engineer (m/w/d)",
+    "company": "N26",
+    "location": "Berlin",
+    "description": "Werkstudent working student 20h/week. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Berlin. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_engineering,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_041_data_eng",
+    "title": "Werkstudent Data Engineer (m/w/d)",
+    "company": "Celonis",
+    "location": "Munich",
+    "description": "Werkstudent working student 20h/week. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Munich. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_042_data_eng",
+    "title": "Graduate Data Engineer (m/w/d)",
+    "company": "Trade Republic",
+    "location": "Hamburg",
+    "description": "Berufseinsteiger graduate trainee entry-level. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Hamburg. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_engineering,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_043_data_eng",
+    "title": "Graduate Data Engineer (m/w/d)",
+    "company": "DeepL",
+    "location": "Cologne",
+    "description": "Berufseinsteiger graduate trainee entry-level. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Cologne. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_engineering,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_044_data_eng",
+    "title": "Graduate Data Engineer (m/w/d)",
+    "company": "Personio",
+    "location": "Frankfurt",
+    "description": "Berufseinsteiger graduate trainee entry-level. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Frankfurt. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_045_data_eng",
+    "title": "Junior Data Engineer (m/w/d)",
+    "company": "SumUp",
+    "location": "Stuttgart",
+    "description": "Junior 0-1 years experience. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Stuttgart. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_engineering,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_046_data_eng",
+    "title": "Junior Data Engineer (m/w/d)",
+    "company": "Babbel",
+    "location": "Remote",
+    "description": "Junior 0-1 years experience. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Remote. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_engineering,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_047_data_eng",
+    "title": "Junior Data Engineer (m/w/d)",
+    "company": "GetYourGuide",
+    "location": "Remote / EU",
+    "description": "Junior 0-1 years experience. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Remote / EU. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_048_data_eng",
+    "title": "Mid-level Data Engineer (m/w/d)",
+    "company": "Delivery Hero",
+    "location": "Berlin",
+    "description": "3+ years experience required. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Berlin. English is the working language. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_049_data_eng",
+    "title": "Mid-level Data Engineer (m/w/d)",
+    "company": "Bosch",
+    "location": "Munich",
+    "description": "3+ years experience required. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Munich. Flie\u00dfend Deutsch (C1) erforderlich. Valid German work permit required.",
+    "tags": "data_engineering,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_050_data_eng",
+    "title": "Mid-level Data Engineer (m/w/d)",
+    "company": "SAP",
+    "location": "Hamburg",
+    "description": "3+ years experience required. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Hamburg. Flie\u00dfend Deutsch (C1) erforderlich.",
+    "tags": "data_engineering,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_051_data_eng",
+    "title": "Senior Data Engineer (m/w/d)",
+    "company": "Infineon",
+    "location": "Cologne",
+    "description": "Senior 5+ years experience lead. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Cologne. English is the working language. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_052_data_eng",
+    "title": "Senior Data Engineer (m/w/d)",
+    "company": "Enpal",
+    "location": "Frankfurt",
+    "description": "Senior 5+ years experience lead. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Frankfurt. Flie\u00dfend Deutsch (C1) erforderlich. Valid German work permit required.",
+    "tags": "data_engineering,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_053_data_eng",
+    "title": "Senior Data Engineer (m/w/d)",
+    "company": "Aleph Alpha",
+    "location": "Stuttgart",
+    "description": "Senior 5+ years experience lead. Python Spark Airflow AWS ETL lakehouse dbt Kafka. Location Stuttgart. Flie\u00dfend Deutsch (C1) erforderlich.",
+    "tags": "data_engineering,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_054_data_eng",
+    "title": "Internship Analytics Engineer (m/w/d)",
+    "company": "Parloa",
+    "location": "Remote",
+    "description": "internship Praktikum for students. dbt SQL warehouse modeling Airflow. Location Remote. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_engineering,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_055_data_eng",
+    "title": "Internship Analytics Engineer (m/w/d)",
+    "company": "Taxfix",
+    "location": "Remote / EU",
+    "description": "internship Praktikum for students. dbt SQL warehouse modeling Airflow. Location Remote / EU. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_engineering,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_056_data_eng",
+    "title": "Internship Analytics Engineer (m/w/d)",
+    "company": "Sennder",
+    "location": "Berlin",
+    "description": "internship Praktikum for students. dbt SQL warehouse modeling Airflow. Location Berlin. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_057_data_eng",
+    "title": "Werkstudent Analytics Engineer (m/w/d)",
+    "company": "Adjust",
+    "location": "Munich",
+    "description": "Werkstudent working student 20h/week. dbt SQL warehouse modeling Airflow. Location Munich. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_engineering,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_058_data_eng",
+    "title": "Werkstudent Analytics Engineer (m/w/d)",
+    "company": "Contentful",
+    "location": "Hamburg",
+    "description": "Werkstudent working student 20h/week. dbt SQL warehouse modeling Airflow. Location Hamburg. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_engineering,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_059_data_eng",
+    "title": "Werkstudent Analytics Engineer (m/w/d)",
+    "company": "Qonto",
+    "location": "Cologne",
+    "description": "Werkstudent working student 20h/week. dbt SQL warehouse modeling Airflow. Location Cologne. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_060_data_eng",
+    "title": "Graduate Analytics Engineer (m/w/d)",
+    "company": "N26",
+    "location": "Frankfurt",
+    "description": "Berufseinsteiger graduate trainee entry-level. dbt SQL warehouse modeling Airflow. Location Frankfurt. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_engineering,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_061_data_eng",
+    "title": "Graduate Analytics Engineer (m/w/d)",
+    "company": "Celonis",
+    "location": "Stuttgart",
+    "description": "Berufseinsteiger graduate trainee entry-level. dbt SQL warehouse modeling Airflow. Location Stuttgart. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_engineering,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_062_data_eng",
+    "title": "Graduate Analytics Engineer (m/w/d)",
+    "company": "Trade Republic",
+    "location": "Remote",
+    "description": "Berufseinsteiger graduate trainee entry-level. dbt SQL warehouse modeling Airflow. Location Remote. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_063_data_eng",
+    "title": "Junior Analytics Engineer (m/w/d)",
+    "company": "DeepL",
+    "location": "Remote / EU",
+    "description": "Junior 0-1 years experience. dbt SQL warehouse modeling Airflow. Location Remote / EU. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_engineering,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_064_data_eng",
+    "title": "Junior Analytics Engineer (m/w/d)",
+    "company": "Personio",
+    "location": "Berlin",
+    "description": "Junior 0-1 years experience. dbt SQL warehouse modeling Airflow. Location Berlin. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_engineering,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_065_data_eng",
+    "title": "Junior Analytics Engineer (m/w/d)",
+    "company": "SumUp",
+    "location": "Munich",
+    "description": "Junior 0-1 years experience. dbt SQL warehouse modeling Airflow. Location Munich. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_066_data_eng",
+    "title": "Mid-level Analytics Engineer (m/w/d)",
+    "company": "Babbel",
+    "location": "Hamburg",
+    "description": "3+ years experience required. dbt SQL warehouse modeling Airflow. Location Hamburg. English is the working language. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_067_data_eng",
+    "title": "Mid-level Analytics Engineer (m/w/d)",
+    "company": "GetYourGuide",
+    "location": "Cologne",
+    "description": "3+ years experience required. dbt SQL warehouse modeling Airflow. Location Cologne. Flie\u00dfend Deutsch (C1) erforderlich. Valid German work permit required.",
+    "tags": "data_engineering,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_068_data_eng",
+    "title": "Mid-level Analytics Engineer (m/w/d)",
+    "company": "Delivery Hero",
+    "location": "Frankfurt",
+    "description": "3+ years experience required. dbt SQL warehouse modeling Airflow. Location Frankfurt. Flie\u00dfend Deutsch (C1) erforderlich.",
+    "tags": "data_engineering,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_069_data_eng",
+    "title": "Senior Analytics Engineer (m/w/d)",
+    "company": "Bosch",
+    "location": "Stuttgart",
+    "description": "Senior 5+ years experience lead. dbt SQL warehouse modeling Airflow. Location Stuttgart. English is the working language. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_engineering,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_070_data_eng",
+    "title": "Senior Analytics Engineer (m/w/d)",
+    "company": "SAP",
+    "location": "Remote",
+    "description": "Senior 5+ years experience lead. dbt SQL warehouse modeling Airflow. Location Remote. Flie\u00dfend Deutsch (C1) erforderlich. Valid German work permit required.",
+    "tags": "data_engineering,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_071_data_eng",
+    "title": "Senior Analytics Engineer (m/w/d)",
+    "company": "Infineon",
+    "location": "Remote / EU",
+    "description": "Senior 5+ years experience lead. dbt SQL warehouse modeling Airflow. Location Remote / EU. Flie\u00dfend Deutsch (C1) erforderlich.",
+    "tags": "data_engineering,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_072_data_ana",
+    "title": "Internship Data Analyst (m/w/d)",
+    "company": "Enpal",
+    "location": "Berlin",
+    "description": "internship Praktikum for students. SQL Excel Power BI dashboards stakeholder reporting. Location Berlin. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_analytics,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_073_data_ana",
+    "title": "Internship Data Analyst (m/w/d)",
+    "company": "Aleph Alpha",
+    "location": "Munich",
+    "description": "internship Praktikum for students. SQL Excel Power BI dashboards stakeholder reporting. Location Munich. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_analytics,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_074_data_ana",
+    "title": "Internship Data Analyst (m/w/d)",
+    "company": "Parloa",
+    "location": "Hamburg",
+    "description": "internship Praktikum for students. SQL Excel Power BI dashboards stakeholder reporting. Location Hamburg. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_analytics,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_075_data_ana",
+    "title": "Werkstudent Data Analyst (m/w/d)",
+    "company": "Taxfix",
+    "location": "Cologne",
+    "description": "Werkstudent working student 20h/week. SQL Excel Power BI dashboards stakeholder reporting. Location Cologne. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_analytics,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_076_data_ana",
+    "title": "Werkstudent Data Analyst (m/w/d)",
+    "company": "Sennder",
+    "location": "Frankfurt",
+    "description": "Werkstudent working student 20h/week. SQL Excel Power BI dashboards stakeholder reporting. Location Frankfurt. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_analytics,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_077_data_ana",
+    "title": "Werkstudent Data Analyst (m/w/d)",
+    "company": "Adjust",
+    "location": "Stuttgart",
+    "description": "Werkstudent working student 20h/week. SQL Excel Power BI dashboards stakeholder reporting. Location Stuttgart. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_analytics,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_078_data_ana",
+    "title": "Graduate Data Analyst (m/w/d)",
+    "company": "Contentful",
+    "location": "Remote",
+    "description": "Berufseinsteiger graduate trainee entry-level. SQL Excel Power BI dashboards stakeholder reporting. Location Remote. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_analytics,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_079_data_ana",
+    "title": "Graduate Data Analyst (m/w/d)",
+    "company": "Qonto",
+    "location": "Remote / EU",
+    "description": "Berufseinsteiger graduate trainee entry-level. SQL Excel Power BI dashboards stakeholder reporting. Location Remote / EU. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_analytics,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_080_data_ana",
+    "title": "Graduate Data Analyst (m/w/d)",
+    "company": "N26",
+    "location": "Berlin",
+    "description": "Berufseinsteiger graduate trainee entry-level. SQL Excel Power BI dashboards stakeholder reporting. Location Berlin. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_analytics,trainee_graduate",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_081_data_ana",
+    "title": "Junior Data Analyst (m/w/d)",
+    "company": "Celonis",
+    "location": "Munich",
+    "description": "Junior 0-1 years experience. SQL Excel Power BI dashboards stakeholder reporting. Location Munich. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "data_analytics,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_082_data_ana",
+    "title": "Junior Data Analyst (m/w/d)",
+    "company": "Trade Republic",
+    "location": "Hamburg",
+    "description": "Junior 0-1 years experience. SQL Excel Power BI dashboards stakeholder reporting. Location Hamburg. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "data_analytics,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_083_data_ana",
+    "title": "Junior Data Analyst (m/w/d)",
+    "company": "DeepL",
+    "location": "Cologne",
+    "description": "Junior 0-1 years experience. SQL Excel Power BI dashboards stakeholder reporting. Location Cologne. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_analytics,junior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_084_data_ana",
+    "title": "Mid-level Data Analyst (m/w/d)",
+    "company": "Personio",
+    "location": "Frankfurt",
+    "description": "3+ years experience required. SQL Excel Power BI dashboards stakeholder reporting. Location Frankfurt. English is the working language. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_analytics,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_085_data_ana",
+    "title": "Mid-level Data Analyst (m/w/d)",
+    "company": "SumUp",
+    "location": "Stuttgart",
+    "description": "3+ years experience required. SQL Excel Power BI dashboards stakeholder reporting. Location Stuttgart. Flie\u00dfend Deutsch (C1) erforderlich. Valid German work permit required.",
+    "tags": "data_analytics,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_086_data_ana",
+    "title": "Mid-level Data Analyst (m/w/d)",
+    "company": "Babbel",
+    "location": "Remote",
+    "description": "3+ years experience required. SQL Excel Power BI dashboards stakeholder reporting. Location Remote. Flie\u00dfend Deutsch (C1) erforderlich.",
+    "tags": "data_analytics,mid",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_087_data_ana",
+    "title": "Senior Data Analyst (m/w/d)",
+    "company": "GetYourGuide",
+    "location": "Remote / EU",
+    "description": "Senior 5+ years experience lead. SQL Excel Power BI dashboards stakeholder reporting. Location Remote / EU. English is the working language. Only for EU citizens. No visa sponsorship.",
+    "tags": "data_analytics,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_088_data_ana",
+    "title": "Senior Data Analyst (m/w/d)",
+    "company": "Delivery Hero",
+    "location": "Berlin",
+    "description": "Senior 5+ years experience lead. SQL Excel Power BI dashboards stakeholder reporting. Location Berlin. Flie\u00dfend Deutsch (C1) erforderlich. Valid German work permit required.",
+    "tags": "data_analytics,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_089_data_ana",
+    "title": "Senior Data Analyst (m/w/d)",
+    "company": "Bosch",
+    "location": "Munich",
+    "description": "Senior 5+ years experience lead. SQL Excel Power BI dashboards stakeholder reporting. Location Munich. Flie\u00dfend Deutsch (C1) erforderlich.",
+    "tags": "data_analytics,senior",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_090_business",
+    "title": "Internship BI Analyst (m/w/d)",
+    "company": "SAP",
+    "location": "Hamburg",
+    "description": "internship Praktikum for students. Tableau Looker Power BI semantic layer KPI. Location Hamburg. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "business_intelligence,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_091_business",
+    "title": "Internship BI Analyst (m/w/d)",
+    "company": "Infineon",
+    "location": "Cologne",
+    "description": "internship Praktikum for students. Tableau Looker Power BI semantic layer KPI. Location Cologne. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "business_intelligence,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_092_business",
+    "title": "Internship BI Analyst (m/w/d)",
+    "company": "Enpal",
+    "location": "Frankfurt",
+    "description": "internship Praktikum for students. Tableau Looker Power BI semantic layer KPI. Location Frankfurt. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "business_intelligence,internship",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_093_business",
+    "title": "Werkstudent BI Analyst (m/w/d)",
+    "company": "Aleph Alpha",
+    "location": "Stuttgart",
+    "description": "Werkstudent working student 20h/week. Tableau Looker Power BI semantic layer KPI. Location Stuttgart. English is the working language. We offer visa sponsorship and EU Blue Card support.",
+    "tags": "business_intelligence,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_094_business",
+    "title": "Werkstudent BI Analyst (m/w/d)",
+    "company": "Parloa",
+    "location": "Remote",
+    "description": "Werkstudent working student 20h/week. Tableau Looker Power BI semantic layer KPI. Location Remote. Flie\u00dfend Deutsch (C1) erforderlich. Relocation package available for international hires.",
+    "tags": "business_intelligence,working_student",
+    "source": "direct"
+  },
+  {
+    "job_id": "sem_eval_095_business",
+    "title": "Werkstudent BI Analyst (m/w/d)",
+    "company": "Taxfix",
+    "location": "Remote / EU",
+    "description": "Werkstudent working student 20h/week. Tableau Looker Power BI semantic layer KPI. Location Remote / EU. Flie\u00dfend Deutsch (C1) erforderlich. Only for EU citizens. No visa sponsorship.",
+    "tags": "business_intelligence,working_student",
+    "source": "direct"
+  }
+]

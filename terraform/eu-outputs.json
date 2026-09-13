@@ -1,0 +1,52 @@
+﻿{
+  "account_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "366945363779"
+  },
+  "bronze_bucket": {
+    "sensitive": false,
+    "type": "string",
+    "value": "dataforge-bronze-dev-366945363779"
+  },
+  "github_actions_role_arn": {
+    "sensitive": false,
+    "type": "string",
+    "value": "arn:aws:iam::366945363779:role/dataforge-github-actions-dev"
+  },
+  "gold_bucket": {
+    "sensitive": false,
+    "type": "string",
+    "value": "dataforge-gold-dev-366945363779"
+  },
+  "jobs_api_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://br1sodhn2e.execute-api.eu-central-1.amazonaws.com/"
+  },
+  "match_api_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://7ldjx36gu2.execute-api.eu-central-1.amazonaws.com/"
+  },
+  "match_function_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://22oqvlj4pyl4geb2lzgeisnquy0dscjk.lambda-url.eu-central-1.on.aws/"
+  },
+  "medallion_state_machine_arn": {
+    "sensitive": false,
+    "type": "string",
+    "value": "arn:aws:states:eu-central-1:366945363779:stateMachine:dataforge-medallion-express"
+  },
+  "metrics_function_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://xy9g3m33wj.execute-api.eu-central-1.amazonaws.com/"
+  },
+  "silver_bucket": {
+    "sensitive": false,
+    "type": "string",
+    "value": "dataforge-silver-dev-366945363779"
+  }
+}

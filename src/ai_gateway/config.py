@@ -19,6 +19,9 @@ MODEL_PRICING: dict[str, ModelPricing] = {
     "claude-3-5-sonnet-20241022": ModelPricing(0.003, 0.015),
     "amazon.titan-embed-text-v2:0": ModelPricing(0.0001, 0.0),
     "amazon.titan-text-express-v1": ModelPricing(0.0002, 0.0006),
+    # Approximate Bedrock on-demand (update from AWS pricing page for thesis appendix)
+    "amazon.nova-micro-v1:0": ModelPricing(0.000035, 0.00014),
+    "amazon.nova-lite-v1:0": ModelPricing(0.00006, 0.00024),
     "local-tfidf": ModelPricing(0.0, 0.0),
     "local-heuristic": ModelPricing(0.0, 0.0),
 }
@@ -32,24 +35,31 @@ TASK_PROFILES: dict[str, dict] = {
         "prefer_eu_residency": True,
     },
     "embed": {
-        "preferred_providers": ["openai", "bedrock", "local"],
+        "preferred_providers": ["bedrock", "openai", "local"],
         "max_latency_ms": 3000,
         "max_cost_usd": 0.0001,
         "require_json": False,
         "prefer_eu_residency": True,
     },
     "rerank": {
-        "preferred_providers": ["openai", "anthropic", "bedrock", "local"],
+        "preferred_providers": ["bedrock", "openai", "anthropic", "local"],
         "max_latency_ms": 8000,
         "max_cost_usd": 0.005,
         "require_json": True,
-        "prefer_eu_residency": False,
+        "prefer_eu_residency": True,
     },
     "summarize": {
-        "preferred_providers": ["openai", "bedrock", "anthropic", "local"],
+        "preferred_providers": ["bedrock", "openai", "anthropic", "local"],
         "max_latency_ms": 10000,
         "max_cost_usd": 0.003,
         "require_json": False,
+        "prefer_eu_residency": True,
+    },
+    "explain": {
+        "preferred_providers": ["bedrock", "openai", "anthropic", "local"],
+        "max_latency_ms": 12000,
+        "max_cost_usd": 0.003,
+        "require_json": True,
         "prefer_eu_residency": True,
     },
 }
@@ -61,6 +71,13 @@ def get_env(name: str, default: str = "") -> str:
 
 def ai_enabled() -> bool:
     return get_env("AI_ENABLED", "true").lower() in ("1", "true", "yes")
+
+
+def daily_budget_usd() -> float:
+    try:
+        return float(get_env("AI_DAILY_BUDGET_USD", "5.0"))
+    except ValueError:
+        return 5.0
 
 
 def enrichment_sample_rate() -> float:

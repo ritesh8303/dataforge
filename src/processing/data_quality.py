@@ -4,7 +4,9 @@ from typing import Any, Dict
 
 import pandas as pd
 
-VALID_SOURCES = frozenset({"ba_api", "direct", "eures", "arbeitnow", "berlin_startups"})
+VALID_SOURCES = frozenset(
+    {"ba_api", "direct", "eures", "arbeitnow", "berlin_startups", "himalayas", "hn_whoishiring"}
+)
 REMOVED_SOURCES = frozenset({"indeed", "hacker_news"})
 
 
@@ -43,6 +45,19 @@ def compute_quality_metrics(df: pd.DataFrame) -> Dict[str, Any]:
         # Removed sources are already outside VALID_SOURCES — one check, no double count.
         invalid_source = int((~active["source"].isin(VALID_SOURCES)).sum())
 
+    tech_share = None
+    if "is_tech" in active.columns and len(active):
+        tech_share = round(float(active["is_tech"].astype(bool).mean()), 4)
+
+    duplicate_rate_per_source: dict[str, float] = {}
+    if "source" in active.columns and "job_id" in active.columns and len(active):
+        for source, group in active.groupby(active["source"].astype(str)):
+            if len(group) == 0:
+                continue
+            duplicate_rate_per_source[str(source)] = round(
+                float(group["job_id"].duplicated().mean()), 4
+            )
+
     remote_in_country_dimension = 0
     if "region" in active.columns:
         remote_in_country_dimension = int((active["region"].astype(str).str.strip() == "Remote").sum())
@@ -56,6 +71,8 @@ def compute_quality_metrics(df: pd.DataFrame) -> Dict[str, Any]:
         "missing_title_rate": round(float(missing_title.mean()), 4),
         "missing_location_rate": round(float(missing_location.mean()), 4),
         "duplicate_job_id_rate": round(float(dupes / len(active)), 4) if len(active) else 0.0,
+        "duplicate_rate_per_source": duplicate_rate_per_source,
+        "tech_share": tech_share,
         "stale_jobs_count": stale_count,
         "invalid_source_count": invalid_source,
         "remote_in_country_dimension": remote_in_country_dimension,

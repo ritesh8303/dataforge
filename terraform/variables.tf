@@ -32,3 +32,16 @@ variable "company_careers_config_url" {
   type        = string
   default     = ""
 }
+
+variable "match_api_key" {
+  description = "Shared secret for Match API X-API-Key header (set before enabling ai.tf)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "enable_sfn_schedule" {
+  description = "When true, EventBridge triggers the Silver→Gold Express state machine (default off — keep Lambda crons)"
+  type        = bool
+  default     = false
+}

@@ -3,3 +3,63 @@ services:
     build: .
     volumes:
       - .:/app
+    working_dir: /app
+    command: >
+      sh -c "python scripts/check_quality_gate.py
+      && dbt run --project-dir dbt --profiles-dir dbt
+      && dbt test --project-dir dbt --profiles-dir dbt
+      && dbt docs generate --project-dir dbt --profiles-dir dbt"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.match
+    ports:
+      - "8001:8080"
+    environment:
+      AI_ENABLED: "true"
+      MATCH_API_KEY: ""
+      GOLD_BUCKET: ""
+      # Local: mount eval fixtures or downloaded Gold via volume if needed
+    volumes:
+      - ./evals/data:/var/task/evals/data:ro
+      - ./prompts:/var/task/prompts:ro
+    # Override Lambda entrypoint for local uvicorn-style serving when image supports it
+    profiles: ["api"]
+
+  match-api-local:
+    image: python:3.11-slim-bookworm
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+    environment:
+      PYTHONPATH: /app/src:/app
+      AI_ENABLED: "true"
+      MATCH_API_KEY: ""
+    command: >
+      sh -c "pip install -q -r requirements-test.txt fastapi uvicorn mangum
+      && python scripts/run_match_api_local.py"
+    profiles: ["api"]
+
+  airflow:
+    image: apache/airflow:2.10.4-python3.11
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      _AIRFLOW_WWW_USER_USERNAME: dataforge
+      _AIRFLOW_WWW_USER_PASSWORD: dataforge
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - .:/opt/airflow/dataforge
+    ports:
+      - "8080:8080"
+    command: >
+      bash -c "airflow db migrate
+      && airflow users create --username dataforge --password dataforge
+         --firstname Data --lastname Forge --role Admin --email local@dataforge.dev || true
+      && airflow webserver & airflow scheduler"
+    profiles: ["airflow"]

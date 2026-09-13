@@ -319,6 +319,7 @@
       <a href="dashboard.html">Dashboard</a>
       <a href="jobs.html">Jobs</a>
       <a href="agent.html" class="active">Career Matching Wizard</a>
+      <a href="about.html">About</a>
     </div>
     <div class="df-navbar-actions">
       <a href="jobs.html" class="df-btn df-btn-ghost df-btn-sm">Job Intelligence Board</a>
@@ -389,14 +390,56 @@
     </div>
 
     <div class="step-container" id="step-3">
-      <div class="wizard-card-title">Step 3 — What location(s) are you targeting?</div>
+      <div class="wizard-card-title">Step 3 — Location, visa profile &amp; match mode</div>
       <div class="chat-card" id="chat-box-loc">
         <div class="chat-bubble agent">
-          Perfect! Now, what location or working arrangement are you targeting? You can say things like 'Germany', 'Munich', 'Remote only', 'Europe', or 'Hybrid in Berlin'.
+          Perfect! Set your location, visa situation, and whether to use the rule-based wizard (60/20/20) or the hybrid LLM Match API (BM25 + embeddings + citations).
         </div>
       </div>
       <label class="df-label" for="input-loc">Preferred Locations / Work Style</label>
       <input type="text" id="input-loc" class="df-input" placeholder="e.g. Remote, Berlin, Munich, Germany" />
+
+      <label class="df-label" for="input-visa">Visa / residence status (advisory filters)</label>
+      <select id="input-visa" class="df-input">
+        <option value="">Prefer not to say</option>
+        <option value="eu_citizen">EU / EEA citizen</option>
+        <option value="blue_card">EU Blue Card</option>
+        <option value="chancenkarte_or_job_seeker">Chancenkarte / job-seeker visa</option>
+        <option value="student_visa">Student visa</option>
+        <option value="needs_visa_from_abroad">Need visa from abroad</option>
+      </select>
+
+      <label class="df-label" for="input-german">German level (CEFR)</label>
+      <select id="input-german" class="df-input">
+        <option value="">Unknown</option>
+        <option value="A1">A1</option>
+        <option value="A2">A2</option>
+        <option value="B1">B1</option>
+        <option value="B2">B2</option>
+        <option value="C1">C1</option>
+        <option value="C2">C2</option>
+      </select>
+
+      <label class="df-label" for="input-match-mode">Match mode</label>
+      <select id="input-match-mode" class="df-input">
+        <option value="rules">Rule-based wizard (60% skills / 20% seniority / 20% location)</option>
+        <option value="hybrid">Hybrid Match API (BM25 + dense + citations)</option>
+        <option value="agent">Multi-agent Match API (Supervisor + specialists)</option>
+      </select>
+
+      <label class="df-label" style="display:flex;align-items:center;gap:0.5rem;margin-top:0.75rem;">
+        <input type="checkbox" id="input-entry-only" />
+        Prefer entry-level / internship / working-student / junior roles
+      </label>
+      <label class="df-label" style="display:flex;align-items:center;gap:0.5rem;">
+        <input type="checkbox" id="input-english-ok" />
+        Prefer English-OK postings
+      </label>
+
+      <p style="font-size:0.75rem;color:var(--df-text-muted);margin-top:0.75rem;">
+        Visa filters are advisory signals from public JDs — not legal advice. Hybrid mode needs MATCH_API_URL (local: http://localhost:8001).
+      </p>
+
       <div class="btn-row">
         <button class="df-btn df-btn-secondary" onclick="goToStep(2)">← Back</button>
         <button class="df-btn df-btn-primary" onclick="submitLocation()">Run Career Match →</button>
@@ -493,14 +536,25 @@
 </footer>
 
 <script>
-  const JOBS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
+  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:";
+  const JOBS_API_URL = isLocal
     ? "http://localhost:8000/jobs"
     : "https://br1sodhn2e.execute-api.eu-central-1.amazonaws.com/";
+  // Paste terraform output match_api_url / Function URL here after apply:
+  const MATCH_API_URL = window.DATAFORGE_MATCH_API_URL || (isLocal
+    ? "http://localhost:8001"
+    : "https://22oqvlj4pyl4geb2lzgeisnquy0dscjk.lambda-url.eu-central-1.on.aws/");
+  const MATCH_API_KEY = window.DATAFORGE_MATCH_API_KEY || "";
 
   let currentStep = 1;
   let resumeContent = "";
   let dreamRole = "";
   let targetLoc = "";
+  let visaStatus = "";
+  let germanLevel = "";
+  let matchMode = "rules";
+  let entryLevelOnly = false;
+  let englishOkOnly = false;
   let scannedJobs = [];
   let userSkills = [];
   let userSeniority = "mid";
@@ -590,7 +644,12 @@
   function submitLocation() {
     targetLoc = document.getElementById("input-loc").value.trim();
     if (!targetLoc) { alert("Please specify your preferred location!"); return; }
-    document.getElementById("chat-box-loc").innerHTML += `<div class="chat-bubble user">I want to work in: ${esc(targetLoc)}.</div>`;
+    visaStatus = document.getElementById("input-visa").value;
+    germanLevel = document.getElementById("input-german").value;
+    matchMode = document.getElementById("input-match-mode").value || "rules";
+    entryLevelOnly = document.getElementById("input-entry-only").checked;
+    englishOkOnly = document.getElementById("input-english-ok").checked;
+    document.getElementById("chat-box-loc").innerHTML += `<div class="chat-bubble user">I want to work in: ${esc(targetLoc)} (${esc(matchMode)} match).</div>`;
     setTimeout(() => { goToStep(4); runScraperAgentSimulation(); }, 450);
   }
 
@@ -619,14 +678,78 @@
     return "Mid-tier";
   }
 
+  function scoreJobRules(j) {
+    const jobText = `${j.title || ''} ${j.tags || ''} ${j.description || ''}`.toLowerCase();
+    const jobSkills = extractSkills(jobText);
+    const matched = jobSkills.filter(s => userSkills.includes(s));
+    const missing = jobSkills.filter(s => !userSkills.includes(s));
+    const skillScore = jobSkills.length ? (matched.length / jobSkills.length) * 100 : 80;
+
+    const titleLower = (j.title || "").toLowerCase();
+    let jobSeniority = "mid";
+    if (titleLower.includes("lead") || titleLower.includes("principal") || titleLower.includes("staff")) jobSeniority = "lead";
+    else if (titleLower.includes("senior")) jobSeniority = "senior";
+    else if (titleLower.includes("junior") || titleLower.includes("entry") || titleLower.includes("graduate") || titleLower.includes("werkstudent") || titleLower.includes("intern")) jobSeniority = "junior";
+
+    let seniorityScore = 100;
+    if (userSeniority !== jobSeniority) {
+      const lvls = ["junior", "mid", "senior", "lead"];
+      seniorityScore = Math.max(20, 100 - Math.abs(lvls.indexOf(userSeniority) - lvls.indexOf(jobSeniority)) * 40);
+    }
+
+    let locScore = 80;
+    const targetLocLower = targetLoc.toLowerCase();
+    const jobLocLower = (j.location || "").toLowerCase();
+    if (targetLocLower.includes("remote") && (j.work_style === "remote" || j.is_remote === true || j.is_remote === "True")) locScore = 100;
+    else if (jobLocLower.includes(targetLocLower) || targetLocLower.includes(jobLocLower)) locScore = 100;
+
+    const matchPct = Math.round((skillScore * 0.60) + (seniorityScore * 0.20) + (locScore * 0.20));
+    const tier = determineCompanyTier(j.company);
+
+    let priority = "Medium";
+    if (matchPct >= 75 && (tier === "FAANG" || tier === "Top Product" || tier === "Strong Startup")) priority = "High";
+
+    let comp = "Market Standard";
+    if (j.salary && j.salary !== "nan") comp = j.salary;
+    else if (tier === "FAANG" || tier === "Top Product") comp = "Top-tier Package";
+
+    let notes = "";
+    if (j.language_requirement === "german_required" || (!j.language_requirement && (j.is_english === "False" || j.is_english === false))) {
+      notes = "Requires German proficiency";
+    }
+
+    return {
+      score: matchPct, title: j.title, company: j.company || "Unknown", tier,
+      location: j.location ? j.location.split(",")[0].trim() : "Europe",
+      work_type: j.work_style ? j.work_style.charAt(0).toUpperCase() + j.work_style.slice(1) : (j.is_remote === true ? "Remote" : "Onsite"),
+      date: j.date_added || "Recent",
+      exp_summary: `Candidate (${userSeniority}) matches job complexity (${jobSeniority}).`,
+      skills_match: matched.join(", ") || "General Engineering",
+      missing_skills: missing,
+      why_fits: `Strong overlap with your skills in ${matched.slice(0, 3).join(", ")}. Matches target title.`,
+      url: fixEuresApplyUrl(j.job_url || j.url || "#"),
+      easy_apply: (j.source === "arbeitnow" || j.source === "direct") ? "Yes" : "No",
+      priority, compensation: comp, notes
+    };
+  }
+
   async function runScraperAgentSimulation() {
     const statusEl = document.getElementById("scanner-status");
     const logEl = document.getElementById("scanner-log");
+    const usingHybrid = matchMode === "hybrid" || matchMode === "agent";
+    const apiMethod = matchMode === "agent" ? "agent" : "hybrid";
     const steps = [
       { status: "Analyzing Resume Profile...", log: "Extracting skills inventory, years of experience, and seniority level..." },
       { status: "Consulting Search Matrix...", log: `Interpreting target role: "${dreamRole}" and location boundaries: "${targetLoc}"...` },
-      { status: "Querying AWS Data Lakehouse...", log: "Invoking metrics APIs & jobs search engine on S3 buckets..." },
-      { status: "Recruiter Analysis Scoring...", log: "Processing candidate-to-job match matrix, matching tags and descriptions..." },
+      {
+        status: matchMode === "agent" ? "Running multi-agent graph..." : (usingHybrid ? "Calling Match API..." : "Querying AWS Data Lakehouse..."),
+        log: matchMode === "agent"
+          ? "Supervisor → Retriever → Scorer → Explainer → Critic (bounded LLM calls)..."
+          : usingHybrid
+          ? "Hybrid BM25 + dense retrieval with PII redaction and visa-aware filters..."
+          : "Invoking metrics APIs & jobs search engine on S3 buckets..."
+      },
+      { status: "Recruiter Analysis Scoring...", log: usingHybrid ? "Attaching cited job_id explanations..." : "Processing candidate-to-job match matrix..." },
       { status: "Complete!", log: "Compiling career match report..." }
     ];
 
@@ -636,71 +759,66 @@
       await new Promise(resolve => setTimeout(resolve, 800));
     }
 
+    let processedJobs = [];
     try {
-      const params = new URLSearchParams({ limit: 800, sort: 'newest', status: 'active' });
-      params.set("search", dreamRole);
-      const res = await fetch(`${JOBS_API_URL}?${params}`);
-      if (!res.ok) throw new Error("API call failed");
-      const data = await res.json();
-      scannedJobs = data.jobs || [];
+      if (usingHybrid) {
+        if (!MATCH_API_URL) throw new Error("MATCH_API_URL is not configured");
+        const headers = { "Content-Type": "application/json" };
+        if (MATCH_API_KEY) headers["X-API-Key"] = MATCH_API_KEY;
+        const res = await fetch(`${MATCH_API_URL.replace(/\/$/, "")}/match`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            resume: resumeContent,
+            dream_role: dreamRole,
+            location: targetLoc,
+            method: apiMethod,
+            limit: 40,
+            visa_status: visaStatus,
+            german_level: germanLevel,
+            entry_level_only: entryLevelOnly,
+            english_ok_only: englishOkOnly,
+            tech_only: true
+          })
+        });
+        if (!res.ok) throw new Error("Match API call failed: " + res.status);
+        const data = await res.json();
+        processedJobs = (data.jobs || []).map(j => {
+          const score = Math.round(Number(j.match_score) <= 1 ? Number(j.match_score) * 100 : Number(j.match_score));
+          const cites = (j.citations || []).map(c => c.reason).join(" ");
+          return {
+            score: Math.min(100, score || 0),
+            title: j.title,
+            company: j.company || "Unknown",
+            tier: determineCompanyTier(j.company),
+            location: j.location ? String(j.location).split(",")[0].trim() : "Europe",
+            work_type: j.work_style ? String(j.work_style).charAt(0).toUpperCase() + String(j.work_style).slice(1) : (j.is_remote === true ? "Remote" : "Onsite"),
+            date: j.date_added || "Recent",
+            exp_summary: `Hybrid match (${j.match_method || data.method}). Visa stance: ${j.ai_visa_stance || "n/a"}.`,
+            skills_match: j.tags || j.ai_skills || "—",
+            missing_skills: [],
+            why_fits: cites || "Retrieved by hybrid ranking.",
+            url: fixEuresApplyUrl(j.job_url || j.url || "#"),
+            easy_apply: (j.source === "arbeitnow" || j.source === "direct") ? "Yes" : "No",
+            priority: score >= 70 ? "High" : "Medium",
+            compensation: j.salary && j.salary !== "nan" ? j.salary : "Market Standard",
+            notes: j.ai_evidence_visa || ""
+          };
+        });
+      } else {
+        const params = new URLSearchParams({ limit: 800, sort: 'newest', status: 'active' });
+        params.set("search", dreamRole);
+        const res = await fetch(`${JOBS_API_URL}?${params}`);
+        if (!res.ok) throw new Error("API call failed");
+        const data = await res.json();
+        scannedJobs = data.jobs || [];
+        processedJobs = scannedJobs.map(scoreJobRules);
+      }
     } catch(e) {
-      console.warn("API call failed", e);
+      console.warn("Match failed", e);
+      statusEl.textContent = "Match failed — check API URL / key";
+      logEl.textContent = String(e);
     }
-
-    const processedJobs = scannedJobs.map(j => {
-      const jobText = `${j.title || ''} ${j.tags || ''} ${j.description || ''}`.toLowerCase();
-      const jobSkills = extractSkills(jobText);
-      const matched = jobSkills.filter(s => userSkills.includes(s));
-      const missing = jobSkills.filter(s => !userSkills.includes(s));
-      const skillScore = jobSkills.length ? (matched.length / jobSkills.length) * 100 : 80;
-
-      const titleLower = (j.title || "").toLowerCase();
-      let jobSeniority = "mid";
-      if (titleLower.includes("lead") || titleLower.includes("principal") || titleLower.includes("staff")) jobSeniority = "lead";
-      else if (titleLower.includes("senior")) jobSeniority = "senior";
-      else if (titleLower.includes("junior") || titleLower.includes("entry") || titleLower.includes("graduate")) jobSeniority = "junior";
-
-      let seniorityScore = 100;
-      if (userSeniority !== jobSeniority) {
-        const lvls = ["junior", "mid", "senior", "lead"];
-        seniorityScore = Math.max(20, 100 - Math.abs(lvls.indexOf(userSeniority) - lvls.indexOf(jobSeniority)) * 40);
-      }
-
-      let locScore = 80;
-      const targetLocLower = targetLoc.toLowerCase();
-      const jobLocLower = (j.location || "").toLowerCase();
-      if (targetLocLower.includes("remote") && (j.work_style === "remote" || j.is_remote === true || j.is_remote === "True")) locScore = 100;
-      else if (jobLocLower.includes(targetLocLower) || targetLocLower.includes(jobLocLower)) locScore = 100;
-
-      const matchPct = Math.round((skillScore * 0.60) + (seniorityScore * 0.20) + (locScore * 0.20));
-      const tier = determineCompanyTier(j.company);
-
-      let priority = "Medium";
-      if (matchPct >= 75 && (tier === "FAANG" || tier === "Top Product" || tier === "Strong Startup")) priority = "High";
-
-      let comp = "Market Standard";
-      if (j.salary && j.salary !== "nan") comp = j.salary;
-      else if (tier === "FAANG" || tier === "Top Product") comp = "Top-tier Package";
-
-      let notes = "";
-      if (j.language_requirement === "german_required" || (!j.language_requirement && (j.is_english === "False" || j.is_english === false))) {
-        notes = "Requires German proficiency";
-      }
-
-      return {
-        score: matchPct, title: j.title, company: j.company || "Unknown", tier,
-        location: j.location ? j.location.split(",")[0].trim() : "Europe",
-        work_type: j.work_style ? j.work_style.charAt(0).toUpperCase() + j.work_style.slice(1) : (j.is_remote === true ? "Remote" : "Onsite"),
-        date: j.date_added || "Recent",
-        exp_summary: `Candidate (${userSeniority}) matches job complexity (${jobSeniority}).`,
-        skills_match: matched.join(", ") || "General Engineering",
-        missing_skills: missing,
-        why_fits: `Strong overlap with your skills in ${matched.slice(0, 3).join(", ")}. Matches target title.`,
-        url: fixEuresApplyUrl(j.job_url || j.url || "#"),
-        easy_apply: (j.source === "arbeitnow" || j.source === "direct") ? "Yes" : "No",
-        priority, compensation: comp, notes
-      };
-    });
 
     processedJobs.sort((a, b) => b.score - a.score);
 

@@ -36,6 +36,13 @@ jobs:
           PYTHONPATH: .
         run: pytest tests/ --ignore=tests/test_e2e_pipeline.py -v --tb=short
 
+      - name: Matching + enrichment rule evals (CI gate)
+        env:
+          PYTHONPATH: src:.
+        run: |
+          python evals/run_matching_eval.py
+          python evals/run_enrichment_rules_eval.py
+
   terraform:
     runs-on: ubuntu-latest
     steps:
@@ -63,3 +70,11 @@ jobs:
         run: |
           dbt run --project-dir dbt --profiles-dir dbt
           dbt test --project-dir dbt --profiles-dir dbt
+          dbt docs generate --project-dir dbt --profiles-dir dbt
+
+      - name: Upload dbt docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-docs
+          path: dbt/target
+          if-no-files-found: warn
