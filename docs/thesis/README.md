@@ -6,11 +6,12 @@
 
 | Document | Use |
 |---|---|
-| [RESULTS_DRAFT.md](RESULTS_DRAFT.md) | Measured RQ1–RQ4 draft tables + honesty notes |
+| **[THESIS_PAPER.md](THESIS_PAPER.md)** | **Full thesis draft (Ch. 1–9 + refs)** — convert to Word/LaTeX for binding |
+| [RESULTS_DRAFT.md](RESULTS_DRAFT.md) | Living measured RQ tables + honesty notes |
 | [../DEMO_SCRIPT.md](../DEMO_SCRIPT.md) | 2–3 min Loom / interview talk-track |
 | [THESIS_PROPOSAL.md](THESIS_PROPOSAL.md) | Full UE ARM-style proposal (abstract → methods → timeline) — registration / course |
 | [THESIS_EXPOSE.md](THESIS_EXPOSE.md) | Short exposé — email to Erst/Zweitbetreuung |
-| [AI_LAYER_ARCHITECTURE.md](AI_LAYER_ARCHITECTURE.md) | Planned/integrating AI modules — **not all deployed** |
+| [AI_LAYER_ARCHITECTURE.md](AI_LAYER_ARCHITECTURE.md) | AI modules — map to Implementation chapter |
 | Admin emails, Prüfungsamt, Betreuungsvertrag | Keep in `D:\JOB\ue-coordination\` — not in this public repo |
 
-**Status (2026-09-13):** production DE pipeline is live. GenAI Match / multi-agent / MCP / governance docs are **in-repo**; AWS Match URL requires renaming `terraform/ai.tf.optional` → `ai.tf` and apply. Do not tell examiners the AI layer is production-complete until that apply + demo URL exist.
+**Status (2026-09-16):** Full paper draft in `THESIS_PAPER.md`. Confirm official UE formatting/citation rules with Examination Office before binding. Live Match is deployed; Bedrock RQ2 table still pending Nova Micro quota approval — paper marks this honestly.
