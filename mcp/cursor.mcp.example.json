@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "dataforge": {
+      "command": "py",
+      "args": ["-3", "mcp/server.py"],
+      "env": {
+        "DATAFORGE_API_BASE": "https://22oqvlj4pyl4geb2lzgeisnquy0dscjk.lambda-url.eu-central-1.on.aws/"
+      }
+    }
+  }
+}
