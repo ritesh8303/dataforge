@@ -79,7 +79,7 @@ Suggested order only — swap freely if a target role weights differently.
 | 2026-09-13 | AWS-frugal redesign (LanceDB, Function URL, Bedrock-first, €40 cap); tech-only + visa-aware audience; free source expansion; Phase A+C started | Cost + JD coverage + job-seeker-visa use case |
 | 2026-09-13 | Phase B: FastAPI+Mangum Match API, PII, citations, visa filters, agent.html hybrid toggle, Function URL in ai.tf.optional | Portfolio Match surface |
 | 2026-09-13 | Phase D: multi-agent graph, HITL, MCP, ablation; Phase E: Step Functions Express, compose Airflow, RESPONSIBLE_AI, Spark note, dbt docs CI | Thesis-plus orchestration + governance |
-| 2026-09-13 | Phase F: About page, ROI + RQ2 scripts, BUDGET_RUNBOOK, RESULTS_DRAFT, README honesty | Packaging |
+| 2026-09-16 | Demo script + RESULTS honesty; MCP auto-loads gitignored Match key; Bedrock Nova TPM increase requested (PENDING) | Wait on quota without blocking portfolio demo |
 
 ## Explicitly out of scope (until evidence says otherwise)
 

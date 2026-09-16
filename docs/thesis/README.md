@@ -7,6 +7,7 @@
 | Document | Use |
 |---|---|
 | [RESULTS_DRAFT.md](RESULTS_DRAFT.md) | Measured RQ1–RQ4 draft tables + honesty notes |
+| [../DEMO_SCRIPT.md](../DEMO_SCRIPT.md) | 2–3 min Loom / interview talk-track |
 | [THESIS_PROPOSAL.md](THESIS_PROPOSAL.md) | Full UE ARM-style proposal (abstract → methods → timeline) — registration / course |
 | [THESIS_EXPOSE.md](THESIS_EXPOSE.md) | Short exposé — email to Erst/Zweitbetreuung |
 | [AI_LAYER_ARCHITECTURE.md](AI_LAYER_ARCHITECTURE.md) | Planned/integrating AI modules — **not all deployed** |

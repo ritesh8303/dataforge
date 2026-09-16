@@ -16,13 +16,31 @@ from __future__ import annotations
 import json
 import os
 import sys
+from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 BASE = os.environ.get("DATAFORGE_API_BASE", "http://127.0.0.1:8001").rstrip("/")
-API_KEY = os.environ.get("DATAFORGE_API_KEY", "").strip()
+
+
+def _load_api_key() -> str:
+    env = os.environ.get("DATAFORGE_API_KEY", "").strip()
+    if env:
+        return env
+    # Repo-root gitignored file written by terraform apply helpers
+    root = Path(__file__).resolve().parents[1]
+    key_file = root / "aws-keys-do-not-commit.txt"
+    if key_file.is_file():
+        for line in key_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line.startswith("MATCH_API_KEY="):
+                return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return ""
+
+
+API_KEY = _load_api_key()
 
 
 def _request(method: str, path: str, body: dict | None = None, query: dict | None = None) -> Any:

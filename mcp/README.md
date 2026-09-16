@@ -10,47 +10,34 @@ Thin stdio MCP bridge over the Match/Jobs HTTPS API. No always-on host.
 | `get_job` | Lookup by `job_id` |
 | `match_resume` | `POST /match` (`method=agent` or `hybrid`) |
 
-## Run locally
+## Production (recommended)
+
+1. Ensure `aws-keys-do-not-commit.txt` exists in the repo root (gitignored) with:
+   ```
+   MATCH_API_KEY=…
+   MATCH_FUNCTION_URL=https://22oqvlj4pyl4geb2lzgeisnquy0dscjk.lambda-url.eu-central-1.on.aws/
+   ```
+2. Copy `mcp/cursor.mcp.example.json` into your Cursor MCP settings (or merge the `dataforge` block).
+3. Restart Cursor MCP. The server auto-loads `MATCH_API_KEY` from that file if `DATAFORGE_API_KEY` is unset.
+
+## Local Match API (no key)
 
 ```bash
 # terminal 1
 py -3 scripts/run_match_api_local.py
 
-# terminal 2 / Cursor MCP config
-set DATAFORGE_API_BASE=http://127.0.0.1:8001
-py -3 mcp/server.py
-```
-
-## Cursor MCP snippet
-
-```json
-{
-  "mcpServers": {
-    "dataforge": {
-      "command": "py",
-      "args": ["-3", "mcp/server.py"],
-      "env": {
-        "DATAFORGE_API_BASE": "http://127.0.0.1:8001",
-        "DATAFORGE_API_KEY": ""
-      }
-    }
-  }
-}
+# Cursor MCP env
+DATAFORGE_API_BASE=http://127.0.0.1:8001
 ```
 
 ## Auth
 
-Production Match requires `X-API-Key` when `MATCH_API_KEY` is set on the Lambda.
+Production Match requires `X-API-Key`. Prefer the gitignored key file over pasting secrets into committed JSON.
+
+Optional override:
 
 ```bash
+set DATAFORGE_API_KEY=<key>
 set DATAFORGE_API_BASE=https://22oqvlj4pyl4geb2lzgeisnquy0dscjk.lambda-url.eu-central-1.on.aws/
-set DATAFORGE_API_KEY=<from aws-keys-do-not-commit.txt>
+py -3 mcp/server.py
 ```
-
-Or in Cursor MCP `env`:
-
-```json
-"DATAFORGE_API_KEY": "<your key>"
-```
-
-Do not commit the key. Local Match (`scripts/run_match_api_local.py`) leaves the key unset by default.
