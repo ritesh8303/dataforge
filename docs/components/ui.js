@@ -1,4 +1,4 @@
-/* DataForge — neural scene, 3D tilt, scroll reveal, drawers */
+/* DataForge — neural scene, scroll reveal, drawers */
 (function () {
   'use strict';
 
@@ -110,32 +110,12 @@
     });
   }
 
-  /* ── Pointer spotlight + 3D tilt ── */
+  /* ── Pointer spotlight (background only; cards stay still) ── */
   function initPointerFX() {
     var root = document.documentElement;
     window.addEventListener('pointermove', function (e) {
       root.style.setProperty('--df-mx', e.clientX + 'px');
       root.style.setProperty('--df-my', e.clientY + 'px');
-    });
-
-    if (reduceMotion || window.matchMedia('(pointer: coarse)').matches) return;
-
-    var selectors = '.df-card, .job-card, .df-kpi-card, .wizard-card, .df-stat-glass, .hero-preview-frame';
-    var tilted = null;
-    document.addEventListener('pointermove', function (e) {
-      var el = e.target.closest(selectors);
-      if (tilted && tilted !== el) tilted.style.transform = '';
-      tilted = el || null;
-      if (!el) return;
-      var rect = el.getBoundingClientRect();
-      var dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-      var dy = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-      var rx = Math.max(-9, Math.min(9, -dy * 8));
-      var ry = Math.max(-9, Math.min(9, dx * 8));
-      el.style.transform = 'perspective(900px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateY(-4px)';
-    });
-    document.addEventListener('pointerleave', function () {
-      if (tilted) { tilted.style.transform = ''; tilted = null; }
     });
   }
 

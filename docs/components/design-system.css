@@ -364,9 +364,9 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
 }
 
 .df-btn-primary:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 36px rgba(34, 211, 238, 0.4), 0 0 40px rgba(167, 139, 250, 0.28);
+  box-shadow: 0 8px 28px rgba(34, 211, 238, 0.38);
   color: #061018;
+  filter: brightness(1.06);
 }
 
 .df-btn-secondary {
@@ -379,8 +379,7 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
 
 .df-btn-secondary:hover {
   border-color: var(--df-hover-border);
-  transform: translateY(-3px);
-  box-shadow: var(--df-shadow-glow-hover);
+  background: var(--df-hover-tint);
   color: var(--df-text);
 }
 
@@ -408,9 +407,8 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
   border-radius: var(--df-radius-lg);
   padding: var(--df-space-6);
   box-shadow: var(--df-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  transition: transform var(--df-transition), box-shadow var(--df-transition), border-color var(--df-transition);
+  transition: box-shadow var(--df-transition), border-color var(--df-transition), background var(--df-transition);
   position: relative;
-  transform-style: preserve-3d;
 }
 
 .df-card::before {
@@ -426,9 +424,8 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
 
 .df-card-hover:hover,
 .df-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--df-shadow-lg), 0 0 40px rgba(34, 211, 238, 0.12);
   border-color: var(--df-hover-border);
+  background: linear-gradient(165deg, rgba(26, 31, 56, 0.9), rgba(12, 14, 28, 0.82));
 }
 
 .df-card-hover:hover::before,
@@ -449,10 +446,9 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
   border-radius: var(--df-radius-lg);
   padding: var(--df-space-5) var(--df-space-6);
   box-shadow: var(--df-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: all var(--df-transition);
+  transition: border-color var(--df-transition), background var(--df-transition);
   position: relative;
   overflow: hidden;
-  transform-style: preserve-3d;
 }
 
 .df-kpi-card::before {
@@ -477,8 +473,6 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
 .df-kpi-card > * { position: relative; z-index: 1; }
 
 .df-kpi-card:hover {
-  transform: translateY(-6px) rotateX(4deg);
-  box-shadow: var(--df-shadow-lg), 0 0 36px rgba(167, 139, 250, 0.16);
   border-color: var(--df-hover-border);
 }
 
@@ -641,9 +635,8 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
 .tag[class*="region-"] { background: rgba(34, 211, 238, 0.12); color: #67e8f9; }
 .tag.clickable { cursor: pointer; transition: all var(--df-transition-fast); }
 .tag.clickable:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 16px rgba(34, 211, 238, 0.2);
   background-color: rgba(34, 211, 238, 0.12);
+  border-color: var(--df-hover-border);
 }
 
 /* ── Inputs ── */
@@ -707,7 +700,7 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
 .df-pill:hover {
   border-color: var(--df-hover-border);
   color: var(--df-text);
-  box-shadow: 0 0 16px rgba(167, 139, 250, 0.18);
+  background: var(--df-hover-tint);
 }
 
 .df-pill.active {
@@ -1117,14 +1110,12 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
   border-radius: var(--df-radius-lg);
   padding: var(--df-space-6);
   box-shadow: var(--df-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: all var(--df-transition);
-  transform-style: preserve-3d;
+  transition: border-color var(--df-transition), background var(--df-transition);
 }
 
 .df-stat-glass:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--df-shadow-lg), 0 0 32px rgba(34, 211, 238, 0.14);
   border-color: var(--df-hover-border);
+  background: linear-gradient(165deg, rgba(26, 31, 56, 0.88), rgba(12, 14, 28, 0.78));
 }
 
 /* ── 3D hero stage ── */
@@ -1220,14 +1211,12 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
   text-align: center;
   min-width: 110px;
   box-shadow: var(--df-shadow);
-  transition: all var(--df-transition);
-  transform-style: preserve-3d;
+  transition: border-color var(--df-transition), background var(--df-transition);
 }
 
 .df-pipeline-step:hover {
-  transform: translateY(-8px) rotateX(8deg);
   border-color: var(--df-hover-border);
-  box-shadow: var(--df-shadow-glow-hover);
+  background: linear-gradient(165deg, rgba(26, 31, 56, 0.9), rgba(12, 14, 28, 0.8));
 }
 
 .df-pipeline-step .icon { font-size: 1.5rem; margin-bottom: var(--df-space-2); }
@@ -1342,12 +1331,11 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
   display: flex;
   flex-direction: column;
   gap: var(--df-space-4);
-  transition: all var(--df-transition);
+  transition: border-color var(--df-transition), background var(--df-transition);
   animation: df-fadeIn 0.5s ease-out forwards;
   opacity: 0;
   box-shadow: var(--df-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   position: relative;
-  transform-style: preserve-3d;
 }
 
 .job-card::before {
@@ -1362,9 +1350,8 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
 }
 
 .job-card:hover {
-  transform: translateY(-8px);
   border-color: var(--df-hover-border);
-  box-shadow: var(--df-shadow-lg), 0 0 32px rgba(34, 211, 238, 0.12);
+  background: linear-gradient(165deg, rgba(26, 31, 56, 0.9), rgba(12, 14, 28, 0.82));
 }
 
 .job-card:hover::before { opacity: 0.7; }
@@ -1405,9 +1392,9 @@ body > *:not(.df-scene):not(.df-noise) { position: relative; z-index: 2; }
 }
 
 .apply-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(34, 211, 238, 0.32);
+  box-shadow: 0 6px 18px rgba(34, 211, 238, 0.28);
   color: #061018;
+  filter: brightness(1.06);
 }
 
 .filter-drawer-backdrop {
