@@ -26,16 +26,28 @@ GOLD_FILES = [
     "top_skills.csv",
     "description_insights.csv",
     "pipeline_stats.csv",
+    "data_quality_report.csv",
+    "metrics.json",
 ]
 
 
 def main():
-    print("Downloading Gold CSVs from S3...")
+    print("Downloading Gold snapshots from S3...")
     GOLD_DIR.mkdir(parents=True, exist_ok=True)
 
+    import boto3
+
+    bucket = GOLD_BUCKET.replace("s3://", "").split("/", 1)[0]
+    s3 = boto3.client("s3")
+
     for name in GOLD_FILES:
-        df = wr.s3.read_csv(f"{GOLD_BUCKET}/{name}")
         out = GOLD_DIR / name
+        if name.endswith(".json"):
+            obj = s3.get_object(Bucket=bucket, Key=name)
+            out.write_bytes(obj["Body"].read())
+            print(f"  {name}: downloaded")
+            continue
+        df = wr.s3.read_csv(f"{GOLD_BUCKET}/{name}")
         df.to_csv(out, index=False, encoding="utf-8-sig")
         print(f"  {name}: {len(df)} rows")
 
