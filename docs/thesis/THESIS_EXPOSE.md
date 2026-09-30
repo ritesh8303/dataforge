@@ -9,21 +9,23 @@
 
 ## Working Title
 
-**Integrating Multi-Provider Generative AI into an Existing Production Data Pipeline: Architecture, Model Selection, Evaluation, and Business Value — A Case Study on European Job Intelligence (DataForge)**
+**Augmented Analytics on a Production Lakehouse: Integrating Generative AI into European Job Intelligence — A Case Study on DataForge**
+
+*(Colloquium topics: augmented analytics, hyperautomation, automation of data cleaning, digitalisation of software-intensive services.)*
 
 ---
 
 ## 1. Motivation and Problem Statement
 
-European tech job data is fragmented across government portals (BA Jobsuche, EURES), aggregators (Arbeitnow), and hundreds of company ATS pages. DataForge, developed as a capstone project, solves this with a serverless medallion lakehouse on AWS: multi-source ETL, SCD Type 2 history, Gold analytics, and public APIs.
+Job data in Europe is spread across government portals (BA Jobsuche, EURES), aggregators (Arbeitnow), and many company ATS pages. DataForge already solves the collection problem. It is a serverless medallion lakehouse on AWS. It has multi-source ETL, SCD Type 2 history, Gold analytics, and public APIs.
 
-However, industry demand has shifted from raw data aggregation to **AI-augmented intelligence**. Companies struggle with three problems:
+Industry demand has moved from raw lists of jobs to **AI-augmented intelligence**. Companies face three problems:
 
-1. **Integration:** How to add LLM capabilities to existing batch pipelines without breaking lineage, reproducibility, or cost controls.
-2. **Model selection:** Which provider (OpenAI, Anthropic, Bedrock, local) offers the best quality–cost–latency trade-off for specific tasks.
-3. **Monetization:** Raw open-data derivatives have weak moats; AI features (semantic matching, enrichment) may justify premium pricing.
+1. **Integration:** How to add language models to existing batch pipelines without breaking data history, repeatable tests, or cost control.
+2. **Model selection:** Which provider (OpenAI, Anthropic, Bedrock, local) is best on quality, cost, latency, and EU data location for a given task.
+3. **Money:** Raw open-data files are easy to copy. AI features (semantic matching, enrichment) may support a higher price.
 
-DataForge currently uses rule-based keyword matching for its Career Matching Wizard and regex for skill extraction—honestly labeled as non-AI. This thesis closes that gap with production-grade AI integration and empirical evaluation.
+DataForge now uses rule-based keyword matching in the Career Matching Wizard, and regex for skills. These baselines are labelled as non-AI on purpose. This thesis closes the gap with controlled AI integration and empirical tests.
 
 ---
 
@@ -31,12 +33,12 @@ DataForge currently uses rule-based keyword matching for its Career Matching Wiz
 
 | ID | Question |
 |----|----------|
-| **RQ1** | How can generative AI be integrated into an existing medallion lakehouse (Bronze→Silver→Gold→API) without breaking SCD Type 2 semantics, reproducibility, or free-tier cost envelopes? |
-| **RQ2** | For job enrichment, semantic matching, and routing tasks, which provider/model class wins on a multi-objective score (quality, cost, latency, EU data residency)? |
-| **RQ3** | Do embeddings + retrieval outperform the current 60/20/20 keyword-based Career Matching Wizard on ranked job relevance? |
-| **RQ4** | Under which pricing and product packaging does AI-on-pipeline create positive unit economics versus pure open-data aggregation? |
+| **RQ1** | How can generative AI be added to an existing medallion lakehouse (Bronze→Silver→Gold→API) without breaking SCD Type 2 history, repeatable tests, or a low-budget cost limit? |
+| **RQ2** | For job enrichment, semantic matching, and routing, which provider or model class wins on quality, cost, latency, and EU data location? |
+| **RQ3** | Do embeddings + retrieval beat the current 60/20/20 keyword Career Matching Wizard on ranked job relevance? |
+| **RQ4** | Under which pricing and product packaging does AI-on-pipeline give better unit cost than selling raw open-data files only? |
 
-**Hypotheses:** (H1) Embedding retrieval beats regex matching on nDCG@10; (H2) cheap batch models suffice for enrichment vs. frontier models; (H3) a task-aware router reduces cost at equal quality vs. a single provider; (H4) AI premium features (matching API, enrichment) have better unit economics than raw CSV licensing.
+**Hypotheses:** (H1) Embedding retrieval beats keyword matching on nDCG@10. (H2) Cheap batch models are enough for enrichment, compared with frontier models. (H3) A task-aware router reduces cost at similar quality, compared with one provider. (H4) AI premium features (matching API, enrichment) have better unit economics than raw CSV licensing.
 
 ---
 
@@ -64,17 +66,17 @@ User → Match API → Gateway → Providers (OpenAI / Anthropic / Bedrock / Loc
 Eval Harness → Gateway logs → Thesis metrics
 ```
 
-**Guardrails:** JSON schema validation; LLM never mutates `job_id` or SCD keys; PII minimization (public vacancy text only); cost budgets and kill switches; prompt version registry.
+**Controls:** JSON schema checks; the LLM never changes `job_id` or SCD keys; personal data is reduced (public vacancy text is the main input); cost budgets and stop switches; prompt versions in git.
 
 ---
 
 ## 5. Methodology
 
 ### 5.1 Implementation
-- Multi-provider gateway with task profiles: `enrich`, `embed`, `rerank`, `summarize`
-- Batch enrichment producing additive Gold artifacts
-- Match API with embedding retrieval + optional LLM rerank
-- Wizard A/B toggle: heuristic vs. semantic matching
+- Multi-provider gateway with task types: `enrich`, `embed`, `rerank`, `summarize`
+- Batch enrichment that only adds Gold artefacts
+- Match API with embedding retrieval and optional LLM re-rank
+- Wizard A/B toggle: rule-based versus semantic matching
 
 ### 5.2 Evaluation
 
@@ -87,16 +89,16 @@ Eval Harness → Gateway logs → Thesis metrics
 | Operations | Failure rate, p95 latency, €/1k jobs | No AI |
 
 ### 5.3 Business analysis
-Unit-economics model for freemium Match API, B2B labour reports, white-label wizard, and usage-based enrichment—using router cost logs for real €/match and €/enriched-job figures.
+A unit-cost model for freemium Match API, B2B labour reports, white-label wizard, and usage-based enrichment. Router cost logs give real €/match and €/enriched-job figures.
 
 ---
 
 ## 6. Expected Contributions
 
-1. **Reference architecture** for integrating multi-provider GenAI into serverless medallion pipelines.
+1. **Reference architecture** for adding multi-provider GenAI to serverless medallion pipelines.
 2. **Empirical comparison** of commercial and EU-resident AI providers on real labour-market data.
-3. **Reproducible evaluation harness** with open baseline (rule-based matcher).
-4. **Business framework** for AI feature monetization on open-data platforms.
+3. **Repeatable evaluation harness** with an open non-AI matching baseline.
+4. **Business framework** for AI feature pricing on open-data platforms.
 
 ---
 
@@ -125,5 +127,5 @@ Unit-economics model for freemium Match API, B2B labour reports, white-label wiz
 
 ## 9. Supervisor Request
 
-**Erstbetreuung:** Prof. Dr. Iftikhar Ahmed (ML, LLMs, Responsible AI)  
-**Zweitbetreuung:** Prasanna Easwarananthan or Thiyaghamani Jeyaraman (Data Engineering + AI)
+**First supervisor:** Prof. Dr. Iftikhar Ahmed (ML, LLMs, Responsible AI) or Prof. Dr. Rand Kouatly (software engineering, LLM applications).  
+**Second supervisor:** from the colloquium second-supervisor list (for example Dr. Sami ur Rahman or Dr. Ila Chandrakar).

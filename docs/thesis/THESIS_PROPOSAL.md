@@ -1,4 +1,4 @@
-# Integrating Multi-Provider Generative AI into an Existing Production Data Pipeline: Architecture, Model Selection, Evaluation, and Business Value — A Case Study on European Job Intelligence (DataForge)
+# Augmented Analytics on a Production Lakehouse: Integrating Generative AI into European Job Intelligence — A Case Study on DataForge
 
 **Master's Thesis Proposal**
 
@@ -7,40 +7,41 @@
 | **Program** | MSc Data Science |
 | **Institution** | University of Europe for Applied Sciences, Potsdam |
 | **Submitted by** | Ritesh Rakesh Jadhav |
-| **Proposed Erstbetreuung** | Prof. Dr. Iftikhar Ahmed |
-| **Proposed Zweitbetreuung** | Prasanna Easwarananthan or Thiyaghamani Jeyaraman |
+| **Proposed Erstbetreuung** | Prof. Dr. Iftikhar Ahmed *or* Prof. Dr. Rand Kouatly |
+| **Proposed Zweitbetreuung** | From the colloquium list (Dr. Sami ur Rahman, Dr. Ila Chandrakar, \ldots) |
 | **Date** | September 2026 |
 | **Reference system** | [DataForge](https://ritesh8303.github.io/dataforge/) (live AWS lakehouse) |
+| **Colloquium mapping** | Augmented analytics; hyperautomation; automation of data cleaning; digitalisation |
 
 ---
 
 ## Abstract
 
-European labour-market data is fragmented across government portals, aggregators, and company applicant-tracking systems. DataForge already addresses this fragmentation with a production serverless medallion lakehouse on AWS: multi-source ETL, SCD Type 2 history, Gold analytics, public APIs, and a GitHub Pages product surface. Industry demand, however, has moved beyond raw aggregation toward **AI-augmented intelligence**—semantic matching, structured enrichment, and measurable cost control—while most academic GenAI work still studies chatbots or greenfield RAG demos rather than integration into an existing production pipeline.
+Job data in Europe is spread across government portals, aggregators, and company applicant-tracking systems. DataForge already deals with this spread. It is a live serverless medallion lakehouse on AWS. It has multi-source ETL, SCD Type 2 history, Gold analytics, public APIs, and a GitHub Pages website. Industry demand has moved beyond raw lists of jobs. Companies now want **AI-augmented intelligence**: semantic matching, structured enrichment, and cost that can be measured. Most academic GenAI work still studies chatbots or new RAG demos. It does not study integration into an existing production pipeline.
 
-This thesis proposes to extend DataForge with a multi-provider generative AI layer (model gateway, batch enrichment, embedding-based Match API, and evaluation harness) **without rebuilding the lakehouse**. The study empirically compares providers and model classes on quality, cost, latency, and EU data residency; tests whether dense retrieval outperforms the current rule-based Career Matching Wizard; and analyses unit economics of AI features versus pure open-data aggregation.
+This thesis will extend DataForge with a multi-provider generative AI layer (model gateway, batch enrichment, embedding-based Match API, and evaluation harness). The lakehouse will **not** be rebuilt. The study compares providers and model classes on quality, cost, latency, and EU data location. It tests whether dense retrieval beats the current rule-based Career Matching Wizard. It also analyses unit cost of AI features versus selling raw open data.
 
-The contribution is a reproducible reference architecture and evaluation protocol for integrating GenAI into medallion pipelines under realistic free-tier and compliance constraints—bridging data engineering, LLMOps, and applied business analysis for the UE MSc Data Science profile.
+The contribution is a repeatable reference architecture and evaluation protocol. It shows how to add GenAI to medallion pipelines under free-tier and compliance limits. This links data engineering, LLM operations, and applied business analysis for the UE MSc Data Science profile.
 
 ---
 
 ## 1. Introduction and Background
 
-Labour-market intelligence is a core input for universities, career services, HR tech, and job seekers. In Europe, vacancy data is spread across the German Federal Employment Agency (BA Jobsuche), EURES, niche aggregators such as Arbeitnow and Berlin Startup Jobs, and hundreds of direct ATS feeds (Greenhouse, Lever, Workday, Personio, and others). Building a trustworthy analytical product from these sources requires disciplined data engineering: ingest validation, historical versioning, quality gates, and serving layers that remain reproducible under cost constraints.
+Labour-market information is important for universities, career services, HR tech, and job seekers. In Europe, vacancy data sits on the German Federal Employment Agency (BA Jobsuche), EURES, smaller aggregators such as Arbeitnow and Berlin Startup Jobs, and many direct ATS feeds (Greenhouse, Lever, Workday, Personio, and others). A trustworthy product from these sources needs careful data engineering: ingest checks, historical versions, quality gates, and serving layers that stay repeatable under cost limits.
 
-DataForge was developed as a capstone-style production system that solves this engineering problem. It runs a daily EventBridge-scheduled pipeline in `eu-central-1`: Bronze Parquet snapshots, Silver SCD Type 2 history, Gold analytics CSVs and metrics, API Gateway endpoints for jobs and metrics, and a public dashboard. Contracts, a data dictionary, CI quality gates, and dbt marts on Gold aggregates are already in place.
+DataForge was built as a capstone-style production system for this engineering problem. It runs a daily EventBridge-scheduled pipeline in `eu-central-1`: Bronze Parquet snapshots, Silver SCD Type 2 history, Gold analytics CSVs and metrics, API Gateway endpoints for jobs and metrics, and a public dashboard. Contracts, a data dictionary, CI quality gates, and dbt marts on Gold aggregates are already in place.
 
-What DataForge still lacks—and what employers increasingly require—is **production-shaped generative AI**: structured LLM enrichment that does not corrupt SCD keys, semantic job–resume matching with measurable ranking quality, multi-provider routing to avoid lock-in, and honest cost/latency logging. The current Career Matching Wizard uses rule-based keyword scoring; skill extraction in Gold relies on regex. Those baselines are intentional and useful for science: they make A/B evaluation possible.
+What DataForge still lacks—and what employers more often require—is **production-shaped generative AI**. This means structured LLM enrichment that does not damage SCD keys, semantic job–resume matching with ranking quality that can be measured, multi-provider routing to avoid lock-in, and honest cost and latency logs. The current Career Matching Wizard uses rule-based keyword scoring. Skill extraction in Gold uses regex. Those baselines are intentional and useful for science: they make A/B evaluation possible.
 
-This proposal therefore frames the thesis as an **integration and evaluation study**, not a greenfield chatbot. The research asks how GenAI can be added to an existing medallion lakehouse, which models win under multi-objective constraints, whether retrieval beats heuristics on ranked relevance, and whether AI product features improve unit economics versus raw data licensing.
+This proposal therefore frames the thesis as an **integration and evaluation study**, not a new chatbot. The research asks how GenAI can be added to an existing medallion lakehouse, which models win under several constraints, whether retrieval beats rules on ranked relevance, and whether AI product features improve unit cost versus raw data licensing.
 
-The remainder of this document states the problem, objectives and research questions, related work gap, theoretical framing, methodology, ethics, timeline, and expected contributions.
+The rest of this document states the problem, objectives and research questions, related work gap, theoretical framing, methodology, ethics, timeline, and expected contributions.
 
 ---
 
 ## 2. Problem Statement
 
-Companies and platform teams rarely start from a blank notebook. They must attach LLMs to pipelines that already enforce lineage, schemas, budgets, and compliance. Academic and tutorial literature under-emphasizes this setting: many projects report model accuracy without production constraints, or deploy RAG systems without a durable data platform underneath.
+Companies and platform teams rarely start from an empty notebook. They must attach LLMs to pipelines that already enforce data history, schemas, budgets, and compliance. Academic and tutorial literature often skips this setting. Many projects report model accuracy without production limits. Others deploy RAG systems without a durable data platform underneath.
 
 In the DataForge case, three concrete problems remain open:
 
@@ -259,19 +260,21 @@ Risks (cost blow-up, scope creep, label sparsity) are mitigated by sampling, fea
 
 ---
 
-## Appendix A — Suggested thesis chapter outline
+## Appendix A — Official UE chapter outline (Kouatly SS 2026)
 
-1. Introduction and industry problem  
-2. Related work  
-3. DataForge as existing system  
-4. Requirements and design of the AI integration layer  
-5. Implementation  
-6. Evaluation results  
-7. Business / ROI analysis  
-8. Discussion, ethics, limitations  
-9. Conclusion and future work  
+1. Introduction  
+2. Theoretical background I — data platforms, digitalisation, information retrieval  
+3. Theoretical background II — generative AI, LLMOps, responsible automation, research gap  
+4. Research questions  
+5. Methodology (design science + single case; defend why not a literature-only thesis)  
+6. Results  
+7. Discussion (own judgement, practical application)  
+8. Implications and future research  
+9. Bibliography  
 
-Target length: agree with supervisors (applied UE theses often ~40–80 pages excluding appendix; code and eval artifacts in GitHub appendix).
+Typeset in [`latex/overleaf_main.tex`](latex/overleaf_main.tex). Character count without spaces depends on ECTS track (120 ECTS: 72,000–82,000). Literature is the major scholarly portion.
+
+Target length: ~50 pages of text ±10 % at 35 lines, plus tables/figures, plus appendices.
 
 ---
 

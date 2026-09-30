@@ -18,8 +18,9 @@ sys.path.insert(0, str(ROOT / "src"))
 
 LAMBDA_CFG = Config(read_timeout=600, connect_timeout=60)
 REGION = "eu-central-1"
-BRONZE_BUCKET = "dataforge-bronze-dev-eu-central-1"
-GOLD_BUCKET = "dataforge-gold-dev-eu-central-1"
+BRONZE_BUCKET = "dataforge-bronze-dev-366945363779"
+GOLD_BUCKET = "dataforge-gold-dev-366945363779"
+SILVER_PATH = "s3://dataforge-silver-dev-366945363779/cleaned/jobs_history.parquet/"
 
 INGESTORS = [
     "dataforge-ingestor",

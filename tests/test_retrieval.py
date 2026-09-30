@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -76,6 +77,29 @@ def test_vector_store_upsert_and_search(tmp_path):
     q = router.embed("embed", "data engineer python").vector
     hits = store2.search(q, top_k=2)
     assert hits[0]["job_id"] == "j1"
+
+
+def test_resolve_vector_entries_json_and_optional_lancedb(tmp_path):
+    from vector_store import resolve_vector_entries, HAS_LANCEDB
+
+    router = ModelRouter()
+    index = build_embedding_index(JOBS, router)
+    raw = json.dumps({"version": 1, "entries": index})
+    entries, backend = resolve_vector_entries(json_raw=raw, uri=None)
+    assert len(entries) == 3
+    assert backend in {"json", "memory"}
+
+    uri = str(tmp_path / "lancedb")
+    entries2, backend2 = resolve_vector_entries(json_raw=raw, uri=uri)
+    assert len(entries2) == 3
+    if HAS_LANCEDB:
+        assert backend2 == "lancedb"
+        # Re-open from disk without JSON
+        entries3, backend3 = resolve_vector_entries(json_raw=None, uri=uri)
+        assert backend3 == "lancedb"
+        assert len(entries3) == 3
+    else:
+        assert backend2 in {"json", "memory"}
 
 
 def test_bm25_empty_corpus():

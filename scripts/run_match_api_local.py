@@ -22,6 +22,9 @@ sys.path.insert(0, str(SRC_DIR))
 os.environ.setdefault("GOLD_BUCKET", "local-mock")
 os.environ.setdefault("GOLD_KEY", "all_jobs.csv")
 os.environ.setdefault("AI_ENABLED", "true")
+# Local LanceDB dir (created on first enrich/match index build when lancedb is installed)
+_local_vectors = Path(__file__).resolve().parents[1] / "data" / "lancedb"
+os.environ.setdefault("VECTOR_STORE_URI", str(_local_vectors))
 # Leave MATCH_API_KEY unset locally so browser demos work without a key.
 
 import boto3

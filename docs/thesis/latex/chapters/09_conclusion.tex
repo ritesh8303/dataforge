@@ -1,0 +1,20 @@
+\chapter{Conclusion and future work}
+\label{ch:conclusion}
+
+\section{Conclusion}
+
+This thesis showed how to extend a live European job-intelligence lakehouse with a frugal GenAI layer without destroying SCD Type~2 lineage or abandoning evaluation honesty. On labelled matching data, dense retrieval improved nDCG@10 over a transparent heuristic wizard. Cost modelling suggests Nova-class enrichment and embeddings are inexpensive at 1k-job scale when rules-first controls apply. Remaining work is primarily \textbf{operational measurement} (Bedrock quota $\rightarrow$ RQ2 Pareto $\rightarrow$ enrichment re-enable $\rightarrow$ faithfulness spot-check), not redesign.
+
+\section{Future work}
+
+\begin{enumerate}[leftmargin=*]
+  \item Complete RQ2 live Pareto after Nova Micro quota approval.
+  \item Expand matching labels ($\geq$100 queries) and multilingual graded relevance.
+  \item Bedrock faithfulness audit for multi-agent citations.
+  \item Optional LanceDB production cutover metrics (latency, recall).
+  \item Supervisor-agreed typesetting to UE binding standards; colloquium demo using \texttt{docs/DEMO\_SCRIPT.md}.
+\end{enumerate}
+
+\section{Closing statement}
+
+DataForge demonstrates that an MSc Data Science thesis can be both a \textbf{hireable production portfolio} and a \textbf{falsifiable integration study}---provided GenAI is treated as a governed pipeline stage, not a slideware feature.

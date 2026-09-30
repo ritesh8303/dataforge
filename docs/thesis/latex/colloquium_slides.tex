@@ -1,0 +1,160 @@
+% Master Colloquium — 10 slides, 16:9, pdfLaTeX (Overleaf-ready)
+% Clear English (IELTS Band 6). Same content as ../COLLOQUIUM_SLIDES.md
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{eurosym}
+
+\title{Augmented Analytics on a Production Lakehouse}
+\subtitle{Integrating Generative AI into European Job Intelligence --- DataForge}
+\author{Ritesh Rakesh Jadhav}
+\institute{M.Sc.\ Data Science\\University of Europe for Applied Sciences, Potsdam}
+\date{Master Colloquium \textbullet\ 10 min + 10 min Q\&A}
+
+\begin{document}
+
+% --- Slide 1 ---
+\begin{frame}
+  \titlepage
+  \vspace{-0.4cm}
+  \small
+  Proposed supervisors: Prof.\ Dr.\ Iftikhar Ahmed (Erst) \textbar\
+  Prof.\ Dr.\ Rand Kouatly (alt.) \textbar\ Zweit TBD
+\end{frame}
+
+% --- Slide 2 ---
+\begin{frame}{Problem}
+  \begin{itemize}
+    \item EU job data is spread across BA, EURES, aggregators, and company ATS feeds.
+    \item Teams want AI features (match, enrichment) on \textbf{existing} pipelines.
+    \item GenAI without tests can break SCD2 history, quality claims, and cost limits.
+    \item Junior developers and career seekers in DE/EU need trustworthy, affordable job intelligence.
+  \end{itemize}
+\end{frame}
+
+% --- Slide 3 ---
+\begin{frame}{Research gap}
+  \begin{itemize}
+    \item Many papers study new RAG demos; few study \textbf{live production} integration.
+    \item This thesis combines:
+      \begin{enumerate}
+        \item multi-source medallion lakehouse (Bronze $\rightarrow$ Silver SCD2 $\rightarrow$ Gold),
+        \item controlled GenAI layer (gateway, kill switch, cost log),
+        \item honest non-AI baseline (rule-based Career Matching Wizard),
+        \item unit cost per 1k jobs.
+      \end{enumerate}
+    \item \textbf{DataForge} is the production case for all four.
+  \end{itemize}
+\end{frame}
+
+% --- Slide 4 ---
+\begin{frame}{Research questions}
+  \small
+  \begin{tabular}{@{}cl@{}}
+    \toprule
+    \textbf{RQ} & \textbf{Question (short)} \\
+    \midrule
+    RQ1 & Integrate GenAI without breaking SCD2 / tests / cost envelope \\
+    RQ2 & Which provider wins on quality, cost, latency, EU residency? \\
+    RQ3 & Do embeddings beat the rule-based wizard on ranked relevance? \\
+    RQ4 & When does AI improve unit economics vs raw open data? \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.5em}
+  \begin{block}{Hypothesis H1 (say aloud)}
+    Embedding retrieval \textbf{outperforms} keyword/heuristic matching on \textbf{nDCG@10}.
+  \end{block}
+\end{frame}
+
+% --- Slide 5 ---
+\begin{frame}{Theory (90 seconds)}
+  \begin{itemize}
+    \item \textbf{Lakehouse / SCD2:} Bronze snapshots $\rightarrow$ Silver history $\rightarrow$ Gold APIs.
+    \item \textbf{Retrieval:} BM25 (lexical) vs dense embeddings (Karpukhin et al.); hybrid fuses both.
+    \item \textbf{Metric:} nDCG@10 for graded ranking (J\"arvelin \& Kek\"al\"ainen, 2002).
+    \item \textbf{Frame:} Design science --- build and evaluate an artefact (Hevner et al., 2004).
+    \item \textbf{Compliance:} public vacancy text; Match API = advice for \textbf{seekers}, not employer screening.
+  \end{itemize}
+\end{frame}
+
+% --- Slide 6 ---
+\begin{frame}{Methodology}
+  \begin{itemize}
+    \item Design science + single embedded case (DataForge, AWS \texttt{eu-central-1}).
+    \item Not literature-only: artefact \textbf{and} measured properties; UE still needs 15--50\,\% literature.
+    \item Not a broad survey: one deep case with reproducible \texttt{evals/} scripts.
+    \item RQ3: 103 queries $\times$ 96 jobs. RQ2: rules now; Bedrock Pareto when quota allows. RQ4: modelled \EUR/1k jobs.
+  \end{itemize}
+\end{frame}
+
+% --- Slide 7 ---
+\begin{frame}{Artefact architecture}
+  \small
+  \begin{center}
+    Public jobs $\rightarrow$ Bronze $\rightarrow$ Silver (SCD2) $\rightarrow$ Gold + APIs\\
+    \hspace{2em}$\downarrow$\hspace{4em}$\downarrow$\\
+    Rules-first enrich (+ optional LLM)\hspace{1em}Hybrid Match API (BM25 + dense)
+  \end{center}
+  \vspace{0.3em}
+  \begin{itemize}
+    \item ModelRouter: task profiles, schema check, \texttt{AI\_ENABLED}, daily budget.
+    \item LLM never mutates \texttt{job\_id} or SCD keys.
+    \item Live: lakehouse, APIs, Match Function URL. Paused: nightly Bedrock (quota = 0).
+  \end{itemize}
+\end{frame}
+
+% --- Slide 8 ---
+\begin{frame}{Results}
+  \small
+  \textbf{RQ3 --- Matching (103 queries, 96 jobs)}
+  \vspace{0.2em}
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    Method & nDCG@10 & P@5 & Recall@20 \\
+    \midrule
+    BM25 & 0.135 & 0.162 & 0.214 \\
+    \textbf{Dense} & \textbf{0.217} & \textbf{0.219} & \textbf{0.274} \\
+    Hybrid (default) & 0.171 & 0.171 & 0.234 \\
+    Heuristic wizard & 0.146 & 0.191 & 0.240 \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.4em}
+  \begin{itemize}
+    \item H1 supported: dense $>$ wizard (0.217 vs 0.146).
+    \item RQ4: rules-first path $\approx$ \EUR{0.06} / 1k jobs (modelled).
+    \item RQ2: rules baseline done; live Bedrock Pareto \textbf{pending quota}.
+  \end{itemize}
+\end{frame}
+
+% --- Slide 9 ---
+\begin{frame}{Implications}
+  \begin{itemize}
+    \item \textbf{Rules before tokens} --- LLM only on hard or sampled cases.
+    \item \textbf{Freeze identity} --- additive AI columns; do not rewrite SCD keys.
+    \item \textbf{Measure baselines} --- wizard + BM25, not only ``we added AI''.
+    \item \textbf{In-region inference} --- Bedrock \texttt{eu-central-1} for residency narrative.
+    \item \textbf{Operational controls} --- kill switch, budget, API key, schedule pause.
+  \end{itemize}
+\end{frame}
+
+% --- Slide 10 ---
+\begin{frame}{Next 12--16 weeks}
+  \begin{itemize}
+    \item Supervisor signatures + CampusNet registration (title becomes \textbf{immutable}).
+    \item Complete RQ2 after Bedrock quota; optional larger gold label set.
+    \item Expand literature with page numbers; hit character count (72k--82k w/o spaces, 120 ECTS).
+    \item Submit Feb--Mar 2027; colloquium on the \textbf{same} topic.
+    \item Rewrite in your own voice --- UE fails theses with $>$20\,\% AI-written text.
+  \end{itemize}
+  \vspace{0.5em}
+  \centering
+  \Large Thank you --- questions?
+\end{frame}
+
+\end{document}

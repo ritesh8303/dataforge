@@ -28,6 +28,11 @@ def test_seniority_werkstudent():
     assert out["seniority"] == "working_student"
 
 
+def test_seniority_thesis():
+    out = classify_seniority("Bachelorarbeit Machine Learning", "")
+    assert out["seniority"] == "thesis"
+
+
 def test_visa_sponsorship():
     out = classify_visa_stance("Engineer", "We offer visa sponsorship and Blue Card support.")
     assert out["visa_stance"] == "sponsorship_offered"

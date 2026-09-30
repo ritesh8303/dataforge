@@ -1,31 +1,69 @@
 {
-  "n_jobs": 30,
-  "live_providers": false,
+  "n_jobs": 40,
+  "live_providers": true,
+  "pinned_provider": "openai",
+  "strict_pin": true,
+  "bedrock_region": "eu-central-1",
+  "completion_model": "gpt-4o-mini",
   "rules": {
-    "avg_latency_ms": 0.12,
-    "cost_usd": 0.0,
-    "p50_latency_ms": 0.12
+    "n": 40,
+    "n_ok": 40,
+    "avg_latency_ms": 0.16,
+    "p50_latency_ms": 0.13,
+    "p95_latency_ms": 0.29,
+    "total_cost_usd": 0.0,
+    "avg_cost_usd": 0.0,
+    "providers": {
+      "rules": 40
+    }
   },
-  "note": "CI default = rules-only Pareto point. Run with --live-providers under budget for Bedrock/OpenAI/Anthropic points (thesis RQ2).",
+  "llm": {
+    "n": 40,
+    "n_ok": 16,
+    "avg_latency_ms": 1355.92,
+    "p50_latency_ms": 1288.35,
+    "p95_latency_ms": 2186.45,
+    "total_cost_usd": 0.00044,
+    "avg_cost_usd": 1.1e-05,
+    "providers": {
+      "openai": 16
+    }
+  },
+  "note": "Rules = \u20ac0 baseline. Live point uses pinned provider only (default bedrock). Strict pin rejects silent local fallback. Costs from CostLogger / MODEL_PRICING.",
   "rows_sample": [
     {
       "job_id": "sem_eval_000_ai_ml_da",
       "rules": {
         "provider": "rules",
-        "latency_ms": 0.19,
+        "latency_ms": 0.2,
         "cost_usd": 0.0,
         "field": "ai_ml_data_science",
         "ok": true
+      },
+      "llm": {
+        "provider": "openai",
+        "model_id": "gpt-4o-mini",
+        "latency_ms": 2709.95,
+        "cost_usd": 2.8e-05,
+        "ok": true,
+        "text_preview": "{\n  \"ai_field\": \"Machine Learning\",\n  \"ai_seniority\": \"Internship\"\n}"
       }
     },
     {
       "job_id": "sem_eval_001_ai_ml_da",
       "rules": {
         "provider": "rules",
-        "latency_ms": 0.14,
+        "latency_ms": 0.11,
         "cost_usd": 0.0,
         "field": "ai_ml_data_science",
         "ok": true
+      },
+      "llm": {
+        "provider": "openai",
+        "latency_ms": 494.09,
+        "cost_usd": 0.0,
+        "ok": false,
+        "error": "429 Client Error: Too Many Requests for url: https://api.openai.com/v1/chat/completions"
       }
     },
     {
@@ -36,16 +74,32 @@
         "cost_usd": 0.0,
         "field": "ai_ml_data_science",
         "ok": true
+      },
+      "llm": {
+        "provider": "openai",
+        "model_id": "gpt-4o-mini",
+        "latency_ms": 1174.05,
+        "cost_usd": 2.8e-05,
+        "ok": true,
+        "text_preview": "{\n  \"ai_field\": \"Machine Learning\",\n  \"ai_seniority\": \"Internship\"\n}"
       }
     },
     {
       "job_id": "sem_eval_003_ai_ml_da",
       "rules": {
         "provider": "rules",
-        "latency_ms": 0.12,
+        "latency_ms": 0.11,
         "cost_usd": 0.0,
         "field": "ai_ml_data_science",
         "ok": true
+      },
+      "llm": {
+        "provider": "openai",
+        "model_id": "gpt-4o-mini",
+        "latency_ms": 1329.88,
+        "cost_usd": 2.8e-05,
+        "ok": true,
+        "text_preview": "{\n  \"ai_field\": \"Machine Learning\",\n  \"ai_seniority\": \"Entry-level\"\n}"
       }
     },
     {
@@ -56,6 +110,14 @@
         "cost_usd": 0.0,
         "field": "ai_ml_data_science",
         "ok": true
+      },
+      "llm": {
+        "provider": "openai",
+        "model_id": "gpt-4o-mini",
+        "latency_ms": 917.71,
+        "cost_usd": 2.9e-05,
+        "ok": true,
+        "text_preview": "{\n  \"ai_field\": \"Machine Learning\",\n  \"ai_seniority\": \"Entry Level\"\n}"
       }
     }
   ]

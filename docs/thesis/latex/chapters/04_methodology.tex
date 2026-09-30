@@ -1,0 +1,198 @@
+\chapter{Methodology}
+\label{ch:method}
+
+\section{Choice of research methodology}
+\label{sec:method-choice}
+
+A master's thesis must not only use a method. It must also explain why this method is used, and why other methods are not used \cf[p.~~3]{bryman2012social}. Three options were considered: a literature review without a built system; a survey of practitioners; and a design-science study with one embedded case.
+
+\subsection{Why not literature review only?}
+
+A literature-only thesis can summarise the current scientific discussion. The University of Europe treats this as an important academic skill. However, it cannot answer RQ1--RQ4. Those questions ask how integration behaves under cost, data history, and ranking metrics. Hevner argues that design science must produce and evaluate artefacts when the problem is practical and contextual \cf{hevner2004dsr}. Reading about lakehouses and RAG is not enough to show that SCD keys stay unchanged in \emph{this} Terraform stack.
+
+\subsection{Why not a survey?}
+
+A survey of data engineers or career-platform owners could measure beliefs about augmented analytics. Surveys are strong when the research question is about opinions, prevalence, or attitudes \cf{bryman2012social}. They are weak when the question needs reproducible ranking scores, token-cost logs, and code inspection. Holstein et al.\ show that practitioner needs for fair ML systems are often vague until a concrete tool exists \cf{holstein2019improving}. In this thesis, the concrete tool \emph{is} the object of study. A survey would also add ethics workload (sampling, consent, anonymity) without replacing the need for labelled retrieval tests.
+
+\subsection{Why not a laboratory-only experiment?}
+
+A controlled experiment on synthetic job text could isolate one retrieval algorithm. That design improves internal validity for a single metric. It drops the production limits that form the gap in Chapter~\ref{ch:theory-ai}: multi-source ingest, SCD history, EU region routing, quota pauses, and a rule-based wizard baseline that already runs in production. Yin notes that case studies are justified when the researcher asks \emph{how} and \emph{why} in a real context \cf[p.~~15]{yin2018casestudy}. The generative layer is such a context.
+
+\subsection{Chosen design: design science with an embedded case}
+
+The chosen design is therefore \textbf{design science research} in the sense of Hevner and of Peffers. DataForge is an \textbf{embedded single-case study} in the sense of Yin \cf{hevner2004dsr,peffers2007dsr,yin2018casestudy}. The artefact is the generative integration layer. The case gives the live lakehouse, the rule-based baseline, and the money limit. Evaluation combines a labelled IR experiment, a cost model, and an architecture check. Gregor and Hevner recommend stating the artefact type, the contribution, and the evaluation method clearly \cf{gregor2013positioning}. Table~\ref{tab:dsr-mapping} maps Peffers's process steps to this thesis.
+
+\begin{table}[ht]
+\centering
+\caption{Design science process mapped to thesis activities}
+\label{tab:dsr-mapping}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Peffers step} & \textbf{This thesis} \\
+\midrule
+Problem identification & Broken history, unmeasured quality, unbounded LLM cost (Chapter~\ref{ch:introduction}) \\
+Objectives & RQ1--RQ4 and requirements tables below \\
+Design \& development & Gateway, rules-first enrichment, hybrid Match API, eval harness \\
+Demonstration & Deployment on AWS \texttt{eu-central-1} lakehouse \\
+Evaluation & nDCG experiment, ROI model, architecture audit, ablation \\
+Communication & Thesis, repository, colloquium \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Advantages and disadvantages of the chosen design}
+\label{sec:method-tradeoffs}
+
+The advantages are clear. We can check whether SCD keys stay unchanged. The pipeline is real. The design also matches an applied M.Sc.\ Data Science profile. The disadvantages are also clear. One case does not statistically generalise to all lakehouses \cf{yin2018casestudy}. Labels written by the author can favour dense methods. Cloud quotas can block parts of the measurement plan. These disadvantages are treated as threats to validity in Chapter~\ref{ch:results}. They are not surprises.
+
+\section{Research process}
+\label{sec:process}
+
+Following Peffers et al., the process has six steps.
+
+\begin{enumerate}
+  \item \textbf{Problem identification.} Broken data history, quality that is not measured, and cost with no limit on live pipelines (Chapter~\ref{ch:introduction}).
+  \item \textbf{Objectives of a solution.} Extra columns only, measurable matching, routing that respects EU location, and unit cost (Chapter~\ref{ch:rqs}).
+  \item \textbf{Design and development.} Gateway, rules-first enrichment, hybrid retrieval, Match API, evaluation harness.
+  \item \textbf{Demonstration.} Deployment on the existing AWS lakehouse in \texttt{eu-central-1}.
+  \item \textbf{Evaluation.} RQ1--RQ4 protocols below.
+  \item \textbf{Communication.} This thesis, the repository, and the Master Colloquium presentation.
+\end{enumerate}
+
+\section{The existing system as empirical context}
+\label{sec:context}
+
+Before the generative layer, DataForge already provided the components in Table~\ref{tab:baseline}. Region and infrastructure-as-code (Terraform, S3 state) are part of the case. They limit data location and cost.
+
+\begin{table}[ht]
+\centering
+\caption{Baseline DataForge components used as case context}
+\label{tab:baseline}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Component} & \textbf{Role} \\
+\midrule
+Ingest Lambdas and GitHub Actions & Arbeitnow, BA, ATS/Personio, Berlin startups, EURES, later Himalayas/HN \\
+Bronze on S3 & Raw Parquet, short retention \\
+Silver on S3 & SCD Type~2 job history \\
+Gold on S3 plus aggregates & Analytics CSVs, metrics, dbt/DuckDB path \\
+API Gateway & Jobs search and metrics \\
+GitHub Pages & Dashboard, job board, rule-based Career Matching Wizard \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The layer contracts for RQ1 cannot be broken. Bronze must not invent business KPIs. Silver owns identity and SCD validity. Gold may use extra enrichment joins. Quality gates (Pydantic ingest, region taxonomy, CI, dbt tests) stay in control.
+
+\section{Artefact requirements}
+\label{sec:requirements}
+
+Functional requirements of the integration layer are shown in Table~\ref{tab:func-req}. Non-functional requirements are shown in Table~\ref{tab:nfr}.
+
+\begin{table}[ht]
+\centering
+\caption{Functional requirements of the generative integration layer}
+\label{tab:func-req}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{ID} & \textbf{Requirement} \\
+\midrule
+F1 & Rules-first German/English classification for field, seniority, visa stance, and languages \\
+F2 & Optional language-model enrichment only when rules are unclear or a sample rate allows it \\
+F3 & Hybrid BM25 plus dense retrieval with reciprocal rank fusion; optional LanceDB-on-S3 \\
+F4 & Match API with citations that include \texttt{job\_id} and evidence spans \\
+F5 & Personal-data removal before language-model calls; API key on production Match \\
+F6 & Optional limited multi-agent graph and human-in-the-loop queue for low confidence \\
+F7 & Model Context Protocol tools over HTTPS Match/Jobs \\
+F8 & Evaluation harness and continuous-integration gates against almost-perfect scores \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\caption{Non-functional requirements}
+\label{tab:nfr}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{ID} & \textbf{Requirement} \\
+\midrule
+N1 & Hard cost limit (\EUR{40} thesis cap; daily budget on the router) \\
+N2 & Stop switch \texttt{AI\_ENABLED} \\
+N3 & Prefer EU-resident inference (Bedrock in \texttt{eu-central-1}) \\
+N4 & Repeatable test files under \texttt{evals/} \\
+N5 & Honest claims: no ``live AI'' wording when a quota pause applies \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Evaluation protocols}
+\label{sec:eval-protocol}
+
+Table~\ref{tab:method} maps experiments to research questions. Matching uses 42 graded queries against 96 jobs. nDCG follows J\"arvelin and Kek\"al\"ainen \cf{jarvelin2002ndcg}. The rule-based wizard (60\,\% skills, 20\,\% seniority, 20\,\% location) is the non-AI baseline required by H1.
+
+\begin{table}[ht]
+\centering
+\caption{Evaluation protocols}
+\label{tab:method}
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+\textbf{Experiment} & \textbf{Protocol} & \textbf{Metric} \\
+\midrule
+Matching (RQ3) & 42 $\times$ 96; BM25, dense, hybrid, heuristic & nDCG@10, P@5, Recall@20, MRR \\
+Rules enrichment & Labelled field, seniority, visa, English & Precision, recall, F1 \\
+Agent ablation & 30 queries; hybrid versus multi-agent & Citation-structure validity \\
+RQ2 Pareto & Rules versus pinned provider (Bedrock) & Latency, euro cost, success rate \\
+ROI model (RQ4) & Public prices $\times$ token scenario & Euro per 1{,}000 jobs \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Construct validity}
+
+Construct validity asks whether metrics measure the intended concept \cf{bryman2012social}. nDCG@10 measures ranked relevance on author labels. It does not measure hiring success, salary, or user satisfaction. That limit is accepted. The construct is ``useful ordering of public vacancies for a stated profile'', not ``employer choice''.
+
+\subsection{Internal validity}
+
+Internal validity concerns whether the observed score differences come from the method, not from confounds. Confounds here include: corpus coverage (some query types have zero relevant jobs in the 96-job set), label bias toward semantic similarity, and embedding model choice. The protocol keeps the same jobs and queries for all rankers to reduce confounds.
+
+\subsection{External validity}
+
+External validity is limited by design. One lakehouse, one junior-oriented query mix, one AWS region, and one embedding provider profile do not represent all European job markets. The thesis claims \emph{existence} and \emph{direction} under these limits, not universal superiority.
+
+\subsection{Statistical conclusion validity}
+
+With 103 queries, large-scale significance testing is still not the main goal. Mean metrics and per-query inspection are reported (see error analysis). A future study with a second annotator could add inter-annotator agreement \cf{bryman2012social}.
+
+\section{Planned threats to validity and mitigations}
+\label{sec:threats-planned}
+
+Table~\ref{tab:threats-plan} lists threats planned before measurement. Chapter~\ref{ch:results} reports what actually happened.
+
+\begin{table}[ht]
+\centering
+\caption{Planned threats to validity and mitigations}
+\label{tab:threats-plan}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Threat} & \textbf{Mitigation} \\
+\midrule
+Author labels favour synonyms & Keep BM25 and wizard baselines; report per-query zeros \\
+Small corpus misses some fields & Document empty relevance sets (q04--q09); do not hide zero nDCG \\
+Quota blocks Bedrock & Fix runner; report pending status; no fabricated Pareto winner \\
+Agent demo inflates claims & Separate structural validity from Bedrock faithfulness \\
+Cost model uses list prices & State FX and sample-rate assumptions openly \\
+Legal over-claim & Separate seeker advice from employer high-risk AI Act uses \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Data sources and ethics}
+\label{sec:ethics}
+
+Vacancy text is collected from public sources. These sources are documented in the project data-sourcing note. Resumes used at match time are given by the user. Personal data is removed before any language-model call. The system is presented as decision support for job discovery. It is not an automated hiring decision under the AI Act high-risk employment uses \cf{eu2024aiact,veale2021demystifying}. Secret scraping of private profiles is not in scope. Human review is used for low-confidence explanations. It is not used to produce silent legal advice.
+
+\section{Reproducibility}
+\label{sec:repro}
+
+Test files and runners live under \texttt{evals/}. Measured files live under \texttt{evals/results/}. Reproduction commands are given in Appendix~\ref{app:repro}. If a cloud quota blocks a cell, the protocol stays fixed. The table can then be completed later without changing the method.

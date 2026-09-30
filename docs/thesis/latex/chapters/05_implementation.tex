@@ -1,0 +1,53 @@
+\chapter{Implementation}
+\label{ch:implementation}
+
+\section{Model gateway (\texttt{src/ai\_gateway/})}
+
+\texttt{ModelRouter} implements task profiles (\texttt{enrich}, \texttt{embed}, \texttt{explain}, \ldots) with preferred provider cascades (Bedrock $\rightarrow$ OpenAI $\rightarrow$ Anthropic $\rightarrow$ local), JSON validation, CostLogger, daily budget checks, and \texttt{AI\_ENABLED} kill switch. Prompt versions live under \texttt{prompts/} with a registry. Tracing helpers support Langfuse (env-gated) and S3/CloudWatch-oriented spans.
+
+Bedrock completion defaults to the EU inference profile \texttt{eu.amazon.nova-micro-v1:0} after Titan Text Express reached end-of-life on the account. Embeddings use Titan Embed Text v2 when available.
+
+\section{Rules-first enrichment (\texttt{src/enrichment/})}
+
+\texttt{rules\_de\_en.py} provides deterministic DE/EN classifiers for tech field taxonomy, seniority, visa stance, languages, and derived flags (\texttt{entry\_level}, English-OK heuristics). The enricher calls LLMs only when configured and when rules mark ambiguity / sample rate permits. Silver/Gold schemas gain additive AI and rule fields without rewriting SCD logic.
+
+\section{Retrieval (\texttt{src/retrieval/}, \texttt{src/vector\_store.py})}
+
+BM25, dense ranking, and reciprocal rank fusion implement hybrid retrieval. LanceDB-on-S3 is supported as an optional persistence path; JSON embedding indices remain the test fallback.
+
+\section{Match API (\texttt{src/api/})}
+
+FastAPI application exposes \texttt{/health}, \texttt{/jobs}, \texttt{/match}, \texttt{/match/agent}, OpenAPI. Mangum adapts to Lambda. Production deployment uses a \textbf{Function URL} (60s timeout) plus optional API Gateway routes. Security: optional \texttt{X-API-Key}, CORS, PII redaction (\texttt{src/security/pii.py}), markdown Accept mode for agent-readable surfaces.
+
+\section{Multi-agent and MCP}
+
+In-process graph: Supervisor $\rightarrow$ Retriever $\rightarrow$ Scorer $\rightarrow$ Explainer $\rightarrow$ Critic with one explainer retry budget. LangGraph is optional; sequential fallback is default. MCP server (\texttt{mcp/server.py}) exposes \texttt{search\_jobs}, \texttt{get\_job}, \texttt{match\_resume} over stdio and auto-loads the Match API key from a gitignored local file when present.
+
+\section{Infrastructure and DevX}
+
+\begin{itemize}[leftmargin=*]
+  \item \texttt{terraform/ai.tf} --- enrichment + Match + Function URL permissions
+  \item \texttt{terraform/stepfunctions.tf} --- Express Silver$\rightarrow$Gold (schedule off by default)
+  \item \texttt{docker-compose.yml} --- analytics, Match API profile, Airflow profile
+  \item CI --- ruff, pytest, terraform validate, dbt run/test/docs, matching + rules evals
+\end{itemize}
+
+\section{Operational status at draft time (honesty)}
+
+\begin{table}[ht]
+\centering
+\caption{Operational status at draft time}
+\label{tab:status}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Capability} & \textbf{Status} \\
+\midrule
+Lakehouse + Jobs/Metrics + Pages & Live \\
+Match Function URL + API key & Live \\
+Enrichment nightly Bedrock & \textbf{Paused} (Nova Micro account quota was 0; increase requested) \\
+RQ2 live Bedrock Pareto & \textbf{Pending} quota approval \\
+RQ3 labelled matching eval & Complete \\
+RQ4 modelled ROI & Complete \\
+\bottomrule
+\end{tabularx}
+\end{table}

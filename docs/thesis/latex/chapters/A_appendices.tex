@@ -1,0 +1,118 @@
+\chapter{Artefact map}
+\label{app:artefacts}
+
+\begin{table}[ht]
+\centering
+\caption{Primary thesis artefacts in the repository}
+\label{tab:artefacts}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Artefact} & \textbf{Path} \\
+\midrule
+Expos\'e for supervisors & \texttt{docs/thesis/THESIS\_EXPOSE.md} \\
+Registration-style proposal & \texttt{docs/thesis/THESIS\_PROPOSAL.md} \\
+UE requirements note & \texttt{docs/thesis/UE\_REQUIREMENTS.md} \\
+Results ledger & \texttt{docs/thesis/RESULTS\_DRAFT.md} (if present) \\
+This \LaTeX{} project & \texttt{docs/thesis/latex/} \\
+Matching evaluation & \texttt{evals/results/eval\_report.md} \\
+Matching JSON & \texttt{evals/results/matching\_eval.json} \\
+RQ2 Pareto JSON & \texttt{evals/results/rq2\_pareto.json} \\
+ROI model & \texttt{evals/results/roi\_report.json} \\
+Agent ablation & \texttt{evals/results/agent\_ablation.json} \\
+Colloquium outline & \texttt{docs/thesis/COLLOQUIUM\_OUTLINE.md} \\
+Demo script & \texttt{docs/DEMO\_SCRIPT.md} \\
+Terraform AI module & \texttt{terraform/ai.tf} \\
+Match API & \texttt{services/match/} (repository layout) \\
+Figure placeholders & \texttt{docs/thesis/latex/figures/architecture.png}, \texttt{rq3\_bars.png} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{Reproduction commands}
+\label{app:repro}
+
+All commands assume the repository root \texttt{d:\textbackslash dataforge} (or the cloned GitHub path). Python 3.10+ is required. Install project dependencies from \texttt{requirements.txt} or the service-specific file before running evals.
+
+\begin{lstlisting}[language=bash,caption={Reproduction commands for the empirical tables}]
+# Matching evaluation (RQ3) -> evals/results/matching_eval.json
+py -3 evals/run_matching_eval.py
+
+# Rules enrichment evaluation
+py -3 evals/run_enrichment_rules_eval.py
+
+# Agent ablation (structural citation validity)
+py -3 evals/run_agent_ablation.py
+
+# ROI model (RQ4) -> evals/results/roi_report.json
+py -3 evals/run_roi_model.py
+
+# RQ2 live (after Bedrock Nova Micro quota approval)
+# Uses AWS profile dataforge-germany, region eu-central-1
+set AWS_PROFILE=dataforge-germany
+set AI_ENABLED=true
+set BEDROCK_COMPLETION_MODEL=eu.amazon.nova-micro-v1:0
+py -3 evals/run_rq2_pareto.py --live-providers --provider bedrock --limit 40
+
+# Compile thesis (Overleaf: set main document to overleaf_main.tex)
+# Local: pdflatex + bibtex in docs/thesis/latex/
+\end{lstlisting}
+
+Measured outputs should be committed or archived with a date stamp. If RQ3 numbers change after corpus expansion, update Table~\ref{tab:rq3} and note the change in Appendix~\ref{app:changelog}.
+
+\chapter{Administrative note for binding}
+\label{app:admin}
+
+Before binding, the student must fill in Overleaf macros in \texttt{overleaf\_main.tex}:
+
+\begin{itemize}
+  \item \texttt{\textbackslash Matrikel\{\}} --- matriculation number;
+  \item \texttt{\textbackslash Erstbetreuung\{\}} and \texttt{\textbackslash Zweitbetreuung\{\}} --- supervisor names;
+  \item \texttt{\textbackslash Abgabedatum\{\}} --- submission date.
+\end{itemize}
+
+Replace the statutory declaration page if the Pr\"ufungsamt publishes different official wording. Add access dates to internet sources (BA/EURES documentation) in the bibliography notes. Replace preprint entries (FrugalGPT, foundation-model report, RAG survey) with published versions if they appear before submission.
+
+The University of Europe 120 ECTS master's thesis target is roughly 72{,}000--82{,}000 characters \emph{without spaces} in the body. Use the word processor or a script to count before binding. AI-assisted drafting must be rewritten in the student's own voice; AI detection above 20\,\% is a fail condition per programme guidance.
+
+\chapter{Source hierarchy used in the literature review}
+\label{app:sources}
+
+The University of Europe asks students to describe the quality of cited sources. Table~\ref{tab:hierarchy} groups the bibliography.
+
+\begin{table}[ht]
+\centering
+\caption{Hierarchy of sources (highest first)}
+\label{tab:hierarchy}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Tier} & \textbf{Examples in this thesis} \\
+\midrule
+Peer-reviewed journals & MIS Quarterly; ACM TOIS; JMIS; IEEE Access; JSIS; Big Data \& Society; Nature Machine Intelligence \\
+IEEE / ACM / Springer / Elsevier / Sage venues & SIGIR; EMNLP; NeurIPS; ICLR; HICSS; KDD; CIDR; CHI; FAccT \\
+Research monographs & Kimball and Ross (Wiley); Manning et al.\ (CUP); Yin (Sage); Bass et al.\ (Addison-Wesley); Barocas et al.\ (MIT Press) \\
+Official legal texts & GDPR (EU 2016); AI Act (EU 2024) \\
+Practitioner / internet (used sparingly) & Databricks medallion note; Gartner hyperautomation commentary; BA/EURES documentation \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Page numbers for Harvard paraphrases should be inserted after the bound-version reading of each monograph and journal article. Preprints (FrugalGPT, foundation-model report, RAG survey) must be replaced by the archival version if one appears before submission.
+
+\chapter{Draft change log}
+\label{app:changelog}
+
+\begin{table}[ht]
+\centering
+\caption{Draft change log}
+\label{tab:changelog}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Date} & \textbf{Change} \\
+\midrule
+16 September 2026 & Initial paper draft from proposal and measured evaluations; RQ2 marked pending quota \\
+18 September 2026 & Restructured to University of Europe lecture format (Kouatly SS 2026) \\
+18 September 2026 & Body text rewritten in clear academic English (IELTS Band 6 style) \\
+18 September 2026 & Expanded literature (Chapters~2--2b), DSR methodology defence, RQ3 error analysis, figures placeholders, 18 new bibliography entries \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -21,6 +21,8 @@ module "enrichment_lambda" {
     GOLD_KEY                  = "all_jobs.csv"
     ENRICHMENT_OUTPUT_KEY     = "ai_job_enrichment.csv"
     EMBEDDING_INDEX_KEY       = "embedding_index.json"
+    # LanceDB on Gold bucket (optional dep in Lambda image; JSON index always written too)
+    VECTOR_STORE_URI          = "s3://${module.s3_gold.bucket_id}/lancedb"
     AI_ENRICHMENT_SAMPLE_RATE = "0.1"
     INDEX_BUILD_LIMIT         = "500"
     AI_ENABLED                = "false"
@@ -47,6 +49,7 @@ module "match_api_lambda" {
     GOLD_KEY            = "all_jobs.csv"
     ENRICHMENT_KEY      = "ai_job_enrichment.csv"
     EMBEDDING_INDEX_KEY = "embedding_index.json"
+    VECTOR_STORE_URI    = "s3://${module.s3_gold.bucket_id}/lancedb"
     ALLOWED_ORIGIN      = "*"
     AI_ENABLED          = "true"
     INDEX_BUILD_LIMIT   = "200"

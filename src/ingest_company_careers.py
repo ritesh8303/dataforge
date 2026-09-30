@@ -33,9 +33,11 @@ from processing.europe_filter import is_in_europe
 logger = logging.getLogger(__name__)
 
 REQUEST_TIMEOUT = int(os.environ.get("COMPANY_CAREERS_REQUEST_TIMEOUT", "15"))
-MAX_WORKERS = int(os.environ.get("COMPANY_CAREERS_MAX_WORKERS", "24"))
+MAX_WORKERS = int(os.environ.get("COMPANY_CAREERS_MAX_WORKERS", "8"))
 MAX_JOBS_PER_COMPANY = int(os.environ.get("COMPANY_CAREERS_MAX_JOBS_PER_COMPANY", "2000"))
 FETCH_DETAILS = os.environ.get("COMPANY_CAREERS_FETCH_DETAILS", "false").lower() == "true"
+PERSONIO_MAX_RETRIES = int(os.environ.get("COMPANY_CAREERS_PERSONIO_RETRIES", "3"))
+PERSONIO_RETRY_SLEEP = float(os.environ.get("COMPANY_CAREERS_PERSONIO_SLEEP", "1.5"))
 
 HEADERS = {
     "User-Agent": "DataForge Job Aggregator/1.0 (+public career feed ingestion)",
@@ -54,7 +56,16 @@ def _load_json_targets(path: str) -> list[dict[str, Any]]:
 
 
 def _repo_config_path(*parts: str) -> str:
-    return os.path.join(os.path.dirname(__file__), "..", "config", "sources", *parts)
+    """Resolve config for local repo and Lambda package (src/ only zip)."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.join(here, "config", "sources", *parts),
+        os.path.join(here, "..", "config", "sources", *parts),
+    ]
+    for path in candidates:
+        if os.path.isfile(path):
+            return path
+    return candidates[0]
 
 
 def _default_dach_targets() -> list[dict[str, Any]]:
@@ -210,6 +221,7 @@ def _request_json(
     method: str = "GET",
     body: dict[str, Any] | None = None,
     headers: dict[str, str] | None = None,
+    allow_redirects: bool = True,
 ) -> Any:
     req_headers = {**HEADERS, **(headers or {})}
     response = requests.request(
@@ -219,15 +231,26 @@ def _request_json(
         params=params,
         json=body,
         timeout=REQUEST_TIMEOUT,
+        allow_redirects=allow_redirects,
     )
     response.raise_for_status()
     return response.json()
 
 
-def _request_text(url: str, *, params: dict[str, Any] | None = None) -> str:
-    response = requests.get(url, headers=HEADERS, params=params, timeout=REQUEST_TIMEOUT)
-    response.raise_for_status()
-    return response.text
+def _request_text(
+    url: str,
+    *,
+    params: dict[str, Any] | None = None,
+    allow_redirects: bool = True,
+) -> requests.Response:
+    response = requests.get(
+        url,
+        headers=HEADERS,
+        params=params,
+        timeout=REQUEST_TIMEOUT,
+        allow_redirects=allow_redirects,
+    )
+    return response
 
 
 def _extract_greenhouse_slug(parsed_url: urlparse) -> dict[str, Any]:
@@ -590,6 +613,7 @@ def fetch_personio(entry: dict[str, Any]) -> list[dict[str, Any]]:
     params = {"language": language} if language else None
 
     # Prefer configured TLD, then fall back to the other common Personio host.
+    # Do not follow redirects: dead tenants bounce to personio.com and burn rate limits.
     host_candidates = [f"https://{slug}.jobs.personio.{tld}/xml"]
     other = "com" if tld == "de" else "de"
     host_candidates.append(f"https://{slug}.jobs.personio.{other}/xml")
@@ -598,13 +622,38 @@ def fetch_personio(entry: dict[str, Any]) -> list[dict[str, Any]]:
     used_host = host_candidates[0]
     last_exc: Exception | None = None
     for host in host_candidates:
-        try:
-            text = _request_text(host, params=params)
-            used_host = host
+        for attempt in range(PERSONIO_MAX_RETRIES):
+            try:
+                response = _request_text(host, params=params, allow_redirects=False)
+                if response.status_code in (301, 302, 303, 307, 308):
+                    loc = response.headers.get("Location", "")
+                    if "personio.com" in loc and f"{slug}." not in loc:
+                        last_exc = requests.exceptions.HTTPError(
+                            f"404 Personio tenant redirect for {slug}",
+                            response=response,
+                        )
+                        break
+                    last_exc = requests.exceptions.HTTPError(
+                        f"{response.status_code} redirect for {slug}",
+                        response=response,
+                    )
+                    break
+                if response.status_code == 429:
+                    time.sleep(PERSONIO_RETRY_SLEEP * (attempt + 1))
+                    last_exc = requests.exceptions.HTTPError(
+                        f"429 for {slug}",
+                        response=response,
+                    )
+                    continue
+                response.raise_for_status()
+                text = response.text
+                used_host = host
+                break
+            except Exception as exc:
+                last_exc = exc
+                continue
+        if text:
             break
-        except Exception as exc:
-            last_exc = exc
-            continue
     if not text:
         raise last_exc or RuntimeError(f"Personio feed failed for {slug}")
 

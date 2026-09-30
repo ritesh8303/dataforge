@@ -1,0 +1,70 @@
+\chapter{Requirements and design of the AI integration layer}
+\label{ch:requirements}
+
+\section{Functional requirements}
+
+\begin{table}[ht]
+\centering
+\caption{Functional requirements}
+\label{tab:func-req}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{ID} & \textbf{Requirement} \\
+\midrule
+F1 & Rules-first DE/EN classification for field, seniority, visa stance, languages \\
+F2 & Optional LLM enrichment only when rules are ambiguous / sample rate allows \\
+F3 & Hybrid BM25 + dense retrieval with RRF; optional LanceDB-on-S3 \\
+F4 & Match API: FastAPI + Mangum; citations with \texttt{job\_id} + evidence \\
+F5 & PII redaction before LLM calls; API key on production Match \\
+F6 & Optional multi-agent graph + HITL queue for low confidence \\
+F7 & MCP tools over HTTPS Match/Jobs \\
+F8 & Eval harness + CI gates \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Non-functional requirements}
+
+\begin{table}[ht]
+\centering
+\caption{Non-functional requirements}
+\label{tab:nfr}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{ID} & \textbf{Requirement} \\
+\midrule
+N1 & Hard cost envelope (\EUR{40} thesis cap; daily USD budget on router) \\
+N2 & Kill switch \texttt{AI\_ENABLED} \\
+N3 & Prefer EU-resident inference (Bedrock \texttt{eu-central-1}) \\
+N4 & Reproducible fixtures under \texttt{evals/} \\
+N5 & Honest portfolio claims (no ``live AI'' without apply) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Architecture (logical)}
+\label{sec:architecture}
+
+\begin{lstlisting}[caption={Logical architecture of the AI integration layer},label={lst:arch}]
+Public JDs -> Ingest -> Bronze -> Silver (SCD2, is_tech, rules fields)
+                              |
+                         Gold marts + Jobs/Metrics APIs + Pages
+                              |
+              [optional] Enrichment (rules -> Bedrock) -> ai_enrichment + embeddings
+                              |
+User / MCP -> Match Function URL (FastAPI) -> hybrid retrieval -> citations
+                              |
+                    [optional] multi-agent graph (bounded) -> HITL
+\end{lstlisting}
+
+Orchestration proofs: EventBridge + Lambda (production), Step Functions Express Silver$\rightarrow$Gold (thin proof), Airflow DAG in Docker (keyword proof, not MWAA).
+
+\section{Design principles}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Additive, not invasive} --- AI columns join; SCD keys immutable.
+  \item \textbf{Rules before tokens} --- save Bedrock for ambiguity.
+  \item \textbf{Measure before marketing} --- CI evals; non-saturated gold set.
+  \item \textbf{Bound agents} --- fixed handoff/LLM caps.
+  \item \textbf{Transparency} --- citations, disclaimers, OpenAPI.
+\end{enumerate}

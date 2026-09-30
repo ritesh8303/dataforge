@@ -1,0 +1,142 @@
+% Optional IEEE conference short paper (4--8 pages stub)
+% Compile: pdflatex ieee_short_paper && bibtex ieee_short_paper && pdflatex x2
+% Overleaf: upload this file + references.bib in same project
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{hyperref}
+
+\hypersetup{hidelinks}
+
+\begin{document}
+
+\title{Augmented Analytics on a Production Lakehouse:\\Integrating Generative AI into European Job Intelligence}
+
+\author{\IEEEauthorblockN{Ritesh Rakesh Jadhav}
+\IEEEauthorblockA{\textit{M.Sc.\ Data Science}\\
+\textit{University of Europe for Applied Sciences}\\
+Potsdam, Germany\\
+\texttt{[student.email@ue-germany.de]}}}
+
+\maketitle
+
+\begin{abstract}
+European labour-market data is fragmented across government portals, aggregators, and company applicant-tracking systems.
+DataForge is a live serverless medallion lakehouse on AWS that ingests multi-source vacancies, preserves slowly changing history, and serves public analytics APIs.
+This paper describes a design-science integration of generative AI---model gateway, rules-first enrichment, hybrid retrieval Match API, and reproducible evaluation harness---without mutating dimensional keys.
+On a labelled set of 103 queries over 96 jobs, dense embedding retrieval achieves nDCG@10 of 0.217 compared with 0.146 for a rule-based Career Matching Wizard and 0.135 for BM25 alone.
+A modelled rules-first enrichment path costs approximately \EUR{0.06} per thousand jobs.
+Live multi-provider Pareto experiments on AWS Bedrock remain pending account quota approval; architecture, baselines, and partial results are reported with explicit operational limits.
+\end{abstract}
+
+\begin{IEEEkeywords}
+lakehouse, generative AI, information retrieval, design science, EU labour market, LLMOps
+\end{IEEEkeywords}
+
+\section{Introduction}
+\label{sec:intro}
+
+Job intelligence platforms must combine reliable data engineering with emerging AI capabilities.
+In Europe, vacancy feeds originate from the German Federal Employment Agency (BA Jobsuche), EURES, aggregators such as Arbeitnow, and numerous company ATS endpoints.
+Production systems require ingest validation, historical versioning, cost control, and compliance-aware serving layers---requirements that notebook-scale retrieval demos often omit.
+
+DataForge addresses the engineering substrate: daily Bronze snapshots, Silver SCD Type 2 history, Gold analytics, API Gateway endpoints, and a public dashboard.
+Industry demand has shifted from raw CSV exports toward \emph{augmented analytics}---semantic matching, structured enrichment, and measurable unit economics.
+This work asks how generative AI can be added to such a pipeline under EU residency preferences, free-tier budgets, and falsifiable baselines.
+
+Contributions:
+\begin{itemize}
+  \item a reference architecture for additive GenAI on medallion layers;
+  \item a multi-provider gateway with kill switch, schema validation, and cost logging;
+  \item an labelled IR evaluation comparing dense, hybrid, BM25, and heuristic matchers;
+  \item a modelled unit-cost analysis for rules-first versus full-LLM enrichment.
+\end{itemize}
+
+\section{Related Work and Gap}
+\label{sec:related}
+
+Medallion lakehouses unify warehousing and ML-oriented storage~\cite{armbrust2021lakehouse}; Kimball-style SCD Type 2 preserves job posting history~\cite{kimball2013dwt}.
+Dense passage retrieval~\cite{karpukhin2020dpr} and retrieval-augmented generation~\cite{lewis2020rag} motivate embedding-based ranking over keyword heuristics.
+Graded ranking quality is measured with nDCG~\cite{jarvelin2002ndcg}.
+Design science research frames artefact-building theses that must still ground claims in theory~\cite{hevner2004dsr}.
+
+Few applied studies combine (i) a live multi-source lakehouse, (ii) controlled multi-provider GenAI integration, (iii) an honest non-AI baseline, and (iv) unit-cost grounding.
+DataForge provides that combined setting.
+
+\section{System and Method}
+\label{sec:method}
+
+\subsection{Architecture}
+
+Public job documents flow Bronze $\rightarrow$ Silver (SCD2) $\rightarrow$ Gold and APIs.
+Generative components are \emph{consumers}: rules-first enrichment and hybrid Match API read Silver/Gold without rewriting \texttt{job\_id} or validity intervals.
+A \texttt{ModelRouter} routes tasks (\texttt{enrich}, \texttt{embed}, \texttt{explain}) across Bedrock (EU), OpenAI, Anthropic, and local providers with JSON schema checks, prompt versioning, daily budget caps, and an \texttt{AI\_ENABLED} kill switch.
+
+\subsection{Matching pipeline}
+
+Hybrid retrieval fuses BM25 lexical scores with dense embeddings via reciprocal rank fusion.
+The Career Matching Wizard baseline applies fixed keyword weights (60\% skills, 20\% seniority, 20\% location).
+
+\subsection{Evaluation design}
+
+RQ3 uses 42 author-graded queries against 96 jobs; primary metric nDCG@10, with P@5, Recall@20, and MRR as secondary measures.
+RQ2 compares provider quality--cost--latency Pareto points; rules-only baseline is complete; live Bedrock Nova Micro runs were blocked at zero account quota at measurement time.
+RQ4 models enrichment, embedding, and match cost for a 1{,}000-job scenario using public list prices and a 30\% LLM-call share under rules-first enrichment.
+
+\section{Results}
+\label{sec:results}
+
+Table~\ref{tab:rq3} summarises matching quality.
+Dense retrieval leads on nDCG@10 (0.217), supporting hypothesis H1 on this label set.
+Hybrid retrieval (0.171) remains the product default for robustness across lexical and semantic signals despite lower nDCG on this gold set.
+
+\begin{table}[ht]
+\centering
+\caption{Matching quality on labelled set (103 queries, 96 jobs). Values may update as labels grow.}
+\label{tab:rq3}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Method & nDCG@10 & P@5 & R@20 & MRR \\
+\midrule
+BM25 & 0.135 & 0.162 & 0.214 & 0.184 \\
+Dense & \textbf{0.217} & \textbf{0.219} & \textbf{0.274} & \textbf{0.268} \\
+Hybrid & 0.171 & 0.171 & 0.234 & 0.234 \\
+Heuristic wizard & 0.146 & 0.191 & 0.240 & 0.212 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Integration checks (RQ1) confirm additive schemas, operational kill switch, and unchanged SCD semantics; nightly Bedrock enrichment was paused pending quota increase.
+Unit-cost modelling (RQ4) yields approximately \EUR{0.06} per thousand jobs on the rules-first path (enrichment sample 30\%, embeddings, 100 match requests).
+
+\section{Discussion and Limitations}
+\label{sec:discussion}
+
+Results support three practical implications: enforce rules-before-tokens enrichment, treat AI outputs as additive artefacts, and always benchmark against simple baselines.
+Compliance framing treats Match as decision support for job seekers on public vacancy text, not automated hiring; GDPR and EU AI Act documentation remains necessary.
+
+Limitations include author labels, a single cloud region, modest absolute nDCG, and incomplete live RQ2 provider cells.
+Absolute scores should not be compared to open-domain QA benchmarks.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This case study shows that generative AI can extend a production European job lakehouse when integration is constrained by historical keys, evaluation harnesses, and cost controls.
+Dense retrieval outperforming a transparent heuristic wizard demonstrates measurable value for augmented analytics claims.
+Future work includes completing Bedrock Pareto experiments after quota approval, enlarging the gold label set with peer review, and flushing live cost logs from production Lambdas.
+
+\section*{Acknowledgment}
+
+The author thanks proposed supervisors at UE Potsdam and the open-source DataForge contributors.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

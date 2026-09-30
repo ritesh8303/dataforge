@@ -1,0 +1,190 @@
+\chapter{Results}
+\label{ch:results}
+
+This chapter reports what was built and what was measured. Discussion of meaning is left to Chapter~\ref{ch:discussion}.
+
+\section{The built system}
+\label{sec:artefact}
+
+The logical architecture of the integration layer is shown in Figure~\ref{fig:arch}. If the file \texttt{figures/architecture.png} (or \texttt{figures/architecture.pdf}) is present in the Overleaf project, Figure~\ref{fig:arch-png} renders the same architecture as a exported diagram.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  box/.style={draw, rounded corners, align=center, inner sep=4pt, minimum height=0.85cm},
+  arr/.style={->, thick}
+]
+\node[box] (ing) {Public jobs / ingest};
+\node[box, right=0.35cm of ing] (br) {Bronze};
+\node[box, right=0.35cm of br] (si) {Silver SCD2};
+\node[box, right=0.35cm of si] (go) {Gold + APIs};
+\node[box, below=0.7cm of si] (en) {Rules + optional LLM};
+\node[box, below=0.7cm of go] (ma) {Match API / hybrid IR};
+\draw[arr] (ing) -- (br);
+\draw[arr] (br) -- (si);
+\draw[arr] (si) -- (go);
+\draw[arr] (si) -- (en);
+\draw[arr] (en) -- (ma);
+\draw[arr] (go) -- (ma);
+\end{tikzpicture}
+\caption{Extra generative layer on the existing DataForge medallion pipeline (TikZ fallback).}
+\label{fig:arch}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\maybeincludegraphics[width=0.92\textwidth]{figures/architecture.png}
+\caption{DataForge architecture with generative integration layer (place \texttt{figures/architecture.png} or \texttt{figures/architecture.pdf} in the Overleaf project).}
+\label{fig:arch-png}
+\end{figure}
+
+Public job documents still flow through Bronze and Silver. Generative components read Silver and Gold. They do not rewrite slowly changing dimension keys.
+
+\subsection{Model gateway}
+
+\texttt{ModelRouter} implements task types (\texttt{enrich}, \texttt{embed}, \texttt{explain}). It uses a preferred provider order (Bedrock, then OpenAI, then Anthropic, then local). It checks JSON schema, logs cost, checks a daily budget, and uses the \texttt{AI\_ENABLED} stop switch. Prompt versions are stored under \texttt{prompts/}. Completion defaults to the EU profile \texttt{eu.amazon.nova-micro-v1:0} after Titan Text Express ended on the account. Embeddings use Titan Embed Text v2 when it is available.
+
+\subsection{Rules-first enrichment}
+
+Fixed German/English classifiers assign tech field, seniority, visa stance, languages, and derived flags. Language-model calls happen only when they are turned on, and only when rules mark a case as unclear or a sample rate allows it. Silver and Gold schemas gain extra columns. SCD logic is not changed.
+
+\subsection{Retrieval and Match API}
+
+BM25, dense ranking, and reciprocal rank fusion implement hybrid retrieval. FastAPI exposes \texttt{/health}, \texttt{/jobs}, \texttt{/match}, and \texttt{/match/agent}. Production uses a Function URL with a 60-second timeout, an optional API key, CORS, and personal-data removal. An in-process graph (Supervisor $\rightarrow$ Retriever $\rightarrow$ Scorer $\rightarrow$ Explainer $\rightarrow$ Critic) is optional and limited. A Model Context Protocol server exposes \texttt{search\_jobs}, \texttt{get\_job}, and \texttt{match\_resume}.
+
+\subsection{Operational status at measurement time}
+
+Table~\ref{tab:status} records an honest limit of the case. Several generative cells were paused because the account quota for Amazon Nova Micro was zero tokens per minute and per day. The architecture was complete. Live completions were not.
+
+\begin{table}[ht]
+\centering
+\caption{Operational status at draft measurement time (16 September 2026)}
+\label{tab:status}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Capability} & \textbf{Status} \\
+\midrule
+Lakehouse, Jobs/Metrics APIs, Pages & Live \\
+Match Function URL with API key & Live \\
+Nightly Bedrock enrichment & Paused (Nova Micro quota 0; increase requested) \\
+RQ2 live Bedrock Pareto & Pending quota approval \\
+RQ3 labelled matching evaluation & Complete \\
+RQ4 modelled unit cost & Complete \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{RQ1 --- Integration without breaking data history}
+\label{sec:rq1-results}
+
+Checks of schemas, Terraform modules (\texttt{terraform/ai.tf}), and the budget runbook show the following. Enrichment columns are extra columns. The router does not write \texttt{job\_id} or SCD validity fields. \texttt{AI\_ENABLED} and a daily budget exist. Silver-to-Gold Step Functions Express is present, with the schedule off by default. The quota pause stopped enrichment runs. It did not require a redesign of keys. RQ1 is therefore answered at the level of architecture and code, with the operational limit in Table~\ref{tab:status}.
+
+\section{RQ3 --- Matching quality}
+\label{sec:rq3}
+
+Table~\ref{tab:rq3} reports ranked retrieval quality on \textbf{103} graded queries and 96 jobs (expanded from a 42-query pilot). Figure~\ref{fig:rq3-bars} visualises nDCG@10. Detail notes live in \texttt{evals/results/error\_analysis.md}.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Matching quality on the labelled set (RQ3; 103$\times$96)}
+\label{tab:rq3}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Method} & \textbf{nDCG@10} & \textbf{P@5} & \textbf{Recall@20} & \textbf{MRR} \\
+\midrule
+BM25 & 0.1351 & 0.1437 & 0.1926 & 0.1906 \\
+Dense & 0.2174 & 0.2175 & 0.2856 & 0.2706 \\
+Hybrid & 0.1668 & 0.1670 & 0.2225 & 0.2327 \\
+Heuristic wizard & 0.1462 & 0.1728 & 0.2071 & 0.1952 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\maybeincludegraphics[width=0.78\textwidth]{figures/rq3_bars.png}
+\caption{nDCG@10 by retrieval method on the 103-query labelled set.}
+\label{fig:rq3-bars}
+\end{figure}
+
+Dense retrieval has the highest nDCG@10 (0.2174). The rule-based wizard scores 0.1462, and BM25 scores 0.1351. Hybrid sits between dense and the wizard on this label set (0.1668). Absolute scores stay far from 1.0. H1 is supported for dense retrieval versus the wizard on this expanded set. Hybrid does not win nDCG@10 here, but remains the product default for lexical fallback and citation workflows.
+
+\subsection{Error analysis by query type}
+\label{sec:error-analysis}
+
+Per-query results in \texttt{evals/results/matching\_eval.json} and \texttt{error\_analysis.md} show three patterns on the 103-query set.
+
+\textbf{Dense wins on semantic clusters.} About 25 queries show dense ahead of the wizard by $\geq$0.05 nDCG@10. Examples include ML stack wording, role-family matching, and mixed DE/EN skill phrases where embeddings group neighbours better than fixed 60/20/20 weights.
+
+\textbf{Heuristic or BM25 wins on exact tokens.} About eight queries each favour the wizard or BM25. Exact product names (for example Power BI), short German keyword queries, and visa/permit boilerplate often reward lexical overlap more than dense neighbours.
+
+\textbf{Constraint-heavy queries.} Working-student, English-OK, and visa sponsorship queries stress fields that rules treat explicitly. Dense can still rank a semantically close job that fails a hard filter. Neither method understands immigration law; both read surface text.
+
+Table~\ref{tab:error-patterns} summarises where dense wins or fails versus the wizard.
+
+\begin{table}[ht]
+\centering
+\caption{Qualitative error patterns (RQ3)}
+\label{tab:error-patterns}
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+\textbf{Theme} & \textbf{Dense tends to} & \textbf{Wizard tends to} \\
+\midrule
+Skill synonyms (PyTorch / deep learning) & Win & Miss if keywords differ \\
+German/English mixed titles & Win partially & Miss without bilingual rules \\
+Visa sponsorship wording & Confuse similar employers & Miss if visa not in skill tokens \\
+Seniority (Intern vs Senior) & Confuse adjacent levels & Win when title tokens match \\
+Empty corpus slice (q04--q09) & Fail equally & Fail equally \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{German and English mixed text}
+
+Sample jobs pair German HR phrases (``Werkstudent'', ``Flie{\ss}end Deutsch (C1)'') with English skill lists. BM25 and the wizard depend on token overlap. Dense embeddings partially bridge language if the encoder saw both languages during training. This explains part of the dense advantage on AI/ML queries. It does not remove the need for explicit language and visa rules in enrichment. Rules-first labels for \texttt{visa\_stance} and \texttt{working\_language} are meant to support filters later, not to fix retrieval alone.
+
+\section{RQ2 --- Provider trade-offs}
+\label{sec:rq2}
+
+The rules-only point is available: almost no extra latency and \EUR{0} model spend. Live Nova Micro completions were blocked by applied account quotas of 0 tokens/minute and 0 tokens/day. A Service Quotas increase (cross-region Nova Micro TPM to 1{,}000{,}000) was submitted on 16 September 2026. It was still pending at measurement time. The runner \texttt{evals/run\_rq2\_pareto.py} with live Bedrock flags is implemented. Table~\ref{tab:rq3} is therefore complete. The live RQ2 provider table is not.
+
+File \texttt{evals/results/rq2\_pareto.json} records a \emph{local stub} run: 40 jobs, rules average latency 0.16\,ms, local ``LLM'' path about 9.8\,s average latency. That stub shows the protocol works. It does \emph{not} substitute for Bedrock latency and euro cost. Until quota approval, RQ2 must be reported as \textbf{pending}, not as a provider winner.
+
+\section{Multi-agent ablation}
+\label{sec:agent}
+
+On the local provider, average citation-structure validity was 1.0 for both hybrid single-shot and multi-agent matching over 30 queries. The schema contract is enforced: every explanation includes \texttt{job\_id} and a text span pointer. Semantic faithfulness under Bedrock was not measured.
+
+\subsection{Interpretation of the ablation}
+
+A score of 1.0 on structural validity means the JSON shape is correct. It does not mean the explanation text is true. The local provider returns templated summaries. Both single-shot and multi-agent paths satisfy the same Pydantic schema. The multi-agent path adds latency and more moving parts. On this stub, it did not add measurable structural benefit. The ablation therefore supports \emph{keeping agents optional} until Bedrock faithfulness tests show a gain. This matches the FrugalGPT idea: do not pay for extra steps without evidence \cf{chen2023frugalgpt}.
+
+\section{RQ4 --- Unit cost}
+\label{sec:rq4}
+
+Table~\ref{tab:roi} reports a modelled scenario: 1{,}000 jobs with rules-first enrichment (about 30\,\% language-model calls), embeddings for the corpus, and 100 match requests. Public Nova Micro and Titan Embed list prices are used. The FX rate is 0.92.
+
+\begin{table}[ht]
+\centering
+\caption{Modelled unit cost for a 1{,}000-job scenario}
+\label{tab:roi}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Component} & \textbf{USD} & \textbf{EUR} \\
+\midrule
+Enrichment, language model on full corpus & 0.077 & 0.071 \\
+Enrichment, rules-first (30\,\%) & 0.023 & 0.021 \\
+Embeddings & 0.044 & 0.040 \\
+Total, rules-first path & 0.067 & 0.062 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Under these assumptions the rules-first path costs about \EUR{0.06} per thousand jobs. Control tools in software include sample rate, daily budget, stop switch, Match API key, and schedule pause.
+
+\section{Threats to validity}
+\label{sec:threats}
+
+Construct validity: nDCG@10 measures ranked relevance on labels written by the author. It does not measure hiring outcomes. Internal validity: the dense advantage may partly reflect how labels were written and which jobs exist in the 96-job slice. External validity: one lakehouse, one junior-oriented query mix, and one cloud region. Statistical conclusion validity: 103 queries are enough for an applied MSc pilot, not for a very large IR significance programme. Labels remain author-constructed. Conclusion validity for RQ2 is also limited by the quota gap. Operational validity: quota rules are part of real MLOps; treating them as experimental conditions is honest \cf{kreuzberger2023mlops}.

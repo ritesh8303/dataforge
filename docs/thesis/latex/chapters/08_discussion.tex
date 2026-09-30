@@ -1,0 +1,38 @@
+\chapter{Discussion, ethics, limitations}
+\label{ch:discussion}
+
+\section{Answers to RQs (current evidence)}
+
+\begin{table}[ht]
+\centering
+\caption{RQ answers at draft time}
+\label{tab:rq-answers}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{RQ} & \textbf{Answer (draft)} \\
+\midrule
+RQ1 & Achieved via additive schemas, immutable SCD keys, Terraform AI module, budgets/kill switch; enrichment paused only for quota, not design failure. \\
+RQ2 & Protocol ready; \textbf{live Bedrock cells pending} quota. Rules baseline established. \\
+RQ3 & Dense $>$ heuristic on nDCG@10; H1 supported on labelled set. \\
+RQ4 & Modelled \EUR{}/1k jobs $\ll$ \EUR{1} under frugal settings; live logs to follow. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Responsible AI}
+
+DataForge Match is an \textbf{advisory job-discovery} aid, not an employer hiring decision system. Controls include transparency (citations, disclaimers), human oversight (HITL on low confidence), PII redaction, and sourcing documentation (\texttt{docs/RESPONSIBLE\_AI.md}, \texttt{docs/DATA\_SOURCING.md}). Visa heuristics are sensitive and must remain evidence-linked and non-blocking by default.
+
+\section{Limitations}
+
+\begin{enumerate}[leftmargin=*]
+  \item Bedrock Nova Micro account quota blocked live RQ2 at draft time.
+  \item Matching label scale is pilot-sized.
+  \item Multi-agent faithfulness under real LLMs not yet spot-checked.
+  \item Official UE formatting rules must still be applied in the bound version.
+  \item Source coverage and \texttt{not\_mentioned} visa majority limit some product KPIs.
+\end{enumerate}
+
+\section{Implications for practice}
+
+Applied GenAI theses should treat \textbf{quota and billing mechanics} as first-class experimental constraints---equal to model choice. ``Architecture complete / measurement pending'' is a valid scientific state when documented with a frozen protocol.

@@ -55,23 +55,26 @@ def lambda_handler(event, context):
 
 def _handle(event):
     params = event.get("queryStringParameters") or {}
-    search = (params.get("search") or "").lower().strip()
+    search = (params.get("search") or params.get("q") or "").lower().strip()
     source = (params.get("source") or "").lower().strip()
     remote = (params.get("remote") or "").lower().strip()
     job_type = (params.get("job_type") or "").lower().strip()
-    location = (params.get("location") or "").lower().strip()
-    experience = (params.get("experience") or "").lower().strip()
+    location = (params.get("location") or params.get("city") or "").lower().strip()
+    experience = (params.get("experience") or params.get("employment_type") or "").lower().strip()
     language_req = (params.get("language_req") or "").lower().strip()
     work_style = (params.get("work_style") or "").lower().strip()
     region = (params.get("region") or "").lower().strip()
+    field = (params.get("field") or "").lower().strip()
     sort = (params.get("sort") or "newest").lower().strip()
     status = (params.get("status") or "active").lower().strip()
 
     # Legacy remote=true|false maps to work_style (standard taxonomy)
-    if remote == "true" and not work_style:
+    if remote in {"true", "remote"} and not work_style:
         work_style = "remote"
     elif remote == "false" and not work_style:
         work_style = "onsite"
+    elif remote in {"hybrid", "onsite"} and not work_style:
+        work_style = remote
 
     try:
         requested_limit = int(params.get("limit", 500))
@@ -111,14 +114,58 @@ def _handle(event):
     if job_type:
         jobs = [j for j in jobs if job_type in j.get("job_types", "").lower()]
     if experience:
-        if experience in ("junior", "entry", "entry-level", "entry_level"):
-            jobs = [j for j in jobs if "junior / entry level" in j.get("tags", "").lower()]
-        elif experience in ("student", "werkstudent", "working_student", "working-student"):
-            jobs = [j for j in jobs if "working student" in j.get("tags", "").lower()]
-        elif experience in ("intern", "internship", "praktikum"):
-            jobs = [j for j in jobs if "internship" in j.get("tags", "").lower()]
-        elif experience in ("thesis", "masterarbeit", "bachelorarbeit", "abschlussarbeit"):
-            jobs = [j for j in jobs if "master thesis" in j.get("tags", "").lower()]
+        exp = experience.replace("-", "_")
+        if exp in ("junior", "entry", "entry_level", "fresher", "trainee", "graduate"):
+            jobs = [
+                j
+                for j in jobs
+                if str(j.get("employment_type", "")).lower() == "fresher"
+                or str(j.get("ai_seniority", "")).lower() in {"junior", "trainee_graduate"}
+                or "junior / entry level" in j.get("tags", "").lower()
+            ]
+        elif exp in ("student", "werkstudent", "working_student"):
+            jobs = [
+                j
+                for j in jobs
+                if str(j.get("employment_type", "")).lower() == "working_student"
+                or str(j.get("ai_seniority", "")).lower() == "working_student"
+                or "working student" in j.get("tags", "").lower()
+            ]
+        elif exp in ("intern", "internship", "praktikum"):
+            jobs = [
+                j
+                for j in jobs
+                if str(j.get("employment_type", "")).lower() == "internship"
+                or str(j.get("ai_seniority", "")).lower() == "internship"
+                or "internship" in j.get("tags", "").lower()
+            ]
+        elif exp in ("thesis", "masterarbeit", "bachelorarbeit", "abschlussarbeit"):
+            jobs = [
+                j
+                for j in jobs
+                if str(j.get("employment_type", "")).lower() == "thesis"
+                or str(j.get("ai_seniority", "")).lower() == "thesis"
+                or "master thesis" in j.get("tags", "").lower()
+                or "thesis" in j.get("title", "").lower()
+            ]
+    if field:
+        field_norm = field.replace("-", "_")
+        aliases = {
+            "ai": "ai_ml_data_science",
+            "ml": "ai_ml_data_science",
+            "ai_ml": "ai_ml_data_science",
+            "data_science": "ai_ml_data_science",
+            "data": "data_engineering",
+        }
+        field_norm = aliases.get(field_norm, field_norm)
+        jobs = [
+            j
+            for j in jobs
+            if field_norm in str(j.get("ai_field", "")).lower()
+            or field_norm in str(j.get("ai_field_rule", "")).lower()
+            or field_norm in str(j.get("field_rule", "")).lower()
+            or field_norm.replace("_", " ") in str(j.get("title", "")).lower()
+        ]
     if language_req:
         jobs = [
             j

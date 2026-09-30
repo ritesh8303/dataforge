@@ -1,6 +1,6 @@
 [
   {
-    "query_id": "q01",
+    "query_id": "q001",
     "resume_excerpt": "Candidate interested in Data Engineer Python AWS Spark. Experience aligns with data engineering.",
     "dream_role": "Data Engineer Python AWS Spark",
     "location": "Berlin",
@@ -34,245 +34,7 @@
     }
   },
   {
-    "query_id": "q02",
-    "resume_excerpt": "Candidate interested in Machine Learning Engineer LLM RAG PyTorch. Experience aligns with ai ml data science.",
-    "dream_role": "Machine Learning Engineer LLM RAG PyTorch",
-    "location": "Remote",
-    "relevant_job_ids": [
-      "sem_eval_000_ai_ml_da",
-      "sem_eval_001_ai_ml_da",
-      "sem_eval_002_ai_ml_da",
-      "sem_eval_003_ai_ml_da",
-      "sem_eval_004_ai_ml_da",
-      "sem_eval_005_ai_ml_da",
-      "sem_eval_006_ai_ml_da",
-      "sem_eval_007_ai_ml_da",
-      "sem_eval_008_ai_ml_da",
-      "sem_eval_009_ai_ml_da",
-      "sem_eval_010_ai_ml_da",
-      "sem_eval_011_ai_ml_da"
-    ],
-    "relevance_grades": {
-      "sem_eval_000_ai_ml_da": 2,
-      "sem_eval_001_ai_ml_da": 2,
-      "sem_eval_002_ai_ml_da": 2,
-      "sem_eval_003_ai_ml_da": 2,
-      "sem_eval_004_ai_ml_da": 2,
-      "sem_eval_005_ai_ml_da": 2,
-      "sem_eval_006_ai_ml_da": 2,
-      "sem_eval_007_ai_ml_da": 2,
-      "sem_eval_008_ai_ml_da": 2,
-      "sem_eval_009_ai_ml_da": 2,
-      "sem_eval_010_ai_ml_da": 2,
-      "sem_eval_011_ai_ml_da": 2
-    }
-  },
-  {
-    "query_id": "q03",
-    "resume_excerpt": "Candidate interested in Junior Data Analyst SQL Power BI. Experience aligns with data analytics.",
-    "dream_role": "Junior Data Analyst SQL Power BI",
-    "location": "Munich",
-    "relevant_job_ids": [
-      "sem_eval_072_data_ana",
-      "sem_eval_073_data_ana",
-      "sem_eval_074_data_ana",
-      "sem_eval_075_data_ana",
-      "sem_eval_076_data_ana",
-      "sem_eval_077_data_ana",
-      "sem_eval_078_data_ana",
-      "sem_eval_079_data_ana",
-      "sem_eval_080_data_ana",
-      "sem_eval_081_data_ana",
-      "sem_eval_082_data_ana",
-      "sem_eval_083_data_ana"
-    ],
-    "relevance_grades": {
-      "sem_eval_072_data_ana": 2,
-      "sem_eval_073_data_ana": 2,
-      "sem_eval_074_data_ana": 2,
-      "sem_eval_075_data_ana": 2,
-      "sem_eval_076_data_ana": 2,
-      "sem_eval_077_data_ana": 2,
-      "sem_eval_078_data_ana": 2,
-      "sem_eval_079_data_ana": 2,
-      "sem_eval_080_data_ana": 2,
-      "sem_eval_081_data_ana": 2,
-      "sem_eval_082_data_ana": 2,
-      "sem_eval_083_data_ana": 2
-    }
-  },
-  {
-    "query_id": "q04",
-    "resume_excerpt": "Candidate interested in Werkstudent Software Engineering React. Experience aligns with software engineering.",
-    "dream_role": "Werkstudent Software Engineering React",
-    "location": "Berlin",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q05",
-    "resume_excerpt": "Candidate interested in DevOps Kubernetes Terraform AWS. Experience aligns with cloud devops.",
-    "dream_role": "DevOps Kubernetes Terraform AWS",
-    "location": "Hamburg",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q06",
-    "resume_excerpt": "Candidate interested in Cybersecurity pentester AppSec. Experience aligns with cybersecurity.",
-    "dream_role": "Cybersecurity pentester AppSec",
-    "location": "Frankfurt",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q07",
-    "resume_excerpt": "Candidate interested in Embedded C firmware automotive. Experience aligns with embedded systems.",
-    "dream_role": "Embedded C firmware automotive",
-    "location": "Stuttgart",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q08",
-    "resume_excerpt": "Candidate interested in SAP ABAP consultant S/4HANA. Experience aligns with sap erp.",
-    "dream_role": "SAP ABAP consultant S/4HANA",
-    "location": "Walldorf",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q09",
-    "resume_excerpt": "Candidate interested in Product Manager B2B SaaS. Experience aligns with product management.",
-    "dream_role": "Product Manager B2B SaaS",
-    "location": "Berlin",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q10",
-    "resume_excerpt": "Candidate interested in BI Analyst Tableau Looker. Experience aligns with business intelligence.",
-    "dream_role": "BI Analyst Tableau Looker",
-    "location": "Cologne",
-    "relevant_job_ids": [
-      "sem_eval_090_business",
-      "sem_eval_091_business",
-      "sem_eval_092_business",
-      "sem_eval_093_business",
-      "sem_eval_094_business",
-      "sem_eval_095_business"
-    ],
-    "relevance_grades": {
-      "sem_eval_090_business": 2,
-      "sem_eval_091_business": 2,
-      "sem_eval_092_business": 2,
-      "sem_eval_093_business": 2,
-      "sem_eval_094_business": 2,
-      "sem_eval_095_business": 2
-    }
-  },
-  {
-    "query_id": "q11",
-    "resume_excerpt": "Candidate interested in QA test automation Playwright. Experience aligns with qa testing.",
-    "dream_role": "QA test automation Playwright",
-    "location": "Berlin",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q12",
-    "resume_excerpt": "Candidate interested in IT Support helpdesk Active Directory. Experience aligns with it support.",
-    "dream_role": "IT Support helpdesk Active Directory",
-    "location": "Munich",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q13",
-    "resume_excerpt": "Candidate interested in Working Student Data Science NLP. Experience aligns with ai ml data science.",
-    "dream_role": "Working Student Data Science NLP",
-    "location": "Berlin",
-    "relevant_job_ids": [
-      "sem_eval_000_ai_ml_da",
-      "sem_eval_001_ai_ml_da",
-      "sem_eval_002_ai_ml_da",
-      "sem_eval_003_ai_ml_da",
-      "sem_eval_004_ai_ml_da",
-      "sem_eval_005_ai_ml_da",
-      "sem_eval_006_ai_ml_da",
-      "sem_eval_007_ai_ml_da",
-      "sem_eval_008_ai_ml_da",
-      "sem_eval_009_ai_ml_da",
-      "sem_eval_010_ai_ml_da",
-      "sem_eval_011_ai_ml_da"
-    ],
-    "relevance_grades": {
-      "sem_eval_000_ai_ml_da": 2,
-      "sem_eval_001_ai_ml_da": 2,
-      "sem_eval_002_ai_ml_da": 2,
-      "sem_eval_003_ai_ml_da": 2,
-      "sem_eval_004_ai_ml_da": 2,
-      "sem_eval_005_ai_ml_da": 2,
-      "sem_eval_006_ai_ml_da": 2,
-      "sem_eval_007_ai_ml_da": 2,
-      "sem_eval_008_ai_ml_da": 2,
-      "sem_eval_009_ai_ml_da": 2,
-      "sem_eval_010_ai_ml_da": 2,
-      "sem_eval_011_ai_ml_da": 2
-    }
-  },
-  {
-    "query_id": "q14",
-    "resume_excerpt": "Candidate interested in Internship backend FastAPI Python. Experience aligns with software engineering.",
-    "dream_role": "Internship backend FastAPI Python",
-    "location": "Remote",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q15",
-    "resume_excerpt": "Candidate interested in Graduate Cloud Engineer AWS. Experience aligns with cloud devops.",
-    "dream_role": "Graduate Cloud Engineer AWS",
-    "location": "Munich",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q16",
-    "resume_excerpt": "Candidate interested in Junior MLOps engineer. Experience aligns with ai ml data science.",
-    "dream_role": "Junior MLOps engineer",
-    "location": "Berlin",
-    "relevant_job_ids": [
-      "sem_eval_000_ai_ml_da",
-      "sem_eval_001_ai_ml_da",
-      "sem_eval_002_ai_ml_da",
-      "sem_eval_003_ai_ml_da",
-      "sem_eval_004_ai_ml_da",
-      "sem_eval_005_ai_ml_da",
-      "sem_eval_006_ai_ml_da",
-      "sem_eval_007_ai_ml_da",
-      "sem_eval_008_ai_ml_da",
-      "sem_eval_009_ai_ml_da",
-      "sem_eval_010_ai_ml_da",
-      "sem_eval_011_ai_ml_da"
-    ],
-    "relevance_grades": {
-      "sem_eval_000_ai_ml_da": 2,
-      "sem_eval_001_ai_ml_da": 2,
-      "sem_eval_002_ai_ml_da": 2,
-      "sem_eval_003_ai_ml_da": 2,
-      "sem_eval_004_ai_ml_da": 2,
-      "sem_eval_005_ai_ml_da": 2,
-      "sem_eval_006_ai_ml_da": 2,
-      "sem_eval_007_ai_ml_da": 2,
-      "sem_eval_008_ai_ml_da": 2,
-      "sem_eval_009_ai_ml_da": 2,
-      "sem_eval_010_ai_ml_da": 2,
-      "sem_eval_011_ai_ml_da": 2
-    }
-  },
-  {
-    "query_id": "q17",
+    "query_id": "q002",
     "resume_excerpt": "Candidate interested in Data platform Airflow dbt. Experience aligns with data engineering.",
     "dream_role": "Data platform Airflow dbt",
     "location": "Remote / EU",
@@ -306,271 +68,7 @@
     }
   },
   {
-    "query_id": "q18",
-    "resume_excerpt": "Candidate interested in Frontend TypeScript Next.js. Experience aligns with software engineering.",
-    "dream_role": "Frontend TypeScript Next.js",
-    "location": "Hamburg",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q19",
-    "resume_excerpt": "Candidate interested in Security SOC analyst SIEM. Experience aligns with cybersecurity.",
-    "dream_role": "Security SOC analyst SIEM",
-    "location": "Munich",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q20",
-    "resume_excerpt": "Candidate interested in Praktikum Data Analytics SQL. Experience aligns with data analytics.",
-    "dream_role": "Praktikum Data Analytics SQL",
-    "location": "Berlin",
-    "relevant_job_ids": [
-      "sem_eval_072_data_ana",
-      "sem_eval_073_data_ana",
-      "sem_eval_074_data_ana",
-      "sem_eval_075_data_ana",
-      "sem_eval_076_data_ana",
-      "sem_eval_077_data_ana",
-      "sem_eval_078_data_ana",
-      "sem_eval_079_data_ana",
-      "sem_eval_080_data_ana",
-      "sem_eval_081_data_ana",
-      "sem_eval_082_data_ana",
-      "sem_eval_083_data_ana"
-    ],
-    "relevance_grades": {
-      "sem_eval_072_data_ana": 2,
-      "sem_eval_073_data_ana": 2,
-      "sem_eval_074_data_ana": 2,
-      "sem_eval_075_data_ana": 2,
-      "sem_eval_076_data_ana": 2,
-      "sem_eval_077_data_ana": 2,
-      "sem_eval_078_data_ana": 2,
-      "sem_eval_079_data_ana": 2,
-      "sem_eval_080_data_ana": 2,
-      "sem_eval_081_data_ana": 2,
-      "sem_eval_082_data_ana": 2,
-      "sem_eval_083_data_ana": 2
-    }
-  },
-  {
-    "query_id": "q21",
-    "resume_excerpt": "Candidate interested in Senior Software Engineer Java. Experience aligns with software engineering.",
-    "dream_role": "Senior Software Engineer Java",
-    "location": "Frankfurt",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q22",
-    "resume_excerpt": "Candidate interested in Entry-level Data Engineer no experience. Experience aligns with data engineering.",
-    "dream_role": "Entry-level Data Engineer no experience",
-    "location": "Cologne",
-    "relevant_job_ids": [
-      "sem_eval_036_data_eng",
-      "sem_eval_037_data_eng",
-      "sem_eval_038_data_eng",
-      "sem_eval_039_data_eng",
-      "sem_eval_040_data_eng",
-      "sem_eval_041_data_eng",
-      "sem_eval_042_data_eng",
-      "sem_eval_043_data_eng",
-      "sem_eval_044_data_eng",
-      "sem_eval_045_data_eng",
-      "sem_eval_046_data_eng",
-      "sem_eval_047_data_eng"
-    ],
-    "relevance_grades": {
-      "sem_eval_036_data_eng": 2,
-      "sem_eval_037_data_eng": 2,
-      "sem_eval_038_data_eng": 2,
-      "sem_eval_039_data_eng": 2,
-      "sem_eval_040_data_eng": 2,
-      "sem_eval_041_data_eng": 2,
-      "sem_eval_042_data_eng": 2,
-      "sem_eval_043_data_eng": 2,
-      "sem_eval_044_data_eng": 2,
-      "sem_eval_045_data_eng": 2,
-      "sem_eval_046_data_eng": 2,
-      "sem_eval_047_data_eng": 2
-    }
-  },
-  {
-    "query_id": "q23",
-    "resume_excerpt": "Candidate interested in English speaking Data Scientist. Experience aligns with ai ml data science.",
-    "dream_role": "English speaking Data Scientist",
-    "location": "Berlin",
-    "relevant_job_ids": [
-      "sem_eval_000_ai_ml_da",
-      "sem_eval_001_ai_ml_da",
-      "sem_eval_002_ai_ml_da",
-      "sem_eval_003_ai_ml_da",
-      "sem_eval_004_ai_ml_da",
-      "sem_eval_005_ai_ml_da",
-      "sem_eval_006_ai_ml_da",
-      "sem_eval_007_ai_ml_da",
-      "sem_eval_008_ai_ml_da",
-      "sem_eval_009_ai_ml_da",
-      "sem_eval_010_ai_ml_da",
-      "sem_eval_011_ai_ml_da"
-    ],
-    "relevance_grades": {
-      "sem_eval_000_ai_ml_da": 2,
-      "sem_eval_001_ai_ml_da": 2,
-      "sem_eval_002_ai_ml_da": 2,
-      "sem_eval_003_ai_ml_da": 2,
-      "sem_eval_004_ai_ml_da": 2,
-      "sem_eval_005_ai_ml_da": 2,
-      "sem_eval_006_ai_ml_da": 2,
-      "sem_eval_007_ai_ml_da": 2,
-      "sem_eval_008_ai_ml_da": 2,
-      "sem_eval_009_ai_ml_da": 2,
-      "sem_eval_010_ai_ml_da": 2,
-      "sem_eval_011_ai_ml_da": 2
-    }
-  },
-  {
-    "query_id": "q24",
-    "resume_excerpt": "Candidate interested in Visa sponsorship software developer. Experience aligns with software engineering.",
-    "dream_role": "Visa sponsorship software developer",
-    "location": "Munich",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q25",
-    "resume_excerpt": "Candidate interested in SRE observability Prometheus. Experience aligns with cloud devops.",
-    "dream_role": "SRE observability Prometheus",
-    "location": "Berlin",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q26",
-    "resume_excerpt": "Candidate interested in Analytics Engineer dbt warehouse. Experience aligns with data engineering.",
-    "dream_role": "Analytics Engineer dbt warehouse",
-    "location": "Remote",
-    "relevant_job_ids": [
-      "sem_eval_036_data_eng",
-      "sem_eval_037_data_eng",
-      "sem_eval_038_data_eng",
-      "sem_eval_039_data_eng",
-      "sem_eval_040_data_eng",
-      "sem_eval_041_data_eng",
-      "sem_eval_042_data_eng",
-      "sem_eval_043_data_eng",
-      "sem_eval_044_data_eng",
-      "sem_eval_045_data_eng",
-      "sem_eval_046_data_eng",
-      "sem_eval_047_data_eng"
-    ],
-    "relevance_grades": {
-      "sem_eval_036_data_eng": 2,
-      "sem_eval_037_data_eng": 2,
-      "sem_eval_038_data_eng": 2,
-      "sem_eval_039_data_eng": 2,
-      "sem_eval_040_data_eng": 2,
-      "sem_eval_041_data_eng": 2,
-      "sem_eval_042_data_eng": 2,
-      "sem_eval_043_data_eng": 2,
-      "sem_eval_044_data_eng": 2,
-      "sem_eval_045_data_eng": 2,
-      "sem_eval_046_data_eng": 2,
-      "sem_eval_047_data_eng": 2
-    }
-  },
-  {
-    "query_id": "q27",
-    "resume_excerpt": "Candidate interested in Werkstudent SAP. Experience aligns with sap erp.",
-    "dream_role": "Werkstudent SAP",
-    "location": "Walldorf",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q28",
-    "resume_excerpt": "Candidate interested in Junior Product Owner agile. Experience aligns with product management.",
-    "dream_role": "Junior Product Owner agile",
-    "location": "Hamburg",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q29",
-    "resume_excerpt": "Candidate interested in Power BI developer. Experience aligns with business intelligence.",
-    "dream_role": "Power BI developer",
-    "location": "Munich",
-    "relevant_job_ids": [
-      "sem_eval_090_business",
-      "sem_eval_091_business",
-      "sem_eval_092_business",
-      "sem_eval_093_business",
-      "sem_eval_094_business",
-      "sem_eval_095_business"
-    ],
-    "relevance_grades": {
-      "sem_eval_090_business": 2,
-      "sem_eval_091_business": 2,
-      "sem_eval_092_business": 2,
-      "sem_eval_093_business": 2,
-      "sem_eval_094_business": 2,
-      "sem_eval_095_business": 2
-    }
-  },
-  {
-    "query_id": "q30",
-    "resume_excerpt": "Candidate interested in Testingenieur Selenium. Experience aligns with qa testing.",
-    "dream_role": "Testingenieur Selenium",
-    "location": "Stuttgart",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q31",
-    "resume_excerpt": "Candidate interested in Desktop support specialist. Experience aligns with it support.",
-    "dream_role": "Desktop support specialist",
-    "location": "Berlin",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q32",
-    "resume_excerpt": "Candidate interested in Computer vision engineer. Experience aligns with ai ml data science.",
-    "dream_role": "Computer vision engineer",
-    "location": "Munich",
-    "relevant_job_ids": [
-      "sem_eval_000_ai_ml_da",
-      "sem_eval_001_ai_ml_da",
-      "sem_eval_002_ai_ml_da",
-      "sem_eval_003_ai_ml_da",
-      "sem_eval_004_ai_ml_da",
-      "sem_eval_005_ai_ml_da",
-      "sem_eval_006_ai_ml_da",
-      "sem_eval_007_ai_ml_da",
-      "sem_eval_008_ai_ml_da",
-      "sem_eval_009_ai_ml_da",
-      "sem_eval_010_ai_ml_da",
-      "sem_eval_011_ai_ml_da"
-    ],
-    "relevance_grades": {
-      "sem_eval_000_ai_ml_da": 2,
-      "sem_eval_001_ai_ml_da": 2,
-      "sem_eval_002_ai_ml_da": 2,
-      "sem_eval_003_ai_ml_da": 2,
-      "sem_eval_004_ai_ml_da": 2,
-      "sem_eval_005_ai_ml_da": 2,
-      "sem_eval_006_ai_ml_da": 2,
-      "sem_eval_007_ai_ml_da": 2,
-      "sem_eval_008_ai_ml_da": 2,
-      "sem_eval_009_ai_ml_da": 2,
-      "sem_eval_010_ai_ml_da": 2,
-      "sem_eval_011_ai_ml_da": 2
-    }
-  },
-  {
-    "query_id": "q33",
+    "query_id": "q003",
     "resume_excerpt": "Candidate interested in Kafka streaming data engineer. Experience aligns with data engineering.",
     "dream_role": "Kafka streaming data engineer",
     "location": "Berlin",
@@ -604,55 +102,799 @@
     }
   },
   {
-    "query_id": "q34",
-    "resume_excerpt": "Candidate interested in React Native developer. Experience aligns with software engineering.",
-    "dream_role": "React Native developer",
-    "location": "Remote",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q35",
-    "resume_excerpt": "Candidate interested in Terraform platform engineer. Experience aligns with cloud devops.",
-    "dream_role": "Terraform platform engineer",
-    "location": "Frankfurt",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
-  },
-  {
-    "query_id": "q36",
-    "resume_excerpt": "Candidate interested in Informationssicherheit Analyst. Experience aligns with cybersecurity.",
-    "dream_role": "Informationssicherheit Analyst",
+    "query_id": "q004",
+    "resume_excerpt": "Candidate interested in Entry-level Data Engineer no experience. Experience aligns with data engineering.",
+    "dream_role": "Entry-level Data Engineer no experience",
     "location": "Cologne",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
+    "relevant_job_ids": [
+      "sem_eval_036_data_eng",
+      "sem_eval_037_data_eng",
+      "sem_eval_038_data_eng",
+      "sem_eval_039_data_eng",
+      "sem_eval_040_data_eng",
+      "sem_eval_041_data_eng",
+      "sem_eval_042_data_eng",
+      "sem_eval_043_data_eng",
+      "sem_eval_044_data_eng",
+      "sem_eval_045_data_eng",
+      "sem_eval_046_data_eng",
+      "sem_eval_047_data_eng"
+    ],
+    "relevance_grades": {
+      "sem_eval_036_data_eng": 2,
+      "sem_eval_037_data_eng": 2,
+      "sem_eval_038_data_eng": 2,
+      "sem_eval_039_data_eng": 2,
+      "sem_eval_040_data_eng": 2,
+      "sem_eval_041_data_eng": 2,
+      "sem_eval_042_data_eng": 2,
+      "sem_eval_043_data_eng": 2,
+      "sem_eval_044_data_eng": 2,
+      "sem_eval_045_data_eng": 2,
+      "sem_eval_046_data_eng": 2,
+      "sem_eval_047_data_eng": 2
+    }
   },
   {
-    "query_id": "q37",
-    "resume_excerpt": "Candidate interested in Mikrocontroller Entwickler. Experience aligns with embedded systems.",
-    "dream_role": "Mikrocontroller Entwickler",
+    "query_id": "q005",
+    "resume_excerpt": "Candidate interested in Analytics Engineer dbt warehouse. Experience aligns with data engineering.",
+    "dream_role": "Analytics Engineer dbt warehouse",
+    "location": "Remote",
+    "relevant_job_ids": [
+      "sem_eval_036_data_eng",
+      "sem_eval_037_data_eng",
+      "sem_eval_038_data_eng",
+      "sem_eval_039_data_eng",
+      "sem_eval_040_data_eng",
+      "sem_eval_041_data_eng",
+      "sem_eval_042_data_eng",
+      "sem_eval_043_data_eng",
+      "sem_eval_044_data_eng",
+      "sem_eval_045_data_eng",
+      "sem_eval_046_data_eng",
+      "sem_eval_047_data_eng"
+    ],
+    "relevance_grades": {
+      "sem_eval_036_data_eng": 2,
+      "sem_eval_037_data_eng": 2,
+      "sem_eval_038_data_eng": 2,
+      "sem_eval_039_data_eng": 2,
+      "sem_eval_040_data_eng": 2,
+      "sem_eval_041_data_eng": 2,
+      "sem_eval_042_data_eng": 2,
+      "sem_eval_043_data_eng": 2,
+      "sem_eval_044_data_eng": 2,
+      "sem_eval_045_data_eng": 2,
+      "sem_eval_046_data_eng": 2,
+      "sem_eval_047_data_eng": 2
+    }
+  },
+  {
+    "query_id": "q006",
+    "resume_excerpt": "Candidate interested in Senior Data Platform Engineer Snowflake. Experience aligns with data engineering.",
+    "dream_role": "Senior Data Platform Engineer Snowflake",
     "location": "Munich",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
+    "relevant_job_ids": [
+      "sem_eval_036_data_eng",
+      "sem_eval_037_data_eng",
+      "sem_eval_038_data_eng",
+      "sem_eval_039_data_eng",
+      "sem_eval_040_data_eng",
+      "sem_eval_041_data_eng",
+      "sem_eval_042_data_eng",
+      "sem_eval_043_data_eng",
+      "sem_eval_044_data_eng",
+      "sem_eval_045_data_eng",
+      "sem_eval_046_data_eng",
+      "sem_eval_047_data_eng"
+    ],
+    "relevance_grades": {
+      "sem_eval_036_data_eng": 1,
+      "sem_eval_037_data_eng": 1,
+      "sem_eval_038_data_eng": 1,
+      "sem_eval_039_data_eng": 1,
+      "sem_eval_040_data_eng": 1,
+      "sem_eval_041_data_eng": 1,
+      "sem_eval_042_data_eng": 1,
+      "sem_eval_043_data_eng": 1,
+      "sem_eval_044_data_eng": 1,
+      "sem_eval_045_data_eng": 1,
+      "sem_eval_046_data_eng": 1,
+      "sem_eval_047_data_eng": 1
+    }
   },
   {
-    "query_id": "q38",
-    "resume_excerpt": "Candidate interested in Fiori ABAP Entwickler. Experience aligns with sap erp.",
-    "dream_role": "Fiori ABAP Entwickler",
+    "query_id": "q007",
+    "resume_excerpt": "Candidate interested in Datenbankentwickler SQL ETL Pipeline. Experience aligns with data engineering.",
+    "dream_role": "Datenbankentwickler SQL ETL Pipeline",
+    "location": "Hamburg",
+    "relevant_job_ids": [
+      "sem_eval_036_data_eng",
+      "sem_eval_037_data_eng",
+      "sem_eval_038_data_eng",
+      "sem_eval_039_data_eng",
+      "sem_eval_040_data_eng",
+      "sem_eval_041_data_eng",
+      "sem_eval_042_data_eng",
+      "sem_eval_043_data_eng",
+      "sem_eval_044_data_eng",
+      "sem_eval_045_data_eng",
+      "sem_eval_046_data_eng",
+      "sem_eval_047_data_eng"
+    ],
+    "relevance_grades": {
+      "sem_eval_036_data_eng": 2,
+      "sem_eval_037_data_eng": 2,
+      "sem_eval_038_data_eng": 2,
+      "sem_eval_039_data_eng": 2,
+      "sem_eval_040_data_eng": 2,
+      "sem_eval_041_data_eng": 2,
+      "sem_eval_042_data_eng": 2,
+      "sem_eval_043_data_eng": 2,
+      "sem_eval_044_data_eng": 2,
+      "sem_eval_045_data_eng": 2,
+      "sem_eval_046_data_eng": 2,
+      "sem_eval_047_data_eng": 2
+    }
+  },
+  {
+    "query_id": "q008",
+    "resume_excerpt": "Candidate interested in Remote Data Engineer EU timezone. Experience aligns with data engineering.",
+    "dream_role": "Remote Data Engineer EU timezone",
+    "location": "Remote",
+    "relevant_job_ids": [
+      "sem_eval_036_data_eng",
+      "sem_eval_037_data_eng",
+      "sem_eval_038_data_eng",
+      "sem_eval_039_data_eng",
+      "sem_eval_040_data_eng",
+      "sem_eval_041_data_eng",
+      "sem_eval_042_data_eng",
+      "sem_eval_043_data_eng",
+      "sem_eval_044_data_eng",
+      "sem_eval_045_data_eng",
+      "sem_eval_046_data_eng",
+      "sem_eval_047_data_eng"
+    ],
+    "relevance_grades": {
+      "sem_eval_036_data_eng": 2,
+      "sem_eval_037_data_eng": 2,
+      "sem_eval_038_data_eng": 2,
+      "sem_eval_039_data_eng": 2,
+      "sem_eval_040_data_eng": 2,
+      "sem_eval_041_data_eng": 2,
+      "sem_eval_042_data_eng": 2,
+      "sem_eval_043_data_eng": 2,
+      "sem_eval_044_data_eng": 2,
+      "sem_eval_045_data_eng": 2,
+      "sem_eval_046_data_eng": 2,
+      "sem_eval_047_data_eng": 2
+    }
+  },
+  {
+    "query_id": "q009",
+    "resume_excerpt": "Candidate interested in Machine Learning Engineer LLM RAG PyTorch. Experience aligns with ai ml data science.",
+    "dream_role": "Machine Learning Engineer LLM RAG PyTorch",
+    "location": "Remote",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q010",
+    "resume_excerpt": "Candidate interested in Working Student Data Science NLP. Experience aligns with ai ml data science.",
+    "dream_role": "Working Student Data Science NLP",
     "location": "Berlin",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
   },
   {
-    "query_id": "q39",
-    "resume_excerpt": "Candidate interested in Technical product manager AI. Experience aligns with product management.",
-    "dream_role": "Technical product manager AI",
+    "query_id": "q011",
+    "resume_excerpt": "Candidate interested in Junior MLOps engineer. Experience aligns with ai ml data science.",
+    "dream_role": "Junior MLOps engineer",
     "location": "Berlin",
-    "relevant_job_ids": [],
-    "relevance_grades": {}
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
   },
   {
-    "query_id": "q40",
+    "query_id": "q012",
+    "resume_excerpt": "Candidate interested in English speaking Data Scientist. Experience aligns with ai ml data science.",
+    "dream_role": "English speaking Data Scientist",
+    "location": "Berlin",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q013",
+    "resume_excerpt": "Candidate interested in Computer vision engineer. Experience aligns with ai ml data science.",
+    "dream_role": "Computer vision engineer",
+    "location": "Munich",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q014",
+    "resume_excerpt": "Candidate interested in Senior ML Engineer production models. Experience aligns with ai ml data science.",
+    "dream_role": "Senior ML Engineer production models",
+    "location": "Frankfurt",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 1,
+      "sem_eval_001_ai_ml_da": 1,
+      "sem_eval_002_ai_ml_da": 1,
+      "sem_eval_003_ai_ml_da": 1,
+      "sem_eval_004_ai_ml_da": 1,
+      "sem_eval_005_ai_ml_da": 1,
+      "sem_eval_006_ai_ml_da": 1,
+      "sem_eval_007_ai_ml_da": 1,
+      "sem_eval_008_ai_ml_da": 1,
+      "sem_eval_009_ai_ml_da": 1,
+      "sem_eval_010_ai_ml_da": 1,
+      "sem_eval_011_ai_ml_da": 1
+    }
+  },
+  {
+    "query_id": "q015",
+    "resume_excerpt": "Candidate interested in NLP Engineer Transformer BERT fine-tuning. Experience aligns with ai ml data science.",
+    "dream_role": "NLP Engineer Transformer BERT fine-tuning",
+    "location": "Hamburg",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q016",
+    "resume_excerpt": "Candidate interested in Praktikum Machine Learning TensorFlow. Experience aligns with ai ml data science.",
+    "dream_role": "Praktikum Machine Learning TensorFlow",
+    "location": "Munich",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q017",
+    "resume_excerpt": "Candidate interested in Datenwissenschaftler Statistik Python. Experience aligns with ai ml data science.",
+    "dream_role": "Datenwissenschaftler Statistik Python",
+    "location": "Cologne",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q018",
+    "resume_excerpt": "Candidate interested in Graduate AI Research Engineer. Experience aligns with ai ml data science.",
+    "dream_role": "Graduate AI Research Engineer",
+    "location": "Stuttgart",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q019",
+    "resume_excerpt": "Candidate interested in Junior Data Analyst SQL Power BI. Experience aligns with data analytics.",
+    "dream_role": "Junior Data Analyst SQL Power BI",
+    "location": "Munich",
+    "relevant_job_ids": [
+      "sem_eval_072_data_ana",
+      "sem_eval_073_data_ana",
+      "sem_eval_074_data_ana",
+      "sem_eval_075_data_ana",
+      "sem_eval_076_data_ana",
+      "sem_eval_077_data_ana",
+      "sem_eval_078_data_ana",
+      "sem_eval_079_data_ana",
+      "sem_eval_080_data_ana",
+      "sem_eval_081_data_ana",
+      "sem_eval_082_data_ana",
+      "sem_eval_083_data_ana"
+    ],
+    "relevance_grades": {
+      "sem_eval_072_data_ana": 2,
+      "sem_eval_073_data_ana": 2,
+      "sem_eval_074_data_ana": 2,
+      "sem_eval_075_data_ana": 2,
+      "sem_eval_076_data_ana": 2,
+      "sem_eval_077_data_ana": 2,
+      "sem_eval_078_data_ana": 2,
+      "sem_eval_079_data_ana": 2,
+      "sem_eval_080_data_ana": 2,
+      "sem_eval_081_data_ana": 2,
+      "sem_eval_082_data_ana": 2,
+      "sem_eval_083_data_ana": 2
+    }
+  },
+  {
+    "query_id": "q020",
+    "resume_excerpt": "Candidate interested in Praktikum Data Analytics SQL. Experience aligns with data analytics.",
+    "dream_role": "Praktikum Data Analytics SQL",
+    "location": "Berlin",
+    "relevant_job_ids": [
+      "sem_eval_072_data_ana",
+      "sem_eval_073_data_ana",
+      "sem_eval_074_data_ana",
+      "sem_eval_075_data_ana",
+      "sem_eval_076_data_ana",
+      "sem_eval_077_data_ana",
+      "sem_eval_078_data_ana",
+      "sem_eval_079_data_ana",
+      "sem_eval_080_data_ana",
+      "sem_eval_081_data_ana",
+      "sem_eval_082_data_ana",
+      "sem_eval_083_data_ana"
+    ],
+    "relevance_grades": {
+      "sem_eval_072_data_ana": 2,
+      "sem_eval_073_data_ana": 2,
+      "sem_eval_074_data_ana": 2,
+      "sem_eval_075_data_ana": 2,
+      "sem_eval_076_data_ana": 2,
+      "sem_eval_077_data_ana": 2,
+      "sem_eval_078_data_ana": 2,
+      "sem_eval_079_data_ana": 2,
+      "sem_eval_080_data_ana": 2,
+      "sem_eval_081_data_ana": 2,
+      "sem_eval_082_data_ana": 2,
+      "sem_eval_083_data_ana": 2
+    }
+  },
+  {
+    "query_id": "q021",
+    "resume_excerpt": "Candidate interested in Business Analyst Excel dashboards stakeholder. Experience aligns with data analytics.",
+    "dream_role": "Business Analyst Excel dashboards stakeholder",
+    "location": "Hamburg",
+    "relevant_job_ids": [
+      "sem_eval_072_data_ana",
+      "sem_eval_073_data_ana",
+      "sem_eval_074_data_ana",
+      "sem_eval_075_data_ana",
+      "sem_eval_076_data_ana",
+      "sem_eval_077_data_ana",
+      "sem_eval_078_data_ana",
+      "sem_eval_079_data_ana",
+      "sem_eval_080_data_ana",
+      "sem_eval_081_data_ana",
+      "sem_eval_082_data_ana",
+      "sem_eval_083_data_ana"
+    ],
+    "relevance_grades": {
+      "sem_eval_072_data_ana": 2,
+      "sem_eval_073_data_ana": 2,
+      "sem_eval_074_data_ana": 2,
+      "sem_eval_075_data_ana": 2,
+      "sem_eval_076_data_ana": 2,
+      "sem_eval_077_data_ana": 2,
+      "sem_eval_078_data_ana": 2,
+      "sem_eval_079_data_ana": 2,
+      "sem_eval_080_data_ana": 2,
+      "sem_eval_081_data_ana": 2,
+      "sem_eval_082_data_ana": 2,
+      "sem_eval_083_data_ana": 2
+    }
+  },
+  {
+    "query_id": "q022",
+    "resume_excerpt": "Candidate interested in Datenanalyst Reporting KPI Controlling. Experience aligns with data analytics.",
+    "dream_role": "Datenanalyst Reporting KPI Controlling",
+    "location": "Frankfurt",
+    "relevant_job_ids": [
+      "sem_eval_072_data_ana",
+      "sem_eval_073_data_ana",
+      "sem_eval_074_data_ana",
+      "sem_eval_075_data_ana",
+      "sem_eval_076_data_ana",
+      "sem_eval_077_data_ana",
+      "sem_eval_078_data_ana",
+      "sem_eval_079_data_ana",
+      "sem_eval_080_data_ana",
+      "sem_eval_081_data_ana",
+      "sem_eval_082_data_ana",
+      "sem_eval_083_data_ana"
+    ],
+    "relevance_grades": {
+      "sem_eval_072_data_ana": 2,
+      "sem_eval_073_data_ana": 2,
+      "sem_eval_074_data_ana": 2,
+      "sem_eval_075_data_ana": 2,
+      "sem_eval_076_data_ana": 2,
+      "sem_eval_077_data_ana": 2,
+      "sem_eval_078_data_ana": 2,
+      "sem_eval_079_data_ana": 2,
+      "sem_eval_080_data_ana": 2,
+      "sem_eval_081_data_ana": 2,
+      "sem_eval_082_data_ana": 2,
+      "sem_eval_083_data_ana": 2
+    }
+  },
+  {
+    "query_id": "q023",
+    "resume_excerpt": "Candidate interested in Senior Analytics Consultant SQL. Experience aligns with data analytics.",
+    "dream_role": "Senior Analytics Consultant SQL",
+    "location": "Berlin",
+    "relevant_job_ids": [
+      "sem_eval_072_data_ana",
+      "sem_eval_073_data_ana",
+      "sem_eval_074_data_ana",
+      "sem_eval_075_data_ana",
+      "sem_eval_076_data_ana",
+      "sem_eval_077_data_ana",
+      "sem_eval_078_data_ana",
+      "sem_eval_079_data_ana",
+      "sem_eval_080_data_ana",
+      "sem_eval_081_data_ana",
+      "sem_eval_082_data_ana",
+      "sem_eval_083_data_ana"
+    ],
+    "relevance_grades": {
+      "sem_eval_072_data_ana": 1,
+      "sem_eval_073_data_ana": 1,
+      "sem_eval_074_data_ana": 1,
+      "sem_eval_075_data_ana": 1,
+      "sem_eval_076_data_ana": 1,
+      "sem_eval_077_data_ana": 1,
+      "sem_eval_078_data_ana": 1,
+      "sem_eval_079_data_ana": 1,
+      "sem_eval_080_data_ana": 1,
+      "sem_eval_081_data_ana": 1,
+      "sem_eval_082_data_ana": 1,
+      "sem_eval_083_data_ana": 1
+    }
+  },
+  {
+    "query_id": "q024",
+    "resume_excerpt": "Candidate interested in Werkstudent Business Analytics. Experience aligns with data analytics.",
+    "dream_role": "Werkstudent Business Analytics",
+    "location": "Munich",
+    "relevant_job_ids": [
+      "sem_eval_072_data_ana",
+      "sem_eval_073_data_ana",
+      "sem_eval_074_data_ana",
+      "sem_eval_075_data_ana",
+      "sem_eval_076_data_ana",
+      "sem_eval_077_data_ana",
+      "sem_eval_078_data_ana",
+      "sem_eval_079_data_ana",
+      "sem_eval_080_data_ana",
+      "sem_eval_081_data_ana",
+      "sem_eval_082_data_ana",
+      "sem_eval_083_data_ana"
+    ],
+    "relevance_grades": {
+      "sem_eval_072_data_ana": 2,
+      "sem_eval_073_data_ana": 2,
+      "sem_eval_074_data_ana": 2,
+      "sem_eval_075_data_ana": 2,
+      "sem_eval_076_data_ana": 2,
+      "sem_eval_077_data_ana": 2,
+      "sem_eval_078_data_ana": 2,
+      "sem_eval_079_data_ana": 2,
+      "sem_eval_080_data_ana": 2,
+      "sem_eval_081_data_ana": 2,
+      "sem_eval_082_data_ana": 2,
+      "sem_eval_083_data_ana": 2
+    }
+  },
+  {
+    "query_id": "q025",
+    "resume_excerpt": "Candidate interested in Remote Data Analyst Tableau. Experience aligns with data analytics.",
+    "dream_role": "Remote Data Analyst Tableau",
+    "location": "Remote",
+    "relevant_job_ids": [
+      "sem_eval_072_data_ana",
+      "sem_eval_073_data_ana",
+      "sem_eval_074_data_ana",
+      "sem_eval_075_data_ana",
+      "sem_eval_076_data_ana",
+      "sem_eval_077_data_ana",
+      "sem_eval_078_data_ana",
+      "sem_eval_079_data_ana",
+      "sem_eval_080_data_ana",
+      "sem_eval_081_data_ana",
+      "sem_eval_082_data_ana",
+      "sem_eval_083_data_ana"
+    ],
+    "relevance_grades": {
+      "sem_eval_072_data_ana": 2,
+      "sem_eval_073_data_ana": 2,
+      "sem_eval_074_data_ana": 2,
+      "sem_eval_075_data_ana": 2,
+      "sem_eval_076_data_ana": 2,
+      "sem_eval_077_data_ana": 2,
+      "sem_eval_078_data_ana": 2,
+      "sem_eval_079_data_ana": 2,
+      "sem_eval_080_data_ana": 2,
+      "sem_eval_081_data_ana": 2,
+      "sem_eval_082_data_ana": 2,
+      "sem_eval_083_data_ana": 2
+    }
+  },
+  {
+    "query_id": "q026",
+    "resume_excerpt": "Candidate interested in BI Analyst Tableau Looker. Experience aligns with business intelligence.",
+    "dream_role": "BI Analyst Tableau Looker",
+    "location": "Cologne",
+    "relevant_job_ids": [
+      "sem_eval_090_business",
+      "sem_eval_091_business",
+      "sem_eval_092_business",
+      "sem_eval_093_business",
+      "sem_eval_094_business",
+      "sem_eval_095_business"
+    ],
+    "relevance_grades": {
+      "sem_eval_090_business": 2,
+      "sem_eval_091_business": 2,
+      "sem_eval_092_business": 2,
+      "sem_eval_093_business": 2,
+      "sem_eval_094_business": 2,
+      "sem_eval_095_business": 2
+    }
+  },
+  {
+    "query_id": "q027",
+    "resume_excerpt": "Candidate interested in Power BI developer. Experience aligns with business intelligence.",
+    "dream_role": "Power BI developer",
+    "location": "Munich",
+    "relevant_job_ids": [
+      "sem_eval_090_business",
+      "sem_eval_091_business",
+      "sem_eval_092_business",
+      "sem_eval_093_business",
+      "sem_eval_094_business",
+      "sem_eval_095_business"
+    ],
+    "relevance_grades": {
+      "sem_eval_090_business": 2,
+      "sem_eval_091_business": 2,
+      "sem_eval_092_business": 2,
+      "sem_eval_093_business": 2,
+      "sem_eval_094_business": 2,
+      "sem_eval_095_business": 2
+    }
+  },
+  {
+    "query_id": "q028",
     "resume_excerpt": "Candidate interested in Looker Studio analyst. Experience aligns with business intelligence.",
     "dream_role": "Looker Studio analyst",
     "location": "Remote",
@@ -674,7 +916,307 @@
     }
   },
   {
-    "query_id": "q41",
+    "query_id": "q029",
+    "resume_excerpt": "Candidate interested in Business Intelligence Developer SSRS. Experience aligns with business intelligence.",
+    "dream_role": "Business Intelligence Developer SSRS",
+    "location": "Berlin",
+    "relevant_job_ids": [
+      "sem_eval_090_business",
+      "sem_eval_091_business",
+      "sem_eval_092_business",
+      "sem_eval_093_business",
+      "sem_eval_094_business",
+      "sem_eval_095_business"
+    ],
+    "relevance_grades": {
+      "sem_eval_090_business": 2,
+      "sem_eval_091_business": 2,
+      "sem_eval_092_business": 2,
+      "sem_eval_093_business": 2,
+      "sem_eval_094_business": 2,
+      "sem_eval_095_business": 2
+    }
+  },
+  {
+    "query_id": "q030",
+    "resume_excerpt": "Candidate interested in Senior BI Architect semantic layer KPI. Experience aligns with business intelligence.",
+    "dream_role": "Senior BI Architect semantic layer KPI",
+    "location": "Frankfurt",
+    "relevant_job_ids": [
+      "sem_eval_090_business",
+      "sem_eval_091_business",
+      "sem_eval_092_business",
+      "sem_eval_093_business",
+      "sem_eval_094_business",
+      "sem_eval_095_business"
+    ],
+    "relevance_grades": {
+      "sem_eval_090_business": 1,
+      "sem_eval_091_business": 1,
+      "sem_eval_092_business": 1,
+      "sem_eval_093_business": 1,
+      "sem_eval_094_business": 1,
+      "sem_eval_095_business": 1
+    }
+  },
+  {
+    "query_id": "q031",
+    "resume_excerpt": "Candidate interested in Werkstudent Software Engineering React. Experience aligns with software engineering.",
+    "dream_role": "Werkstudent Software Engineering React",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q032",
+    "resume_excerpt": "Candidate interested in Internship backend FastAPI Python. Experience aligns with software engineering.",
+    "dream_role": "Internship backend FastAPI Python",
+    "location": "Remote",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q033",
+    "resume_excerpt": "Candidate interested in Senior Software Engineer Java. Experience aligns with software engineering.",
+    "dream_role": "Senior Software Engineer Java",
+    "location": "Frankfurt",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q034",
+    "resume_excerpt": "Candidate interested in Frontend TypeScript Next.js. Experience aligns with software engineering.",
+    "dream_role": "Frontend TypeScript Next.js",
+    "location": "Hamburg",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q035",
+    "resume_excerpt": "Candidate interested in React Native developer. Experience aligns with software engineering.",
+    "dream_role": "React Native developer",
+    "location": "Remote",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q036",
+    "resume_excerpt": "Candidate interested in Visa sponsorship software developer. Experience aligns with software engineering.",
+    "dream_role": "Visa sponsorship software developer",
+    "location": "Munich",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q037",
+    "resume_excerpt": "Candidate interested in Full Stack Developer Node.js PostgreSQL. Experience aligns with software engineering.",
+    "dream_role": "Full Stack Developer Node.js PostgreSQL",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q038",
+    "resume_excerpt": "Candidate interested in Backend Engineer Go microservices. Experience aligns with software engineering.",
+    "dream_role": "Backend Engineer Go microservices",
+    "location": "Munich",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q039",
+    "resume_excerpt": "Candidate interested in Softwareentwickler Java Spring Boot. Experience aligns with software engineering.",
+    "dream_role": "Softwareentwickler Java Spring Boot",
+    "location": "Stuttgart",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q040",
+    "resume_excerpt": "Candidate interested in Junior Python Developer Django REST. Experience aligns with software engineering.",
+    "dream_role": "Junior Python Developer Django REST",
+    "location": "Cologne",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q041",
+    "resume_excerpt": "Candidate interested in Senior Staff Engineer distributed systems. Experience aligns with software engineering.",
+    "dream_role": "Senior Staff Engineer distributed systems",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q042",
+    "resume_excerpt": "Candidate interested in Praktikum Softwareentwicklung C# .NET. Experience aligns with software engineering.",
+    "dream_role": "Praktikum Softwareentwicklung C# .NET",
+    "location": "Hamburg",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q043",
+    "resume_excerpt": "Candidate interested in DevOps Kubernetes Terraform AWS. Experience aligns with cloud devops.",
+    "dream_role": "DevOps Kubernetes Terraform AWS",
+    "location": "Hamburg",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q044",
+    "resume_excerpt": "Candidate interested in Graduate Cloud Engineer AWS. Experience aligns with cloud devops.",
+    "dream_role": "Graduate Cloud Engineer AWS",
+    "location": "Munich",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q045",
+    "resume_excerpt": "Candidate interested in SRE observability Prometheus. Experience aligns with cloud devops.",
+    "dream_role": "SRE observability Prometheus",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q046",
+    "resume_excerpt": "Candidate interested in Terraform platform engineer. Experience aligns with cloud devops.",
+    "dream_role": "Terraform platform engineer",
+    "location": "Frankfurt",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q047",
+    "resume_excerpt": "Candidate interested in Cloud Engineer Azure migration. Experience aligns with cloud devops.",
+    "dream_role": "Cloud Engineer Azure migration",
+    "location": "Cologne",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q048",
+    "resume_excerpt": "Candidate interested in Site Reliability Engineer on-call SLO. Experience aligns with cloud devops.",
+    "dream_role": "Site Reliability Engineer on-call SLO",
+    "location": "Munich",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q049",
+    "resume_excerpt": "Candidate interested in Werkstudent DevOps Docker CI/CD. Experience aligns with cloud devops.",
+    "dream_role": "Werkstudent DevOps Docker CI/CD",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q050",
+    "resume_excerpt": "Candidate interested in Remote Platform Engineer GitOps. Experience aligns with cloud devops.",
+    "dream_role": "Remote Platform Engineer GitOps",
+    "location": "Remote",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q051",
+    "resume_excerpt": "Candidate interested in Cybersecurity pentester AppSec. Experience aligns with cybersecurity.",
+    "dream_role": "Cybersecurity pentester AppSec",
+    "location": "Frankfurt",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q052",
+    "resume_excerpt": "Candidate interested in Security SOC analyst SIEM. Experience aligns with cybersecurity.",
+    "dream_role": "Security SOC analyst SIEM",
+    "location": "Munich",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q053",
+    "resume_excerpt": "Candidate interested in Informationssicherheit Analyst. Experience aligns with cybersecurity.",
+    "dream_role": "Informationssicherheit Analyst",
+    "location": "Cologne",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q054",
+    "resume_excerpt": "Candidate interested in Senior Security Architect zero trust. Experience aligns with cybersecurity.",
+    "dream_role": "Senior Security Architect zero trust",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q055",
+    "resume_excerpt": "Candidate interested in Werkstudent Cyber Security. Experience aligns with cybersecurity.",
+    "dream_role": "Werkstudent Cyber Security",
+    "location": "Hamburg",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q056",
+    "resume_excerpt": "Candidate interested in Penetration Tester OSCP certified. Experience aligns with cybersecurity.",
+    "dream_role": "Penetration Tester OSCP certified",
+    "location": "Remote",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q057",
+    "resume_excerpt": "Candidate interested in Embedded C firmware automotive. Experience aligns with embedded systems.",
+    "dream_role": "Embedded C firmware automotive",
+    "location": "Stuttgart",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q058",
+    "resume_excerpt": "Candidate interested in Mikrocontroller Entwickler. Experience aligns with embedded systems.",
+    "dream_role": "Mikrocontroller Entwickler",
+    "location": "Munich",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q059",
+    "resume_excerpt": "Candidate interested in RTOS Embedded Linux developer. Experience aligns with embedded systems.",
+    "dream_role": "RTOS Embedded Linux developer",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q060",
+    "resume_excerpt": "Candidate interested in Praktikum Embedded Systems IoT. Experience aligns with embedded systems.",
+    "dream_role": "Praktikum Embedded Systems IoT",
+    "location": "Cologne",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q061",
+    "resume_excerpt": "Candidate interested in QA test automation Playwright. Experience aligns with qa testing.",
+    "dream_role": "QA test automation Playwright",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q062",
+    "resume_excerpt": "Candidate interested in Testingenieur Selenium. Experience aligns with qa testing.",
+    "dream_role": "Testingenieur Selenium",
+    "location": "Stuttgart",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q063",
     "resume_excerpt": "Candidate interested in SDET Python pytest. Experience aligns with qa testing.",
     "dream_role": "SDET Python pytest",
     "location": "Hamburg",
@@ -682,9 +1224,569 @@
     "relevance_grades": {}
   },
   {
-    "query_id": "q42",
+    "query_id": "q064",
+    "resume_excerpt": "Candidate interested in Senior QA Lead test strategy. Experience aligns with qa testing.",
+    "dream_role": "Senior QA Lead test strategy",
+    "location": "Munich",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q065",
+    "resume_excerpt": "Candidate interested in Werkstudent QA Manual Testing. Experience aligns with qa testing.",
+    "dream_role": "Werkstudent QA Manual Testing",
+    "location": "Frankfurt",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q066",
+    "resume_excerpt": "Candidate interested in SAP ABAP consultant S/4HANA. Experience aligns with sap erp.",
+    "dream_role": "SAP ABAP consultant S/4HANA",
+    "location": "Walldorf",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q067",
+    "resume_excerpt": "Candidate interested in Werkstudent SAP. Experience aligns with sap erp.",
+    "dream_role": "Werkstudent SAP",
+    "location": "Walldorf",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q068",
+    "resume_excerpt": "Candidate interested in Fiori ABAP Entwickler. Experience aligns with sap erp.",
+    "dream_role": "Fiori ABAP Entwickler",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q069",
+    "resume_excerpt": "Candidate interested in SAP HANA Datenbankadministrator. Experience aligns with sap erp.",
+    "dream_role": "SAP HANA Datenbankadministrator",
+    "location": "Stuttgart",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q070",
+    "resume_excerpt": "Candidate interested in Product Manager B2B SaaS. Experience aligns with product management.",
+    "dream_role": "Product Manager B2B SaaS",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q071",
+    "resume_excerpt": "Candidate interested in Junior Product Owner agile. Experience aligns with product management.",
+    "dream_role": "Junior Product Owner agile",
+    "location": "Hamburg",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q072",
+    "resume_excerpt": "Candidate interested in Technical product manager AI. Experience aligns with product management.",
+    "dream_role": "Technical product manager AI",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q073",
+    "resume_excerpt": "Candidate interested in Senior Product Manager fintech. Experience aligns with product management.",
+    "dream_role": "Senior Product Manager fintech",
+    "location": "Munich",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q074",
+    "resume_excerpt": "Candidate interested in Produktmanager Digitalisierung. Experience aligns with product management.",
+    "dream_role": "Produktmanager Digitalisierung",
+    "location": "Cologne",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q075",
+    "resume_excerpt": "Candidate interested in IT Support helpdesk Active Directory. Experience aligns with it support.",
+    "dream_role": "IT Support helpdesk Active Directory",
+    "location": "Munich",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q076",
+    "resume_excerpt": "Candidate interested in Desktop support specialist. Experience aligns with it support.",
+    "dream_role": "Desktop support specialist",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q077",
     "resume_excerpt": "Candidate interested in Systemadministrator Linux. Experience aligns with it support.",
     "dream_role": "Systemadministrator Linux",
+    "location": "Frankfurt",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q078",
+    "resume_excerpt": "Candidate interested in Werkstudent IT Helpdesk. Experience aligns with it support.",
+    "dream_role": "Werkstudent IT Helpdesk",
+    "location": "Hamburg",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q079",
+    "resume_excerpt": "Candidate interested in Senior IT Service Desk Lead. Experience aligns with it support.",
+    "dream_role": "Senior IT Service Desk Lead",
+    "location": "Stuttgart",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q080",
+    "resume_excerpt": "Candidate interested in Visa sponsorship data engineer Germany. Experience aligns with data engineering.",
+    "dream_role": "Visa sponsorship data engineer Germany",
+    "location": "Berlin",
+    "relevant_job_ids": [
+      "sem_eval_036_data_eng",
+      "sem_eval_037_data_eng",
+      "sem_eval_038_data_eng",
+      "sem_eval_039_data_eng",
+      "sem_eval_040_data_eng",
+      "sem_eval_041_data_eng",
+      "sem_eval_042_data_eng",
+      "sem_eval_043_data_eng",
+      "sem_eval_044_data_eng",
+      "sem_eval_045_data_eng",
+      "sem_eval_046_data_eng",
+      "sem_eval_047_data_eng"
+    ],
+    "relevance_grades": {
+      "sem_eval_036_data_eng": 2,
+      "sem_eval_037_data_eng": 2,
+      "sem_eval_038_data_eng": 2,
+      "sem_eval_039_data_eng": 2,
+      "sem_eval_040_data_eng": 2,
+      "sem_eval_041_data_eng": 2,
+      "sem_eval_042_data_eng": 2,
+      "sem_eval_043_data_eng": 2,
+      "sem_eval_044_data_eng": 2,
+      "sem_eval_045_data_eng": 2,
+      "sem_eval_046_data_eng": 2,
+      "sem_eval_047_data_eng": 2
+    }
+  },
+  {
+    "query_id": "q081",
+    "resume_excerpt": "Candidate interested in EU Blue Card machine learning role. Experience aligns with ai ml data science.",
+    "dream_role": "EU Blue Card machine learning role",
+    "location": "Berlin",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q082",
+    "resume_excerpt": "Candidate interested in Relocation support backend developer. Experience aligns with software engineering.",
+    "dream_role": "Relocation support backend developer",
+    "location": "Munich",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q083",
+    "resume_excerpt": "Candidate interested in Fully remote software job EU citizen. Experience aligns with software engineering.",
+    "dream_role": "Fully remote software job EU citizen",
+    "location": "Remote / EU",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q084",
+    "resume_excerpt": "Candidate interested in Home office Data Scientist English speaking. Experience aligns with ai ml data science.",
+    "dream_role": "Home office Data Scientist English speaking",
+    "location": "Remote",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q085",
+    "resume_excerpt": "Candidate interested in Remote Cloud DevOps no office required. Experience aligns with cloud devops.",
+    "dream_role": "Remote Cloud DevOps no office required",
+    "location": "Remote",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q086",
+    "resume_excerpt": "Candidate interested in International hire frontend visa support. Experience aligns with software engineering.",
+    "dream_role": "International hire frontend visa support",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q087",
+    "resume_excerpt": "Candidate interested in English working language product manager. Experience aligns with product management.",
+    "dream_role": "English working language product manager",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q088",
+    "resume_excerpt": "Candidate interested in Deutsch C1 erforderlich Datenanalyst. Experience aligns with data analytics.",
+    "dream_role": "Deutsch C1 erforderlich Datenanalyst",
+    "location": "Munich",
+    "relevant_job_ids": [
+      "sem_eval_072_data_ana",
+      "sem_eval_073_data_ana",
+      "sem_eval_074_data_ana",
+      "sem_eval_075_data_ana",
+      "sem_eval_076_data_ana",
+      "sem_eval_077_data_ana",
+      "sem_eval_078_data_ana",
+      "sem_eval_079_data_ana",
+      "sem_eval_080_data_ana",
+      "sem_eval_081_data_ana",
+      "sem_eval_082_data_ana",
+      "sem_eval_083_data_ana"
+    ],
+    "relevance_grades": {
+      "sem_eval_072_data_ana": 2,
+      "sem_eval_073_data_ana": 2,
+      "sem_eval_074_data_ana": 2,
+      "sem_eval_075_data_ana": 2,
+      "sem_eval_076_data_ana": 2,
+      "sem_eval_077_data_ana": 2,
+      "sem_eval_078_data_ana": 2,
+      "sem_eval_079_data_ana": 2,
+      "sem_eval_080_data_ana": 2,
+      "sem_eval_081_data_ana": 2,
+      "sem_eval_082_data_ana": 2,
+      "sem_eval_083_data_ana": 2
+    }
+  },
+  {
+    "query_id": "q089",
+    "resume_excerpt": "Candidate interested in Mid-level Backend Engineer 3 years Python. Experience aligns with software engineering.",
+    "dream_role": "Mid-level Backend Engineer 3 years Python",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q090",
+    "resume_excerpt": "Candidate interested in Trainee graduate program data analytics. Experience aligns with data analytics.",
+    "dream_role": "Trainee graduate program data analytics",
+    "location": "Munich",
+    "relevant_job_ids": [
+      "sem_eval_072_data_ana",
+      "sem_eval_073_data_ana",
+      "sem_eval_074_data_ana",
+      "sem_eval_075_data_ana",
+      "sem_eval_076_data_ana",
+      "sem_eval_077_data_ana",
+      "sem_eval_078_data_ana",
+      "sem_eval_079_data_ana",
+      "sem_eval_080_data_ana",
+      "sem_eval_081_data_ana",
+      "sem_eval_082_data_ana",
+      "sem_eval_083_data_ana"
+    ],
+    "relevance_grades": {
+      "sem_eval_072_data_ana": 2,
+      "sem_eval_073_data_ana": 2,
+      "sem_eval_074_data_ana": 2,
+      "sem_eval_075_data_ana": 2,
+      "sem_eval_076_data_ana": 2,
+      "sem_eval_077_data_ana": 2,
+      "sem_eval_078_data_ana": 2,
+      "sem_eval_079_data_ana": 2,
+      "sem_eval_080_data_ana": 2,
+      "sem_eval_081_data_ana": 2,
+      "sem_eval_082_data_ana": 2,
+      "sem_eval_083_data_ana": 2
+    }
+  },
+  {
+    "query_id": "q091",
+    "resume_excerpt": "Candidate interested in Berufseinsteiger DevOps Engineer. Experience aligns with cloud devops.",
+    "dream_role": "Berufseinsteiger DevOps Engineer",
+    "location": "Frankfurt",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q092",
+    "resume_excerpt": "Candidate interested in Senior Lead Engineer 5+ years microservices. Experience aligns with software engineering.",
+    "dream_role": "Senior Lead Engineer 5+ years microservices",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q093",
+    "resume_excerpt": "Candidate interested in Internship summer AI research. Experience aligns with ai ml data science.",
+    "dream_role": "Internship summer AI research",
+    "location": "Berlin",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q094",
+    "resume_excerpt": "Candidate interested in Working student 20h ML engineering. Experience aligns with ai ml data science.",
+    "dream_role": "Working student 20h ML engineering",
+    "location": "Berlin",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q095",
+    "resume_excerpt": "Candidate interested in Hybrid work BI developer. Experience aligns with business intelligence.",
+    "dream_role": "Hybrid work BI developer",
+    "location": "Cologne",
+    "relevant_job_ids": [
+      "sem_eval_090_business",
+      "sem_eval_091_business",
+      "sem_eval_092_business",
+      "sem_eval_093_business",
+      "sem_eval_094_business",
+      "sem_eval_095_business"
+    ],
+    "relevance_grades": {
+      "sem_eval_090_business": 2,
+      "sem_eval_091_business": 2,
+      "sem_eval_092_business": 2,
+      "sem_eval_093_business": 2,
+      "sem_eval_094_business": 2,
+      "sem_eval_095_business": 2
+    }
+  },
+  {
+    "query_id": "q096",
+    "resume_excerpt": "Candidate interested in Entry level QA no prior experience. Experience aligns with qa testing.",
+    "dream_role": "Entry level QA no prior experience",
+    "location": "Berlin",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q097",
+    "resume_excerpt": "Candidate interested in Lead SRE incident management. Experience aligns with cloud devops.",
+    "dream_role": "Lead SRE incident management",
+    "location": "Munich",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q098",
+    "resume_excerpt": "Candidate interested in SAP consultant visa sponsorship. Experience aligns with sap erp.",
+    "dream_role": "SAP consultant visa sponsorship",
+    "location": "Walldorf",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q099",
+    "resume_excerpt": "Candidate interested in Security engineer valid work permit Germany. Experience aligns with cybersecurity.",
+    "dream_role": "Security engineer valid work permit Germany",
+    "location": "Frankfurt",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q100",
+    "resume_excerpt": "Candidate interested in Embedded firmware intern automotive. Experience aligns with embedded systems.",
+    "dream_role": "Embedded firmware intern automotive",
+    "location": "Stuttgart",
+    "relevant_job_ids": [],
+    "relevance_grades": {}
+  },
+  {
+    "query_id": "q101",
+    "resume_excerpt": "Candidate interested in Analytics engineer Spark Scala remote. Experience aligns with data engineering.",
+    "dream_role": "Analytics engineer Spark Scala remote",
+    "location": "Remote / EU",
+    "relevant_job_ids": [
+      "sem_eval_036_data_eng",
+      "sem_eval_037_data_eng",
+      "sem_eval_038_data_eng",
+      "sem_eval_039_data_eng",
+      "sem_eval_040_data_eng",
+      "sem_eval_041_data_eng",
+      "sem_eval_042_data_eng",
+      "sem_eval_043_data_eng",
+      "sem_eval_044_data_eng",
+      "sem_eval_045_data_eng",
+      "sem_eval_046_data_eng",
+      "sem_eval_047_data_eng"
+    ],
+    "relevance_grades": {
+      "sem_eval_036_data_eng": 2,
+      "sem_eval_037_data_eng": 2,
+      "sem_eval_038_data_eng": 2,
+      "sem_eval_039_data_eng": 2,
+      "sem_eval_040_data_eng": 2,
+      "sem_eval_041_data_eng": 2,
+      "sem_eval_042_data_eng": 2,
+      "sem_eval_043_data_eng": 2,
+      "sem_eval_044_data_eng": 2,
+      "sem_eval_045_data_eng": 2,
+      "sem_eval_046_data_eng": 2,
+      "sem_eval_047_data_eng": 2
+    }
+  },
+  {
+    "query_id": "q102",
+    "resume_excerpt": "Candidate interested in NLP research scientist PhD preferred. Experience aligns with ai ml data science.",
+    "dream_role": "NLP research scientist PhD preferred",
+    "location": "Berlin",
+    "relevant_job_ids": [
+      "sem_eval_000_ai_ml_da",
+      "sem_eval_001_ai_ml_da",
+      "sem_eval_002_ai_ml_da",
+      "sem_eval_003_ai_ml_da",
+      "sem_eval_004_ai_ml_da",
+      "sem_eval_005_ai_ml_da",
+      "sem_eval_006_ai_ml_da",
+      "sem_eval_007_ai_ml_da",
+      "sem_eval_008_ai_ml_da",
+      "sem_eval_009_ai_ml_da",
+      "sem_eval_010_ai_ml_da",
+      "sem_eval_011_ai_ml_da"
+    ],
+    "relevance_grades": {
+      "sem_eval_000_ai_ml_da": 2,
+      "sem_eval_001_ai_ml_da": 2,
+      "sem_eval_002_ai_ml_da": 2,
+      "sem_eval_003_ai_ml_da": 2,
+      "sem_eval_004_ai_ml_da": 2,
+      "sem_eval_005_ai_ml_da": 2,
+      "sem_eval_006_ai_ml_da": 2,
+      "sem_eval_007_ai_ml_da": 2,
+      "sem_eval_008_ai_ml_da": 2,
+      "sem_eval_009_ai_ml_da": 2,
+      "sem_eval_010_ai_ml_da": 2,
+      "sem_eval_011_ai_ml_da": 2
+    }
+  },
+  {
+    "query_id": "q103",
+    "resume_excerpt": "Candidate interested in Helpdesk technician Windows Server. Experience aligns with it support.",
+    "dream_role": "Helpdesk technician Windows Server",
     "location": "Frankfurt",
     "relevant_job_ids": [],
     "relevance_grades": {}

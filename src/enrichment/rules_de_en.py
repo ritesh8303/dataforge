@@ -29,11 +29,42 @@ FIELD_VALUES = (
 SENIORITY_VALUES = (
     "internship",
     "working_student",
+    "thesis",
     "trainee_graduate",
     "junior",
     "mid",
     "senior",
 )
+
+# Product surface: early-career seeker roles only (thesis / DataForge Jobs+Match).
+PRODUCT_SENIORITY = frozenset(
+    {
+        "internship",
+        "working_student",
+        "thesis",
+        "trainee_graduate",
+        "junior",
+    }
+)
+
+# Data / AI / closely related evolving fields for the seeker product.
+PRODUCT_DATA_AI_FIELDS = frozenset(
+    {
+        "ai_ml_data_science",
+        "data_engineering",
+        "data_analytics",
+        "business_intelligence",
+        "cloud_devops",  # data platform / MLOps-adjacent when classified here
+    }
+)
+
+EMPLOYMENT_TYPE_BY_SENIORITY = {
+    "working_student": "working_student",
+    "internship": "internship",
+    "thesis": "thesis",
+    "trainee_graduate": "fresher",
+    "junior": "fresher",
+}
 
 VISA_VALUES = (
     "sponsorship_offered",
@@ -195,6 +226,17 @@ _SENIORITY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
         ),
     ),
     (
+        "thesis",
+        re.compile(
+            r"\b("
+            r"masterarbeit|bachelorarbeit|abschlussarbeit|"
+            r"master\s*thesis|bachelor\s*thesis|thesis\s*(?:student|role|position)|"
+            r"diplomarbeit|abschluss\s*arbeit"
+            r")\b",
+            re.I,
+        ),
+    ),
+    (
         "internship",
         re.compile(
             r"\b("
@@ -210,7 +252,7 @@ _SENIORITY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
             r"\b("
             r"trainee|graduate\s*program|absolvent|berufseinsteiger|"
             r"entry[\s-]?level|new\s*grad|graduate\s*scheme|"
-            r"einstiegsposition|nachwuchskraft"
+            r"einstiegsposition|nachwuchskraft|fresher"
             r")\b",
             re.I,
         ),
@@ -418,14 +460,11 @@ def derive_flags(
     salary_annual: float | None = None,
 ) -> dict[str, Any]:
     """Derived portfolio/thesis flags (advisory, not legal advice)."""
-    entry_level = (
-        seniority in {"internship", "working_student", "trainee_graduate", "junior"}
-        or (experience_years_min is not None and experience_years_min <= 1)
-        or experience_years_min is None
-        and seniority in {"internship", "working_student", "trainee_graduate", "junior"}
+    entry_level = seniority in PRODUCT_SENIORITY or (
+        experience_years_min is not None and experience_years_min <= 1
     )
-    if experience_years_min is not None and experience_years_min > 1:
-        entry_level = seniority in {"internship", "working_student", "trainee_graduate"}
+    if experience_years_min is not None and experience_years_min > 2:
+        entry_level = seniority in {"internship", "working_student", "thesis", "trainee_graduate"}
 
     blue_card_new_grad_eligible = None
     if salary_annual is not None:
@@ -439,9 +478,18 @@ def derive_flags(
 
     return {
         "entry_level": entry_level,
+        "employment_type": EMPLOYMENT_TYPE_BY_SENIORITY.get(seniority, ""),
         "blue_card_new_grad_eligible": blue_card_new_grad_eligible,
         "job_seeker_visa_friendly": job_seeker_visa_friendly,
     }
+
+
+def is_product_data_ai_field(field: str) -> bool:
+    return str(field or "").strip().lower() in PRODUCT_DATA_AI_FIELDS
+
+
+def is_product_seniority(seniority: str) -> bool:
+    return str(seniority or "").strip().lower() in PRODUCT_SENIORITY
 
 
 def classify_job(title: str = "", description: str = "", tags: str = "") -> dict[str, Any]:

@@ -38,6 +38,7 @@ services:
       PYTHONPATH: /app/src:/app
       AI_ENABLED: "true"
       MATCH_API_KEY: ""
+      VECTOR_STORE_URI: /app/data/lancedb
     command: >
       sh -c "pip install -q -r requirements-test.txt fastapi uvicorn mangum
       && python scripts/run_match_api_local.py"

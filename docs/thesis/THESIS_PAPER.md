@@ -1,13 +1,16 @@
-# Integrating Multi-Provider Generative AI into a Production Medallion Lakehouse: Architecture, Retrieval Evaluation, Cost Control, and Responsible Deployment — A Case Study on European Job Intelligence (DataForge)
+# Content ledger (superseded as the official outline)
 
-**Master’s Thesis (Draft)**  
+**The binding thesis is** [`latex/overleaf_main.tex`](latex/overleaf_main.tex), restructured on 18 September 2026 to the University of Europe lecture format (Kouatly, SS 2026).
+
+This Markdown file keeps the earlier ARM-style chapter order so measured tables are easy to copy. Do not submit this file as the thesis.
+
+**Working title (UE):** Augmented Analytics on a Production Lakehouse: Integrating Generative AI into European Job Intelligence — A Case Study on DataForge
+
 **Programme:** M.Sc. Data Science (2-year)  
 **Institution:** University of Europe for Applied Sciences, Potsdam  
 **Author:** Ritesh Rakesh Jadhav  
 **Date:** September 2026  
-**Reference implementation:** https://github.com/ritesh8303/dataforge  
-
-> **Formatting note.** Official UE / Prüfungsamt layout (margins, fonts, binding, citation style, exact page limits) must be confirmed with supervisors and the Examination Office. This document is the **content draft** aligned to the programme’s applied ARM-style structure and the chapter outline in `THESIS_PROPOSAL.md` (target ~40–80 pages when typeset, excluding appendices). Convert to Word/LaTeX before binding.
+**Reference implementation:** https://github.com/ritesh8303/dataforge
 
 ---
 

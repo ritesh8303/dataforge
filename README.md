@@ -1,6 +1,6 @@
 # DataForge
 
-Live European **job-intelligence lakehouse**: multi-source ingest → medallion on AWS → Gold analytics → APIs → GitHub Pages — with a **frugal GenAI match layer** in-repo (Bedrock-first, hybrid retrieval, multi-agent optional).
+Live European **early-career data & AI job lakehouse**: multi-source ingest → medallion on AWS → Gold analytics → APIs → GitHub Pages — scoped to **fresher, working-student, internship, and thesis** roles in **data / AI / related fields across the EU**, with a **frugal GenAI match layer** in-repo (Bedrock-first, hybrid retrieval, multi-agent optional).
 
 **Live:** [Dashboard](https://ritesh8303.github.io/dataforge/) · **Code:** this repo  
 **Thesis:** UE Applied Sciences M.Sc. Data Science — [`docs/thesis/`](docs/thesis/)

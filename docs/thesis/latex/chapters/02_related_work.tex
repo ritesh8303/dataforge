@@ -1,0 +1,111 @@
+\chapter{Theoretical Background I: Data Platforms, Digitalisation, and Information Retrieval}
+\label{ch:theory-data}
+
+The literature review is the main academic part of this thesis. It does not list every related paper. It explains the scientific discussion around the DataForge case. It also comments on the quality of the sources. Then it leads to a gap that the later chapters can test. The University of Europe asks students to use sources in a clear order. Peer-reviewed journal papers and conference papers from ACM, IEEE, Springer, Elsevier, and Sage come first. Research books from known publishers are used for basic methods. Official EU laws are primary legal sources. Vendor websites and analyst notes are used only as industry background, and they are marked as such.
+
+\section{Digitalisation and software-intensive labour-market services}
+\label{sec:digitalisation}
+
+Digital transformation is often described as a process that tries to improve an organisation by using information, computing, communication, and network technologies together \cf[p.~~118]{vial2019digital}. Digitisation of a PDF is only a small step. Digitalisation of a job service means that software is the main way jobs are published, found, ranked, and explained. Fitzgerald and colleagues argued that using digital technology is now a core business need, not an optional IT project \cf{fitzgerald2014digital}. For public employment services and job platforms, this is visible in APIs from the Bundesagentur f\"ur Arbeit and from EURES, and in many applicant-tracking systems in companies \cf{ba2024jobsuche,eures2024}.
+
+Two points matter for data science. First, job data is not a single static file. It comes from many sources, and the field names do not always match. Second, matching and enrichment are software products. Quality attributes from software architecture still apply: change is possible, the service is available, cost is controlled, and security is kept \cf{bass2012architecture,iso25010}. The colloquium theme ``digitalisation and digital transformations: impacts on software engineering'' is therefore a real condition of this work. A lakehouse and a generative-AI layer must work together.
+
+Labour-market research also warns that AI can change hiring and job search at scale \cf{oecd2023ai,webb2020double}. This thesis does not predict macro employment effects. It treats job intelligence as a \emph{software service} whose quality can be measured on retrieval metrics and operational limits.
+
+\section{From warehouses to lakehouses}
+\label{sec:lakehouse}
+
+For a long time, enterprise analytics used two main ideas. Bill Inmon described a central, normalised data warehouse. Ralph Kimball described dimensional models that are easier for reports \cf{inmon2005bdw,kimball2013dwt}. Both ideas assume that a clean database is the main source for decisions. Later, ``data lakes'' stored cheap files first and added structure later. Armbrust and co-authors argue that neither extreme is enough. A \emph{lakehouse} tries to keep warehouse controls (transactions, schema, governance) and also keep the scale of lakes \cf{armbrust2021lakehouse}.
+
+In industry, this is often built as a medallion pattern: Bronze for raw ingest, Silver for cleaned history, and Gold for user reports \cf{databricks2020medallion}. The word ``medallion'' is not a peer-reviewed theory by itself. It is a common engineering pattern. It can be criticised and tested. The stronger scientific ideas are older: improve data step by step, keep raw evidence separate from later metrics, and write clear contracts between layers. These ideas later limit how generative outputs may enter the pipeline.
+
+For DataForge, the lakehouse is not an abstract diagram. Bronze keeps raw Parquet from each source. Silver owns job identity and history. Gold joins aggregates and API-facing tables. Any generative enrichment must respect these contracts. Otherwise the system repeats the technical debt that Sculley and colleagues describe for machine-learning systems glued onto legacy pipelines \cf{sculley2015debt}.
+
+\section{Historical modelling and slowly changing dimensions}
+\label{sec:scd}
+
+Job postings change. Titles are rewritten. Locations appear and disappear. Vacancies close. Kimball and Ross call such entities slowly changing dimensions. Type~1 overwrites the old value. Type~2 keeps history by adding a new row with start and end dates \cf[p.~~193]{kimball2013dwt}. For labour-market analytics, Type~2 is important. Without it, we cannot answer time questions, such as how long internships stay open, or how visa wording changes. A language model that silently rewrites the current row would destroy this history.
+
+This thesis therefore uses a strict rule. Generative enrichment may \emph{join} Silver and Gold. It must not change business keys or slowly changing dimension date fields. This is an application of dimensional modelling to a modern machine-learning setting. It is not a new modelling theory.
+
+\section{Data quality and the automation of cleaning}
+\label{sec:quality}
+
+Poor data quality has long created hidden costs for organisations \cf{redman1998dq}. Batini and colleagues review methods to assess and improve quality. They use dimensions such as accuracy, completeness, consistency, and timeliness \cf{batini2009dq}. Demirkan and Delen link information quality to measurable profiles that can guide improvement work \cf{demiliani2006dq}. In modern analytics, cleaning is not a one-time script. It is ongoing software work. This is why the colloquium lists ``automation of data cleaning'' as a data-science topic.
+
+Two implications matter here. First, clear rules (regular expressions, taxonomies, schema checks) are still strong quality tools. They are cheaper, easier to inspect, and easier to repeat. Second, language models can help when rules are unclear. However, they can also produce fluent labels that are not grounded in the text. A careful architecture therefore applies rules first. It spends model tokens only on the remaining unclear cases. This idea returns as a cost hypothesis in Chapter~\ref{ch:rqs}.
+
+In job text, quality problems are domain-specific. Seniority may appear as ``Werkstudent'', ``Praktikum'', ``Junior'', or ``(m/w/d)'' with no level at all. Visa stance may be explicit, implied, or absent. Language requirements may be split between title and body. Rules can catch many patterns in German and English. They cannot catch every employer style. That mixed picture motivates a \emph{rules-first, model-second} enrichment design.
+
+\section{Classical information retrieval}
+\label{sec:classical-ir}
+
+Matching a resume to a job is, at root, an information-retrieval (IR) problem. A query (the candidate profile) is ranked against a collection of job documents. Manning, Raghavan and Sch\"utze give a standard textbook for this field. They cover Boolean search, ranked search, evaluation, and web search \cf{manning2008ir}. Among keyword rankers, BM25 is still the main probabilistic baseline. Robertson and Zaragoza present BM25 in the probabilistic relevance framework. They explain why term-frequency limits and document-length normalisation often beat simple tf--idf \cf{robertson2009bm25}.
+
+Keyword methods fail in known ways on job text. A candidate who writes ``PyTorch'' will not match a posting that only says ``deep learning framework''. Mixing German and English makes this worse. A query for ``Werkstudent'' may miss a posting titled ``Working Student'' if tokenisation is naive. These failures motivate meaning-based (dense) retrieval, which is reviewed in the next chapter. They also explain why a keyword Career Matching Wizard is a fair scientific baseline. It is clear, cheap, and similar to many live systems.
+
+\section{Evaluation of ranked retrieval}
+\label{sec:ir-eval}
+
+IR research says that ranking quality must be measured against relevance labels, not against user stories only. Precision at $k$, recall at $k$, and mean reciprocal rank are standard metrics \cf[p.~~159]{manning2008ir}. For graded relevance, J\"arvelin and Kek\"al\"ainen introduced discounted cumulative gain and its normalised form nDCG. nDCG gives more reward when highly relevant documents appear near the top, and it can be compared across queries \cf{jarvelin2002ndcg}. This thesis uses nDCG@10 as the main matching metric. Precision@5, Recall@20, and MRR are extra measures.
+
+Two warnings from IR research limit later interpretation. First, a small labelled set supports an applied master's pilot. It does not support a very large IR benchmark claim. Second, if the person who writes labels thinks in synonyms, dense methods may look better than they are. A simple keyword baseline is therefore a needed control. It is not a weak joke comparison.
+
+Benchmark work such as BEIR shows that retrieval models behave very differently across domains \cf{thakur2021beir}. A model that wins on news may lose on biomedical text. Job text in Europe is another domain. It mixes languages, HR boilerplate, and sparse structured fields. This thesis does not claim BEIR-scale evidence. It does claim that domain-specific labels are necessary.
+
+\section{Person--job matching as a special retrieval task}
+\label{sec:jobmatch}
+
+Recommending jobs to people, and people to jobs, is a two-sided matching problem \cf{malinowski2006matching}. Neural person--job fit models later represent skills and job requirements in a shared space \cf{qin2018personjob}. Surveys of deep learning for job recommendation list challenges such as short text, skill mismatch, and cold-start vacancies \cf{guo2019deep,rahmani2022jobrec}. Industry systems also face fairness issues. Work on LinkedIn talent search shows that exposure can be unbalanced, and that fair re-ranking is an active topic \cf{geyik2019fairness}.
+
+For an advice system aimed at job seekers, two differences are important. The system ranks \emph{public vacancies} for a user who gave a resume. It does not rank \emph{candidates} for a hiring manager. This difference later supports the legal discussion. It also explains why this study uses IR metrics on job rankings, and not hiring-outcome metrics that cannot be observed here.
+
+Barocas, Hardt and Narayanan stress that fairness depends on the decision context and on what is measured \cf{barocas2023fairness}. A seeker-side ranker can still harm users if it hides viable jobs or over-promotes others. Holstein and colleagues report that practitioners need concrete tooling and process support, not only abstract fairness definitions \cf{holstein2019improving}. These points motivate citations, human review for low confidence, and honest limits in product copy.
+
+\section{Multi-source ingest and public employment data}
+\label{sec:multisource}
+
+European job intelligence must combine heterogeneous sources. Public APIs from the Bundesagentur and EURES provide official listings \cf{ba2024jobsuche,eures2024}. Commercial boards and company ATS feeds add coverage. Each source uses different field names, update frequencies, and language habits. Inmon's warehouse idea of a single integrated store still applies, but the integration work is continuous \cf{inmon2005bdw}.
+
+From a research view, multi-source ingest raises three quality questions. \emph{Coverage:} does the corpus include the roles the queries ask for? \emph{Freshness:} are closed jobs removed quickly? \emph{Provenance:} can a match cite the job ID and source? DataForge keeps source tags and job IDs stable through Silver. Match results expose \texttt{job\_id} and evidence spans. These choices follow IR and software-architecture practice more than a new theory.
+
+\section{Continuous experimentation as a test style}
+\label{sec:experimentation}
+
+Software product teams more often test development decisions with experiments, not only with expert opinion. Fagerholm and colleagues present the RIGHT model for continuous experimentation. They argue that experiment-driven development reduces the risk of building the wrong product \cf{fagerholm2017right}. This thesis does not run a long online A/B test with live job seekers. The time of a master's project is short. It is also not ethical to put untested rankers into a public user interface. The thesis still uses the experiment idea: every generative claim has a protocol, a baseline, and a metric. This is how the colloquium topic ``continuous experimentation'' is used.
+
+\section{Literature map and critique}
+\label{sec:lit-critique}
+
+Table~\ref{tab:lit-map} maps literature streams to what they contribute, and to what they usually omit in practitioner writing.
+
+\begin{table}[ht]
+\centering
+\caption{Literature streams and their limits for this case}
+\label{tab:lit-map}
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+\textbf{Stream} & \textbf{Main contribution} & \textbf{Typical gap for DataForge} \\
+\midrule
+Digitalisation & Explains why job services are software products & Rarely gives pipeline contracts \\
+Lakehouse / medallion & Layered storage and governance & Rarely treats generative outputs as SCD-safe joins \\
+Data quality & Rules and measurement dimensions & Rarely combines with token budgets \\
+Classical IR & Baselines and nDCG & Rarely uses junior/visa query mixes \\
+Person--job fit & Neural matching ideas & Often employer-side; weak on EU law \\
+MLOps & Versioning and monitoring & Weak on FrugalGPT-style routing at small budget \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Several sources in Table~\ref{tab:lit-map} are strong but not perfect. Armbrust et al.\ describe lakehouses at platform level; they do not discuss GDPR resume handling \cf{armbrust2021lakehouse}. Geyik et al.\ study employer-side fairness; this thesis studies seeker-side ranking \cf{geyik2019fairness}. Rahmani and Bhulai review recommenders; many listed papers target English-only corpora \cf{rahmani2022jobrec}. These limits are normal in a focused master's review. They also define where this thesis adds value: integration under European production limits.
+
+\section{Interim summary}
+\label{sec:interim1}
+
+The first theory chapter leads to five points. Digitalisation makes labour-market software a data-science object, not only a scraping task. Lakehouse and medallion patterns give layer contracts. Slowly changing dimensions forbid silent rewrites of history. Data-quality research supports rules before tokens. Classical IR and person--job matching research give metrics and a non-AI baseline. The next chapter studies what generative models change, and what they must not be allowed to change.
+
+\section{Positioning against pure software portfolios}
+\label{sec:portfolio-gap}
+
+Many student portfolios show scrapers or dashboards without a held-out ranking test. Many applied AI demos show a chat box without lineage or cost logs. The gap that this thesis fills is the combination of both sides: a live medallion system with SCD Type~2 history, and a GenAI layer that is measured against a transparent non-AI baseline. Related work on lakehouses explains storage and refinement \citep{armbrust2021lakehouse}. Related work on dense retrieval explains ranking quality \citep{karpukhin2020dpr,jarvelin2002ndcg}. Related work on LLMOps explains operations \citep{kreuzberger2023mlops}. Few single sources require all three in one applied master's artefact. That is why the literature chapters stay long even though the artefact is software-intensive.
+

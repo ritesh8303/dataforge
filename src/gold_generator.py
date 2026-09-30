@@ -360,6 +360,8 @@ def lambda_handler(event, context):
                 "is_tech",
                 "field_rule",
                 "ai_field_rule",
+                "seniority_rule",
+                "employment_type_rule",
                 "source_attribution",
                 "dedup_key",
             ]
@@ -374,6 +376,37 @@ def lambda_handler(event, context):
         all_jobs["is_remote"] = all_jobs.get("is_remote", pd.Series(False, index=all_jobs.index)).apply(
             lambda x: True if str(x) == "True" else False
         )
+
+        # Product audience gate: EU + data/AI + fresher/WS/thesis only
+        from processing.audience_gate import filter_jobs_for_product
+        from enrichment.ingest_review import enqueue_ingest_review
+
+        records = all_jobs.to_dict(orient="records")
+        accepted, rejected = filter_jobs_for_product(records)
+        uncertain = [r for r in rejected if r.get("audience_uncertain")]
+        if uncertain:
+            dest = enqueue_ingest_review(uncertain)
+            if dest:
+                print(f"Queued {len(uncertain)} ambiguous jobs for ingest review -> {dest}")
+        print(
+            f"Audience gate: kept {len(accepted)} / {len(records)} "
+            f"(dropped {len(rejected) - len(uncertain)} hard, {len(uncertain)} review)"
+        )
+        if accepted:
+            all_jobs = pd.DataFrame(accepted)
+            # Stable product columns
+            for col in (
+                "ai_field",
+                "ai_seniority",
+                "employment_type",
+                "ai_entry_level",
+                "ai_english_ok",
+                "audience_accept",
+            ):
+                if col not in all_jobs.columns and accepted:
+                    all_jobs[col] = [a.get(col) for a in accepted]
+        else:
+            all_jobs = all_jobs.iloc[0:0].copy()
 
         # 1b. Expired jobs (is_current=False)
         expired_raw = df[df["is_current"] == False].copy()

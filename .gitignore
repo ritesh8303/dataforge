@@ -42,6 +42,8 @@ data/silver/
 # Large row-level Gold CSVs: rewritten daily, would bloat git history ~6 MB/day
 data/gold/all_jobs.csv
 data/gold/expired_jobs.csv
+# Local LanceDB vector cache (Match API)
+data/lancedb/
 
 # Temp debug files
 event.json

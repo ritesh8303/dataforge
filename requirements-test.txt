@@ -11,3 +11,6 @@ fastapi
 mangum
 httpx
 uvicorn
+# Optional: LanceDB vector backend for Match (falls back to embedding_index.json)
+lancedb
+pyarrow

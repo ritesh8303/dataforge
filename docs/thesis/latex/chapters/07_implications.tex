@@ -1,0 +1,71 @@
+\chapter{Implications and Future Research}
+\label{ch:implications}
+
+\section{Theoretical implications}
+\label{sec:theory-impl}
+
+Three implications follow for the scientific discussion in Chapters~\ref{ch:theory-data} and~\ref{ch:theory-ai}.
+
+First, lakehouse research should treat generative models as a new class of extra data user, in Sculley's sense, unless layer contracts name them clearly \cf{sculley2015debt,armbrust2021lakehouse}. The contribution of this case is to show that dimensional history and embeddings can exist together if identity is frozen.
+
+Second, IR evaluation remains the correct language for ``AI matching'' claims. nDCG, a keyword baseline, and a gold set that is not almost perfect stop augmented-analytics talk from becoming only a demo \cf{jarvelin2002ndcg,manning2008ir}. Dense retrieval's advantage here is consistent with Karpukhin et al.\ on other collections. However, the modest absolute scores warn against copying open-domain question-answering numbers into job search \cf{karpukhin2020dpr,thakur2021beir}.
+
+Third, design science is a sufficient, and for an applied M.Sc.\ an honest, frame. The knowledge produced is a working system with measured properties. It is not a new law of retrieval. Hevner requires that artefacts are evaluated with methods that match the claims. Gregor and Hevner add that the contribution must be positioned so reviewers see design and evaluation together \cf{hevner2004dsr,gregor2013positioning}. This demand is met only if RQ2's missing cells are disclosed.
+
+\section{Practical and managerial implications}
+\label{sec:practical-impl}
+
+For European product organisations the case suggests an order: data contracts, then rules, then embeddings, then generation, then agents. Turning this order around increases spend and reduces auditability. Hyperautomation slogans that skip the first two steps are, on this evidence, weak in operations \cf{gartner2020hyper}.
+
+Unit cost at Nova-class prices implies that the scarce resource is not token spend at 1{,}000-job scale. The scarce resources are labelled evaluation, quota control, and trust. Monetisation should therefore attach to cited Match, quality-checked history, and location guarantees, not to CSV dumps of public jobs.
+
+For public employment data specifically, advisory matching can reduce search cost for juniors without becoming an automated hiring gate. That product boundary should be written into terms of service and into colloquium slides, not only into a legal appendix. Practitioners should train support staff to explain the difference between \emph{job ranking for seekers} and \emph{candidate ranking for employers}. Veale and Borgesius show that AI Act categories depend on intended purpose \cf{veale2021demystifying}. Product copy is part of compliance work.
+
+Raji et al.\ suggest internal auditing before launch \cf{raji2020closing}. Even a student project can adopt a light version: log prompts, log costs, keep evaluation files in git, and document pauses. That habit transfers directly to industry MLOps \cf{kreuzberger2023mlops}.
+
+\section{Implications for job seekers and career services}
+\label{sec:seeker-impl}
+
+From a seeker perspective, the useful output is not a single score. It is a short list with reasons: matched skills, location, seniority fit, and a visa hint with citation. Users who need English-only roles or sponsorship benefit when language and visa columns are explicit in Gold, not only when embeddings guess similarity. Users who search in German benefit when rules normalise ``Werkstudent'' and ``working student'' to the same seniority band.
+
+Career centres at universities could reuse the Match API as a teaching tool. Students see how the same resume changes rank order under BM25, dense, and hybrid methods. That builds literacy about automated job search without pretending the system is neutral or complete.
+
+\section{Implications for the University of Europe Data Science profile}
+\label{sec:ue-impl}
+
+The programme asks students to connect data engineering, statistical evaluation, and responsible application. A thesis that only deploys a vendor chatbot would fail that profile. A thesis that only reviews literature would fail the built-system expectation of an applied degree. The implication for future UE theses in this area is practical: register a title that names the \emph{integration problem}, freeze an evaluation protocol before the writing clock starts, and keep a measurement log that can survive a quota incident.
+
+The literature share expected for a 120 ECTS master's thesis is large. This project meets that expectation by giving two theory chapters, not a short related-work paragraph. Sources are graded in Appendix~\ref{app:sources}. Page-level Harvard citations should still be added after final reading of each monograph.
+
+\section{Future research}
+\label{sec:future}
+
+Several extensions are possible in a short time after submission, or in a follow-on paper (optional IEEE 4--8 pages, as offered in the colloquium).
+
+\begin{enumerate}
+  \item Complete the RQ2 live Pareto table after Nova Micro quota approval, without changing the runner.
+  \item Enlarge the matching gold set to at least 100 queries with a second annotator, and report agreement between annotators.
+  \item Add job slices for q04--q09 themes so coverage gaps can be retested.
+  \item Measure explanation faithfulness under Bedrock, not only citation-structure validity on a local stub.
+  \item Compare in-region Bedrock embeddings with an open encoder (for example a Sentence-BERT type model) on the same jobs.
+  \item Run a small user study with intern and working-student seekers (ethics approval, informed consent) to add preference judgements next to nDCG.
+  \item Test whether rules-first cleaning of seniority and visa fields improves dense retrieval. This links the colloquium topic of automated data cleaning to ranking quality.
+  \item Explore continuous experimentation in production with a careful traffic split after faithfulness checks pass \cf{fagerholm2017right}.
+\end{enumerate}
+
+Topics that are not recommended as immediate extensions are quantum ranking, unsupervised module clustering of the code base, and automated fault finding. They are real software-engineering agendas from the colloquium list. However, they would replace the research questions rather than deepen them.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This thesis asked how generative AI can be added to a live European job-intelligence lakehouse without destroying history, evaluation honesty, or a free-tier budget. The literature placed the problem at the meeting point of digitalisation, dimensional modelling, information retrieval, LLM operations, and European law. Design science with one embedded case was chosen over a literature-only or survey design because the questions are about a system under limits.
+
+On labelled matching data, dense retrieval improved nDCG@10 compared with a clear rule-based wizard. Hybrid retrieval did not win that table. It still remains the product default for keyword robustness and citation workflows. Modelled enrichment and embedding costs at 1{,}000 jobs stay around six euro cents when rules-first sampling is used. Live multi-provider completion experiments remain open, pending a cloud quota. Those four sentences are the empirical core. Everything else is architecture, law, and caution.
+
+The work shows that an M.Sc.\ Data Science thesis at the University of Europe can be both a production portfolio and a testable integration study. This is possible if generative AI is treated as a controlled pipeline stage, not as slideware.
+
+\section{What this thesis does not claim}
+\label{sec:nonclaims}
+
+This thesis does not claim that dense retrieval solves visa uncertainty. It does not claim that Bedrock is always cheaper than every SaaS model; the live Pareto cells are still pending. It does not claim that the Match API is a hiring system. It does not claim that 103 author-labelled queries equal an industry benchmark such as BEIR. Clearing these non-claims keeps the contribution falsifiable and aligned with the writing lecture's demand for a thesis, not an essay.
+

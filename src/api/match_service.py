@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import os
 import time
 from io import StringIO
@@ -11,12 +12,13 @@ from typing import Any
 import boto3
 
 from ai_gateway.router import ModelRouter
-from embedding_index import build_embedding_index, index_from_json, job_text
+from embedding_index import build_embedding_index, job_text
 from enrichment.rules_de_en import classify_job
 from retrieval import rank_bm25, rank_hybrid
 from security.pii import redact_pii
+from vector_store import resolve_vector_entries
 
-_cache: dict[str, Any] = {"jobs": None, "index": None, "ts": 0}
+_cache: dict[str, Any] = {"jobs": None, "index": None, "vector_backend": "memory", "ts": 0}
 CACHE_TTL = 300
 
 
@@ -32,6 +34,7 @@ def load_jobs_and_index(force: bool = False) -> tuple[list[dict], list[dict]]:
     jobs_key = os.environ.get("GOLD_KEY", "all_jobs.csv")
     index_key = os.environ.get("EMBEDDING_INDEX_KEY", "embedding_index.json")
     enrichment_key = os.environ.get("ENRICHMENT_KEY", "ai_job_enrichment.csv")
+    vector_uri = os.environ.get("VECTOR_STORE_URI", "").strip()
 
     s3 = boto3.client("s3")
     jobs_obj = s3.get_object(Bucket=bucket, Key=jobs_key)
@@ -65,20 +68,35 @@ def load_jobs_and_index(force: bool = False) -> tuple[list[dict], list[dict]]:
             job.setdefault("ai_job_seeker_visa_friendly", rules.get("job_seeker_visa_friendly"))
             job.setdefault("is_tech", rules.get("is_tech"))
 
-    index: list[dict] = []
+    json_raw: bytes | None = None
     try:
         idx_obj = s3.get_object(Bucket=bucket, Key=index_key)
-        index = index_from_json(idx_obj["Body"].read().decode("utf-8"))
+        json_raw = idx_obj["Body"].read()
     except Exception:
+        json_raw = None
+
+    index, backend = resolve_vector_entries(json_raw=json_raw, uri=vector_uri or None)
+    if not index:
         router = ModelRouter()
         limit = int(os.environ.get("INDEX_BUILD_LIMIT", "200"))
         index = build_embedding_index(jobs[:limit], router)
+        if vector_uri:
+            index, backend = resolve_vector_entries(
+                json_raw=json.dumps({"version": 1, "entries": index}),
+                uri=vector_uri,
+            )
+        else:
+            backend = "built"
 
     _cache["jobs"] = jobs
     _cache["index"] = index
+    _cache["vector_backend"] = backend
     _cache["ts"] = now
     return jobs, index
 
+
+def vector_backend() -> str:
+    return str(_cache.get("vector_backend") or "memory")
 
 def _truthy(value: Any) -> bool:
     if isinstance(value, bool):
@@ -94,14 +112,26 @@ def apply_profile_filters(
     entry_level_only: bool = False,
     english_ok_only: bool = False,
     tech_only: bool = True,
+    data_ai_only: bool = True,
+    audience_only: bool = True,
 ) -> list[dict]:
+    from enrichment.rules_de_en import PRODUCT_DATA_AI_FIELDS, PRODUCT_SENIORITY
+
     out = []
     for job in jobs:
+        if audience_only and job.get("audience_accept") is not None and not _truthy(job.get("audience_accept")):
+            continue
+        if data_ai_only:
+            field = str(job.get("ai_field") or job.get("ai_field_rule") or job.get("field_rule") or "").lower()
+            if field and field not in PRODUCT_DATA_AI_FIELDS and field not in {"", "nan"}:
+                # Allow missing field through to rules path below; reject clear non-product fields
+                if field in {"non_tech", "software_engineering", "it_support", "embedded_systems", "other_tech", "product_management", "qa_testing", "sap_erp", "cybersecurity"}:
+                    continue
         if tech_only and job.get("is_tech") is not None and not _truthy(job.get("is_tech")):
             continue
         if entry_level_only and not _truthy(job.get("ai_entry_level")):
             seniority = str(job.get("ai_seniority") or "").lower()
-            if seniority not in {"internship", "working_student", "trainee_graduate", "junior"}:
+            if seniority not in PRODUCT_SENIORITY:
                 continue
         if english_ok_only and not _truthy(job.get("ai_english_ok")):
             continue
@@ -170,7 +200,7 @@ def match_jobs(
     limit: int = 15,
     visa_status: str = "",
     german_level: str = "",
-    entry_level_only: bool = False,
+    entry_level_only: bool = True,
     english_ok_only: bool = False,
     tech_only: bool = True,
 ) -> dict[str, Any]:
@@ -186,6 +216,8 @@ def match_jobs(
         entry_level_only=entry_level_only,
         english_ok_only=english_ok_only,
         tech_only=tech_only,
+        data_ai_only=True,
+        audience_only=True,
     )
     if location:
         loc = location.lower()
@@ -236,6 +268,8 @@ def match_jobs(
         "jobs": results,
         "count": len(results),
         "method": used,
+        "vector_backend": vector_backend(),
+        "index_size": len(index),
         "pii_redacted": redacted.redacted_counts,
         "filters_applied": {
             "visa_status": visa_status or None,
@@ -251,7 +285,6 @@ def match_jobs(
         ),
         "cost_summary": router.cost_logger.summary(),
     }
-
 
 def jobs_to_markdown(payload: dict[str, Any]) -> str:
     lines = [

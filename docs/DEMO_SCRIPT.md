@@ -29,7 +29,7 @@ Show: Agent wizard → hybrid (or agent) → one result card with citations.
 Say: “Advisory only — not legal advice on visas.”
 
 ### 1:50–2:20 — Frugal GenAI / thesis
-> “Rules-first enrichment, Bedrock Nova Micro when quota allows, kill switch and daily budget. Thesis RQs measure lineage, provider trade-offs, ranking quality, and unit economics. Live Bedrock RQ2 is waiting on an AWS quota increase — matching evals and rules baselines are already in the repo.”
+> “Rules-first enrichment, Bedrock Nova Micro when quota allows, kill switch and daily budget. On 103 labelled queries, dense retrieval leads nDCG@10 at about 0.22 versus about 0.15 for the keyword wizard. Bedrock RQ2 is still waiting on AWS quota; we can measure the same Pareto with gpt-4o-mini for cents while residency is scored separately.”
 
 Show briefly: GitHub `evals/results/eval_report.md` or RESULTS_DRAFT.
 

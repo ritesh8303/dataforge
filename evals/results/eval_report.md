@@ -1,22 +1,11 @@
 # Matching eval report
 
-- Queries: 42
+- Queries: 103
 - Jobs: 96
 
 | Method | nDCG@10 | P@5 | Recall@20 | MRR |
 |---|---:|---:|---:|---:|
-| bm25 | 0.1452 | 0.1619 | 0.2143 | 0.1844 |
-| dense | 0.2203 | 0.2190 | 0.2738 | 0.2677 |
-| hybrid | 0.1714 | 0.1714 | 0.2341 | 0.2344 |
-| heuristic | 0.1585 | 0.1905 | 0.2401 | 0.2117 |
-
-## Multi-agent ablation (Phase D)
-
-Local provider, 30 labelled queries (`evals/run_agent_ablation.py`):
-
-| Method | Avg citation validity |
-|---|---:|
-| hybrid single-shot | 1.0 |
-| multi-agent | 1.0 |
-
-Structural citation validity is saturated on the local provider; thesis appendix should add a Bedrock sample for faithfulness + €/latency.
+| bm25 | 0.1351 | 0.1437 | 0.1926 | 0.1906 |
+| dense | 0.2174 | 0.2175 | 0.2856 | 0.2706 |
+| hybrid | 0.1668 | 0.1670 | 0.2225 | 0.2327 |
+| heuristic | 0.1462 | 0.1728 | 0.2071 | 0.1952 |

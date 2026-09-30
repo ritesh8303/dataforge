@@ -34,7 +34,7 @@ class VectorStore:
     """Upsert / search job embedding vectors."""
 
     def __init__(self, uri: str | None = None, table_name: str = TABLE_NAME):
-        self.uri = uri or os.environ.get("VECTOR_STORE_URI", "")
+        self.uri = (uri if uri is not None else os.environ.get("VECTOR_STORE_URI", "")).strip()
         self.table_name = table_name
         self._memory: dict[str, dict[str, Any]] = {}
         self._db = None
@@ -42,15 +42,43 @@ class VectorStore:
         if self.uri and HAS_LANCEDB:
             try:
                 self._db = lancedb.connect(self.uri)
+                names = set(self._db.table_names())
+                if self.table_name in names:
+                    self._table = self._db.open_table(self.table_name)
+                    self._hydrate_memory_from_table()
             except Exception as exc:  # pragma: no cover
                 logger.warning("LanceDB connect failed (%s); using memory fallback", exc)
+                self._db = None
+                self._table = None
+
+    def _hydrate_memory_from_table(self) -> None:
+        if self._table is None:
+            return
+        try:
+            df = self._table.to_pandas()
+            for _, r in df.iterrows():
+                jid = str(r.get("job_id") or "")
+                vec = r.get("vector")
+                if not jid or vec is None:
+                    continue
+                self._memory[jid] = {
+                    "job_id": jid,
+                    "vector": list(vec),
+                    "model": str(r.get("model") or ""),
+                    "provider": str(r.get("provider") or ""),
+                    "text": str(r.get("text") or ""),
+                }
+        except Exception as exc:  # pragma: no cover
+            logger.warning("LanceDB hydrate failed: %s", exc)
 
     @property
     def backend(self) -> str:
         if self._db is not None:
             return "lancedb"
-        if self.uri.startswith("s3://") or self.uri.endswith(".json"):
+        if self.uri.endswith(".json"):
             return "json"
+        if self.uri.startswith("s3://"):
+            return "json"  # S3 path without LanceDB package → caller uses embedding_index.json
         return "memory"
 
     def upsert(self, entries: Sequence[dict[str, Any]]) -> int:
@@ -74,8 +102,6 @@ class VectorStore:
             try:
                 existing = set(self._db.table_names())
                 if self.table_name in existing:
-                    self._table = self._db.open_table(self.table_name)
-                    # Simple full rewrite for demo volumes (<50k).
                     self._db.drop_table(self.table_name)
                 self._table = self._db.create_table(self.table_name, data=rows, mode="overwrite")
             except Exception as exc:  # pragma: no cover
@@ -83,15 +109,13 @@ class VectorStore:
         return count
 
     def vectors_by_id(self) -> dict[str, list[float]]:
-        if self._table is not None:
-            try:
-                df = self._table.to_pandas()
-                return {str(r["job_id"]): list(r["vector"]) for _, r in df.iterrows()}
-            except Exception as exc:  # pragma: no cover
-                logger.warning("LanceDB read failed: %s", exc)
+        if not self._memory and self._table is not None:
+            self._hydrate_memory_from_table()
         return {k: v["vector"] for k, v in self._memory.items()}
 
     def to_json_entries(self) -> list[dict[str, Any]]:
+        if not self._memory and self._table is not None:
+            self._hydrate_memory_from_table()
         return [
             {
                 "job_id": e["job_id"],
@@ -115,6 +139,13 @@ class VectorStore:
         entries = data.get("entries", data if isinstance(data, list) else [])
         return self.upsert(entries)
 
+    def load_json_bytes(self, raw: bytes | str) -> int:
+        if isinstance(raw, bytes):
+            raw = raw.decode("utf-8")
+        data = json.loads(raw)
+        entries = data.get("entries", data if isinstance(data, list) else [])
+        return self.upsert(entries)
+
     def search(self, query_vector: Sequence[float], top_k: int = 20) -> list[dict[str, Any]]:
         from embedding_index import cosine_similarity
 
@@ -128,6 +159,30 @@ class VectorStore:
             )
         scored.sort(key=lambda x: x["score"], reverse=True)
         return scored[:top_k]
+
+
+def resolve_vector_entries(
+    *,
+    json_raw: bytes | str | None = None,
+    uri: str | None = None,
+) -> tuple[list[dict[str, Any]], str]:
+    """Load embedding entries from LanceDB URI and/or JSON bytes.
+
+    Preference: existing LanceDB table → JSON hydrate into LanceDB → JSON-only memory.
+    Returns (entries, backend_label).
+    """
+    store = VectorStore(uri=uri)
+    if store.vectors_by_id():
+        return store.to_json_entries(), store.backend
+
+    if json_raw is not None:
+        store.load_json_bytes(json_raw)
+        # Persist into LanceDB when URI is writable
+        if store._db is not None and store._memory:
+            store.upsert(list(store._memory.values()))
+        return store.to_json_entries(), store.backend if store._db is not None else "json"
+
+    return [], store.backend
 
 
 def build_store_from_embedding_index(index: list[dict], uri: str | None = None) -> VectorStore:

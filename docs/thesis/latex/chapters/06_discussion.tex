@@ -1,0 +1,82 @@
+\chapter{Discussion}
+\label{ch:discussion}
+
+This chapter contains my own interpretation, practical application, and critical judgement. The numbers themselves stay those of Chapter~\ref{ch:results}.
+
+\section{Answering the research questions}
+\label{sec:answers}
+
+Table~\ref{tab:rq-answers} summarises my reading of the evidence at draft time.
+
+\begin{table}[ht]
+\centering
+\caption{Author's answers to the research questions}
+\label{tab:rq-answers}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{RQ} & \textbf{Answer} \\
+\midrule
+RQ1 & Integration without breaking SCD keys is possible. Extra schemas, identity that cannot change, Terraform isolation of AI resources, and a stop switch are enough. A quota pause is an operations incident. It does not prove that the architecture is wrong. \\
+RQ2 & Not closed by live data. The protocol and the rules baseline exist. Live Bedrock cells were blocked. It would be unscientific to name a provider winner. \\
+RQ3 & On this labelled set, dense retrieval beats the rule-based wizard on nDCG@10. H1 is supported for dense retrieval. Hybrid is not the nDCG winner here. It can still be a reasonable product default. \\
+RQ4 & Modelled spend at 1{,}000 jobs is cents, not tens of euros, when rules-first sampling is used. H2 and H4 are supported only in direction, and only under list-price assumptions. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Why dense can win on the gold set while hybrid is still used}
+\label{sec:dense-vs-hybrid}
+
+A tempting conclusion is ``stop using BM25''. That conclusion would ignore both the IR literature and the product needs. Reciprocal rank fusion exists because collections and queries are mixed \cf{cormack2009rrf}. BEIR shows that the best retriever changes by domain \cf{thakur2021beir}. The Career Matching Wizard must stay explainable. Keyword hits map cleanly onto highlighted evidence spans. This matters for citations and for GDPR-style transparency \cf{eu2016gdpr,edwards2021regulating}. Hybrid retrieval is therefore not a failed experiment. It is a compromise with more than one goal. The scientific claim that is actually supported is narrower: embedding retrieval improves nDCG@10 compared with the 60/20/20 rules on this junior-oriented gold set.
+
+The absolute scores (nDCG@10 $\approx$ 0.22 at best) come from honest labelling. They are not a defect of the methods. Scores near 1.0 on a tiny set would be easier to market and weaker as science.
+
+\section{Reading the error analysis}
+\label{sec:error-discussion}
+
+The zero scores on queries q04--q09 are important for supervisors and for future work. They show that average nDCG is not a single story. A product demo can show one good ML query. A thesis must also show where the corpus fails. In my view, expanding the job slice for DevOps, SAP, and product roles is a data-coverage task first. It is not solved by a larger language model alone.
+
+Visa and language constraints expose a deeper issue. Job text often states visa rules indirectly (``EU citizens only'', ``relocation support'', ``Blue Card''). Dense retrieval may treat two ML internships as similar even when only one offers sponsorship. The wizard does not solve this either unless visa tokens appear in the weighted fields. Rules-first enrichment of \texttt{visa\_stance} is the right long-term path. Retrieval and enrichment must be judged together. Chapter~\ref{ch:implications} returns to this point.
+
+Seniority confusion (intern versus working student versus graduate) is a labelling and taxonomy problem as much as a vector problem. German employers use different words for similar levels. A single embedding space helps, but taxonomy columns in Silver still matter for filters and for fair user expectations.
+
+\section{Quota as an experimental variable}
+\label{sec:quota}
+
+In my view, applied generative-AI theses should treat billing and quota rules as first-class experimental limits, equal to model choice. The FrugalGPT literature already treats cost as a performance dimension \cf{chen2023frugalgpt}. Account-level token caps are only a harder form of the same dimension. Reporting ``architecture complete / measurement pending'' with a fixed protocol is better than silently changing provider in the middle of the study. It is also better than inventing a Pareto table.
+
+This incident also shows why \texttt{AI\_ENABLED} and schedule pauses are not optional extras. They are part of scientific control. When Bedrock quota returns, the same runner should fill the missing cells without rewriting the thesis method.
+
+\section{Practical application}
+\label{sec:practical}
+
+For platform teams that already own a medallion pipeline, the practice to copy is: freeze identity and history; add AI as a join; measure against a simple baseline; put a budget in the request path; prefer in-region inference when the product is European. For career-product owners, the practice to copy is: do not sell raw dumps of public vacancies as intelligence; sell cited shortlists, visa/entry filters, and quality-checked history. For supervisors of applied master's projects, the practice to copy is: require a non-AI baseline and a stop switch before a language-model diagram is accepted as a contribution.
+
+Holstein et al.\ remind us that practitioners want tools that fit workflow, not only accuracy tables \cf{holstein2019improving}. DataForge Match is small, but it already follows that idea: API key, citations, and a wizard that stays available when AI is off.
+
+\section{Responsible-AI judgement}
+\label{sec:rai-discussion}
+
+In my judgement, DataForge Match is an advice tool for job discovery. It should not be described as a high-risk employment system in the AI Act sense, because it does not rank people for an employer \cf{eu2024aiact,veale2021demystifying}. Annex~III of the AI Act lists recruitment and selection of natural persons among high-risk uses when they affect access to employment. The Match API ranks \emph{vacancies} for a user who asked for help. That is closer to a search and recommendation service than to automated rejection of candidates.
+
+This legal reading does not remove remaining ethics duties. Visa heuristics can still harm if they are presented as certainty. A ``visa sponsorship likely'' label is not legal advice. Resume text is still personal data under the GDPR \cf{eu2016gdpr}. Citations can still have a valid structure and a wrong meaning. The human-in-the-loop queue, data removal, and ``not legal advice'' disclaimers are therefore still needed, even if the risk class is lower than employer screening.
+
+I also reject the opposite mistake: claiming ``low risk'' and then hiding automation. Job seekers deserve to know that ranking is automated, that evidence comes from public text, and that they should verify visa and language rules with the employer. Edwards and Veale argue that meaningful information about automated decisions can be required even when a full explanation right is narrow \cf{edwards2021regulating}. UI copy and API responses are part of responsible design, not marketing.
+
+Fairness literature warns against abstract fixes that ignore context \cf{selbst2019fairness,barocas2023fairness}. For seeker-side ranking, fairness means exposure to relevant roles across locations and language groups, not parity of false positives in hiring. This thesis cannot measure long-run exposure. It can require citations and document limits.
+
+\section{Comparison with related work}
+\label{sec:compare-lit}
+
+Person--job fit papers often report higher metrics on academic résumé datasets \cf{qin2018personjob}. Those datasets are cleaner and larger than a 96-job pilot. Karpukhin et al.\ report strong dense retrieval on open-domain QA \cf{karpukhin2020dpr}. Job search mixes HR boilerplate and legal hints. That is closer to BEIR ``heterogeneous'' settings than to QA \cf{thakur2021beir}. The modest nDCG here is therefore not shocking. It is a reason to avoid copying QA leaderboard numbers into product slides.
+
+\section{Limitations}
+\label{sec:limitations}
+
+The labelled set is small. The annotator and the system author are the same person. RQ2 live cells are missing. Multi-agent faithfulness under a real completion model is untested. Coverage of German vacancies is still incomplete. Visa stance is often \texttt{not\_mentioned} in the raw text. This limits product KPIs even when the model is good. Official binding details (matriculation number, signed supervisors, Examination Office declaration if it differs) were not all available at draft time.
+
+\section{Comparison of the expanded label set with the pilot}
+\label{sec:label-scale}
+
+The first pilot used 42 queries. The expanded set uses 103 queries on the same 96-job corpus. Mean nDCG@10 for dense retrieval moved only slightly (from about 0.220 to 0.217). The wizard and BM25 scores also stayed in the same band. This stability is useful. It suggests that the dense advantage is not an artefact of a tiny query list alone. Absolute scores remain modest. That is expected for a synthetic but graded corpus that mixes languages, visa phrases, and seniority words. Future work should add a second human annotator and more real vacancy text from Gold, not only more synthetic queries.
+

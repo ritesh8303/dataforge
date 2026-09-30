@@ -43,21 +43,31 @@ def lambda_handler(event, context):
         index = build_embedding_index(jobs_list[:limit], router)
         import boto3
 
-        boto3.client("s3").put_object(
+        s3 = boto3.client("s3")
+        s3.put_object(
             Bucket=gold_bucket,
             Key=index_key,
             Body=index_to_json(index).encode("utf-8"),
             ContentType="application/json",
         )
 
+        vector_uri = os.environ.get("VECTOR_STORE_URI", "").strip()
+        vector_backend = "json"
+        if vector_uri:
+            from vector_store import build_store_from_embedding_index
+
+            store = build_store_from_embedding_index(index, uri=vector_uri)
+            vector_backend = store.backend
+            print(f"Vector store backend={vector_backend} size={len(store.vectors_by_id())} uri={vector_uri}")
+
         return {
             "statusCode": 200,
             "body": json.dumps({
                 "enriched": len(enrichment_df),
                 "index_size": len(index),
+                "vector_backend": vector_backend,
                 "cost_summary": router.cost_logger.summary(),
             }),
-        }
-    except Exception as e:
+        }    except Exception as e:
         print(f"Enrichment failed: {e}")
         raise

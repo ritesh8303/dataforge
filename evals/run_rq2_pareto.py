@@ -4,6 +4,10 @@
 Examples:
   py -3 evals/run_rq2_pareto.py
   py -3 evals/run_rq2_pareto.py --live-providers --provider bedrock --limit 40
+  # When Bedrock quota is 0, use OpenAI (~€0.004 for 40 jobs with gpt-4o-mini):
+  set OPENAI_API_KEY=...
+  set AI_ENABLED=true
+  py -3 evals/run_rq2_pareto.py --live-providers --provider openai --limit 40
 """
 
 from __future__ import annotations
@@ -41,8 +45,10 @@ def _score_rules(job: dict) -> dict:
     }
 
 
-def _score_llm(job: dict, providers: list[str], task: str = "enrich") -> dict:
-    # Temporarily pin task profile to requested providers only (no OpenAI/Anthropic spill).
+def _score_llm(job: dict, providers: list[str], task: str = "enrich", *, strict: bool = True) -> dict:
+    """Score one job via LLM. When strict=True (default), call the pinned provider only —
+    do not count ModelRouter's local fallback as a successful live cell.
+    """
     original = TASK_PROFILES.get(task, {}).get("preferred_providers")
     if task in TASK_PROFILES:
         TASK_PROFILES[task]["preferred_providers"] = providers
@@ -57,9 +63,34 @@ def _score_llm(job: dict, providers: list[str], task: str = "enrich") -> dict:
     )
     t0 = time.perf_counter()
     try:
-        resp = router.complete(task, prompt, system="Classify the job. JSON only.", json_mode=True)
+        pinned = providers[0] if providers else "local"
+        if strict and pinned != "local":
+            provider = router._providers.get(pinned)
+            if provider is None or not provider.available():
+                raise RuntimeError(f"Pinned provider '{pinned}' is not available (missing API key?)")
+            resp = provider.complete(
+                prompt,
+                system="Classify the job. JSON only.",
+                json_mode=True,
+            )
+            from ai_gateway.providers.base import validate_json_response
+
+            ok_json, _ = validate_json_response(resp.text or "")
+            if not ok_json:
+                raise ValueError(f"Invalid JSON from {pinned}")
+            router.cost_logger.log(
+                task=task,
+                provider=resp.provider,
+                model_id=resp.model_id,
+                input_tokens=resp.input_tokens,
+                output_tokens=resp.output_tokens,
+                latency_ms=resp.latency_ms,
+                success=True,
+            )
+        else:
+            resp = router.complete(task, prompt, system="Classify the job. JSON only.", json_mode=True)
+
         ms = (time.perf_counter() - t0) * 1000
-        # Per-call cost from last successful log entry
         cost = 0.0
         if router.cost_logger.records:
             cost = float(router.cost_logger.records[-1].cost_usd)
@@ -74,7 +105,7 @@ def _score_llm(job: dict, providers: list[str], task: str = "enrich") -> dict:
     except Exception as exc:
         ms = (time.perf_counter() - t0) * 1000
         return {
-            "provider": "error",
+            "provider": providers[0] if providers else "error",
             "latency_ms": round(ms, 2),
             "cost_usd": 0.0,
             "ok": False,
@@ -116,27 +147,54 @@ def main() -> int:
         choices=["bedrock", "openai", "anthropic", "local"],
         help="When --live-providers, pin cascade to this provider only",
     )
+    parser.add_argument(
+        "--sleep",
+        type=float,
+        default=0.0,
+        help="Seconds to sleep between live LLM calls (rate-limit friendly)",
+    )
+    parser.add_argument(
+        "--allow-local-fallback",
+        action="store_true",
+        help="Allow ModelRouter local fallback (default: strict pinned provider only)",
+    )
     args = parser.parse_args()
 
     jobs = json.loads((ROOT / "evals" / "data" / "sample_jobs.json").read_text(encoding="utf-8"))[: args.limit]
     rows = []
-    for job in jobs:
+    for i, job in enumerate(jobs):
         row = {"job_id": job.get("job_id"), "rules": _score_rules(job)}
         if args.live_providers:
-            row["llm"] = _score_llm(job, providers=[args.provider])
+            if i and args.sleep > 0:
+                time.sleep(args.sleep)
+            row["llm"] = _score_llm(
+                job,
+                providers=[args.provider],
+                strict=not args.allow_local_fallback,
+            )
+            status = "ok" if row["llm"].get("ok") else f"FAIL:{row['llm'].get('error', '')[:80]}"
+            print(f"[{i + 1}/{len(jobs)}] {job.get('job_id')} {status}", flush=True)
         rows.append(row)
+
+    completion_model = {
+        "openai": os.environ.get("OPENAI_COMPLETION_MODEL", "gpt-4o-mini"),
+        "anthropic": os.environ.get("ANTHROPIC_COMPLETION_MODEL", "claude-3-haiku-20240307"),
+        "bedrock": os.environ.get("BEDROCK_COMPLETION_MODEL", "eu.amazon.nova-micro-v1:0"),
+        "local": "local-heuristic",
+    }.get(args.provider if args.live_providers else "", os.environ.get("BEDROCK_COMPLETION_MODEL", ""))
 
     report = {
         "n_jobs": len(jobs),
         "live_providers": args.live_providers,
         "pinned_provider": args.provider if args.live_providers else None,
+        "strict_pin": bool(args.live_providers and not args.allow_local_fallback),
         "bedrock_region": os.environ.get("AWS_BEDROCK_REGION", "eu-central-1"),
-        "completion_model": os.environ.get("BEDROCK_COMPLETION_MODEL", "amazon.titan-text-express-v1"),
+        "completion_model": completion_model,
         "rules": _agg(rows, "rules"),
         "llm": _agg(rows, "llm") if args.live_providers else None,
         "note": (
             "Rules = €0 baseline. Live point uses pinned provider only (default bedrock). "
-            "Costs are CostLogger estimates from MODEL_PRICING."
+            "Strict pin rejects silent local fallback. Costs from CostLogger / MODEL_PRICING."
         ),
         "rows_sample": rows[:5],
     }

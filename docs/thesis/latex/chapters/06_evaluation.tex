@@ -1,0 +1,68 @@
+\chapter{Evaluation results}
+\label{ch:evaluation}
+
+\section{Methodology overview}
+
+\begin{table}[ht]
+\centering
+\caption{Evaluation methodology}
+\label{tab:method}
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+\textbf{Experiment} & \textbf{Protocol} & \textbf{Metric} \\
+\midrule
+Matching (RQ3) & 42 graded queries $\times$ 96 jobs; BM25 / dense / hybrid / heuristic & nDCG@10, P@5, Recall@20, MRR \\
+Rules enrichment & Labelled jobs for field/seniority/visa/English & Precision / Recall / F1 \\
+Agent ablation & 30 queries; hybrid vs multi-agent & Citation structure validity \\
+RQ2 Pareto & Rules vs pinned provider (Bedrock) & Latency, \EUR{}, success rate \\
+ROI model & Pricing assumptions $\times$ token scenario & \EUR{} per 1k jobs / per match share \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Fixtures and runners live under \texttt{evals/}; results under \texttt{evals/results/}.
+
+\section{RQ3 --- Matching quality}
+\label{sec:rq3}
+
+From \texttt{evals/results/eval\_report.md}:
+
+\begin{table}[ht]
+\centering
+\caption{Matching quality (RQ3)}
+\label{tab:rq3}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Method} & \textbf{nDCG@10} & \textbf{P@5} & \textbf{Recall@20} & \textbf{MRR} \\
+\midrule
+bm25 & 0.1452 & 0.1619 & 0.2143 & 0.1844 \\
+\textbf{dense} & \textbf{0.2203} & \textbf{0.2190} & \textbf{0.2738} & \textbf{0.2677} \\
+hybrid & 0.1714 & 0.1714 & 0.2341 & 0.2344 \\
+heuristic & 0.1585 & 0.1905 & 0.2401 & 0.2117 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Interpretation.}
+Dense retrieval outperforms the heuristic wizard on nDCG@10 (\textbf{H1 supported} on this gold set). Hybrid trails pure dense on this particular label distribution but remains the \textbf{product default} because Match also emphasises lexical fallback, filterability, and citation workflows that combine lexical hits with structured JD evidence. Scores are intentionally \textbf{non-saturated} (unlike trivial demos with nDCG$\approx$1.0).
+
+\section{RQ2 --- Provider trade-offs (partial)}
+\label{sec:rq2}
+
+\textbf{Available now:} rules-only Pareto point (near-zero latency, \EUR{0}).
+\textbf{Blocked:} live Nova Micro completions due to applied account quotas of \textbf{0 tokens/minute and 0 tokens/day} for Nova Micro, despite higher AWS default TPM. A Service Quotas increase (cross-region Nova Micro TPM $\rightarrow$ 1{,}000{,}000) was submitted on 2026-09-16 and was \textbf{PENDING} at draft time.
+
+This is a \textbf{measurement gap}, not an architecture gap: the runner \texttt{evals/run\_rq2\_pareto.py -{}-live-providers -{}-provider bedrock} is ready. The thesis will update Table~RQ2 after approval without changing the protocol.
+
+\section{Multi-agent ablation (thesis-plus)}
+
+On the local provider, average citation \textbf{structure} validity was 1.0 for both hybrid single-shot and multi-agent (30 queries). This indicates the schema/citation contract is enforced, but \textbf{faithfulness} under Bedrock still requires a post-quota spot-check (local saturation does not prove semantic grounding).
+
+\section{Threats to validity}
+
+\begin{itemize}[leftmargin=*]
+  \item Label set size (42$\times$96) is adequate for an applied MSc pilot, not an industrial IR benchmark.
+  \item Dense advantage may partly reflect label construction; hybrid product choice is multi-objective.
+  \item ROI uses public pricing assumptions until live CostLogger traces accumulate.
+  \item RQ2 live cells incomplete pending quota.
+\end{itemize}

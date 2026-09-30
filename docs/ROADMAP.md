@@ -15,7 +15,7 @@
 
 **How to change the plan:** edit the tables/waves here, note `Last market check:` date below, and adjust build order in the next coding session. No approval ritual required.
 
-**Last market check:** 2026-09-13  
+**Last market check:** 2026-09-30  
 **Sources (seed):** DACH DE/AI JDs (Wavestone, GenAI DE, RAG/agent roles), EU DS hiring notes, your `UPSKILLING_PLAN` P0–P2 list, Allianz Agentic AI WS JD, workingstudentjobs.de teardown.
 
 Full gap matrix: Cursor canvas `industry-portfolio-coverage` (filter **Gaps only**) — update that when coverage status changes.
@@ -26,9 +26,9 @@ Full gap matrix: Cursor canvas `industry-portfolio-coverage` (filter **Gaps only
 |---|---|
 | Medallion + SCD2 + multi-source ETL + Terraform + CI | **Covered** (live AWS) |
 | dbt + dictionary + quality gate | **Partial** (add dbt docs polish) |
-| Tech-only taxonomy + visa/seniority rules + DACH/Personio/Himalayas/HN sources | **Partial** (Phase A shipped in code; AWS apply pending) |
-| RAG Match / enrichment / multi-provider gateway | **Partial** (Bedrock-first + kill switch + prompt registry in code) |
-| Hybrid BM25+vector (LanceDB), honest evals CI gate | **Partial** (Phase A shipped; LanceDB optional dep) |
+| Tech-only taxonomy + visa/seniority rules + DACH/Personio/Himalayas/HN sources | **Partial** — pivoting to **EU data/AI early-career** audience gate |
+| Hybrid BM25+vector (LanceDB), honest evals CI gate | **Partial** (Match uses `VECTOR_STORE_URI` + JSON fallback; LanceDB optional dep) |
+| RAG Match / enrichment / multi-provider gateway | **Partial** (Match defaults: data/AI + entry-level audience; Bedrock quota still blocked) |
 | FastAPI Match API + PII + citations + visa profile + agent toggle | **Partial** (Phase B shipped in code; AWS apply pending) |
 | MCP, multi-agent | **Partial** (Phase D in code: sequential/LangGraph, HITL, MCP, ablation; AWS apply pending) |
 | Airflow keyword, Azure provider stub, streaming/Spark talk-tracks | **Thin proof** (compose Airflow DAG + STREAMING_AND_SPARK + Step Functions Express) |
@@ -80,6 +80,8 @@ Suggested order only — swap freely if a target role weights differently.
 | 2026-09-13 | Phase B: FastAPI+Mangum Match API, PII, citations, visa filters, agent.html hybrid toggle, Function URL in ai.tf.optional | Portfolio Match surface |
 | 2026-09-13 | Phase D: multi-agent graph, HITL, MCP, ablation; Phase E: Step Functions Express, compose Airflow, RESPONSIBLE_AI, Spark note, dbt docs CI | Thesis-plus orchestration + governance |
 | 2026-09-16 | Demo script + RESULTS honesty; MCP auto-loads gitignored Match key; Bedrock Nova TPM increase requested (PENDING) | Wait on quota without blocking portfolio demo |
+| 2026-09-30 | Match `VECTOR_STORE_URI` (LanceDB) + JSON fallback; packaging doc; RQ2 OpenAI alternate while Bedrock case still CASE_OPENED | Close portfolio gaps without waiting on AWS |
+| 2026-09-30 | Product audience: EU + data/AI fields + fresher/WS/internship/thesis only (WSJ-inspired gate) | Thesis seeker focus |
 
 ## Explicitly out of scope (until evidence says otherwise)
 

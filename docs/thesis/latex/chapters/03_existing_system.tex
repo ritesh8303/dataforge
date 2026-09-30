@@ -1,0 +1,43 @@
+\chapter{DataForge as existing system}
+\label{ch:baseline}
+
+\section{Scope of the baseline system}
+
+Before the thesis AI layer, DataForge already provided:
+
+\begin{table}[ht]
+\centering
+\caption{Baseline DataForge components}
+\label{tab:baseline}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Component} & \textbf{Role} \\
+\midrule
+Ingest Lambdas + GitHub Actions & Arbeitnow, BA, ATS/Personio, Berlin startups, EURES, later Himalayas/HN \\
+Bronze S3 & Raw Parquet, short retention \\
+Silver S3 & SCD Type~2 job history \\
+Gold S3 + committed aggregates & Analytics CSVs, metrics, dbt/DuckDB path \\
+API Gateway & Jobs search + Metrics \\
+GitHub Pages & Dashboard, job board, Career Matching Wizard (heuristic) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Region: \texttt{eu-central-1}. Infrastructure as code: Terraform with S3 state backend.
+
+\section{Layer contracts (non-negotiable for RQ1)}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Bronze} may not invent business KPIs.
+  \item \textbf{Silver} owns identity and SCD validity; GenAI must not mutate \texttt{job\_id} / SCD keys.
+  \item \textbf{Gold} may consume additive enrichment joins.
+  \item Quality gates (Pydantic ingest, region taxonomy, CI quality script, dbt tests) remain authoritative.
+\end{itemize}
+
+\section{Heuristic Career Matching Wizard (baseline for RQ3)}
+
+The pre-AI wizard scores candidates with a \textbf{60\% skills / 20\% seniority / 20\% location} heuristic. It is an honest non-neural baseline---useful scientifically precisely because it is simple and transparent.
+
+\section{Audience refinement for the thesis product}
+
+The Match surface targets \textbf{intern / working-student / junior} seekers with optional visa-aware filters (e.g.\ Chancenkarte / job-seeker friendly heuristics). Visa fields are \textbf{advisory}, evidence-cited, and never legal advice.
