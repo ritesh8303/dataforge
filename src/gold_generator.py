@@ -327,9 +327,10 @@ def lambda_handler(event, context):
             if invalid_company.any():
                 print(f"Dropping {invalid_company.sum()} active jobs with invalid company after normalization.")
                 current = current[~invalid_company].copy().reset_index(drop=True)
-        print(f"Total active jobs: {len(current)}")
+        lakehouse_active = len(current)
+        print(f"Total active jobs (lakehouse): {lakehouse_active}")
 
-        # 1. All active jobs
+        # 1. All active jobs → product audience gate (EU + data/AI + fresher/WS/thesis)
         cols = [
             c
             for c in [
@@ -377,7 +378,6 @@ def lambda_handler(event, context):
             lambda x: True if str(x) == "True" else False
         )
 
-        # Product audience gate: EU + data/AI + fresher/WS/thesis only
         from processing.audience_gate import filter_jobs_for_product
         from enrichment.ingest_review import enqueue_ingest_review
 
@@ -394,7 +394,6 @@ def lambda_handler(event, context):
         )
         if accepted:
             all_jobs = pd.DataFrame(accepted)
-            # Stable product columns
             for col in (
                 "ai_field",
                 "ai_seniority",
@@ -405,8 +404,13 @@ def lambda_handler(event, context):
             ):
                 if col not in all_jobs.columns and accepted:
                     all_jobs[col] = [a.get(col) for a in accepted]
+            accepted_ids = set(all_jobs["job_id"].astype(str))
+            # Dashboard aggregates use the same product slice as all_jobs / Jobs board
+            product = current[current["job_id"].astype(str).isin(accepted_ids)].copy().reset_index(drop=True)
         else:
             all_jobs = all_jobs.iloc[0:0].copy()
+            product = current.iloc[0:0].copy()
+        print(f"Product board jobs: {len(product)} (lakehouse active: {lakehouse_active})")
 
         # 1b. Expired jobs (is_current=False)
         expired_raw = df[df["is_current"] == False].copy()
@@ -454,15 +458,16 @@ def lambda_handler(event, context):
             lambda x: True if str(x) == "True" else False
         )
 
-        # 2. Jobs by source
+        # 2–8. Dashboard aggregates scoped to product board (same slice as all_jobs)
         jobs_by_source = (
-            current.groupby("source").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
+            product.groupby("source").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
         )
 
         # 2b. Jobs by region (geographic only — never work-style "Remote")
-        validate_region_taxonomy(current["region"].unique())
+        if len(product):
+            validate_region_taxonomy(product["region"].unique())
         jobs_by_region = (
-            current.groupby("region").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
+            product.groupby("region").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
         )
 
         # 3. Top locations — take first part before comma to clean "Berlin, Berlin, Germany" → "Berlin"
@@ -476,11 +481,13 @@ def lambda_handler(event, context):
                     return mapped
             return text
 
-        current["location_clean"] = (
-            current["location"].str.split(",").str[0].str.strip().apply(clean_location_label)
+        product["location_clean"] = (
+            product["location"].astype(str).str.split(",").str[0].str.strip().apply(clean_location_label)
+            if len(product)
+            else pd.Series(dtype=str)
         )
         top_locations = (
-            current[current["location_clean"].notna() & (current["location_clean"] != "")]
+            product[product["location_clean"].notna() & (product["location_clean"] != "")]
             .groupby("location_clean")
             .size()
             .reset_index(name="job_count")
@@ -489,11 +496,11 @@ def lambda_handler(event, context):
             .rename(columns={"location_clean": "location"})
         )
 
-        # 4. Remote / hybrid / on-site — all sources via work_style
+        # 4. Remote / hybrid / on-site — product board via work_style
         work_style_labels = {"remote": "Remote", "hybrid": "Hybrid", "onsite": "On-site"}
-        if "work_style" in current.columns:
+        if "work_style" in product.columns and len(product):
             remote_vs_onsite = (
-                current.groupby("work_style")
+                product.groupby("work_style")
                 .size()
                 .reset_index(name="job_count")
                 .rename(columns={"work_style": "work_type"})
@@ -504,16 +511,26 @@ def lambda_handler(event, context):
         else:
             remote_vs_onsite = pd.DataFrame({"work_type": [], "job_count": []})
 
-        # 5. Jobs trend — count only first appearance of each job_id (true new jobs)
-        first_seen = df.sort_values("scd_start_date").drop_duplicates(subset="job_id", keep="first")
-        first_seen["date"] = pd.to_datetime(first_seen["scd_start_date"]).dt.date.astype(str)
-        jobs_trend = first_seen.groupby("date").size().reset_index(name="new_jobs").sort_values("date")
-
-        # 6. Top companies (real employers only)
-        companies_df = current.copy()
-        companies_df["company"] = companies_df["company"].apply(
-            lambda c: normalize_company(c)
+        # 5. Jobs trend — first appearance of product job_ids only
+        product_ids = set(product["job_id"].astype(str)) if len(product) else set()
+        first_seen = (
+            df[df["job_id"].astype(str).isin(product_ids)]
+            .sort_values("scd_start_date")
+            .drop_duplicates(subset="job_id", keep="first")
+            if product_ids
+            else df.iloc[0:0].copy()
         )
+        if len(first_seen):
+            first_seen = first_seen.copy()
+            first_seen["date"] = pd.to_datetime(first_seen["scd_start_date"]).dt.date.astype(str)
+            jobs_trend = first_seen.groupby("date").size().reset_index(name="new_jobs").sort_values("date")
+        else:
+            jobs_trend = pd.DataFrame({"date": [], "new_jobs": []})
+
+        # 6. Top companies (product board)
+        companies_df = product.copy()
+        if len(companies_df):
+            companies_df["company"] = companies_df["company"].apply(lambda c: normalize_company(c))
         top_companies = (
             companies_df[companies_df["company"].notna()]
             .groupby("company")
@@ -521,13 +538,15 @@ def lambda_handler(event, context):
             .reset_index(name="job_count")
             .sort_values("job_count", ascending=False)
             .head(20)
+            if len(companies_df)
+            else pd.DataFrame({"company": [], "job_count": []})
         )
 
-        # 7. Active vs expired — Active count must match filtered all_jobs (single source of truth)
+        # 7. Active vs expired — Active = product board size (matches all_jobs)
         expired_count = int((df["is_current"] == False).sum())
         active_vs_expired = pd.DataFrame(
             [
-                {"status": "Active", "job_count": len(current)},
+                {"status": "Active", "job_count": len(product)},
                 {"status": "Expired", "job_count": expired_count},
             ]
         )
@@ -614,9 +633,9 @@ def lambda_handler(event, context):
         homeoffice_desc_count = 0
         benefits_count = 0
 
-        arbeitnow_jobs = current[current["source"] == "arbeitnow"]
+        arbeitnow_jobs = product[product["source"] == "arbeitnow"] if len(product) else product
 
-        for _, row in current.iterrows():
+        for _, row in product.iterrows():
             raw_desc = str(row.get("description", ""))
             plain_text = strip_html(raw_desc)
             combined = " ".join(
@@ -647,7 +666,9 @@ def lambda_handler(event, context):
 
         top_skills = pd.DataFrame(skill_counter.most_common(20), columns=["skill", "job_count"])
 
-        english_jobs_total = int(current["is_english"].astype(bool).sum()) if "is_english" in current.columns else 0
+        english_jobs_total = (
+            int(product["is_english"].astype(bool).sum()) if "is_english" in product.columns and len(product) else 0
+        )
 
         description_insights = pd.DataFrame(
             [
@@ -661,7 +682,7 @@ def lambda_handler(event, context):
             ]
         )
 
-        quality_metrics = compute_quality_metrics(current)
+        quality_metrics = compute_quality_metrics(product if len(product) else current)
         data_quality_report = pd.DataFrame([quality_metrics])
 
         gold_base = f"s3://{gold_bucket}"
@@ -683,9 +704,12 @@ def lambda_handler(event, context):
         upload_metrics_json(gold_bucket)
         print("Metrics snapshot written to metrics.json")
 
-        msg = f"Gold layer refreshed. Active jobs: {len(current)}, Files written: 13"
+        msg = (
+            f"Gold layer refreshed. Product jobs: {len(all_jobs)}, "
+            f"lakehouse active: {lakehouse_active}, Files written: 13"
+        )
         print(msg)
-        _trigger_github_redeploy(len(current))
+        _trigger_github_redeploy(len(all_jobs))
         return {"statusCode": 200, "body": json.dumps({"message": msg})}
 
     except Exception as e:

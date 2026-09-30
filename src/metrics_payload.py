@@ -70,11 +70,28 @@ def build_metrics_payload(bucket: str) -> dict:
     }
 
     stats = stats_rows[0] if stats_rows else {}
+    lakehouse_new = int(stats.get("new_jobs", 0) or 0)
+    lakehouse_updated = int(stats.get("updated_jobs", 0) or 0)
+    lakehouse_expired = int(stats.get("expired_jobs", 0) or 0)
+    lakehouse_active = int(stats.get("total_silver", 0) or 0)
+    run_at = stats.get("run_at", "") or ""
+    run_date = run_at[:10] if len(run_at) >= 10 else today
+
+    # Product KPIs: all_jobs.csv is audience-gated (EU × data/AI × early career)
+    product_total = len(all_jobs)
+    product_new = sum(1 for j in all_jobs if (j.get("date_added") or "") == run_date)
+    if product_new == 0 and run_date != today:
+        product_new = sum(1 for j in all_jobs if (j.get("date_added") or "") == today)
+
     pipeline_stats = {
-        "new_jobs": int(stats.get("new_jobs", 0)),
-        "updated_jobs": int(stats.get("updated_jobs", 0)),
-        "expired_jobs": int(stats.get("expired_jobs", 0)),
-        "run_at": stats.get("run_at", ""),
+        # Dashboard "New Since Last Run" uses product new (aligned with total_jobs)
+        "new_jobs": product_new,
+        "product_new_jobs": product_new,
+        "updated_jobs": lakehouse_updated,
+        "expired_jobs": lakehouse_expired,
+        "run_at": run_at,
+        "lakehouse_new_jobs": lakehouse_new,
+        "lakehouse_active": lakehouse_active,
     }
 
     quality = quality_rows[0] if quality_rows else {}
@@ -86,15 +103,16 @@ def build_metrics_payload(bucket: str) -> dict:
         "schema_validation_pass": str(quality.get("schema_validation_pass", "false")).lower() == "true",
     }
 
-    run_at = pipeline_stats.get("run_at", "")
     if run_at:
         last_updated = run_at.replace("+00:00", "Z") if run_at.endswith("+00:00") else run_at
     else:
         last_updated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return {
-        "total_jobs": len(all_jobs),
-        "new_today": sum(1 for j in all_jobs if j.get("date_added", "") == today),
+        "total_jobs": product_total,
+        "new_today": product_new,
+        "lakehouse_total_jobs": lakehouse_active or int(active_vs_expired.get("Active", 0)),
+        "audience": "eu_data_ai_early_career",
         "english_jobs": english_jobs,
         "english_jobs_title_based": english_jobs,
         "english_jobs_strict": english_jobs_strict,
