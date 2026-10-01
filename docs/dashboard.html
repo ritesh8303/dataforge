@@ -156,7 +156,11 @@
   <div class="dash-header">
     <div>
       <h1>Job Intelligence Dashboard</h1>
-      <p>Aggregated job intelligence across BA Jobsuche, EURES, Arbeitnow, direct ATS, and Berlin startups</p>
+      <p>European job postings collected from BA Jobsuche, EURES, Arbeitnow, company career pages, and Berlin startups.</p>
+      <p id="scope-note" class="df-kpi-sub" style="margin-top:0.5rem;max-width:46rem;line-height:1.45;">
+        Big numbers = <strong>all active jobs</strong> on the public board.
+        Charts labeled <strong>Early-career product</strong> = EU data/AI roles for students, interns, graduates (~few hundred).
+      </p>
     </div>
     <div class="dash-header-actions">
       <span class="df-freshness">
@@ -170,33 +174,33 @@
 
   <!-- KPI Grid -->
   <div class="df-grid-5" style="margin-bottom:var(--df-space-8);">
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.16),rgba(167,139,250,0.08));" title="All active jobs on the published Gold board (full lakehouse).">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.16),rgba(167,139,250,0.08));" title="All active jobs currently published on the Jobs board.">
       <div class="df-kpi-icon">📊</div>
-      <div class="df-kpi-label">Active Board Jobs</div>
+      <div class="df-kpi-label">Active Jobs</div>
       <div class="df-kpi-value" id="kpi-total"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub" id="kpi-total-sub">full lakehouse</div>
+      <div class="df-kpi-sub" id="kpi-total-sub">all open postings</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.16),rgba(34,211,238,0.06));" title="New product-board jobs first seen on the latest pipeline run date.">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.16),rgba(34,211,238,0.06));" title="New active-board jobs first seen on the latest pipeline run date.">
       <div class="df-kpi-icon">🆕</div>
-      <div class="df-kpi-label">New Since Last Run <span class="kpi-info" title="Product-gated new jobs. Lakehouse SCD intake is shown in the subtitle.">ⓘ</span></div>
+      <div class="df-kpi-label">New On Board <span class="kpi-info" title="Jobs newly appearing on the published active board for the latest pipeline run. Early-career product new count is in the subtitle.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-today"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub" id="kpi-today-sub">product · latest pipeline run</div>
+      <div class="df-kpi-sub" id="kpi-today-sub">latest pipeline run</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#2dd4bf);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.12),rgba(45,212,191,0.1));">
       <div class="df-kpi-icon">🌐</div>
-      <div class="df-kpi-label">Remote Openings <span class="kpi-info" title="work_style = remote on the active board.">ⓘ</span></div>
+      <div class="df-kpi-label">Remote Jobs</div>
       <div class="df-kpi-value" id="kpi-remote"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub">active board · remote</div>
+      <div class="df-kpi-sub">among all active jobs</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#a78bfa,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(167,139,250,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🇬🇧</div>
-      <div class="df-kpi-label">English Jobs <span class="kpi-info" title="English signal on active board jobs.">ⓘ</span></div>
+      <div class="df-kpi-label">English-Friendly <span class="kpi-info" title="Heuristic signal from title/language fields — not a guarantee the role is English-only.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-english"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub" id="kpi-english-sub">active board</div>
+      <div class="df-kpi-sub" id="kpi-english-sub">signal on active jobs</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#fb923c,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(251,146,60,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🔥</div>
-      <div class="df-kpi-label">Top Skill</div>
+      <div class="df-kpi-label">Top Mentioned Skill</div>
       <div class="df-kpi-value" id="kpi-top-skill-count"><span class="df-skeleton kpi-skeleton"></span></div>
       <div class="df-kpi-sub" id="kpi-top-skill">loading...</div>
     </div>
@@ -204,7 +208,7 @@
 
   <!-- Coverage Funnel -->
   <div class="df-card chart-card" id="coverage-funnel-card" style="display:none;margin-bottom:var(--df-space-8);">
-    <div class="card-heading">Coverage Funnel <span class="df-kpi-sub">lakehouse → product board → employment · field · region</span></div>
+    <div class="card-heading">Early-career product funnel <span class="df-kpi-sub">all active jobs → EU data/AI early-career subset → type · field · country</span></div>
     <div class="df-grid-4" id="coverage-funnel-kpis" style="margin-bottom:var(--df-space-4);"></div>
     <div class="df-grid-3" id="coverage-funnel-breakdown"></div>
   </div>
@@ -212,20 +216,20 @@
   <div class="main-grid">
     <div class="col-left">
       <div class="df-card chart-card">
-        <div class="card-heading">New Jobs Trend — Last 30 Days</div>
+        <div class="card-heading">New Early-Career Product Jobs — 30 Days <span class="df-kpi-sub">product gate only · not the full board</span></div>
         <div class="chart-wrap">
           <canvas id="trend-chart"></canvas>
         </div>
       </div>
       <div class="df-card chart-card">
-        <div class="card-heading">Skill Demand (Top 8) <span class="df-kpi-sub">titles · tags · descriptions where available</span></div>
+        <div class="card-heading">Skill Mentions (Top 8) <span class="df-kpi-sub">all active jobs · title/tags/description keyword hits</span></div>
         <div id="top-skills"></div>
       </div>
     </div>
 
     <div class="col-right">
       <div class="df-card chart-card">
-        <div class="card-heading">Remote vs On-site</div>
+        <div class="card-heading">Remote vs On-site <span class="df-kpi-sub">all active jobs</span></div>
         <div class="donut-inner">
           <div class="donut-ring">
             <canvas id="donut-remote"></canvas>
@@ -239,7 +243,7 @@
       </div>
 
       <div class="df-card chart-card">
-        <div class="card-heading">Country Distribution</div>
+        <div class="card-heading">Country Distribution <span class="df-kpi-sub">all active jobs</span></div>
         <div class="donut-inner">
           <div class="donut-ring">
             <canvas id="donut-region"></canvas>
@@ -253,12 +257,12 @@
       </div>
 
       <div class="df-card chart-card">
-        <div class="card-heading">Jobs by Source</div>
+        <div class="card-heading">Jobs by Source <span class="df-kpi-sub">all active jobs</span></div>
         <div id="source-bars"></div>
       </div>
 
       <div class="df-card chart-card">
-        <div class="card-heading">Top 5 Hiring Companies</div>
+        <div class="card-heading">Top Hiring Companies <span class="df-kpi-sub">all active jobs</span></div>
         <div class="company-list" id="top-companies"></div>
       </div>
     </div>
@@ -269,7 +273,7 @@
   <div class="df-footer-inner">
     <div>
       <div class="df-footer-brand"><img src="df-logo.png" alt="" /> DataForge</div>
-      <p>Pipeline: Lambda → S3 Bronze → Silver (SCD Type 2) → Gold → API Gateway</p>
+      <p>Jobs are collected daily, cleaned, and published to this dashboard and the Jobs board.</p>
     </div>
     <div class="df-footer-links">
       <a href="index.html">Home</a>
@@ -463,46 +467,43 @@
     const totalSub = document.getElementById("kpi-total-sub");
     if (totalSub) {
       const product = data.product_jobs ?? data.early_career_jobs;
-      const lake = data.lakehouse_total_jobs ?? data.pipeline_stats?.lakehouse_active;
-      if (product != null && lake != null) {
-        totalSub.textContent = `product early-career ${Number(product).toLocaleString()} · lakehouse ${Number(lake).toLocaleString()}`;
-      } else if (product != null) {
-        totalSub.textContent = `product early-career ${Number(product).toLocaleString()}`;
-      } else {
-        totalSub.textContent = "full active board";
-      }
+      totalSub.textContent = product != null
+        ? `early-career product subset: ${Number(product).toLocaleString()}`
+        : "all open postings";
+    }
+
+    const scopeNote = document.getElementById("scope-note");
+    if (scopeNote && data.scope_note) {
+      scopeNote.textContent = data.scope_note;
     }
 
     const ps = data.pipeline_stats || {};
-    const productNew = ps.product_new_jobs ?? ps.new_jobs ?? data.new_today ?? 0;
-    setEl("kpi-today", Number(productNew).toLocaleString());
+    const boardNew = ps.board_new_jobs ?? data.new_today ?? ps.lakehouse_new_jobs ?? 0;
+    const productNew = ps.product_new_jobs ?? 0;
+    setEl("kpi-today", Number(boardNew).toLocaleString());
     const todaySub = document.getElementById("kpi-today-sub");
     if (todaySub) {
-      const lakeNew = ps.lakehouse_new_jobs;
       const runAt = ps.run_at;
       const runBit = runAt
         ? `run ${new Date(runAt).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}`
         : "latest pipeline run";
-      todaySub.textContent = (lakeNew != null && lakeNew !== "")
-        ? `product · of ${Number(lakeNew).toLocaleString()} lakehouse new · ${runBit}`
-        : `product · ${runBit}`;
+      todaySub.textContent = `early-career product new: ${Number(productNew).toLocaleString()} · ${runBit}`;
     }
 
     setEl("kpi-remote", (rc.remote != null ? rc.remote : (rv["Remote"] || 0)).toLocaleString());
 
     const englishTitle = data.english_jobs_title_based ?? data.english_jobs ?? data.description_insights?.english_jobs ?? 0;
-    const englishStrict = data.english_jobs_strict;
     setEl("kpi-english", Number(englishTitle).toLocaleString());
     const englishSub = document.getElementById("kpi-english-sub");
     if (englishSub) {
-      englishSub.textContent = englishStrict != null
-        ? `active board · product strict: ${Number(englishStrict).toLocaleString()}`
-        : "active board";
+      const total = Number(data.total_jobs || 0) || 1;
+      const pct = Math.round((Number(englishTitle) / total) * 100);
+      englishSub.textContent = `~${pct}% of active jobs · heuristic signal`;
     }
 
     if (data.top_skills?.length) {
-      setEl("kpi-top-skill-count", data.top_skills[0].count.toLocaleString() + " postings");
-      setEl("kpi-top-skill", "#1: " + data.top_skills[0].skill);
+      setEl("kpi-top-skill-count", data.top_skills[0].count.toLocaleString() + " mentions");
+      setEl("kpi-top-skill", "#1: " + data.top_skills[0].skill + " · all active");
     }
 
     setEl("last-updated", "Updated " + new Date(data.last_updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }));
@@ -569,27 +570,28 @@
     if (!card || !funnel) return;
     card.style.display = "";
 
-    const lake = Number(funnel.lakehouse_active || 0);
+    const lake = Number(funnel.published_active || funnel.lakehouse_active || 0);
     const product = Number(funnel.product_jobs || 0);
     const pct = lake ? Math.round((product / lake) * 100) : null;
     const kpiEl = document.getElementById("coverage-funnel-kpis");
     if (kpiEl) {
       kpiEl.innerHTML = `
         <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#64748b,#94a3b8);--kpi-tint:linear-gradient(145deg,rgba(100,116,139,0.12),transparent);">
-          <div class="df-kpi-label">Lakehouse Active</div>
+          <div class="df-kpi-label">All Active Jobs</div>
           <div class="df-kpi-value">${lake.toLocaleString()}</div>
+          <div class="df-kpi-sub">published Jobs board</div>
         </div>
         <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.14),transparent);">
-          <div class="df-kpi-label">Product Jobs</div>
+          <div class="df-kpi-label">Early-Career Product</div>
           <div class="df-kpi-value">${product.toLocaleString()}</div>
-          <div class="df-kpi-sub">${pct != null ? pct + "% of lakehouse" : "EU · data/AI · early career"}</div>
+          <div class="df-kpi-sub">${pct != null ? pct + "% of active · EU data/AI" : "EU · data/AI · early career"}</div>
         </div>
         <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.12),transparent);">
-          <div class="df-kpi-label">Employment Types</div>
+          <div class="df-kpi-label">Role Types (product)</div>
           <div class="df-kpi-value">${Object.keys(funnel.by_employment_type || {}).length}</div>
         </div>
         <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#fb923c,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(251,146,60,0.12),transparent);">
-          <div class="df-kpi-label">Fields</div>
+          <div class="df-kpi-label">Fields (product)</div>
           <div class="df-kpi-value">${Object.keys(funnel.by_field || {}).length}</div>
         </div>`;
     }
@@ -612,15 +614,15 @@
     if (br) {
       br.innerHTML = `
         <div>
-          <div class="card-heading" style="font-size:0.8rem;margin-bottom:var(--df-space-2)">By employment type</div>
+          <div class="card-heading" style="font-size:0.8rem;margin-bottom:var(--df-space-2)">Product · by role type</div>
           ${fmtBars(funnel.by_employment_type, PASTEL.mint)}
         </div>
         <div>
-          <div class="card-heading" style="font-size:0.8rem;margin-bottom:var(--df-space-2)">By field</div>
+          <div class="card-heading" style="font-size:0.8rem;margin-bottom:var(--df-space-2)">Product · by field</div>
           ${fmtBars(funnel.by_field, PASTEL.purple)}
         </div>
         <div>
-          <div class="card-heading" style="font-size:0.8rem;margin-bottom:var(--df-space-2)">By region (top 10)</div>
+          <div class="card-heading" style="font-size:0.8rem;margin-bottom:var(--df-space-2)">Product · by country</div>
           ${fmtBars(funnel.by_region, PASTEL.blue)}
         </div>`;
     }
