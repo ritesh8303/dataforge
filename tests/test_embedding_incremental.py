@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from embedding_index import build_embedding_index, content_hash, index_from_json, index_to_json, job_text
+from embedding_index import build_embedding_index, content_hash, index_from_json, index_to_json
 from ai_gateway.router import ModelRouter
 
 

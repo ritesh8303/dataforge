@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from unittest.mock import patch
 
-import pytest
 
 # Prefer site-packages FastAPI/Pydantic over vendored Lambda copies under src/.
 import fastapi  # noqa: F401

@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
 
-import pytest
 
 
 def test_esco_extract_python_spark():

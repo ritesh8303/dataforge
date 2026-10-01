@@ -230,7 +230,7 @@ def extract_profile(
             skills=[str(s).lower() for s in skills][:20],
             dream_role=dream_role,
             cities=[str(c).lower() for c in cities][:10],
-            languages=[str(l).lower() for l in langs][:5],
+            languages=[str(lang).lower() for lang in langs][:5],
             german_level=str(parsed.get("german_level") or base.german_level),
             visa_status=visa_status,
             seniority_target=seniority,

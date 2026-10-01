@@ -7,7 +7,7 @@ import json
 import os
 import smtplib
 import urllib.request
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from email.message import EmailMessage
 from io import StringIO
 from pathlib import Path

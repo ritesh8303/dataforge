@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import ast
 import inspect
 from pathlib import Path
 
@@ -13,7 +12,6 @@ SRC = ROOT / "src"
 
 from enrichment.rules_de_en import FIELD_VALUES, SENIORITY_VALUES, VISA_VALUES
 from enrichment.schemas import (
-    JobEnrichment,
     PROFILE_VISA_STATUS,
     VISA_BLOCKING_FOR_SEEKER,
     normalize_visa_stance,

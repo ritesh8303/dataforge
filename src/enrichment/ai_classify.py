@@ -14,7 +14,6 @@ from ai_gateway.config import ai_enabled
 from ai_gateway.providers.base import validate_json_response
 from enrichment.rules_de_en import apply_no_experience_fresher, classify_job
 from enrichment.schemas import (
-    JobEnrichment,
     openai_enrichment_json_schema,
     parse_enrichment_payload,
 )

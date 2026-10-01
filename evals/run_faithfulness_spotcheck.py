@@ -61,24 +61,74 @@ def _openai_judge(job: dict, citation: dict) -> dict:
     }
 
 
+def _offline_match(limit: int) -> dict:
+    """CI-safe match over eval fixtures (no S3 / GOLD_BUCKET)."""
+    from ai_gateway.router import ModelRouter
+    from api.match_service import apply_profile_filters, build_citations
+    from embedding_index import build_embedding_index
+    from retrieval import rank_hybrid
+
+    sample_path = ROOT / "evals" / "data" / "sample_jobs.json"
+    jobs = json.loads(sample_path.read_text(encoding="utf-8"))
+    for job in jobs:
+        job.setdefault("audience_accept", True)
+        job.setdefault("ai_entry_level", True)
+        job.setdefault("ai_field", job.get("ai_field") or "data_engineering")
+
+    resume = "Python SQL Spark Airflow AWS. Seeking working student or junior data engineer."
+    dream = "Data Engineer"
+    jobs = apply_profile_filters(
+        jobs,
+        entry_level_only=True,
+        data_ai_only=False,
+        audience_only=False,
+    )
+    router = ModelRouter()
+    offline = type("Offline", (), {"name": "offline", "available": lambda self: False})()
+    for name in ("openai", "anthropic", "bedrock", "azure", "mistral"):
+        router._providers[name] = offline
+    index = build_embedding_index(jobs[: min(len(jobs), 120)], router)
+    vectors = {e["job_id"]: e["vector"] for e in index}
+
+    def embed_fn(text: str):
+        return router.embed("embed", text).vector
+
+    ranked = rank_hybrid(
+        query=f"{dream} {resume} Berlin",
+        jobs=jobs,
+        vectors_by_id=vectors,
+        embed_fn=embed_fn,
+        top_k=limit,
+    )
+    out_jobs = []
+    for job in ranked[:limit]:
+        item = dict(job)
+        item["citations"] = build_citations(item, resume[:400], dream)
+        out_jobs.append(item)
+    return {"jobs": out_jobs, "method": "hybrid_offline_fixture", "cost_summary": {}}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=10)
     parser.add_argument("--use-llm-judge", action="store_true")
     args = parser.parse_args()
 
-    from api.match_service import match_jobs
+    if os.environ.get("GOLD_BUCKET"):
+        from api.match_service import match_jobs
 
-    payload = match_jobs(
-        resume="Python SQL Spark Airflow AWS. Seeking working student or junior data engineer.",
-        dream_role="Data Engineer",
-        location="Berlin",
-        method="hybrid",
-        limit=args.limit,
-        entry_level_only=True,
-        data_ai_only=True,
-        audience_only=True,
-    )
+        payload = match_jobs(
+            resume="Python SQL Spark Airflow AWS. Seeking working student or junior data engineer.",
+            dream_role="Data Engineer",
+            location="Berlin",
+            method="hybrid",
+            limit=args.limit,
+            entry_level_only=True,
+            data_ai_only=True,
+            audience_only=True,
+        )
+    else:
+        payload = _offline_match(args.limit)
     rows = []
     for job in payload.get("jobs") or []:
         for cite in job.get("citations") or []:
