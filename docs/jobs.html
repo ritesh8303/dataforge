@@ -7,7 +7,8 @@
   <title>DataForge — Job Intelligence Board</title>
   <meta name="description" content="DataForge Job Intelligence Board — search and filter Europe-wide jobs across BA Jobsuche, EURES, Arbeitnow, direct ATS feeds, and Berlin startups." />
   <link rel="icon" href="df-logo.png" type="image/png" />
-  <meta name="theme-color" content="#05060d" />
+  <meta name="theme-color" content="#f3f6fb" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#05060d" media="(prefers-color-scheme: dark)" />
   <link rel="stylesheet" href="components/design-system.css" />
   <script>
     (function () {
@@ -42,7 +43,7 @@
     .job-date { font-size: 0.75rem; color: var(--df-text-muted); }
     .pagination { display: flex; justify-content: center; gap: var(--df-space-2); margin-top: var(--df-space-8); flex-wrap: wrap; }
     .page-btn { background: var(--df-glass); backdrop-filter: blur(8px); border: 1px solid var(--df-border); border-radius: var(--df-radius); color: var(--df-text-secondary); padding: 0.45rem 0.9rem; font-size: 0.8125rem; cursor: pointer; transition: all var(--df-transition-fast); font-family: inherit; }
-    .page-btn.active { background: var(--df-gradient); border-color: transparent; color: #fff; box-shadow: var(--df-shadow-primary); }
+    .page-btn.active { background: var(--df-gradient); border-color: transparent; color: var(--df-on-gradient); box-shadow: var(--df-shadow-primary); }
     .page-btn:hover:not(.active) {
       border-color: var(--df-hover-border);
       color: var(--df-primary-dark);

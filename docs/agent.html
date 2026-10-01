@@ -6,7 +6,8 @@
   <title>DataForge — Career Matching Wizard</title>
   <meta name="description" content="DataForge Career Matching Wizard — rule-based resume matching against live job listings with skill scoring and export." />
   <link rel="icon" href="df-logo.png" type="image/png" />
-  <meta name="theme-color" content="#05060d" />
+  <meta name="theme-color" content="#f3f6fb" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#05060d" media="(prefers-color-scheme: dark)" />
   <link rel="stylesheet" href="components/design-system.css" />
   <style>
     body { background: transparent; }
@@ -23,7 +24,7 @@
     .step-container.active { display: block; }
 
     .chat-card {
-      background: rgba(8, 10, 22, 0.7);
+      background: var(--df-chat-bg);
       border-radius: var(--df-radius);
       padding: var(--df-space-5);
       border: 1px solid var(--df-border);
@@ -44,7 +45,7 @@
     }
 
     .chat-bubble.agent {
-      background: rgba(16, 19, 35, 0.9);
+      background: var(--df-chat-agent);
       color: var(--df-text);
       border: 1px solid var(--df-border);
       align-self: flex-start;
@@ -53,7 +54,7 @@
 
     .chat-bubble.user {
       background: rgba(34, 211, 238, 0.12);
-      color: #67e8f9;
+      color: var(--df-badge-fg-cyan);
       border: 1px solid rgba(34, 211, 238, 0.28);
       align-self: flex-end;
       border-top-right-radius: 4px;
@@ -107,7 +108,7 @@
     .results-panel.active { display: block; }
 
     .report-panel {
-      background: linear-gradient(145deg, rgba(22, 26, 48, 0.85), rgba(10, 12, 24, 0.75));
+      background: var(--df-surface-card);
       backdrop-filter: blur(16px);
       border: 1px solid var(--df-border);
       box-shadow: var(--df-shadow);
@@ -238,7 +239,7 @@
     }
 
     .badge-tier.faang { background: var(--df-error-bg); color: var(--df-error); }
-    .badge-tier.product { background: rgba(34, 211, 238, 0.16); color: #67e8f9; }
+    .badge-tier.product { background: rgba(34, 211, 238, 0.16); color: var(--df-badge-fg-cyan); }
     .badge-tier.startup { background: var(--df-success-bg); color: var(--df-success); }
     .badge-tier.midtier { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
 
@@ -250,7 +251,7 @@
     }
 
     .badge-type.remote { background: var(--df-success-bg); color: var(--df-success); }
-    .badge-type.hybrid { background: rgba(251, 146, 60, 0.16); color: #fdba74; }
+    .badge-type.hybrid { background: rgba(251, 146, 60, 0.16); color: var(--df-badge-fg-peach); }
     .badge-type.onsite { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
 
     .badge-pri {

@@ -7,7 +7,8 @@
   <meta name="description" content="DataForge is a Job Intelligence Platform aggregating and analyzing Europe-wide job data across BA Jobsuche, EURES, direct ATS feeds, Arbeitnow, and Berlin startups." />
   <link rel="icon" href="df-logo.png" type="image/png" />
   <link rel="stylesheet" href="components/design-system.css" />
-  <meta name="theme-color" content="#05060d" />
+  <meta name="theme-color" content="#f3f6fb" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#05060d" media="(prefers-color-scheme: dark)" />
   <style>
     .hero-content { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; }
     .hero-logo {
@@ -20,7 +21,7 @@
     .hero-sub { font-size: 1.15rem; line-height: 1.75; margin-bottom: var(--df-space-8); max-width: 620px; margin-left: auto; margin-right: auto; color: var(--df-text-secondary); }
     .hero-cta { display: flex; gap: var(--df-space-4); justify-content: center; flex-wrap: wrap; }
     .hero-preview-frame {
-      background: linear-gradient(165deg, rgba(22, 26, 48, 0.85), rgba(10, 12, 24, 0.78));
+      background: var(--df-surface-card);
       backdrop-filter: blur(18px);
       border: 1px solid var(--df-border);
       border-radius: var(--df-radius-xl);
@@ -70,7 +71,7 @@
     .stat-skeleton { display: inline-block; width: 80px; height: 2rem; border-radius: var(--df-radius-sm); }
     .ticker {
       overflow: hidden; border-top: 1px solid var(--df-border); border-bottom: 1px solid var(--df-border);
-      background: rgba(8, 10, 22, 0.55); padding: 0.85rem 0;
+      background: var(--df-ticker-bg); padding: 0.85rem 0;
     }
     .ticker-track { display: flex; gap: 2.5rem; width: max-content; animation: ticker 28s linear infinite; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--df-text-muted); }
     .ticker-track span { white-space: nowrap; }

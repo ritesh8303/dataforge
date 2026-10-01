@@ -6,7 +6,8 @@
   <title>DataForge — Job Intelligence Dashboard</title>
   <meta name="description" content="DataForge Job Intelligence Dashboard — aggregated analytics across BA Jobsuche, EURES, Arbeitnow, direct ATS feeds, and Berlin startups." />
   <link rel="icon" href="df-logo.png" type="image/png" />
-  <meta name="theme-color" content="#05060d" />
+  <meta name="theme-color" content="#f3f6fb" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#05060d" media="(prefers-color-scheme: dark)" />
   <link rel="stylesheet" href="components/design-system.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -280,12 +281,26 @@
 
   let trendChartInstance = null;
   const donutInstances = {};
+  let lastData = null;
 
-  const CHART_COLORS = {
-    grid: 'rgba(148,163,184,0.1)',
-    tick: '#94a3b8',
-    tooltip: { bg: 'rgba(10,12,24,0.94)', border: 'rgba(34,211,238,0.28)', text: '#f4f7ff' }
-  };
+  function cssVar(name, fallback) {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return value || fallback;
+  }
+
+  function chartColors() {
+    return {
+      grid: cssVar('--df-chart-grid', 'rgba(148,163,184,0.1)'),
+      tick: cssVar('--df-chart-tick', '#94a3b8'),
+      tooltip: {
+        bg: cssVar('--df-chart-tooltip-bg', 'rgba(10,12,24,0.94)'),
+        border: cssVar('--df-chart-tooltip-border', 'rgba(34,211,238,0.28)'),
+        text: cssVar('--df-chart-tooltip-text', '#f4f7ff')
+      },
+      pointBorder: cssVar('--df-chart-point-border', '#0a0c16'),
+      donutBorder: cssVar('--df-chart-border', '#05060d')
+    };
+  }
   const PASTEL = { blue: '#22d3ee', purple: '#a78bfa', mint: '#2dd4bf', pink: '#f472b6', peach: '#fb923c', gray: '#64748b' };
 
   function drawTrend(trend) {
@@ -313,7 +328,7 @@
           fill: true,
           tension: 0.35,
           pointBackgroundColor: PASTEL.purple,
-          pointBorderColor: '#0a0c16',
+          pointBorderColor: chartColors().pointBorder,
           pointHoverRadius: 5,
           pointRadius: 2,
           pointHitRadius: 10
@@ -325,10 +340,10 @@
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: CHART_COLORS.tooltip.bg,
-            titleColor: CHART_COLORS.tooltip.text,
-            bodyColor: CHART_COLORS.tooltip.text,
-            borderColor: CHART_COLORS.tooltip.border,
+            backgroundColor: chartColors().tooltip.bg,
+            titleColor: chartColors().tooltip.text,
+            bodyColor: chartColors().tooltip.text,
+            borderColor: chartColors().tooltip.border,
             borderWidth: 1,
             padding: 10,
             cornerRadius: 8,
@@ -339,11 +354,11 @@
         scales: {
           x: {
             grid: { display: false },
-            ticks: { color: CHART_COLORS.tick, font: { size: 10 }, maxTicksLimit: 8 }
+            ticks: { color: chartColors().tick, font: { size: 10 }, maxTicksLimit: 8 }
           },
           y: {
-            grid: { color: CHART_COLORS.grid },
-            ticks: { color: CHART_COLORS.tick, font: { size: 10 } }
+            grid: { color: chartColors().grid },
+            ticks: { color: chartColors().tick, font: { size: 10 } }
           }
         }
       }
@@ -395,7 +410,7 @@
       type: 'doughnut',
       data: {
         labels,
-        datasets: [{ data: values, backgroundColor: colors, borderColor: '#05060d', borderWidth: 2, hoverOffset: 4 }]
+        datasets: [{ data: values, backgroundColor: colors, borderColor: chartColors().donutBorder, borderWidth: 2, hoverOffset: 4 }]
       },
       options: {
         responsive: true,
@@ -404,10 +419,10 @@
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: CHART_COLORS.tooltip.bg,
-            titleColor: CHART_COLORS.tooltip.text,
-            bodyColor: CHART_COLORS.tooltip.text,
-            borderColor: CHART_COLORS.tooltip.border,
+            backgroundColor: chartColors().tooltip.bg,
+            titleColor: chartColors().tooltip.text,
+            bodyColor: chartColors().tooltip.text,
+            borderColor: chartColors().tooltip.border,
             borderWidth: 1,
             padding: 8,
             cornerRadius: 6
@@ -430,6 +445,7 @@
   }
 
   function render(data) {
+    lastData = data;
     const rv = data.remote_vs_onsite || {};
     const rc = data.remote_counts || {};
     const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -551,6 +567,10 @@
 
   fetchMetrics();
   setInterval(fetchMetrics, REFRESH_MS);
+  const themeMedia = window.matchMedia('(prefers-color-scheme: light)');
+  themeMedia.addEventListener('change', function () {
+    if (lastData) render(lastData);
+  });
 </script>
 <script src="components/ui.js"></script>
 </body>
