@@ -285,9 +285,11 @@ def build_metrics_payload(bucket: str) -> dict:
     board_total = len(all_jobs)
     # Prefer published board as the headline active count; silver may differ slightly.
     lakehouse_total = lakehouse_active or board_total
+    # Prefer pipeline SCD "new" for the headline; board_new is first-seen on run_date in Gold.
+    headline_new = lakehouse_new or board_new
 
     pipeline_stats = {
-        "new_jobs": board_new or lakehouse_new,
+        "new_jobs": headline_new,
         "board_new_jobs": board_new,
         "product_new_jobs": product_new,
         "updated_jobs": lakehouse_updated,
@@ -324,7 +326,7 @@ def build_metrics_payload(bucket: str) -> dict:
     return {
         "total_jobs": board_total or lakehouse_total,
         "board_jobs": board_total,
-        "new_today": board_new or lakehouse_new,
+        "new_today": headline_new,
         "early_career_jobs": product_total,
         "product_jobs": product_total,
         "lakehouse_total_jobs": lakehouse_total,

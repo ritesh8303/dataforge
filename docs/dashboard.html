@@ -478,7 +478,7 @@
     }
 
     const ps = data.pipeline_stats || {};
-    const boardNew = ps.board_new_jobs ?? data.new_today ?? ps.lakehouse_new_jobs ?? 0;
+    const boardNew = ps.lakehouse_new_jobs ?? data.new_today ?? ps.board_new_jobs ?? 0;
     const productNew = ps.product_new_jobs ?? 0;
     setEl("kpi-today", Number(boardNew).toLocaleString());
     const todaySub = document.getElementById("kpi-today-sub");
