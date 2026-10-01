@@ -28,9 +28,11 @@ class MatchRequest(BaseModel):
         description="eu_citizen | blue_card | chancenkarte_or_job_seeker | student_visa | needs_visa_from_abroad",
     )
     german_level: str = Field(default="", description="CEFR level, e.g. A1–C2")
-    entry_level_only: bool = False
+    entry_level_only: bool = True
     english_ok_only: bool = False
     tech_only: bool = False
+    data_ai_only: bool = True
+    audience_only: bool = True
 
 
 def _expected_api_key() -> str:
@@ -122,6 +124,8 @@ async def match_endpoint(
                 entry_level_only=body.entry_level_only,
                 english_ok_only=body.english_ok_only,
                 tech_only=body.tech_only,
+                data_ai_only=body.data_ai_only,
+                audience_only=body.audience_only,
             )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -155,9 +159,11 @@ async def match_get(
     limit: int = Query(default=15, ge=1, le=50),
     visa_status: str = "",
     german_level: str = "",
-    entry_level_only: bool = False,
+    entry_level_only: bool = True,
     english_ok_only: bool = False,
-    tech_only: bool = True,
+    tech_only: bool = False,
+    data_ai_only: bool = True,
+    audience_only: bool = True,
     _: None = Depends(require_api_key),
 ) -> Response:
     body = MatchRequest(
@@ -171,5 +177,7 @@ async def match_get(
         entry_level_only=entry_level_only,
         english_ok_only=english_ok_only,
         tech_only=tech_only,
+        data_ai_only=data_ai_only,
+        audience_only=audience_only,
     )
     return await match_endpoint(body, request, None)

@@ -53,8 +53,24 @@ def enqueue_ingest_review(rows: Sequence[dict[str, Any]], path: str | Path | Non
                 "seniority": job.get("ai_seniority") or job.get("seniority", ""),
                 "reasons": ",".join(job.get("audience_reject_reasons") or []),
                 "payload_json": json.dumps(
-                    {k: job.get(k) for k in ("job_id", "title", "url", "job_url", "audience_reject_reasons")}
-                )[:2000],
+                    {
+                        k: job.get(k)
+                        for k in (
+                            "job_id",
+                            "title",
+                            "url",
+                            "job_url",
+                            "description",
+                            "tags",
+                            "location",
+                            "company",
+                            "source",
+                            "audience_reject_reasons",
+                        )
+                    },
+                    ensure_ascii=False,
+                    default=str,
+                )[:3500],
             }
         )
 

@@ -40,15 +40,17 @@
   <p class="about-eyebrow">Portfolio · UE M.Sc. thesis reference</p>
   <h1>Problem → pipeline → AI → bio</h1>
   <p>
-    Public job boards are noisy for <strong>interns, working students, and juniors</strong> in Germany/EU —
-    especially when visa stance, English-OK signals, and entry-level wording are buried in long JDs.
-    DataForge turns free sources into a measurable lakehouse and an advisory match surface.
+    Public job boards bury <strong>fresher, Werkstudent, internship, and thesis</strong> openings in
+    <strong>data / AI</strong> under mid/senior and non-data noise across the EU.
+    DataForge gates Gold / Jobs / Match to that audience and adds an advisory match surface.
+    We only use legal public APIs and ATS feeds — never LinkedIn or workingstudentjobs.de scrapes.
   </p>
 
   <h2>1. Pipeline</h2>
   <ul>
     <li>Bronze → Silver (SCD2) → Gold on AWS S3 (<code>eu-central-1</code>)</li>
-    <li>Sources: Arbeitnow, BA, EURES, ATS/Personio, Berlin startups, Himalayas, HN Who’s Hiring</li>
+    <li>Sources: Arbeitnow, BA, EURES, ATS/Personio, Berlin startups (optional Himalayas / HN)</li>
+    <li>Product gate: EU × data/AI fields × early-career only; ambiguous rows → ingest review queue</li>
     <li>dbt + DuckDB on Gold aggregates; quality gate in CI</li>
   </ul>
 

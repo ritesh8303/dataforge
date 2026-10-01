@@ -43,5 +43,10 @@
   {"company": "Infineon", "careers_url": "https://careers.smartrecruiters.com/InfineonTechnologies"},
   {"company": "Zalando SE SR", "careers_url": "https://careers.smartrecruiters.com/zalando"},
   {"company": "OTTO", "careers_url": "https://careers.smartrecruiters.com/OTTO"},
-  {"company": "Lufthansa Group", "careers_url": "https://careers.smartrecruiters.com/LufthansaGroup"}
+  {"company": "Lufthansa Group", "careers_url": "https://careers.smartrecruiters.com/LufthansaGroup"},
+  {"company": "Hugging Face", "careers_url": "https://apply.workable.com/huggingface"},
+  {"company": "Mistral AI", "careers_url": "https://jobs.ashbyhq.com/mistral"},
+  {"company": "Scaleway", "careers_url": "https://jobs.ashbyhq.com/scaleway"},
+  {"company": "Aleph Alpha", "careers_url": "https://jobs.ashbyhq.com/aleph-alpha"},
+  {"company": "Helmholtz Munich", "careers_url": "https://jobs.ashbyhq.com/helmholtzmunich"}
 ]

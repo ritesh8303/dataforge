@@ -26,7 +26,7 @@ Full gap matrix: Cursor canvas `industry-portfolio-coverage` (filter **Gaps only
 |---|---|
 | Medallion + SCD2 + multi-source ETL + Terraform + CI | **Covered** (live AWS) |
 | dbt + dictionary + quality gate | **Partial** (add dbt docs polish) |
-| Tech-only taxonomy + visa/seniority rules + DACH/Personio/Himalayas/HN sources | **Partial** — pivoting to **EU data/AI early-career** audience gate |
+| Tech-only taxonomy + visa/seniority rules + DACH/Personio/Himalayas/HN sources | **Covered** — product gate **EU × data/AI × fresher/WS/internship/thesis**; mid/senior stay out of Gold |
 | Hybrid BM25+vector (LanceDB), honest evals CI gate | **Partial** (Match uses `VECTOR_STORE_URI` + JSON fallback; LanceDB optional dep) |
 | RAG Match / enrichment / multi-provider gateway | **Partial** (Match defaults: data/AI + entry-level audience; Bedrock quota still blocked) |
 | FastAPI Match API + PII + citations + visa profile + agent toggle | **Partial** (Phase B shipped in code; AWS apply pending) |

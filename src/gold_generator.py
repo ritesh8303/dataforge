@@ -330,7 +330,7 @@ def lambda_handler(event, context):
         lakehouse_active = len(current)
         print(f"Total active jobs (lakehouse): {lakehouse_active}")
 
-        # 1. All active jobs — enrich with audience labels; publish full board
+        # 1. Product board — enrich labels, then hard-gate to EU × data/AI × early career
         cols = [
             c
             for c in [
@@ -394,7 +394,8 @@ def lambda_handler(event, context):
                     from agent.ingest_review_agent import run_ingest_review_agent
 
                     summary = run_ingest_review_agent(
-                        use_llm=os.environ.get("INGEST_REVIEW_USE_LLM", "false").lower() == "true",
+                        use_llm=os.environ.get("INGEST_REVIEW_USE_LLM", "false").lower()
+                        in {"1", "true", "yes"},
                         max_llm=int(os.environ.get("INGEST_REVIEW_MAX_LLM", "40")),
                     )
                     print(
@@ -409,10 +410,11 @@ def lambda_handler(event, context):
                 except Exception as exc:
                     print(f"Ingest review agent skipped: {exc}")
         print(
-            f"Board publish: {len(enriched_all)} active jobs "
-            f"(early-career data/AI slice: {len(early_career)}, uncertain: {len(uncertain)})"
+            f"Audience gate: {len(early_career)} product jobs of {len(enriched_all)} lakehouse "
+            f"(uncertain still: {len(uncertain)})"
         )
-        all_jobs = pd.DataFrame(enriched_all)
+        # Product Gold = accepted only; lakehouse breadth stays in Silver SCD
+        all_jobs = pd.DataFrame(early_career)
         for col in (
             "ai_field",
             "ai_seniority",
@@ -423,11 +425,14 @@ def lambda_handler(event, context):
             "field",
             "seniority",
         ):
-            if col not in all_jobs.columns:
-                all_jobs[col] = [a.get(col) for a in enriched_all]
-        # Dashboard aggregates use the full active board
-        product = current.copy().reset_index(drop=True)
-        print(f"Published board jobs: {len(all_jobs)} (lakehouse active: {lakehouse_active})")
+            if col not in all_jobs.columns and early_career:
+                all_jobs[col] = [a.get(col) for a in early_career]
+        product_ids = set(str(r.get("job_id")) for r in early_career)
+        product = current[current["job_id"].astype(str).isin(product_ids)].copy().reset_index(drop=True)
+        if not len(product) and len(all_jobs):
+            # Fallback when job_id join misses — use enriched accepted frame for aggregates
+            product = all_jobs.copy()
+        print(f"Published product jobs: {len(all_jobs)} (lakehouse active: {lakehouse_active})")
 
         # 1b. Expired jobs (is_current=False)
         expired_raw = df[df["is_current"] == False].copy()
@@ -722,7 +727,7 @@ def lambda_handler(event, context):
         print("Metrics snapshot written to metrics.json")
 
         msg = (
-            f"Gold layer refreshed. Active jobs: {len(all_jobs)}, "
+            f"Gold layer refreshed. Product jobs: {len(all_jobs)}, "
             f"lakehouse active: {lakehouse_active}, Files written: 13"
         )
         print(msg)

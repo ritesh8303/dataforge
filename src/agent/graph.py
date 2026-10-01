@@ -73,9 +73,9 @@ def run_match_agent(
     limit: int = 15,
     visa_status: str = "",
     german_level: str = "",
-    entry_level_only: bool = False,
+    entry_level_only: bool = True,
     english_ok_only: bool = False,
-    tech_only: bool = True,
+    tech_only: bool = False,
 ) -> dict[str, Any]:
     if not resume and not dream_role:
         raise ValueError("resume or dream_role required")

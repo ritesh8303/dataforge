@@ -43,9 +43,11 @@ def retriever_node(state: AgentState) -> AgentState:
         jobs,
         visa_status=str(state.get("visa_status") or ""),
         german_level=str(state.get("german_level") or ""),
-        entry_level_only=bool(state.get("entry_level_only")),
+        entry_level_only=bool(state.get("entry_level_only", True)),
         english_ok_only=bool(state.get("english_ok_only")),
-        tech_only=bool(state.get("tech_only", True)),
+        tech_only=bool(state.get("tech_only", False)),
+        data_ai_only=True,
+        audience_only=True,
     )
     location = str(state.get("location") or "")
     if location:

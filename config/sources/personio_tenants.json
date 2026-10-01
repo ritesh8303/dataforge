@@ -8,5 +8,15 @@
   {"company": "Personio Careers", "slug": "personio", "tld": "de"},
   {"company": "Clark", "slug": "clark", "tld": "de"},
   {"company": "Synapticon", "slug": "synapticon", "tld": "de"},
-  {"company": "Penta", "slug": "penta", "tld": "de"}
+  {"company": "Penta", "slug": "penta", "tld": "de"},
+  {"company": "Project A", "slug": "project-a", "tld": "com"},
+  {"company": "Adjust", "slug": "adjust", "tld": "com"},
+  {"company": "Pitch", "slug": "pitch", "tld": "com"},
+  {"company": "Taxfix", "slug": "taxfix", "tld": "de"},
+  {"company": "Omio", "slug": "omio", "tld": "com"},
+  {"company": "Blinkist", "slug": "blinkist", "tld": "com"},
+  {"company": "Lilium", "slug": "lilium", "tld": "com"},
+  {"company": "Infarm", "slug": "infarm", "tld": "com"},
+  {"company": "GetYourGuide Personio", "slug": "getyourguide", "tld": "com"},
+  {"company": "Mambu", "slug": "mambu", "tld": "com"}
 ]

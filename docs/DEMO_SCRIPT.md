@@ -13,20 +13,20 @@ Record this once; reuse for applications and thesis supervisors.
 ## Script
 
 ### 0:00–0:25 — Problem
-> “Public EU job boards are noisy for interns and juniors. Visa and English-OK signals are buried in long JDs. DataForge turns free sources into a lakehouse and an advisory match API.”
+> “Public EU boards bury fresher, Werkstudent, internship, and thesis roles in data/AI under mid/senior noise. DataForge gates the lakehouse to that seeker audience and adds an advisory match API.”
 
 Show: Home → About (problem → pipeline → AI).
 
 ### 0:25–1:00 — Lakehouse
-> “Daily ingest into Bronze, Silver SCD Type 2, Gold marts on S3 in Frankfurt. Terraform, CI, quality gate, dbt on Gold. Jobs and Metrics APIs power the Pages UI.”
+> “Daily ingest into Bronze, Silver SCD Type 2, Gold marts on S3 in Frankfurt. Product Gold publishes only EU × data/AI × early-career. Terraform, CI, quality gate, dbt on Gold. Jobs and Metrics APIs power the Pages UI.”
 
-Show: Dashboard KPIs → Jobs board with a filter (e.g. Berlin / entry).
+Show: Dashboard KPIs → Jobs board with a filter (e.g. Berlin / working student / thesis).
 
 ### 1:00–1:50 — Match
-> “Match API is FastAPI on Lambda: hybrid BM25 + dense retrieval, PII redaction, visa-aware filters, citations per job_id. Multi-agent mode is optional and budget-capped.”
+> “Match API is FastAPI on Lambda: hybrid BM25 + dense retrieval over the gated board, PII redaction, visa-aware filters, citations per job_id. Multi-agent mode is optional and budget-capped.”
 
-Show: Agent wizard → hybrid (or agent) → one result card with citations.  
-Say: “Advisory only — not legal advice on visas.”
+Show: Job Agent → hybrid (or agent) → one result card with citations.  
+Say: “Advisory only — not legal advice on visas. We never scrape LinkedIn or workingstudentjobs.de.”
 
 ### 1:50–2:20 — Frugal GenAI / thesis
 > “Rules-first enrichment, Bedrock Nova Micro when quota allows, kill switch and daily budget. On 103 labelled queries, dense retrieval leads nDCG@10 at about 0.22 versus about 0.15 for the keyword wizard. Bedrock RQ2 is still waiting on AWS quota; we can measure the same Pareto with gpt-4o-mini for cents while residency is scored separately.”

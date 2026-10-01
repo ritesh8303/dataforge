@@ -278,7 +278,7 @@
 <div class="df-page df-fade-in">
   <div class="agent-header">
     <h1>Job Matching Agent</h1>
-    <p>Paste your resume — I search the live DataForge gold board (~14k EU openings) and rank suggestions for you.</p>
+    <p>Paste your resume — I search the DataForge product board (EU data/AI early-career roles) and rank suggestions for you.</p>
   </div>
 
   <div class="agent-shell" id="agent-shell">
@@ -303,7 +303,7 @@
                 <option value="rules">Client scoring (Jobs API)</option>
               </select>
             </label>
-            <label><input type="checkbox" id="entry-only" /> Early-career only</label>
+            <label><input type="checkbox" id="entry-only" checked /> Early-career only</label>
             <label><input type="checkbox" id="english-ok" /> English-OK</label>
           </div>
         </div>
@@ -793,7 +793,7 @@
     document.getElementById("results-panel").classList.remove("active");
     setPlaceholder();
     addBubble(
-      "Hi — I’m the DataForge Job Matching Agent.\n\nPaste your resume and I’ll suggest openings from our live EU job lakehouse (BA, EURES, Arbeitnow, direct ATS, Berlin startups).",
+      "Hi — I’m the DataForge Job Matching Agent.\n\nPaste your resume and I’ll suggest fresher, working-student, internship, and thesis openings in data/AI from our gated EU gold board.",
       "agent"
     );
   }
