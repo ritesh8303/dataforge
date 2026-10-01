@@ -21,6 +21,12 @@ def test_eu_location_berlin():
     assert is_eu_location(location="Berlin, Germany", region="Germany") is True
 
 
+def test_eu_location_berlin_city_only():
+    assert is_eu_location(location="Berlin", region="") is True
+    assert is_eu_location(location="München", region="") is True
+    assert is_eu_location(location="Hamburg", region="") is True
+
+
 def test_non_eu_london_blocked():
     assert is_eu_location(location="London, UK", region="United Kingdom") is False
 
@@ -36,6 +42,31 @@ def test_accept_werkstudent_data():
     decision = classify_for_audience(job)
     assert decision["audience_accept"] is True
     assert decision["employment_type"] == "working_student"
+
+
+def test_accept_werkstudent_data_analytics_city_only():
+    job = {
+        "title": "Werkstudent:in Data Analytics (Controlling Focus) (m/w/d)",
+        "description": "SQL Power BI",
+        "location": "Hamburg",
+        "region": "",
+        "tags": "",
+    }
+    decision = classify_for_audience(job)
+    assert decision["audience_eu"] is True
+    assert decision["audience_data_ai"] is True
+    assert decision["audience_accept"] is True
+
+
+def test_accept_data_ai_solutions_ws():
+    job = {
+        "title": "Werkstudent Data & AI Solutions (w|m|d)",
+        "description": "Python ML",
+        "location": "München",
+        "region": "",
+        "tags": "",
+    }
+    assert passes_audience(job) is True
 
 
 def test_reject_senior_data():

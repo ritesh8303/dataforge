@@ -82,7 +82,10 @@ _FIELD_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
             r"\b("
             r"machine\s*learning|deep\s*learning|data\s*scientist|ml\s*engineer|"
             r"nlp|computer\s*vision|llm|gen(?:erative)?\s*ai|ki\s*ingenieur|"
-            r"artificial\s*intelligence|forschung.*ki|ai\s*/\s*ml|mlops"
+            r"artificial\s*intelligence|forschung.*ki|ai\s*/\s*ml|mlops|"
+            r"data\s*&\s*ai|ai\s*&\s*data|data\s*and\s*ai|ai\s*solutions|"
+            r"scientific\s*computing|physical\s*ai|ki\s*in\s+der|"
+            r"datenanalyse\s*mit\s*ki"
             r")\b",
             re.I,
         ),
@@ -93,7 +96,8 @@ _FIELD_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
             r"\b("
             r"data\s*engineer|dateningenieur|etl|elt|spark|airflow|dbt|"
             r"data\s*platform|lakehouse|kafka|streaming\s*data|"
-            r"pipeline\s*engineer|datenplattform"
+            r"pipeline\s*engineer|datenplattform|"
+            r"analytics\s*&\s*data\s*engineering|data\s*engineering"
             r")\b",
             re.I,
         ),
@@ -103,7 +107,9 @@ _FIELD_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
         re.compile(
             r"\b("
             r"data\s*analyst|datenanalyst|analytics\s*engineer|"
-            r"business\s*analyst.*data|sql\s*analyst|reporting\s*analyst"
+            r"business\s*analyst.*data|sql\s*analyst|reporting\s*analyst|"
+            r"data\s*analytics|datenanalyse|daten[\s-]*und[\s-]*prozessanalyse|"
+            r"fachinformatiker.*daten|data\s*analysis"
             r")\b",
             re.I,
         ),

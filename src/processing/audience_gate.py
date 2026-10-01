@@ -6,6 +6,7 @@ data and AI-related roles across the European Union — not a general tech board
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from enrichment.rules_de_en import (
@@ -14,6 +15,41 @@ from enrichment.rules_de_en import (
     classify_job,
     is_product_data_ai_field,
     is_product_seniority,
+)
+from processing.europe_filter import CITY_COUNTRY_MAPPING
+
+# EU member-state display names used by CITY_COUNTRY_MAPPING values.
+_EU_COUNTRY_NAMES = frozenset(
+    {
+        "austria",
+        "belgium",
+        "bulgaria",
+        "croatia",
+        "cyprus",
+        "czechia",
+        "czech republic",
+        "denmark",
+        "estonia",
+        "finland",
+        "france",
+        "germany",
+        "greece",
+        "hungary",
+        "ireland",
+        "italy",
+        "latvia",
+        "lithuania",
+        "luxembourg",
+        "malta",
+        "netherlands",
+        "poland",
+        "portugal",
+        "romania",
+        "slovakia",
+        "slovenia",
+        "spain",
+        "sweden",
+    }
 )
 
 # EU member states (ISO-2 + common English/German names). UK/CH/NO are out of product scope.
@@ -149,9 +185,24 @@ def is_eu_location(
     allow_remote_eu: bool = True,
 ) -> bool:
     """True when the posting is in an EU member state (or EU-remote)."""
-    blob = " ".join(filter(None, [_norm(location), _norm(region), _norm(title)]))
-    if not blob:
+    loc_blob = " ".join(filter(None, [_norm(location), _norm(region)]))
+    title_blob = _norm(title)
+    blob = " ".join(filter(None, [loc_blob, title_blob]))
+    if not blob and not loc_blob:
         return False
+
+    # City → country from location/region only (never title — avoids
+    # false hits like "essen" inside "professional").
+    search = loc_blob or blob
+    for city, country in CITY_COUNTRY_MAPPING.items():
+        if not city or len(city) < 3:
+            continue
+        if city in search:
+            if country.lower() in _EU_COUNTRY_NAMES:
+                return True
+            # Mapped to UK/CH/NO/etc. → not product-EU
+            return False
+
     if any(tok in blob for tok in NON_EU_EUROPE_BLOCK):
         # Explicit non-EU European → out (product is EU-only).
         if not any(tok in blob for tok in EU_COUNTRY_TOKENS):
@@ -169,6 +220,8 @@ def is_eu_location(
         # Remote without country: keep if region already EU or location empty-ish EU remote boards.
         reg = _norm(region)
         if reg in EU_COUNTRY_TOKENS or reg in {"eu", "europe", "european union"}:
+            return True
+        if reg in _EU_COUNTRY_NAMES:
             return True
     return False
 
@@ -192,8 +245,40 @@ def classify_for_audience(job: dict[str, Any]) -> dict[str, Any]:
         region=str(job.get("region") or ""),
         title=title,
     )
+    # BA Jobsuche is Germany-only; treat non-empty DE-style locations as EU
+    # even when city list misses a smaller town.
+    source = _norm(job.get("source"))
+    if not eu_ok and source == "ba_api":
+        loc = _norm(job.get("location"))
+        if loc and not any(tok in loc for tok in NON_EU_EUROPE_BLOCK):
+            eu_ok = True
     field_ok = is_product_data_ai_field(field)
     seniority_ok = is_product_seniority(seniority)
+
+    # Title/description rescue: clear data/AI keywords often land in other_tech
+    # (e.g. "Werkstudent Data & AI Solutions", "Analytics & Data Engineering").
+    text_blob = " ".join(
+        filter(None, [_norm(title), _norm(description), _norm(tags), _norm(field)])
+    )
+    data_ai_title_hit = bool(
+        re.search(
+            r"\b("
+            r"data\s*science|data\s*scientist|data\s*engineer|data\s*analyst|"
+            r"data\s*analytics|datenanalyst|dateningenieur|datenanalyse|"
+            r"machine\s*learning|\bml\b|\bllm\b|deep\s*learning|"
+            r"business\s*intelligence|\bbi\b|power\s*bi|"
+            r"data\s*&\s*ai|ai\s*&\s*data|data\s*and\s*ai|"
+            r"analytics\s*&\s*data|ki\b|artificial\s*intelligence|"
+            r"gen(?:erative)?\s*ai|mlops|daten[\s-]*und[\s-]*prozess"
+            r")\b",
+            text_blob,
+            flags=re.I,
+        )
+    )
+    if not field_ok and seniority_ok and data_ai_title_hit:
+        field_ok = True
+        if not field or field in {"other_tech", "non_tech", "software_engineering"}:
+            field = "data_analytics"
 
     # High-experience mid/senior defaults fail seniority_ok; also reject explicit senior + years>2
     years = rules.get("experience_years_min")
