@@ -80,8 +80,8 @@
 
 <div class="df-page-narrow df-fade-in">
   <div class="page-header">
-    <h1>EU Data &amp; AI — Early Career Jobs</h1>
-    <p>Fresher, working-student, internship, and thesis roles in data, AI/ML, and related fields across the European Union</p>
+    <h1>EU Job Board</h1>
+    <p>All active openings from BA Jobsuche, EURES, Arbeitnow, direct ATS feeds, and Berlin startups — filter by field, seniority, location, and language</p>
   </div>
 
   <div id="error-box" class="df-error" style="display:none"></div>
@@ -91,10 +91,12 @@
   </div>
 
   <div id="popular-tags" class="df-filter-chips" style="margin-bottom:1rem">
+    <button type="button" class="df-chip" data-preset="all">All jobs</button>
+    <button type="button" class="df-chip" data-preset="early-career">Early career</button>
     <button type="button" class="df-chip" data-preset="berlin-ws">Berlin · Working Student</button>
     <button type="button" class="df-chip" data-preset="internship-ai">Internship · AI/ML</button>
-    <button type="button" class="df-chip" data-preset="thesis">Thesis roles</button>
     <button type="button" class="df-chip" data-preset="fresher-de">Fresher · Data Engineering</button>
+    <button type="button" class="df-chip" data-preset="mid-senior">Mid / Senior</button>
     <button type="button" class="df-chip" data-preset="english">English-OK</button>
   </div>
 
@@ -182,23 +184,32 @@
       <div class="filter-group">
         <label class="df-label" for="field">Field</label>
         <select id="field" class="df-select">
-          <option value="">All data / AI fields</option>
+          <option value="">All fields</option>
           <option value="ai_ml_data_science">AI / ML / Data Science</option>
           <option value="data_engineering">Data Engineering</option>
           <option value="data_analytics">Data Analytics</option>
           <option value="business_intelligence">Business Intelligence</option>
-          <option value="cloud_devops">Cloud / DevOps (data-adjacent)</option>
+          <option value="cloud_devops">Cloud / DevOps</option>
+          <option value="software_engineering">Software Engineering</option>
+          <option value="product_management">Product Management</option>
+          <option value="cybersecurity">Cybersecurity</option>
+          <option value="qa_testing">QA / Testing</option>
+          <option value="sap_erp">SAP / ERP</option>
+          <option value="other_tech">Other tech</option>
         </select>
       </div>
 
       <div class="filter-group">
-        <label class="df-label" for="experience_level">Role type</label>
+        <label class="df-label" for="experience_level">Seniority / role type</label>
         <select id="experience_level" class="df-select">
-          <option value="">All early-career types</option>
+          <option value="">All levels</option>
+          <option value="early_career">Early career (WS / intern / thesis / junior)</option>
           <option value="working_student">Working Student</option>
           <option value="internship">Internship</option>
           <option value="thesis">Thesis</option>
           <option value="fresher">Fresher / Junior / Graduate</option>
+          <option value="mid">Mid-level</option>
+          <option value="senior">Senior / Lead</option>
         </select>
       </div>
 
@@ -227,7 +238,7 @@
   const JOBS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:8000/jobs"
     : "https://br1sodhn2e.execute-api.eu-central-1.amazonaws.com/";
-  const BOARD_BUILD = "2026-09-30.audience";
+  const BOARD_BUILD = "2026-10-01.full-board";
   const JOB_PAGE_SIZE = 2000;
   const PAGE_SIZE = 25;
   const LANG_API = { en: "english_only", de: "german_required", bi: "bilingual" };
@@ -478,7 +489,16 @@
 
       if (expLevel) {
         const wanted = expLevel.toLowerCase();
-        if (wanted === "fresher") {
+        const early = ["fresher", "junior", "trainee_graduate", "working_student", "internship", "thesis"];
+        if (wanted === "early_career") {
+          const ok = early.includes(emp)
+            || j.ai_entry_level === true || j.ai_entry_level === "True" || j.ai_entry_level === "1"
+            || j.audience_accept === true || j.audience_accept === "True" || j.audience_accept === "1"
+            || title.includes("werkstudent") || title.includes("working student")
+            || title.includes("intern") || title.includes("praktikum")
+            || title.includes("thesis") || title.includes("junior") || title.includes("graduate");
+          if (!ok) return false;
+        } else if (wanted === "fresher") {
           if (!(emp === "fresher" || emp === "junior" || emp === "trainee_graduate" || title.includes("junior") || title.includes("graduate"))) return false;
         } else if (wanted === "working_student") {
           if (!(emp === "working_student" || title.includes("werkstudent") || title.includes("working student") || tags.includes("working student"))) return false;
@@ -486,6 +506,10 @@
           if (!(emp === "internship" || title.includes("intern") || title.includes("praktikum") || tags.includes("internship"))) return false;
         } else if (wanted === "thesis") {
           if (!(emp === "thesis" || title.includes("thesis") || title.includes("masterarbeit") || title.includes("bachelorarbeit"))) return false;
+        } else if (wanted === "mid") {
+          if (!(emp === "mid" || title.includes("mid-level") || (/\b(mid|professional)\b/.test(title) && !title.includes("senior")))) return false;
+        } else if (wanted === "senior") {
+          if (!(emp === "senior" || title.includes("senior") || title.includes("lead") || title.includes("principal") || title.includes("staff"))) return false;
         }
       }
       return true;
@@ -673,17 +697,21 @@
       document.getElementById("experience_level").value = "";
       document.getElementById("language").value = "";
       syncPillFromSelect("language-pills", "language");
-      if (preset === "berlin-ws") {
+      if (preset === "all") {
+        // leave all filters empty — full board
+      } else if (preset === "early-career") {
+        document.getElementById("experience_level").value = "early_career";
+      } else if (preset === "berlin-ws") {
         document.getElementById("location").value = "Berlin";
         document.getElementById("experience_level").value = "working_student";
       } else if (preset === "internship-ai") {
         document.getElementById("experience_level").value = "internship";
         document.getElementById("field").value = "ai_ml_data_science";
-      } else if (preset === "thesis") {
-        document.getElementById("experience_level").value = "thesis";
       } else if (preset === "fresher-de") {
         document.getElementById("experience_level").value = "fresher";
         document.getElementById("field").value = "data_engineering";
+      } else if (preset === "mid-senior") {
+        document.getElementById("experience_level").value = "senior";
       } else if (preset === "english") {
         document.getElementById("language").value = "en";
         syncPillFromSelect("language-pills", "language");

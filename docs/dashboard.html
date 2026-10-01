@@ -169,29 +169,29 @@
 
   <!-- KPI Grid -->
   <div class="df-grid-5" style="margin-bottom:var(--df-space-8);">
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.16),rgba(167,139,250,0.08));" title="Product board: EU + data/AI + fresher / working student / internship / thesis.">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.16),rgba(167,139,250,0.08));" title="All active jobs published to the Gold board from five ingestion sources.">
       <div class="df-kpi-icon">📊</div>
-      <div class="df-kpi-label">Product Board Jobs</div>
+      <div class="df-kpi-label">Total Active Jobs</div>
       <div class="df-kpi-value" id="kpi-total"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub" id="kpi-total-sub">EU · data/AI · early career</div>
+      <div class="df-kpi-sub" id="kpi-total-sub">full board · all sources</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.16),rgba(34,211,238,0.06));" title="New product-board jobs first seen on the latest pipeline run date.">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.16),rgba(34,211,238,0.06));" title="New job IDs from the latest Silver pipeline run.">
       <div class="df-kpi-icon">🆕</div>
-      <div class="df-kpi-label">New Since Last Run <span class="kpi-info" title="Product-gated new jobs. Lakehouse SCD intake is shown in the subtitle.">ⓘ</span></div>
+      <div class="df-kpi-label">New Since Last Run <span class="kpi-info" title="Jobs first seen on the latest pipeline run date.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-today"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub" id="kpi-today-sub">product · latest pipeline run</div>
+      <div class="df-kpi-sub" id="kpi-today-sub">incremental · latest pipeline run</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#2dd4bf);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.12),rgba(45,212,191,0.1));">
       <div class="df-kpi-icon">🌐</div>
-      <div class="df-kpi-label">Remote Openings <span class="kpi-info" title="work_style = remote on the product board.">ⓘ</span></div>
+      <div class="df-kpi-label">Remote Openings <span class="kpi-info" title="work_style = remote across the full board.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-remote"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub">product · remote only</div>
+      <div class="df-kpi-sub">work_style · remote only</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#a78bfa,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(167,139,250,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🇬🇧</div>
-      <div class="df-kpi-label">English Jobs <span class="kpi-info" title="English signal on product-board jobs.">ⓘ</span></div>
+      <div class="df-kpi-label">English Jobs <span class="kpi-info" title="English signal on published jobs.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-english"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub" id="kpi-english-sub">product board</div>
+      <div class="df-kpi-sub" id="kpi-english-sub">title / language labels</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#fb923c,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(251,146,60,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🔥</div>
@@ -453,15 +453,15 @@
     setEl("kpi-total", (data.total_jobs || 0).toLocaleString());
     const totalSub = document.getElementById("kpi-total-sub");
     if (totalSub) {
-      const lake = data.lakehouse_total_jobs ?? data.pipeline_stats?.lakehouse_active;
-      totalSub.textContent = lake
-        ? `EU · data/AI · early career · lakehouse ${Number(lake).toLocaleString()}`
-        : "EU · data/AI · early career";
+      const early = data.early_career_jobs;
+      totalSub.textContent = early != null
+        ? `full board · early-career data/AI filter: ${Number(early).toLocaleString()}`
+        : "full board · all sources";
     }
 
     const ps = data.pipeline_stats || {};
-    const productNew = ps.product_new_jobs ?? ps.new_jobs ?? data.new_today ?? 0;
-    setEl("kpi-today", Number(productNew).toLocaleString());
+    const boardNew = ps.new_jobs ?? data.new_today ?? 0;
+    setEl("kpi-today", Number(boardNew).toLocaleString());
     const todaySub = document.getElementById("kpi-today-sub");
     if (todaySub) {
       const lakeNew = ps.lakehouse_new_jobs;
@@ -469,9 +469,9 @@
       const runBit = runAt
         ? `run ${new Date(runAt).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}`
         : "latest pipeline run";
-      todaySub.textContent = (lakeNew != null && lakeNew !== "")
-        ? `product · of ${Number(lakeNew).toLocaleString()} lakehouse new · ${runBit}`
-        : `product · ${runBit}`;
+      todaySub.textContent = (lakeNew != null && lakeNew !== "" && Number(lakeNew) !== Number(boardNew))
+        ? `board new · SCD intake ${Number(lakeNew).toLocaleString()} · ${runBit}`
+        : runBit;
     }
 
     setEl("kpi-remote", (rc.remote != null ? rc.remote : (rv["Remote"] || 0)).toLocaleString());
@@ -482,8 +482,8 @@
     const englishSub = document.getElementById("kpi-english-sub");
     if (englishSub) {
       englishSub.textContent = englishStrict != null
-        ? `product board · strict: ${Number(englishStrict).toLocaleString()}`
-        : "product board";
+        ? `title / labels · strict: ${Number(englishStrict).toLocaleString()}`
+        : "title / language labels";
     }
 
     if (data.top_skills?.length) {

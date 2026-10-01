@@ -77,21 +77,26 @@ def build_metrics_payload(bucket: str) -> dict:
     run_at = stats.get("run_at", "") or ""
     run_date = run_at[:10] if len(run_at) >= 10 else today
 
-    # Product KPIs: all_jobs.csv is audience-gated (EU × data/AI × early career)
-    product_total = len(all_jobs)
-    product_new = sum(1 for j in all_jobs if (j.get("date_added") or "") == run_date)
-    if product_new == 0 and run_date != today:
-        product_new = sum(1 for j in all_jobs if (j.get("date_added") or "") == today)
+    # Board KPIs: all_jobs.csv is the full active lakehouse publish
+    total = len(all_jobs)
+    new_on_run = sum(1 for j in all_jobs if (j.get("date_added") or "") == run_date)
+    if new_on_run == 0 and run_date != today:
+        new_on_run = sum(1 for j in all_jobs if (j.get("date_added") or "") == today)
+    early_career = sum(
+        1
+        for j in all_jobs
+        if str(j.get("audience_accept", "")).lower() in {"1", "true", "yes"}
+        or str(j.get("ai_entry_level", "")).lower() in {"1", "true", "yes"}
+    )
 
     pipeline_stats = {
-        # Dashboard "New Since Last Run" uses product new (aligned with total_jobs)
-        "new_jobs": product_new,
-        "product_new_jobs": product_new,
+        "new_jobs": new_on_run,
+        "product_new_jobs": new_on_run,
         "updated_jobs": lakehouse_updated,
         "expired_jobs": lakehouse_expired,
         "run_at": run_at,
         "lakehouse_new_jobs": lakehouse_new,
-        "lakehouse_active": lakehouse_active,
+        "lakehouse_active": lakehouse_active or total,
     }
 
     quality = quality_rows[0] if quality_rows else {}
@@ -109,10 +114,11 @@ def build_metrics_payload(bucket: str) -> dict:
         last_updated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return {
-        "total_jobs": product_total,
-        "new_today": product_new,
-        "lakehouse_total_jobs": lakehouse_active or int(active_vs_expired.get("Active", 0)),
-        "audience": "eu_data_ai_early_career",
+        "total_jobs": total,
+        "new_today": new_on_run,
+        "early_career_jobs": early_career,
+        "lakehouse_total_jobs": lakehouse_active or total,
+        "audience": "all_active_eu_board",
         "english_jobs": english_jobs,
         "english_jobs_title_based": english_jobs,
         "english_jobs_strict": english_jobs_strict,

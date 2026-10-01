@@ -226,8 +226,52 @@ def is_eu_location(
     return False
 
 
-def classify_for_audience(job: dict[str, Any]) -> dict[str, Any]:
+def classify_for_audience(
+    job: dict[str, Any],
+    *,
+    apply_overrides: bool = True,
+) -> dict[str, Any]:
     """Run rules classify and attach product decision fields."""
+    # Agent / human override from ingest-review decisions file
+    jid = str(job.get("job_id") or "").strip()
+    if apply_overrides and jid:
+        try:
+            from agent.ingest_review_agent import load_decisions
+
+            override = load_decisions().get(jid)
+        except Exception:
+            override = None
+        if override:
+            decision = _norm(override.get("decision"))
+            field = _norm(override.get("field")) or _norm(job.get("ai_field") or job.get("field"))
+            seniority = _norm(override.get("seniority")) or _norm(
+                job.get("ai_seniority") or job.get("seniority")
+            )
+            accept = decision == "accept"
+            return {
+                "field": field,
+                "seniority": seniority,
+                "employment_type": (
+                    {"working_student": "working_student", "internship": "internship", "thesis": "thesis"}.get(
+                        seniority, "fresher"
+                    )
+                    if accept
+                    else ""
+                ),
+                "entry_level": accept,
+                "english_ok": bool(job.get("ai_english_ok") or job.get("english_ok")),
+                "audience_eu": accept,
+                "audience_data_ai": accept,
+                "audience_seniority": accept,
+                "audience_uncertain": False,
+                "audience_accept": accept,
+                "audience_reject_reasons": [] if accept else ["agent_reject"],
+                "audience_override": "ingest_review_agent",
+                "audience_override_reason": override.get("reason") or "",
+                "product_fields": sorted(PRODUCT_DATA_AI_FIELDS),
+                "product_seniorities": sorted(PRODUCT_SENIORITY),
+            }
+
     title = str(job.get("title") or "")
     description = str(job.get("description") or "")
     tags = str(job.get("tags") or "")
@@ -343,3 +387,24 @@ def filter_jobs_for_product(jobs: list[dict[str, Any]]) -> tuple[list[dict[str, 
         else:
             other.append(enriched)
     return accepted, other
+
+
+def enrich_jobs_with_audience(jobs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Attach audience/seniority/field labels to every job — does not drop rows."""
+    out: list[dict[str, Any]] = []
+    for job in jobs:
+        decision = classify_for_audience(job, apply_overrides=True)
+        enriched = {
+            **job,
+            **{
+                k: decision[k]
+                for k in decision
+                if k.startswith("audience_") or k in {"employment_type", "seniority", "field", "entry_level", "english_ok"}
+            },
+        }
+        enriched["ai_seniority"] = decision.get("seniority")
+        enriched["ai_field"] = decision.get("field")
+        enriched["ai_entry_level"] = decision.get("entry_level")
+        enriched["ai_english_ok"] = decision.get("english_ok")
+        out.append(enriched)
+    return out

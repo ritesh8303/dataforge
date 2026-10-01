@@ -30,7 +30,7 @@ class MatchRequest(BaseModel):
     german_level: str = Field(default="", description="CEFR level, e.g. A1–C2")
     entry_level_only: bool = False
     english_ok_only: bool = False
-    tech_only: bool = True
+    tech_only: bool = False
 
 
 def _expected_api_key() -> str:

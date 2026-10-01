@@ -111,9 +111,9 @@ def apply_profile_filters(
     german_level: str = "",
     entry_level_only: bool = False,
     english_ok_only: bool = False,
-    tech_only: bool = True,
-    data_ai_only: bool = True,
-    audience_only: bool = True,
+    tech_only: bool = False,
+    data_ai_only: bool = False,
+    audience_only: bool = False,
 ) -> list[dict]:
     from enrichment.rules_de_en import PRODUCT_DATA_AI_FIELDS, PRODUCT_SENIORITY
 
@@ -200,9 +200,9 @@ def match_jobs(
     limit: int = 15,
     visa_status: str = "",
     german_level: str = "",
-    entry_level_only: bool = True,
+    entry_level_only: bool = False,
     english_ok_only: bool = False,
-    tech_only: bool = True,
+    tech_only: bool = False,
 ) -> dict[str, Any]:
     if not resume and not dream_role:
         raise ValueError("resume or dream_role required")
@@ -216,8 +216,8 @@ def match_jobs(
         entry_level_only=entry_level_only,
         english_ok_only=english_ok_only,
         tech_only=tech_only,
-        data_ai_only=True,
-        audience_only=True,
+        data_ai_only=False,
+        audience_only=False,
     )
     if location:
         loc = location.lower()

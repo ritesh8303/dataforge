@@ -330,7 +330,7 @@ def lambda_handler(event, context):
         lakehouse_active = len(current)
         print(f"Total active jobs (lakehouse): {lakehouse_active}")
 
-        # 1. All active jobs → product audience gate (EU + data/AI + fresher/WS/thesis)
+        # 1. All active jobs — enrich with audience labels; publish full board
         cols = [
             c
             for c in [
@@ -378,39 +378,56 @@ def lambda_handler(event, context):
             lambda x: True if str(x) == "True" else False
         )
 
-        from processing.audience_gate import filter_jobs_for_product
+        from processing.audience_gate import enrich_jobs_with_audience
         from enrichment.ingest_review import enqueue_ingest_review
 
         records = all_jobs.to_dict(orient="records")
-        accepted, rejected = filter_jobs_for_product(records)
-        uncertain = [r for r in rejected if r.get("audience_uncertain")]
+        enriched_all = enrich_jobs_with_audience(records)
+        early_career = [r for r in enriched_all if r.get("audience_accept")]
+        uncertain = [r for r in enriched_all if r.get("audience_uncertain")]
         if uncertain:
             dest = enqueue_ingest_review(uncertain)
             if dest:
                 print(f"Queued {len(uncertain)} ambiguous jobs for ingest review -> {dest}")
+            if os.environ.get("INGEST_REVIEW_AGENT", "true").lower() != "false":
+                try:
+                    from agent.ingest_review_agent import run_ingest_review_agent
+
+                    summary = run_ingest_review_agent(
+                        use_llm=os.environ.get("INGEST_REVIEW_USE_LLM", "false").lower() == "true",
+                        max_llm=int(os.environ.get("INGEST_REVIEW_MAX_LLM", "40")),
+                    )
+                    print(
+                        f"Ingest review agent: decided {summary.get('decided')} "
+                        f"(accept={summary.get('counts', {}).get('accept', 0)}, "
+                        f"reject={summary.get('counts', {}).get('reject', 0)}, "
+                        f"methods={summary.get('methods')}) -> {summary.get('decisions_path')}"
+                    )
+                    enriched_all = enrich_jobs_with_audience(records)
+                    early_career = [r for r in enriched_all if r.get("audience_accept")]
+                    uncertain = [r for r in enriched_all if r.get("audience_uncertain")]
+                except Exception as exc:
+                    print(f"Ingest review agent skipped: {exc}")
         print(
-            f"Audience gate: kept {len(accepted)} / {len(records)} "
-            f"(dropped {len(rejected) - len(uncertain)} hard, {len(uncertain)} review)"
+            f"Board publish: {len(enriched_all)} active jobs "
+            f"(early-career data/AI slice: {len(early_career)}, uncertain: {len(uncertain)})"
         )
-        if accepted:
-            all_jobs = pd.DataFrame(accepted)
-            for col in (
-                "ai_field",
-                "ai_seniority",
-                "employment_type",
-                "ai_entry_level",
-                "ai_english_ok",
-                "audience_accept",
-            ):
-                if col not in all_jobs.columns and accepted:
-                    all_jobs[col] = [a.get(col) for a in accepted]
-            accepted_ids = set(all_jobs["job_id"].astype(str))
-            # Dashboard aggregates use the same product slice as all_jobs / Jobs board
-            product = current[current["job_id"].astype(str).isin(accepted_ids)].copy().reset_index(drop=True)
-        else:
-            all_jobs = all_jobs.iloc[0:0].copy()
-            product = current.iloc[0:0].copy()
-        print(f"Product board jobs: {len(product)} (lakehouse active: {lakehouse_active})")
+        all_jobs = pd.DataFrame(enriched_all)
+        for col in (
+            "ai_field",
+            "ai_seniority",
+            "employment_type",
+            "ai_entry_level",
+            "ai_english_ok",
+            "audience_accept",
+            "field",
+            "seniority",
+        ):
+            if col not in all_jobs.columns:
+                all_jobs[col] = [a.get(col) for a in enriched_all]
+        # Dashboard aggregates use the full active board
+        product = current.copy().reset_index(drop=True)
+        print(f"Published board jobs: {len(all_jobs)} (lakehouse active: {lakehouse_active})")
 
         # 1b. Expired jobs (is_current=False)
         expired_raw = df[df["is_current"] == False].copy()
@@ -458,7 +475,7 @@ def lambda_handler(event, context):
             lambda x: True if str(x) == "True" else False
         )
 
-        # 2–8. Dashboard aggregates scoped to product board (same slice as all_jobs)
+        # 2–8. Dashboard aggregates over the full active board
         jobs_by_source = (
             product.groupby("source").size().reset_index(name="job_count").sort_values("job_count", ascending=False)
         )
@@ -705,7 +722,7 @@ def lambda_handler(event, context):
         print("Metrics snapshot written to metrics.json")
 
         msg = (
-            f"Gold layer refreshed. Product jobs: {len(all_jobs)}, "
+            f"Gold layer refreshed. Active jobs: {len(all_jobs)}, "
             f"lakehouse active: {lakehouse_active}, Files written: 13"
         )
         print(msg)

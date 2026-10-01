@@ -115,7 +115,24 @@ def _handle(event):
         jobs = [j for j in jobs if job_type in j.get("job_types", "").lower()]
     if experience:
         exp = experience.replace("-", "_")
-        if exp in ("junior", "entry", "entry_level", "fresher", "trainee", "graduate"):
+        if exp in ("early_career", "entry", "entry_level"):
+            early = {
+                "fresher",
+                "junior",
+                "trainee_graduate",
+                "working_student",
+                "internship",
+                "thesis",
+            }
+            jobs = [
+                j
+                for j in jobs
+                if str(j.get("employment_type", "")).lower() in early
+                or str(j.get("ai_seniority", "")).lower() in early
+                or str(j.get("ai_entry_level", "")).lower() in {"1", "true", "yes"}
+                or str(j.get("audience_accept", "")).lower() in {"1", "true", "yes"}
+            ]
+        elif exp in ("junior", "fresher", "trainee", "graduate"):
             jobs = [
                 j
                 for j in jobs
@@ -147,6 +164,25 @@ def _handle(event):
                 or str(j.get("ai_seniority", "")).lower() == "thesis"
                 or "master thesis" in j.get("tags", "").lower()
                 or "thesis" in j.get("title", "").lower()
+            ]
+        elif exp == "mid":
+            jobs = [
+                j
+                for j in jobs
+                if str(j.get("employment_type", "")).lower() == "mid"
+                or str(j.get("ai_seniority", "")).lower() == "mid"
+                or "mid-level" in j.get("title", "").lower()
+            ]
+        elif exp in ("senior", "lead", "staff", "principal"):
+            jobs = [
+                j
+                for j in jobs
+                if str(j.get("employment_type", "")).lower() == "senior"
+                or str(j.get("ai_seniority", "")).lower() == "senior"
+                or any(
+                    t in j.get("title", "").lower()
+                    for t in ("senior", "lead", "principal", "staff ", " head of")
+                )
             ]
     if field:
         field_norm = field.replace("-", "_")
