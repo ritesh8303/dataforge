@@ -34,3 +34,12 @@ Do not scrape workingstudentjobs.de (`/api/` disallowed in their robots.txt).
 - Personio XML: ~200 ms delay between tenants, daily cadence, ETag/cache when available.
 - Honour `robots.txt` for any future JSON-LD career-page connector.
 - Store posting content only; never scrape candidate profiles.
+
+## Saved-search alert stub
+
+Check for new product-board jobs (local `data/gold` or `GOLD_BUCKET`) and optionally POST to a webhook:
+
+```bash
+py -3 scripts/check_new_jobs_alert.py --employment working_student --field data_engineering --city Berlin
+# Optional: set ALERT_WEBHOOK_URL=https://hooks.example/…
+```

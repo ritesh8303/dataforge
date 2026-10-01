@@ -1,0 +1,10 @@
+{
+  "method": "dense",
+  "metric": "ndcg@10",
+  "baseline": 0.1258,
+  "max_drop": 0.02,
+  "source": "evals/results/matching_eval.json averages.dense (local-tfidf pin, 2026-10-01)",
+  "updated": "2026-10-01",
+  "note": "CI pins ModelRouter to local embeddings. Thesis packaging figure 0.2174 retained in RESULTS_DRAFT as historical; re-measure differs under current offline local hash embed.",
+  "thesis_packaging_dense_ndcg": 0.2174
+}

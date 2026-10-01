@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+from collections import Counter
 from datetime import date, datetime, timezone
 from io import StringIO
 
@@ -17,6 +18,90 @@ METRICS_JSON_KEY = "metrics.json"
 def _read_csv(bucket: str, key: str) -> list[dict]:
     obj = s3.get_object(Bucket=bucket, Key=key)
     return list(csv.DictReader(StringIO(obj["Body"].read().decode("utf-8-sig"))))
+
+
+def _count_field(rows: list[dict], *keys: str) -> dict[str, int]:
+    counter: Counter[str] = Counter()
+    for row in rows:
+        val = ""
+        for key in keys:
+            raw = str(row.get(key) or "").strip()
+            if raw and raw.lower() not in {"nan", "none", "null"}:
+                val = raw
+                break
+        if not val:
+            val = "unspecified"
+        counter[val] += 1
+    return dict(sorted(counter.items(), key=lambda kv: (-kv[1], kv[0])))
+
+
+def _coverage_funnel(all_jobs: list[dict], lakehouse_active: int) -> dict:
+    by_region = _count_field(all_jobs, "region")
+    top_region = dict(list(by_region.items())[:10])
+    return {
+        "lakehouse_active": int(lakehouse_active or 0),
+        "product_jobs": len(all_jobs),
+        "by_employment_type": _count_field(all_jobs, "employment_type", "employment_type_rule"),
+        "by_field": _count_field(all_jobs, "ai_field", "field", "ai_field_rule", "field_rule"),
+        "by_region": top_region,
+    }
+
+
+def _top_companies_early_career(all_jobs: list[dict], top_n: int = 10) -> list[dict]:
+    """Product-board early-career density by company (share when lakehouse totals known)."""
+    product_counts: Counter[str] = Counter()
+    for job in all_jobs:
+        company = str(job.get("company") or "").strip()
+        if company and company.lower() not in {"nan", "none", "unknown"}:
+            product_counts[company] += 1
+    ranked = []
+    for company, count in product_counts.most_common(top_n):
+        ranked.append(
+            {
+                "company": company,
+                "product_jobs": count,
+                # Product board is already early-career gated; share unknown without lakehouse company totals.
+                "early_career_share": None,
+                "company_early_career_score": count,
+            }
+        )
+    return ranked
+
+
+def company_early_career_map(
+    product_jobs: list[dict],
+    lakehouse_by_company: dict[str, int] | None = None,
+) -> dict[str, dict]:
+    """Map company -> early_career_share (or product count when lakehouse totals unavailable)."""
+    product_counts: Counter[str] = Counter()
+    for job in product_jobs:
+        company = str(job.get("company") or "").strip()
+        if company:
+            product_counts[company] += 1
+    out: dict[str, dict] = {}
+    for company, prod_n in product_counts.items():
+        all_active = None
+        if lakehouse_by_company and company in lakehouse_by_company:
+            try:
+                all_active = int(lakehouse_by_company[company])
+            except (TypeError, ValueError):
+                all_active = None
+        if all_active and all_active > 0:
+            share = round(prod_n / all_active, 4)
+            out[company] = {
+                "product_jobs": prod_n,
+                "all_active": all_active,
+                "early_career_share": share,
+                "company_early_career_score": share,
+            }
+        else:
+            out[company] = {
+                "product_jobs": prod_n,
+                "all_active": None,
+                "early_career_share": None,
+                "company_early_career_score": prod_n,
+            }
+    return out
 
 
 def build_metrics_payload(bucket: str) -> dict:
@@ -102,6 +187,10 @@ def build_metrics_payload(bucket: str) -> dict:
         "schema_validation_pass": str(quality.get("schema_validation_pass", "false")).lower() == "true",
     }
 
+    lakehouse_total = lakehouse_active or int(active_vs_expired.get("Active", 0))
+    coverage_funnel = _coverage_funnel(all_jobs, lakehouse_total)
+    top_companies_early_career = _top_companies_early_career(all_jobs, top_n=10)
+
     if run_at:
         last_updated = run_at.replace("+00:00", "Z") if run_at.endswith("+00:00") else run_at
     else:
@@ -111,7 +200,7 @@ def build_metrics_payload(bucket: str) -> dict:
         "total_jobs": product_total,
         "new_today": product_new,
         "early_career_jobs": product_total,
-        "lakehouse_total_jobs": lakehouse_active or int(active_vs_expired.get("Active", 0)),
+        "lakehouse_total_jobs": lakehouse_total,
         "audience": "eu_data_ai_early_career",
         "english_jobs": english_jobs,
         "english_jobs_title_based": english_jobs,
@@ -122,6 +211,8 @@ def build_metrics_payload(bucket: str) -> dict:
         "trend": trend,
         "top_locations": top_locations,
         "top_companies": top_companies,
+        "top_companies_early_career": top_companies_early_career,
+        "coverage_funnel": coverage_funnel,
         "remote_vs_onsite": remote_vs_onsite,
         "active_vs_expired": active_vs_expired,
         "top_skills": top_skills,

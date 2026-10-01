@@ -86,3 +86,13 @@ class CostLogger:
 
     def to_json(self) -> str:
         return json.dumps({"records": [r.to_dict() for r in self.records], "summary": self.summary()})
+
+    def flush(self, path: str | None = None) -> str:
+        """Write records + summary JSON for ROI reporting (default data/ai_cost_records.json)."""
+        from pathlib import Path
+
+        out = Path(path) if path else Path("data") / "ai_cost_records.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        payload = {"records": [r.to_dict() for r in self.records], "summary": self.summary()}
+        out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        return str(out)

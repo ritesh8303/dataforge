@@ -18,7 +18,12 @@ from retrieval import rank_bm25, rank_hybrid
 from security.pii import redact_pii
 from vector_store import resolve_vector_entries
 
-_cache: dict[str, Any] = {"jobs": None, "index": None, "vector_backend": "memory", "ts": 0}
+try:
+    from api.match_insights import bilingual_blurb, company_early_career_scores, skill_gap_plan
+except ImportError:  # Lambda / flat src layout
+    from match_insights import bilingual_blurb, company_early_career_scores, skill_gap_plan
+
+_cache: dict[str, Any] = {"jobs": None, "index": None, "vector_backend": "memory", "ts": 0, "company_scores": None}
 CACHE_TTL = 300
 
 
@@ -91,12 +96,30 @@ def load_jobs_and_index(force: bool = False) -> tuple[list[dict], list[dict]]:
     _cache["jobs"] = jobs
     _cache["index"] = index
     _cache["vector_backend"] = backend
+    _cache["company_scores"] = company_early_career_scores(jobs)
     _cache["ts"] = now
     return jobs, index
 
 
 def vector_backend() -> str:
     return str(_cache.get("vector_backend") or "memory")
+
+
+def _company_score_lookup() -> dict[str, float | int]:
+    scores = _cache.get("company_scores")
+    if isinstance(scores, dict):
+        return scores
+    if isinstance(scores, list):
+        out: dict[str, float | int] = {}
+        for row in scores:
+            if not isinstance(row, dict):
+                continue
+            company = str(row.get("company") or "")
+            if company:
+                out[company] = row.get("early_career_score", row.get("early_career_jobs", 0))
+        return out
+    return {}
+
 
 def _truthy(value: Any) -> bool:
     if isinstance(value, bool):
@@ -261,9 +284,17 @@ def match_jobs(
         used = "keyword"
 
     results = []
-    for job in ranked:
+    company_scores = _company_score_lookup()
+    # Keep match path lightweight: rules blurbs for all; LLM only for top few when key present.
+    llm_blurb_budget = 3
+    for i, job in enumerate(ranked):
         item = dict(job)
         item["citations"] = build_citations(item, redacted.text, dream_role)
+        item["skill_gap_plan"] = skill_gap_plan(redacted.text, item)
+        item["bilingual_blurb"] = bilingual_blurb(item, use_llm=(i < llm_blurb_budget))
+        company = str(item.get("company") or "").strip()
+        if company and company in company_scores:
+            item["company_early_career_score"] = company_scores[company]
         results.append(item)
 
     return {

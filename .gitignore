@@ -44,6 +44,11 @@ data/gold/all_jobs.csv
 data/gold/expired_jobs.csv
 # Local LanceDB vector cache (Match API)
 data/lancedb/
+# CostLogger flush (may include operational spend metadata)
+data/ai_cost_records.json
+# Saved-search alert stub state / outputs
+data/alert_seen_job_ids.json
+data/alerts/
 
 # Temp debug files
 event.json

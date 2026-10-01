@@ -8,9 +8,9 @@
   "rules": {
     "n": 40,
     "n_ok": 40,
-    "avg_latency_ms": 0.16,
-    "p50_latency_ms": 0.13,
-    "p95_latency_ms": 0.29,
+    "avg_latency_ms": 0.18,
+    "p50_latency_ms": 0.17,
+    "p95_latency_ms": 0.28,
     "total_cost_usd": 0.0,
     "avg_cost_usd": 0.0,
     "providers": {
@@ -19,14 +19,14 @@
   },
   "llm": {
     "n": 40,
-    "n_ok": 16,
-    "avg_latency_ms": 1355.92,
-    "p50_latency_ms": 1288.35,
-    "p95_latency_ms": 2186.45,
-    "total_cost_usd": 0.00044,
-    "avg_cost_usd": 1.1e-05,
+    "n_ok": 40,
+    "avg_latency_ms": 1125.38,
+    "p50_latency_ms": 1043.66,
+    "p95_latency_ms": 1643.81,
+    "total_cost_usd": 0.001107,
+    "avg_cost_usd": 2.8e-05,
     "providers": {
-      "openai": 16
+      "openai": 40
     }
   },
   "note": "Rules = \u20ac0 baseline. Live point uses pinned provider only (default bedrock). Strict pin rejects silent local fallback. Costs from CostLogger / MODEL_PRICING.",
@@ -35,7 +35,7 @@
       "job_id": "sem_eval_000_ai_ml_da",
       "rules": {
         "provider": "rules",
-        "latency_ms": 0.2,
+        "latency_ms": 0.36,
         "cost_usd": 0.0,
         "field": "ai_ml_data_science",
         "ok": true
@@ -43,7 +43,7 @@
       "llm": {
         "provider": "openai",
         "model_id": "gpt-4o-mini",
-        "latency_ms": 2709.95,
+        "latency_ms": 1624.88,
         "cost_usd": 2.8e-05,
         "ok": true,
         "text_preview": "{\n  \"ai_field\": \"Machine Learning\",\n  \"ai_seniority\": \"Internship\"\n}"
@@ -53,24 +53,7 @@
       "job_id": "sem_eval_001_ai_ml_da",
       "rules": {
         "provider": "rules",
-        "latency_ms": 0.11,
-        "cost_usd": 0.0,
-        "field": "ai_ml_data_science",
-        "ok": true
-      },
-      "llm": {
-        "provider": "openai",
-        "latency_ms": 494.09,
-        "cost_usd": 0.0,
-        "ok": false,
-        "error": "429 Client Error: Too Many Requests for url: https://api.openai.com/v1/chat/completions"
-      }
-    },
-    {
-      "job_id": "sem_eval_002_ai_ml_da",
-      "rules": {
-        "provider": "rules",
-        "latency_ms": 0.09,
+        "latency_ms": 0.17,
         "cost_usd": 0.0,
         "field": "ai_ml_data_science",
         "ok": true
@@ -78,7 +61,25 @@
       "llm": {
         "provider": "openai",
         "model_id": "gpt-4o-mini",
-        "latency_ms": 1174.05,
+        "latency_ms": 1144.09,
+        "cost_usd": 2.8e-05,
+        "ok": true,
+        "text_preview": "{\n  \"ai_field\": \"Machine Learning\",\n  \"ai_seniority\": \"Internship\"\n}"
+      }
+    },
+    {
+      "job_id": "sem_eval_002_ai_ml_da",
+      "rules": {
+        "provider": "rules",
+        "latency_ms": 0.14,
+        "cost_usd": 0.0,
+        "field": "ai_ml_data_science",
+        "ok": true
+      },
+      "llm": {
+        "provider": "openai",
+        "model_id": "gpt-4o-mini",
+        "latency_ms": 1643.81,
         "cost_usd": 2.8e-05,
         "ok": true,
         "text_preview": "{\n  \"ai_field\": \"Machine Learning\",\n  \"ai_seniority\": \"Internship\"\n}"
@@ -88,7 +89,7 @@
       "job_id": "sem_eval_003_ai_ml_da",
       "rules": {
         "provider": "rules",
-        "latency_ms": 0.11,
+        "latency_ms": 0.15,
         "cost_usd": 0.0,
         "field": "ai_ml_data_science",
         "ok": true
@@ -96,17 +97,17 @@
       "llm": {
         "provider": "openai",
         "model_id": "gpt-4o-mini",
-        "latency_ms": 1329.88,
+        "latency_ms": 1508.5,
         "cost_usd": 2.8e-05,
         "ok": true,
-        "text_preview": "{\n  \"ai_field\": \"Machine Learning\",\n  \"ai_seniority\": \"Entry-level\"\n}"
+        "text_preview": "{\n  \"ai_field\": \"Machine Learning\",\n  \"ai_seniority\": \"Entry Level\"\n}"
       }
     },
     {
       "job_id": "sem_eval_004_ai_ml_da",
       "rules": {
         "provider": "rules",
-        "latency_ms": 0.11,
+        "latency_ms": 0.14,
         "cost_usd": 0.0,
         "field": "ai_ml_data_science",
         "ok": true
@@ -114,7 +115,7 @@
       "llm": {
         "provider": "openai",
         "model_id": "gpt-4o-mini",
-        "latency_ms": 917.71,
+        "latency_ms": 949.55,
         "cost_usd": 2.9e-05,
         "ok": true,
         "text_preview": "{\n  \"ai_field\": \"Machine Learning\",\n  \"ai_seniority\": \"Entry Level\"\n}"

@@ -42,6 +42,8 @@ jobs:
         run: |
           python evals/run_matching_eval.py
           python evals/run_enrichment_rules_eval.py
+          python evals/check_ndcg_regression.py
+          python evals/run_faithfulness_spotcheck.py --limit 10
 
   terraform:
     runs-on: ubuntu-latest

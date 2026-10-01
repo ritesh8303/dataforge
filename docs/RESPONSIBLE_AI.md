@@ -33,7 +33,7 @@ Fields such as `ai_visa_stance`, `job_seeker_visa_friendly`, and profile `visa_s
 ## Limitations (honest)
 
 - Majority of JDs have `ai_visa_stance = not_mentioned`.
-- Local-provider ablation can score citation *structure* highly while Bedrock faithfulness still needs spot-check.
+- Local-provider ablation can score citation *structure* highly; use `evals/run_faithfulness_spotcheck.py` (and optional OpenAI judge) for semantic grounding checks.
 - Multi-agent path is bounded (≤4 LLM calls, ≤6 handoffs) — not an unbounded agent swarm.
 - Rules classifier and LLM enricher can disagree; rules-first is the cost control, not ground truth.
 

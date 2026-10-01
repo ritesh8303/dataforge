@@ -65,7 +65,11 @@ def main() -> int:
             f"(need ≥{MIN_QUERIES}/{MIN_JOBS})"
         )
 
+    # Pin local embeddings so CI nDCG is offline-deterministic (production may use OpenAI).
     router = ModelRouter()
+    _offline = type("Offline", (), {"name": "offline", "available": lambda self: False})()
+    for name in ("openai", "anthropic", "bedrock", "azure"):
+        router._providers[name] = _offline
     index = build_embedding_index(jobs, router)
     vectors = {e["job_id"]: e["vector"] for e in index}
 

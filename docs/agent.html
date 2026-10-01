@@ -201,6 +201,22 @@
       border-left: 2px solid var(--accent, var(--df-primary));
     }
 
+    .mini-gap, .mini-blurb {
+      font-size: 0.72rem;
+      color: var(--df-text-muted);
+      margin-top: var(--df-space-2);
+      line-height: 1.45;
+    }
+
+    .mini-gap strong, .mini-blurb strong {
+      color: var(--df-text-secondary);
+      font-weight: 600;
+    }
+
+    .gap-missing {
+      color: var(--df-warning);
+    }
+
     .spreadsheet-actions {
       display: flex;
       justify-content: space-between;
@@ -267,6 +283,7 @@
       <a href="dashboard.html">Dashboard</a>
       <a href="jobs.html">Jobs</a>
       <a href="agent.html" class="active">Job Agent</a>
+      <a href="roi.html">ROI</a>
       <a href="about.html">About</a>
     </div>
     <div class="df-navbar-actions">
@@ -587,6 +604,9 @@
       const raw = Number(j.match_score || j.agent_score || 0);
       const score = Math.round(raw <= 1 ? raw * 100 : raw);
       const cites = (j.citations || []).map(c => c.reason).filter(Boolean).join(" ");
+      const gap = j.skill_gap_plan || {};
+      const blurb = j.bilingual_blurb || {};
+      const missing = Array.isArray(gap.missing) ? gap.missing : [];
       return {
         score: Math.min(100, score || 0),
         title: j.title,
@@ -596,8 +616,13 @@
         work_type: j.work_style ? String(j.work_style).charAt(0).toUpperCase() + String(j.work_style).slice(1) : (j.is_remote === true ? "Remote" : "Onsite"),
         date: j.date_added || "Recent",
         exp_summary: `${lastMethod}. Visa stance: ${j.ai_visa_stance || "n/a"}.`,
-        skills_match: j.tags || j.ai_skills || "—",
-        missing_skills: [],
+        skills_match: (Array.isArray(gap.matched) && gap.matched.length)
+          ? gap.matched.join(", ")
+          : (j.tags || j.ai_skills || "—"),
+        missing_skills: missing,
+        skill_gap_advice: gap.advice || "",
+        bilingual_blurb: blurb,
+        company_early_career_score: j.company_early_career_score,
         why_fits: cites || "Ranked from the DataForge gold board against your resume.",
         url: fixEuresApplyUrl(j.job_url || j.url || "#"),
         easy_apply: (j.source === "arbeitnow" || j.source === "direct") ? "Yes" : "No",
@@ -674,7 +699,22 @@
     const stretch = processedJobs.filter(j => j.score >= 45 && j.score < 75).slice(0, 5);
     const safest = [...processedJobs].sort((a, b) => a.score - b.score).slice(0, 5).reverse();
 
-    const card = (j) => `
+    const card = (j) => {
+      const gapBits = [];
+      if (j.missing_skills?.length) {
+        gapBits.push(`<span class="gap-missing">Gap: ${esc(j.missing_skills.slice(0, 4).join(", "))}</span>`);
+      }
+      if (j.skill_gap_advice) {
+        gapBits.push(esc(j.skill_gap_advice));
+      }
+      const blurb = j.bilingual_blurb || {};
+      const blurbHtml = (blurb.en || blurb.de)
+        ? `<div class="mini-blurb"><strong>EN</strong> ${esc(blurb.en || "—")}<br/><strong>DE</strong> ${esc(blurb.de || "—")}</div>`
+        : "";
+      const scoreNote = j.company_early_career_score != null
+        ? `<div class="mini-meta">Early-career score @ company: ${esc(j.company_early_career_score)}</div>`
+        : "";
+      return `
       <div class="mini-job-card">
         <div class="mini-card-top">
           <div class="mini-title">${esc(j.title)}</div>
@@ -682,10 +722,13 @@
         </div>
         <div class="mini-company">${esc(j.company)}</div>
         <div class="mini-meta">${esc(j.location)} · ${esc(j.work_type)}</div>
+        ${scoreNote}
         <div class="mini-reason">${esc(j.why_fits)}</div>
+        ${gapBits.length ? `<div class="mini-gap">${gapBits.join("<br/>")}</div>` : ""}
+        ${blurbHtml}
         <div style="margin-top:0.5rem"><a class="table-apply-btn" href="${esc(j.url)}" target="_blank" rel="noopener">Apply</a></div>
       </div>`;
-
+    };
     document.getElementById("group-strongest").innerHTML = strongest.map(card).join("") || "<div class='mini-meta'>None</div>";
     document.getElementById("group-stretch").innerHTML = (stretch.length ? stretch : processedJobs.slice(5, 10)).map(card).join("") || "<div class='mini-meta'>None</div>";
     document.getElementById("group-safest").innerHTML = safest.map(card).join("") || "<div class='mini-meta'>None</div>";

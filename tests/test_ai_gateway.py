@@ -28,10 +28,13 @@ def test_local_enrich_returns_valid_json():
     assert parsed["seniority"] in ("junior", "mid", "senior", "lead")
 
 
-def test_local_embed_deterministic():
+def test_local_embed_deterministic(monkeypatch):
     router = ModelRouter()
+    # Force local provider so this stays offline-deterministic even when OpenAI is configured.
+    monkeypatch.setitem(router._providers, "openai", type("X", (), {"name": "openai", "available": lambda self: False})())
     a = router.embed("embed", "Python AWS Spark")
     b = router.embed("embed", "Python AWS Spark")
+    assert a.provider == "local"
     assert a.vector == b.vector
     assert len(a.vector) > 0
 

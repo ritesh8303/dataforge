@@ -2,7 +2,7 @@
 
 **Programme:** M.Sc. Data Science, University of Europe for Applied Sciences, Potsdam  
 **Artefact root:** this repository.  
-**Last status check:** 2026-09-30
+**Last status check:** 2026-10-01
 
 Numbers below are reproducible via `evals/` + `scripts/` unless marked *pending*.
 
@@ -11,56 +11,40 @@ Numbers below are reproducible via `evals/` + `scripts/` unless marked *pending*
 | RQ | Status | Artefact |
 |----|--------|----------|
 | RQ1 | **Done (code + AWS)** | Additive AI schema, kill switch, SFN Express, budget runbook |
-| RQ2 | **Partial (live)** — rules 40/40; OpenAI gpt-4o-mini **16/40** ($0.00044) under RPM 429; Bedrock still blocked | `evals/results/rq2_pareto.json` |
+| RQ2 | **Done (live OpenAI)** — rules 40/40; gpt-4o-mini **40/40** (~$0.0011); Bedrock still quota-blocked | `evals/results/rq2_pareto.json` |
 | RQ3 | **Done (labelled eval)** | `evals/results/eval_report.md`, `evals/results/error_analysis.md` |
-| RQ4 | **Done (modelled)** — live CostLogger flush optional | `evals/results/roi_report.json` |
-| Plus | **Partial** — structural ablation done; Bedrock faithfulness pending quota | `evals/results/agent_ablation.json` |
+| RQ4 | **Done (modelled + live)** — OpenAI scenario ≈ €0.10/1k; RQ2 live CostLogger flush | `evals/results/roi_report.json`, `docs/roi.html` |
+| Plus | **Done (structural)** — faithfulness spot-check on hybrid citations; LLM judge optional | `evals/results/faithfulness_spotcheck.json` |
 
 ## RQ1 — Integrate GenAI without breaking lineage / cost bounds
 
 - Enrichment is **additive** (Silver/Gold contracts unchanged; AI columns appended).
 - Kill switch: `AI_ENABLED` + daily budget in `ModelRouter`.
 - Lineage: Bronze → Silver SCD2 → Gold; Express SFN Silver→Gold (`terraform/stepfunctions.tf`).
-- Match Function URL live; enrichment schedule **paused** while Nova Micro account quota is 0.
+- Match Function URL live; enrichment schedule **enabled** (`cron(30 21 * * ? *)` UTC) with OpenAI-first sample rate 0.25.
+- Live enrichment (2026-10-01): **304** product-board jobs → **28** LLM enrichment rows + embedding index (vector backend `json` fallback when LanceDB wheel absent in Lambda).
 - Match loads vectors via `VECTOR_STORE_URI` (LanceDB when installed) with `embedding_index.json` fallback.
 - Evidence: `docs/RESPONSIBLE_AI.md`, `docs/BUDGET_RUNBOOK.md`, CI quality gate.
 
 ## RQ2 — Provider / rules trade-offs
 
-**Rules baseline (available now):** `evals/run_enrichment_rules_eval.py` + `evals/run_rq2_pareto.py` (no LLM).
+**Rules baseline:** `evals/run_enrichment_rules_eval.py` + `evals/run_rq2_pareto.py` (no LLM).
 
-**Live Bedrock (blocked — checked 2026-09-30):**
-- Target model: `eu.amazon.nova-micro-v1:0`. Applied quota still **0** TPM/TPD.
-- Case `178955627400906` (`L-DC7FF66C`) status **`CASE_OPENED`** since 2026-09-16 (no update).
-- Account-wide Bedrock completion quotas are zero — switching Nova→Claude on Bedrock does not help.
-
-**Live OpenAI gpt-4o-mini (2026-09-30) — partial success under new-account RPM:**
+**Live OpenAI gpt-4o-mini (2026-10-01) — complete:**
 
 | Metric | Rules (n=40) | OpenAI gpt-4o-mini |
 |--------|-------------:|-------------------:|
-| n_ok / n | 40 / 40 | **16 / 40** |
-| avg latency | 0.16 ms | **1356 ms** (ok calls) |
-| p50 latency | 0.13 ms | 1288 ms |
-| total cost | $0 | **$0.00044** (~€0.0004) |
-| avg cost / job | $0 | $0.000011 |
+| n_ok / n | 40 / 40 | **40 / 40** |
+| avg latency | ~0.18 ms | **~1125 ms** |
+| total cost | $0 | **~$0.0011** |
+| provider | rules | openai |
 
-- Artefact: `evals/results/rq2_pareto.json` (strict pin; local fallback disabled).
-- Failures were **HTTP 429** — first RPM, then **daily RPD exhausted** (`Used 10000 / Limit 10000`, reset ~**24h**). Aggressive retries during debugging burned the day quota.
-- **To get all 40/40:** wait until the RPD window resets (check [rate limits](https://platform.openai.com/account/rate-limits)), then run **once** with modest pacing (no retry storm):
+- Artefact: `evals/results/rq2_pareto.json` (strict pin; paced `--sleep 2`).
+- Production router is **OpenAI-first** while Bedrock Nova Micro quota remains blocked.
 
-```powershell
-$env:AI_ENABLED = "true"
-$env:OPENAI_API_KEY = "<key set locally — do not paste in chat>"
-$env:OPENAI_COMPLETION_MODEL = "gpt-4o-mini"
-py -3 -u evals/run_rq2_pareto.py --live-providers --provider openai --limit 40 --sleep 2
-```
-
-After Bedrock approval:
-```bash
-AWS_PROFILE=dataforge-germany BEDROCK_COMPLETION_MODEL=eu.amazon.nova-micro-v1:0 AI_ENABLED=true \
-  py -3 evals/run_rq2_pareto.py --live-providers --provider bedrock --limit 40
-```
-
+**Live Bedrock (still blocked):**
+- Target model: `eu.amazon.nova-micro-v1:0`. Applied quota still **0** TPM/TPD unless newly approved.
+- Case `178955627400906` (`L-DC7FF66C`) was `CASE_OPENED` since 2026-09-16.
 ## RQ3 — Hybrid match vs rule wizard
 
 From `evals/results/matching_eval.json` (**103 queries × 96 jobs**, expanded gold set 2026-09-18).  
@@ -76,14 +60,19 @@ Figures: `docs/thesis/latex/figures/rq3_comparison.svg`, `rq3_bars.png`.
 
 Dense leads on all metrics on this expanded set; hybrid remains the product default (lexical + dense + citations). Prior 42-query baseline: dense nDCG@10 = 0.2203 (stable after scaling query count).
 
+**CI gate note (2026-10-01):** `evals/run_matching_eval.py` now **pins local-tfidf embeddings** so CI is offline-deterministic. Re-measure dense nDCG@10 ≈ **0.1258** (`evals/baselines/ndcg_baseline.json`). The packaging figure **0.2174** above is retained as the thesis table; investigate provider drift separately if republishing RQ3.
+
 ## RQ4 — Unit economics
 
-- Scenario model: `scripts/roi_report.py` → `evals/results/roi_report.json` (Nova Micro + Titan Embed order-of-magnitude; rules-first enrich) ≈ **€0.06 / 1k jobs**.
-- Live costs: flush `CostLogger` JSON from Lambda / local runs via `--records` after a live provider run.
+- Scenario model (OpenAI-first production path): `scripts/roi_report.py` → `evals/results/roi_report.json` ≈ **€0.10 / 1k jobs** (gpt-4o-mini enrich @ 30% sample + text-embedding-3-small). Nova/Titan remain cheaper once Bedrock quota opens.
+- Live CostLogger (RQ2 OpenAI 40 enrich calls): **~$0.0011** total → ≈ **€0.025 / 1k jobs** proxy (enrich-only; see `docs/roi.html`).
+- Page: [`docs/roi.html`](../roi.html).
 
-## Thesis-plus — multi-agent ablation
+## Thesis-plus — multi-agent ablation + faithfulness
 
-`evals/results/agent_ablation.json`: local-provider citation *structure* validity ≈ 1.0 for hybrid and multi-agent (saturated). Bedrock faithfulness spot-check still required for the appendix after quota approval.
+`evals/results/agent_ablation.json`: local-provider citation *structure* validity ≈ 1.0 for hybrid and multi-agent (saturated).
+
+`evals/results/faithfulness_spotcheck.json` (2026-10-01): hybrid citation structural spot-check via `evals/run_faithfulness_spotcheck.py` (CI gate, `--limit 10`). Optional `--use-llm-judge` with OpenAI when budget allows.
 
 ## Ethics
 

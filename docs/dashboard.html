@@ -142,6 +142,7 @@
       <a href="dashboard.html" class="active">Dashboard</a>
       <a href="jobs.html">Jobs</a>
       <a href="agent.html">Job Agent</a>
+      <a href="roi.html">ROI</a>
       <a href="about.html">About</a>
     </div>
     <div class="df-navbar-actions">
@@ -199,6 +200,13 @@
       <div class="df-kpi-value" id="kpi-top-skill-count"><span class="df-skeleton kpi-skeleton"></span></div>
       <div class="df-kpi-sub" id="kpi-top-skill">loading...</div>
     </div>
+  </div>
+
+  <!-- Coverage Funnel -->
+  <div class="df-card chart-card" id="coverage-funnel-card" style="display:none;margin-bottom:var(--df-space-8);">
+    <div class="card-heading">Coverage Funnel <span class="df-kpi-sub">lakehouse → product board → employment · field · region</span></div>
+    <div class="df-grid-4" id="coverage-funnel-kpis" style="margin-bottom:var(--df-space-4);"></div>
+    <div class="df-grid-3" id="coverage-funnel-breakdown"></div>
   </div>
 
   <div class="main-grid">
@@ -267,6 +275,7 @@
       <a href="index.html">Home</a>
       <a href="jobs.html">Job Intelligence Board</a>
       <a href="agent.html">Job Agent</a>
+      <a href="roi.html">ROI</a>
       <a href="about.html">About</a>
     </div>
   </div>
@@ -546,6 +555,70 @@
     slices.sort((a, b) => b.value - a.value);
 
     renderDonut("donut-region", "donut-region-pct", "legend-region", slices, "top");
+
+    renderCoverageFunnel(data.coverage_funnel);
+  }
+
+  function renderCoverageFunnel(funnel) {
+    const card = document.getElementById("coverage-funnel-card");
+    if (!card || !funnel) return;
+    card.style.display = "";
+
+    const lake = Number(funnel.lakehouse_active || 0);
+    const product = Number(funnel.product_jobs || 0);
+    const pct = lake ? Math.round((product / lake) * 100) : null;
+    const kpiEl = document.getElementById("coverage-funnel-kpis");
+    if (kpiEl) {
+      kpiEl.innerHTML = `
+        <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#64748b,#94a3b8);--kpi-tint:linear-gradient(145deg,rgba(100,116,139,0.12),transparent);">
+          <div class="df-kpi-label">Lakehouse Active</div>
+          <div class="df-kpi-value">${lake.toLocaleString()}</div>
+        </div>
+        <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.14),transparent);">
+          <div class="df-kpi-label">Product Jobs</div>
+          <div class="df-kpi-value">${product.toLocaleString()}</div>
+          <div class="df-kpi-sub">${pct != null ? pct + "% of lakehouse" : "EU · data/AI · early career"}</div>
+        </div>
+        <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.12),transparent);">
+          <div class="df-kpi-label">Employment Types</div>
+          <div class="df-kpi-value">${Object.keys(funnel.by_employment_type || {}).length}</div>
+        </div>
+        <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#fb923c,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(251,146,60,0.12),transparent);">
+          <div class="df-kpi-label">Fields</div>
+          <div class="df-kpi-value">${Object.keys(funnel.by_field || {}).length}</div>
+        </div>`;
+    }
+
+    const fmtBars = (obj, color) => {
+      const entries = Object.entries(obj || {}).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      const max = entries[0]?.[1] || 1;
+      if (!entries.length) return "<div class='df-kpi-sub'>No data</div>";
+      return entries.map(([name, count]) => `
+        <div class="bar-row">
+          <span class="bar-name" title="${esc(name)}">${esc(name)}</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${(count / max) * 100}%;background:${color}"></div>
+          </div>
+          <span class="bar-count">${Number(count).toLocaleString()}</span>
+        </div>`).join("");
+    };
+
+    const br = document.getElementById("coverage-funnel-breakdown");
+    if (br) {
+      br.innerHTML = `
+        <div>
+          <div class="card-heading" style="font-size:0.8rem;margin-bottom:var(--df-space-2)">By employment type</div>
+          ${fmtBars(funnel.by_employment_type, PASTEL.mint)}
+        </div>
+        <div>
+          <div class="card-heading" style="font-size:0.8rem;margin-bottom:var(--df-space-2)">By field</div>
+          ${fmtBars(funnel.by_field, PASTEL.purple)}
+        </div>
+        <div>
+          <div class="card-heading" style="font-size:0.8rem;margin-bottom:var(--df-space-2)">By region (top 10)</div>
+          ${fmtBars(funnel.by_region, PASTEL.blue)}
+        </div>`;
+    }
   }
 
   function esc(s) {

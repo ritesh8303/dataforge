@@ -1,6 +1,6 @@
 {
   "model_scenario": {
-    "scenario": "1000_jobs_rules_first_plus_100_matches",
+    "scenario": "1000_jobs_rules_first_plus_100_matches_openai",
     "assumptions": {
       "enrich_sample_rate_llm": 0.3,
       "tokens_enrich_in_out": [
@@ -8,25 +8,67 @@
         250
       ],
       "tokens_embed_in": 400,
-      "fx_eur_per_usd": 0.92
+      "fx_eur_per_usd": 0.92,
+      "n_jobs": 1000,
+      "provider": "openai"
     },
     "cost_usd": {
-      "enrich_llm_only_full": 0.077,
-      "enrich_rules_first": 0.0231,
-      "embeddings": 0.044,
-      "total": 0.0671,
-      "per_enriched_job": 2.3e-05,
-      "per_match_request_embed_share": 4e-05
+      "enrich_llm_only_full": 0.33,
+      "enrich_rules_first": 0.099,
+      "embeddings": 0.0088,
+      "total": 0.1078,
+      "per_enriched_job": 9.9e-05,
+      "per_match_request_embed_share": 8e-06,
+      "per_1k_jobs": 0.1078
     },
     "cost_eur_approx": {
-      "total": 0.0617,
-      "per_enriched_job": 2.1e-05
+      "total": 0.0992,
+      "per_enriched_job": 9.1e-05,
+      "per_1k_jobs": 0.0992
     },
     "models": {
-      "enrich": "amazon.nova-micro-v1:0",
-      "embed": "amazon.titan-embed-text-v2:0"
+      "enrich": "gpt-4o-mini",
+      "embed": "text-embedding-3-small"
+    },
+    "bedrock_fallback_note": "Nova Micro + Titan remain cheaper when Bedrock quota is approved."
+  },
+  "live_summary": {
+    "total_cost_usd": 0.001107,
+    "total_calls": 40,
+    "avg_latency_ms": 1125.38,
+    "by_provider": {
+      "openai": {
+        "calls": 40,
+        "cost_usd": 0.0011070000000000001,
+        "latency_ms": 45015.2,
+        "failures": 0
+      }
+    },
+    "by_task": {
+      "enrich": {
+        "calls": 40,
+        "cost_usd": 0.0011070000000000001,
+        "latency_ms": 45015.2,
+        "failures": 0
+      }
     }
   },
-  "live_summary": null,
+  "live_unit_economics": {
+    "jobs_proxy": 40,
+    "total_cost_usd": 0.001107,
+    "total_cost_eur": 0.001018,
+    "eur_per_1k_jobs": 0.025461,
+    "usd_per_1k_jobs": 0.027675,
+    "by_provider": {
+      "openai": {
+        "calls": 40,
+        "cost_usd": 0.001107,
+        "cost_eur": 0.001018,
+        "failures": 0
+      }
+    },
+    "fx_eur_per_usd": 0.92
+  },
+  "records_path": "D:\\dataforge\\data\\ai_cost_records.json",
   "note": "Prefer live CostLogger JSON when available; model_scenario is thesis-order-of-magnitude."
 }

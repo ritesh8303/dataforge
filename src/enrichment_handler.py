@@ -68,6 +68,7 @@ def lambda_handler(event, context):
                 "vector_backend": vector_backend,
                 "cost_summary": router.cost_logger.summary(),
             }),
-        }    except Exception as e:
+        }
+    except Exception as e:
         print(f"Enrichment failed: {e}")
         raise

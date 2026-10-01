@@ -59,12 +59,21 @@ Kill switch: `AI_ENABLED=false` on Match / enrichment / Gold.
 | Always-on containers / RDS / OpenSearch | Out of scope | Do not add |
 | Dual SFN + Lambda cron triggers | Double compute | `enable_sfn_schedule=false` |
 
-## Thesis logging
+## Observability defaults (Langfuse / MCP / LanceDB)
+
+| Piece | Default | How to enable |
+|-------|---------|----------------|
+| **LanceDB** | `VECTOR_STORE_URI=s3://…/lancedb` on Match + enrichment (`terraform/ai.tf`) | Install `lancedb` in the Lambda layer/zip; falls back to `embedding_index.json` |
+| **MCP** | Cursor stdio bridge | Copy `mcp/cursor.mcp.example.json` → `.cursor/mcp.json` (or Cursor MCP settings); key from gitignored `aws-keys-do-not-commit.txt` |
+| **Langfuse** | Off | Set `LANGFUSE_PUBLIC_KEY` + `LANGFUSE_SECRET_KEY` (+ optional `LANGFUSE_HOST`) on Match/enrichment; traces via `src/ai_gateway/tracing.py` |
+
+Thesis logging:
 
 ```bash
 py -3 scripts/roi_report.py
 py -3 evals/run_rq2_pareto.py
 py -3 evals/run_agent_ablation.py
+py -3 evals/run_faithfulness_spotcheck.py --limit 10
 ```
 
 Keep total logged GenAI spend under **€40**. Document FX as approximate USD→EUR in ROI report.
