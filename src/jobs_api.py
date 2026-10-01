@@ -137,8 +137,13 @@ def _handle(event):
                 j
                 for j in jobs
                 if str(j.get("employment_type", "")).lower() == "fresher"
-                or str(j.get("ai_seniority", "")).lower() in {"junior", "trainee_graduate"}
+                or str(j.get("ai_seniority", "")).lower()
+                in {"junior", "fresher", "trainee_graduate"}
+                or "junior" in j.get("tags", "").lower()
+                or "graduate" in j.get("tags", "").lower()
                 or "junior / entry level" in j.get("tags", "").lower()
+                or "absolvent" in j.get("title", "").lower()
+                or "berufseinsteiger" in j.get("title", "").lower()
             ]
         elif exp in ("student", "werkstudent", "working_student"):
             jobs = [

@@ -6,17 +6,27 @@ data and AI-related roles across the European Union — not a general tech board
 
 from __future__ import annotations
 
+import os
 import re
 from typing import Any
 
 from enrichment.rules_de_en import (
     PRODUCT_DATA_AI_FIELDS,
     PRODUCT_SENIORITY,
-    classify_job,
     is_product_data_ai_field,
     is_product_seniority,
 )
 from processing.europe_filter import CITY_COUNTRY_MAPPING
+
+# Cap live LLM calls during Gold when enrichment CSV is missing (enrichment Lambda is primary).
+_ai_live_calls = 0
+
+
+def _audience_ai_max() -> int:
+    try:
+        return max(0, int(os.environ.get("AUDIENCE_AI_MAX", "80")))
+    except ValueError:
+        return 80
 
 # EU member-state display names used by CITY_COUNTRY_MAPPING values.
 _EU_COUNTRY_NAMES = frozenset(
@@ -231,7 +241,7 @@ def classify_for_audience(
     *,
     apply_overrides: bool = True,
 ) -> dict[str, Any]:
-    """Run rules classify and attach product decision fields."""
+    """AI-first classify and attach product decision fields (rules only on AI fail)."""
     # Agent / human override from ingest-review decisions file
     jid = str(job.get("job_id") or "").strip()
     if apply_overrides and jid:
@@ -275,14 +285,75 @@ def classify_for_audience(
     title = str(job.get("title") or "")
     description = str(job.get("description") or "")
     tags = str(job.get("tags") or "")
-    rules = classify_job(title, description, tags)
 
-    field = _norm(job.get("ai_field") or job.get("ai_field_rule") or job.get("field_rule") or rules.get("field"))
-    seniority = _norm(job.get("ai_seniority") or job.get("seniority_rule") or rules.get("seniority"))
+    # Prefer prior AI enrichment columns; otherwise AI-classify (rules only on kill-switch / failure).
+    # Cap live LLM calls so Gold does not timeout — enrichment Lambda is the primary classifier.
+    global _ai_live_calls
+    has_ai = bool(str(job.get("ai_field") or "").strip()) or bool(str(job.get("ai_seniority") or "").strip())
+    if has_ai:
+        field = _norm(job.get("ai_field") or job.get("ai_field_rule") or job.get("field_rule"))
+        seniority = _norm(job.get("ai_seniority") or job.get("seniority_rule"))
+        rules = {
+            "field": field,
+            "seniority": seniority,
+            "employment_type": job.get("employment_type") or "",
+            "entry_level": job.get("ai_entry_level"),
+            "english_ok": job.get("ai_english_ok"),
+            "experience_years_min": job.get("ai_experience_years_min"),
+            "confidence": job.get("ai_confidence") or 0.75,
+            "field_rule": field,
+            "is_tech": job.get("is_tech", True),
+        }
+    else:
+        from enrichment.ai_classify import classify_job_ai
+
+        if _ai_live_calls < _audience_ai_max():
+            _ai_live_calls += 1
+            classified = classify_job_ai(
+                title,
+                description,
+                tags,
+                company=str(job.get("company") or ""),
+                location=str(job.get("location") or ""),
+            )
+        else:
+            from enrichment.rules_de_en import classify_job as _classify_job_rules
+
+            classified = {
+                **_classify_job_rules(title, description, tags),
+                "classification_source": "rules_fallback_audience_budget",
+            }
+        rules = classified
+        field = _norm(classified.get("field"))
+        seniority = _norm(classified.get("seniority"))
+
     if field in {"", "nan"}:
         field = _norm(rules.get("field"))
     if seniority in {"", "nan"}:
         seniority = _norm(rules.get("seniority"))
+
+    # No stated prior experience → fresher (keeps WS / internship / thesis / trainee).
+    from enrichment.rules_de_en import apply_no_experience_fresher
+
+    years_raw = rules.get("experience_years_min")
+    try:
+        years_i = int(years_raw) if years_raw is not None and str(years_raw).strip() not in {"", "nan", "none"} else None
+    except (TypeError, ValueError):
+        years_i = None
+    seniority = apply_no_experience_fresher(seniority, title, description, experience_years_min=years_i)
+    rules["seniority"] = seniority
+    if seniority in {"internship", "working_student", "thesis", "fresher"}:
+        rules["employment_type"] = seniority
+    elif seniority in {"trainee_graduate", "junior"}:
+        rules["employment_type"] = "fresher"
+    rules["entry_level"] = seniority in {
+        "internship",
+        "working_student",
+        "thesis",
+        "trainee_graduate",
+        "fresher",
+        "junior",
+    }
 
     eu_ok = is_eu_location(
         location=str(job.get("location") or ""),

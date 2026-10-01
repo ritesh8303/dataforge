@@ -51,3 +51,20 @@ def test_classify_job_entry_friendly():
     )
     assert out["entry_level"] is True
     assert out["english_ok"] is True
+
+
+def test_no_experience_means_fresher():
+    out = classify_job(
+        "Data Analyst (m/w/d)",
+        "You will build dashboards in Power BI and SQL. English working language.",
+    )
+    assert out["seniority"] == "fresher"
+    assert out["entry_level"] is True
+
+
+def test_years_experience_not_auto_fresher():
+    out = classify_job(
+        "Data Engineer",
+        "We need at least 3 years of professional experience with Spark.",
+    )
+    assert out["seniority"] != "fresher"

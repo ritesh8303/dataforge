@@ -80,6 +80,22 @@ SEARCH_KEYWORDS = [
     "platform engineer",
     "cloud engineer",
     "site reliability engineer",
+    "working student data",
+    "working student AI",
+    "working student machine learning",
+    "internship data science",
+    "internship machine learning",
+    "Werkstudent Data",
+    "Werkstudent KI",
+    "trainee data",
+    "trainee data science",
+    "graduate data analyst",
+    "graduate data scientist",
+    "junior data engineer",
+    "junior data scientist",
+    "junior data analyst",
+    "entry level data",
+    "graduate program data",
 ]
 
 

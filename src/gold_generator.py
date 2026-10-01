@@ -1,5 +1,7 @@
 import os
 import json
+from pathlib import Path
+
 import pandas as pd
 import awswrangler as wr
 import re
@@ -370,7 +372,8 @@ def lambda_handler(event, context):
         ]
         all_jobs = current[cols].copy()
         if "description" in all_jobs.columns:
-            all_jobs["description"] = all_jobs["description"].fillna("").astype(str).str.slice(0, 300)
+            # Keep enough text for experience/seniority classification; truncate for board after gate.
+            all_jobs["description"] = all_jobs["description"].fillna("").astype(str).str.slice(0, 1800)
         all_jobs["date_added"] = pd.to_datetime(all_jobs["scd_start_date"]).dt.date.astype(str)
         all_jobs.drop(columns=["scd_start_date"], inplace=True)
         all_jobs.rename(columns={"url": "job_url", "remote": "is_remote"}, inplace=True)
@@ -382,6 +385,39 @@ def lambda_handler(event, context):
         from enrichment.ingest_review import enqueue_ingest_review
 
         records = all_jobs.to_dict(orient="records")
+
+        # Merge prior AI enrichment so audience gate is AI-first (not rule-first).
+        enrich_key = os.environ.get("ENRICHMENT_OUTPUT_KEY", "ai_job_enrichment.csv")
+        if gold_bucket:
+            try:
+                enrich_df = wr.s3.read_csv(f"s3://{gold_bucket}/{enrich_key}")
+                if not enrich_df.empty and "job_id" in enrich_df.columns:
+                    emap = enrich_df.set_index("job_id").to_dict(orient="index")
+                    for rec in records:
+                        jid = str(rec.get("job_id") or "")
+                        if jid in emap:
+                            for k, v in emap[jid].items():
+                                if v is not None and str(v).strip() not in {"", "nan"}:
+                                    rec[k] = v
+                    print(f"Merged AI enrichment for {sum(1 for r in records if r.get('ai_field'))} jobs")
+            except Exception as exc:
+                print(f"No prior AI enrichment merge ({exc})")
+        else:
+            local_enrich = Path("data/gold") / enrich_key
+            if local_enrich.exists():
+                try:
+                    enrich_df = pd.read_csv(local_enrich)
+                    if not enrich_df.empty and "job_id" in enrich_df.columns:
+                        emap = enrich_df.set_index("job_id").to_dict(orient="index")
+                        for rec in records:
+                            jid = str(rec.get("job_id") or "")
+                            if jid in emap:
+                                for k, v in emap[jid].items():
+                                    if v is not None and str(v).strip() not in {"", "nan"}:
+                                        rec[k] = v
+                except Exception as exc:
+                    print(f"Local enrichment merge failed: {exc}")
+
         enriched_all = enrich_jobs_with_audience(records)
         early_career = [r for r in enriched_all if r.get("audience_accept")]
         uncertain = [r for r in enriched_all if r.get("audience_uncertain")]
@@ -416,6 +452,8 @@ def lambda_handler(event, context):
         # Jobs board publishes the full active lakehouse with audience flags.
         # Match/dashboard product KPIs keep using audience_accept=True rows.
         all_jobs = pd.DataFrame(enriched_all)
+        if "description" in all_jobs.columns:
+            all_jobs["description"] = all_jobs["description"].fillna("").astype(str).str.slice(0, 300)
         for col in (
             "ai_field",
             "ai_seniority",

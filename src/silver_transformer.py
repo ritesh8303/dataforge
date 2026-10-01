@@ -226,23 +226,17 @@ def _normalize_bronze_before_dedup(bronze_df: pd.DataFrame) -> pd.DataFrame:
         bronze_df = bronze_df[bronze_df.apply(row_is_in_europe, axis=1)].copy()
         print(f"Europe safety gate filtering: kept {len(bronze_df)} out of {initial_len} jobs.")
 
-    # Rule-based tech / field / seniority pre-filter (free; LLM only later for ambiguous).
+    # Classification is AI-first in enrichment / audience_gate (no rule pre-label here).
     if not bronze_df.empty:
-        from enrichment.rules_de_en import classify_job
-
-        class_rows = bronze_df.apply(
-            lambda r: classify_job(
-                title=str(r.get("title", "")),
-                description=str(r.get("description", "")),
-                tags=str(r.get("tags", "")),
-            ),
-            axis=1,
-        )
-        bronze_df["is_tech"] = class_rows.map(lambda x: bool(x.get("is_tech")))
-        bronze_df["field_rule"] = class_rows.map(lambda x: x.get("field_rule", "non_tech"))
-        bronze_df["ai_field_rule"] = class_rows.map(lambda x: x.get("field", "non_tech"))
-        bronze_df["seniority_rule"] = class_rows.map(lambda x: x.get("seniority", "mid"))
-        bronze_df["employment_type_rule"] = class_rows.map(lambda x: x.get("employment_type", ""))
+        for col, default in (
+            ("is_tech", True),
+            ("field_rule", ""),
+            ("ai_field_rule", ""),
+            ("seniority_rule", ""),
+            ("employment_type_rule", ""),
+        ):
+            if col not in bronze_df.columns:
+                bronze_df[col] = default
 
     return bronze_df
 

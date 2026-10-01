@@ -48,5 +48,16 @@
   {"company": "Mistral AI", "careers_url": "https://jobs.ashbyhq.com/mistral"},
   {"company": "Scaleway", "careers_url": "https://jobs.ashbyhq.com/scaleway"},
   {"company": "Aleph Alpha", "careers_url": "https://jobs.ashbyhq.com/aleph-alpha"},
-  {"company": "Helmholtz Munich", "careers_url": "https://jobs.ashbyhq.com/helmholtzmunich"}
+  {"company": "Helmholtz Munich", "careers_url": "https://jobs.ashbyhq.com/helmholtzmunich"},
+  {"company": "BMW Group", "careers_url": "https://careers.smartrecruiters.com/BMWGroup"},
+  {"company": "Mercedes-Benz Group", "careers_url": "https://careers.smartrecruiters.com/MercedesBenzGroup"},
+  {"company": "Deutsche Bahn", "careers_url": "https://careers.smartrecruiters.com/DeutscheBahn"},
+  {"company": "Personio", "careers_url": "https://boards.greenhouse.io/personio"},
+  {"company": "ABOUT YOU", "careers_url": "https://boards.greenhouse.io/aboutyou"},
+  {"company": "CHECK24", "careers_url": "https://boards.greenhouse.io/check24"},
+  {"company": "Flink", "careers_url": "https://boards.greenhouse.io/flink"},
+  {"company": "Taxfix", "careers_url": "https://boards.greenhouse.io/taxfix"},
+  {"company": "Omio", "careers_url": "https://boards.greenhouse.io/omio"},
+  {"company": "Adjust", "careers_url": "https://boards.greenhouse.io/adjust"},
+  {"company": "Delivery Hero Students", "careers_url": "https://boards.greenhouse.io/deliveryhero"}
 ]

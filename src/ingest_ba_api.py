@@ -28,35 +28,45 @@ def lambda_handler(event, context):
         if not bucket and not is_local:
             raise ValueError("BRONZE_BUCKET environment variable is not set.")
         fetcher = BAFetcher()
+        # Fresher / graduate first (user priority), then WS / internship, then core data.
         queries = [
-            "Data Engineer",
-            "Data Scientist",
-            "Data Analyst",
-            "Business Intelligence",
-            "Machine Learning",
-            "MLOps",
-            "AI Engineer",
-            "Artificial Intelligence",
-            "Forward Deployed Engineer",
-            "Deep Learning",
-            "DevOps",
-            "Software Engineer",
-            "Platform Engineer",
-            "Cloud Architect",
-            "SRE",
-            "Werkstudent Data",
-            "Werkstudent Software",
-            "Praktikum Data",
-            "Praktikum Software",
             "Junior Data Engineer",
             "Junior Data Scientist",
+            "Junior Data Analyst",
+            "Junior Business Intelligence",
+            "Junior Machine Learning",
+            "Junior KI",
+            "Absolvent Data",
+            "Absolvent Data Science",
+            "Absolvent Machine Learning",
+            "Berufseinsteiger Data",
+            "Berufseinsteiger IT",
+            "Trainee Data",
+            "Trainee Data Science",
+            "Trainee Analytics",
+            "Graduate Data",
+            "Graduate Analyst",
+            "Entry Level Data",
             "Junior Software Engineer",
-            "Trainee IT",
+            "Werkstudent Data",
+            "Werkstudent KI",
+            "Werkstudent Data Science",
+            "Praktikum Data",
+            "Praktikum Data Science",
+            "Data Analyst",
+            "Data Scientist",
+            "Data Engineer",
+            "Machine Learning",
+            "Business Intelligence",
         ]
         all_jobs = []
         seen_ids = set()
         for query in queries:
-            result = fetcher.fetch_jobs(query=query)
+            try:
+                result = fetcher.fetch_jobs(query=query, max_pages=2)
+            except Exception as exc:
+                print(f"Query '{query}' failed ({exc}); continuing")
+                continue
             for job in result["stellenangebote"]:
                 if job["refnr"] not in seen_ids:
                     seen_ids.add(job["refnr"])

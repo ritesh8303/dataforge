@@ -23,7 +23,8 @@ module "enrichment_lambda" {
     EMBEDDING_INDEX_KEY       = "embedding_index.json"
     # LanceDB on Gold bucket (optional dep in Lambda image; JSON index always written too)
     VECTOR_STORE_URI          = "s3://${module.s3_gold.bucket_id}/lancedb"
-    AI_ENRICHMENT_SAMPLE_RATE = "0.25"
+    AI_ENRICHMENT_SAMPLE_RATE = "1.0"
+    ENRICHMENT_MAX_LLM        = "800"
     INDEX_BUILD_LIMIT         = "500"
     AI_ENABLED                = "true"
     AI_DAILY_BUDGET_USD       = "5.0"

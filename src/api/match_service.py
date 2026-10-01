@@ -13,7 +13,6 @@ import boto3
 
 from ai_gateway.router import ModelRouter
 from embedding_index import build_embedding_index, job_text
-from enrichment.rules_de_en import classify_job
 from retrieval import rank_bm25, rank_hybrid
 from security.pii import redact_pii
 from vector_store import resolve_vector_entries
@@ -57,21 +56,7 @@ def load_jobs_and_index(force: bool = False) -> tuple[list[dict], list[dict]]:
         jid = job.get("job_id", "")
         if jid in enrich_map:
             job.update(enrich_map[jid])
-        # Ensure rule-derived flags exist even without enrichment CSV
-        if "ai_visa_stance" not in job or not job.get("ai_visa_stance"):
-            rules = classify_job(
-                str(job.get("title", "")),
-                str(job.get("description", "")),
-                str(job.get("tags", "")),
-            )
-            job.setdefault("ai_field", rules.get("field"))
-            job.setdefault("ai_seniority", rules.get("seniority"))
-            job.setdefault("ai_visa_stance", rules.get("visa_stance"))
-            job.setdefault("ai_evidence_visa", rules.get("evidence_visa", ""))
-            job.setdefault("ai_english_ok", rules.get("english_ok"))
-            job.setdefault("ai_entry_level", rules.get("entry_level"))
-            job.setdefault("ai_job_seeker_visa_friendly", rules.get("job_seeker_visa_friendly"))
-            job.setdefault("is_tech", rules.get("is_tech"))
+        # Labels come from Gold audience gate + enrichment CSV (no per-job LLM on load).
 
     json_raw: bytes | None = None
     try:

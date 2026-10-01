@@ -145,8 +145,8 @@ class BAFetcher:
             "homeoffice": bool(job.get("homeofficemoeglich")),
         }
 
-    def fetch_jobs(self, query: str = "Data Engineer") -> Dict[str, Any]:
-        """Fetches all pages of jobs from BA public API."""
+    def fetch_jobs(self, query: str = "Data Engineer", max_pages: int = 5) -> Dict[str, Any]:
+        """Fetches pages of jobs from BA public API (capped for Lambda time)."""
         headers = {
             "X-API-Key": "jobboerse-jobsuche",
             "Accept": "application/json",
@@ -157,12 +157,24 @@ class BAFetcher:
         page = 1
         page_size = 100
 
-        while True:
+        while page <= max_pages:
             params = {"was": query, "size": page_size, "page": page}
             print(f"Fetching BA API page {page} for query: {query}")
-            response = requests.get(self.JOBS_URL, headers=headers, params=params, timeout=15)
-            response.raise_for_status()
-            raw_data = response.json()
+            last_err = None
+            raw_data = None
+            for attempt in range(3):
+                try:
+                    response = requests.get(
+                        self.JOBS_URL, headers=headers, params=params, timeout=30
+                    )
+                    response.raise_for_status()
+                    raw_data = response.json()
+                    break
+                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
+                    last_err = exc
+                    print(f"BA API retry {attempt + 1}/3 for '{query}' page {page}: {exc}")
+            if raw_data is None:
+                raise last_err or RuntimeError(f"BA API failed for query={query}")
             raw_jobs = raw_data.get("ergebnisliste") or raw_data.get("stellenangebote") or []
             if not raw_jobs:
                 break

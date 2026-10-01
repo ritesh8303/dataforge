@@ -31,6 +31,7 @@ SENIORITY_VALUES = (
     "working_student",
     "thesis",
     "trainee_graduate",
+    "fresher",
     "junior",
     "mid",
     "senior",
@@ -43,6 +44,7 @@ PRODUCT_SENIORITY = frozenset(
         "working_student",
         "thesis",
         "trainee_graduate",
+        "fresher",
         "junior",
     }
 )
@@ -63,6 +65,7 @@ EMPLOYMENT_TYPE_BY_SENIORITY = {
     "internship": "internship",
     "thesis": "thesis",
     "trainee_graduate": "fresher",
+    "fresher": "fresher",
     "junior": "fresher",
 }
 
@@ -280,6 +283,31 @@ _EXP_YEARS_RE = re.compile(
     re.I,
 )
 
+# Explicit prior / professional experience asks (not mere "Erfahrung mit Python").
+_PRIOR_EXPERIENCE_RE = re.compile(
+    r"("
+    r"\d+\s*(?:\+|plus)?\s*(?:Jahre|years?|yrs?)\s*"
+    r"(?:Berufserfahrung|(?:of\s+)?(?:professional\s+)?experience|Erfahrung)?"
+    r"|Berufserfahrung|"
+    r"prior\s+experience|previous\s+experience|relevante\s+(?:Berufserfahrung|Erfahrung)|"
+    r"mehrj[aä]hrig(?:e|en)?\s+(?:Berufserfahrung|Erfahrung)|"
+    r"proven\s+experience|solid\s+experience|extensive\s+experience|"
+    r"professional\s+experience\s+required|"
+    r"experience\s+(?:required|necessary|needed)|"
+    r"(?:mindestens|min\.?|at\s+least)\s+\d+\s*(?:Jahre|years?)|"
+    r"(?:several|multiple)\s+years?\s+(?:of\s+)?experience|"
+    r"Jahre\s+(?:einschl[aä]gig(?:er|e)?\s+)?Berufserfahrung|"
+    r"erste\s+Berufserfahrung|"
+    r"work\s+experience\s+(?:of\s+)?(?:at\s+least\s+)?\d+"
+    r")",
+    re.I,
+)
+
+_SENIOR_TITLE_RE = re.compile(
+    r"\b(senior|sr\.?|staff|principal|lead|leiter|head\s+of|director)\b",
+    re.I,
+)
+
 _VISA_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     (
         "eu_citizens_only",
@@ -408,7 +436,10 @@ def classify_seniority(title: str = "", description: str = "") -> dict[str, Any]
     for seniority, pattern in _SENIORITY_PATTERNS:
         if pattern.search(title or "") or pattern.search(text):
             return {"seniority": seniority, "confidence": 0.9 if pattern.search(title or "") else 0.7}
-    return {"seniority": "mid", "confidence": 0.35, "field_rule_note": "default_mid"}
+    # No explicit seniority cue: fresher unless prior experience is stated.
+    if mentions_prior_experience(title, description):
+        return {"seniority": "mid", "confidence": 0.35, "field_rule_note": "default_mid_has_experience"}
+    return {"seniority": "fresher", "confidence": 0.55, "field_rule_note": "default_fresher_no_experience"}
 
 
 def classify_experience_years(title: str = "", description: str = "") -> int | None:
@@ -417,6 +448,39 @@ def classify_experience_years(title: str = "", description: str = "") -> int | N
     if not matches:
         return None
     return min(matches)
+
+
+def mentions_prior_experience(title: str = "", description: str = "") -> bool:
+    """True when the posting asks for prior/professional experience."""
+    if classify_experience_years(title, description) is not None:
+        return True
+    return bool(_PRIOR_EXPERIENCE_RE.search(_blob(title, description)))
+
+
+def apply_no_experience_fresher(
+    seniority: str,
+    title: str = "",
+    description: str = "",
+    experience_years_min: int | None = None,
+) -> str:
+    """If no prior experience is stated, classify as fresher (keep WS/intern/thesis/trainee)."""
+    sen = str(seniority or "").strip().lower()
+    if sen in {"internship", "working_student", "thesis", "trainee_graduate"}:
+        return sen
+    if _SENIOR_TITLE_RE.search(title or ""):
+        return sen or "senior"
+    years = experience_years_min
+    if years is None:
+        years = classify_experience_years(title, description)
+    if years is not None and int(years) >= 1:
+        return sen or ("junior" if int(years) <= 2 else "mid")
+    if mentions_prior_experience(title, description):
+        return sen or "mid"
+    # Need enough description to conclude experience was omitted (not just missing text).
+    desc = (description or "").strip()
+    if len(desc) < 120:
+        return sen if sen else "fresher"
+    return "fresher"
 
 
 def classify_visa_stance(title: str = "", description: str = "") -> dict[str, Any]:
@@ -503,10 +567,13 @@ def classify_job(title: str = "", description: str = "", tags: str = "") -> dict
     field = classify_field(title, description, tags)
     seniority = classify_seniority(title, description)
     years = classify_experience_years(title, description)
+    sen = apply_no_experience_fresher(
+        seniority["seniority"], title, description, experience_years_min=years
+    )
     visa = classify_visa_stance(title, description)
     langs = classify_languages(title, description)
     flags = derive_flags(
-        seniority=seniority["seniority"],
+        seniority=sen,
         experience_years_min=years,
         visa_stance=visa["visa_stance"],
         english_ok=langs["english_ok"],
@@ -514,7 +581,7 @@ def classify_job(title: str = "", description: str = "", tags: str = "") -> dict
     )
     return {
         **field,
-        "seniority": seniority["seniority"],
+        "seniority": sen,
         "experience_years_min": years,
         "visa_stance": visa["visa_stance"],
         "evidence_visa": visa.get("evidence_visa", ""),
