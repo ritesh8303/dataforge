@@ -3,45 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataForge — Career Matching Wizard</title>
-  <meta name="description" content="DataForge Career Matching Wizard — rule-based resume matching against live job listings with skill scoring and export." />
+  <title>DataForge — Job Matching Agent</title>
+  <meta name="description" content="Paste your resume and get ranked job suggestions from the DataForge EU lakehouse." />
   <link rel="icon" href="df-logo.png" type="image/png" />
   <meta name="theme-color" content="#f3f6fb" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#05060d" media="(prefers-color-scheme: dark)" />
   <link rel="stylesheet" href="components/design-system.css" />
   <style>
     body { background: transparent; }
-    .wizard-header { margin-bottom: var(--df-space-8); }
-    .wizard-header p { font-size: 0.9rem; margin-top: var(--df-space-1); }
-    .wizard-card-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: var(--df-space-5);
-      color: var(--df-text);
+    .agent-header { margin-bottom: var(--df-space-6); }
+    .agent-header p { font-size: 0.9rem; margin-top: var(--df-space-1); color: var(--df-text-secondary); }
+
+    .agent-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--df-space-6);
     }
 
-    .step-container { display: none; animation: df-fadeIn 0.4s ease forwards; }
-    .step-container.active { display: block; }
-
-    .chat-card {
-      background: var(--df-chat-bg);
-      border-radius: var(--df-radius);
-      padding: var(--df-space-5);
+    .chat-panel {
+      background: var(--df-surface-card);
       border: 1px solid var(--df-border);
-      margin-bottom: var(--df-space-5);
-      max-height: 220px;
+      border-radius: var(--df-radius-lg);
+      box-shadow: var(--df-shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 520px;
+      max-height: 72vh;
+    }
+
+    .chat-log {
+      flex: 1;
       overflow-y: auto;
+      padding: var(--df-space-5);
       display: flex;
       flex-direction: column;
       gap: var(--df-space-3);
     }
 
     .chat-bubble {
-      max-width: 85%;
+      max-width: 88%;
       padding: var(--df-space-3) var(--df-space-4);
       border-radius: var(--df-radius);
       font-size: 0.875rem;
       line-height: 1.55;
+      white-space: pre-wrap;
     }
 
     .chat-bubble.agent {
@@ -60,48 +65,61 @@
       border-top-right-radius: 4px;
     }
 
-    .btn-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: var(--df-space-5);
-      gap: var(--df-space-4);
-    }
-
-    .scanner-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: var(--df-space-12) var(--df-space-4);
+    .chat-bubble.system {
+      align-self: center;
+      max-width: 95%;
+      background: var(--df-bg-subtle);
+      color: var(--df-text-muted);
+      border: 1px dashed var(--df-border);
+      font-size: 0.8rem;
       text-align: center;
     }
 
-    .pulse-ring {
-      width: 88px;
-      height: 88px;
-      border-radius: 50%;
-      background: rgba(34, 211, 238, 0.1);
-      border: 2px solid var(--df-blue);
-      box-shadow: 0 0 40px rgba(34, 211, 238, 0.35), 0 0 80px rgba(167, 139, 250, 0.2);
+    .composer {
+      border-top: 1px solid var(--df-border);
+      padding: var(--df-space-4);
+      display: grid;
+      gap: var(--df-space-3);
+    }
+
+    .composer-row {
       display: flex;
+      gap: var(--df-space-3);
+      align-items: flex-end;
+    }
+
+    .composer textarea {
+      flex: 1;
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    .composer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--df-space-2);
       align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      animation: df-pulse 1.8s infinite ease-in-out;
-      margin-bottom: var(--df-space-5);
+      justify-content: space-between;
     }
 
-    .scanner-status {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--df-text);
-      margin-bottom: var(--df-space-2);
+    .composer-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--df-space-3);
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--df-text-muted);
     }
 
-    .scanner-log {
-      font-size: 0.8125rem;
-      color: var(--df-text-secondary);
-      min-height: 1.2rem;
+    .composer-meta select {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--df-space-2);
     }
 
     .results-panel { display: none; animation: df-fadeIn 0.5s ease forwards; }
@@ -109,19 +127,11 @@
 
     .report-panel {
       background: var(--df-surface-card);
-      backdrop-filter: blur(16px);
       border: 1px solid var(--df-border);
       box-shadow: var(--df-shadow);
       border-radius: var(--df-radius-lg);
       padding: var(--df-space-6);
-      margin-bottom: var(--df-space-8);
-      display: grid;
-      grid-template-columns: 1.5fr 1fr;
-      gap: var(--df-space-8);
-    }
-
-    @media (max-width: 768px) {
-      .report-panel { grid-template-columns: 1fr; }
+      margin-bottom: var(--df-space-6);
     }
 
     .report-title {
@@ -166,47 +176,22 @@
 
     .mini-job-card {
       background: var(--df-glass);
-      backdrop-filter: blur(10px);
       border: 1px solid var(--df-border);
       border-radius: var(--df-radius);
       padding: var(--df-space-4);
       margin-bottom: var(--df-space-3);
-      transition: all var(--df-transition-fast);
-      box-shadow: var(--df-shadow-xs);
-    }
-
-    .mini-job-card:hover {
-      border-color: var(--df-hover-border);
-      background: var(--df-hover-tint);
     }
 
     .mini-card-top {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
       gap: var(--df-space-3);
       margin-bottom: var(--df-space-2);
     }
 
-    .mini-title {
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--df-text);
-      line-height: 1.35;
-    }
-
-    .mini-company {
-      font-size: 0.8125rem;
-      color: var(--df-text-secondary);
-      margin-bottom: var(--df-space-2);
-    }
-
-    .mini-meta {
-      font-size: 0.75rem;
-      color: var(--df-text-muted);
-      margin-bottom: var(--df-space-2);
-    }
-
+    .mini-title { font-size: 0.875rem; font-weight: 600; color: var(--df-text); }
+    .mini-company { font-size: 0.8125rem; color: var(--df-text-secondary); margin-bottom: var(--df-space-2); }
+    .mini-meta { font-size: 0.75rem; color: var(--df-text-muted); margin-bottom: var(--df-space-2); }
     .mini-reason {
       font-size: 0.75rem;
       color: var(--df-text-secondary);
@@ -225,45 +210,25 @@
       gap: var(--df-space-4);
     }
 
-    .spreadsheet-title {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--df-text);
-    }
+    .spreadsheet-title { font-size: 1.05rem; font-weight: 600; color: var(--df-text); }
+    .skills-cell { display: flex; flex-wrap: wrap; gap: 4px; max-width: 200px; }
+    .cell-title { font-weight: 600; color: var(--df-text); }
 
-    .badge-tier {
+    .badge-tier, .badge-type, .badge-pri {
       padding: 0.2rem 0.5rem;
       border-radius: var(--df-radius-full);
       font-size: 0.68rem;
       font-weight: 600;
     }
-
     .badge-tier.faang { background: var(--df-error-bg); color: var(--df-error); }
     .badge-tier.product { background: rgba(34, 211, 238, 0.16); color: var(--df-badge-fg-cyan); }
     .badge-tier.startup { background: var(--df-success-bg); color: var(--df-success); }
     .badge-tier.midtier { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
-
-    .badge-type {
-      padding: 0.2rem 0.5rem;
-      border-radius: var(--df-radius-full);
-      font-size: 0.68rem;
-      font-weight: 600;
-    }
-
     .badge-type.remote { background: var(--df-success-bg); color: var(--df-success); }
     .badge-type.hybrid { background: rgba(251, 146, 60, 0.16); color: var(--df-badge-fg-peach); }
     .badge-type.onsite { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
-
-    .badge-pri {
-      padding: 0.2rem 0.5rem;
-      border-radius: var(--df-radius-full);
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .badge-pri.high { background: var(--df-warning-bg); color: var(--df-warning); }
-    .badge-pri.medium { background: var(--df-bg-subtle); color: var(--df-text-secondary); }
+    .badge-pri.high { background: var(--df-warning-bg); color: var(--df-warning); text-transform: uppercase; }
+    .badge-pri.medium { background: var(--df-bg-subtle); color: var(--df-text-secondary); text-transform: uppercase; }
 
     .table-apply-btn {
       background: rgba(34, 211, 238, 0.14);
@@ -274,13 +239,6 @@
       text-decoration: none;
       font-weight: 600;
       font-size: 0.75rem;
-      transition: all var(--df-transition-fast);
-    }
-
-    .table-apply-btn:hover {
-      background: var(--df-hover-tint);
-      color: var(--df-primary-dark);
-      border-color: var(--df-hover-border);
     }
 
     .sample-btn {
@@ -291,17 +249,9 @@
       cursor: pointer;
       text-decoration: underline;
       font-weight: 500;
-      margin-left: var(--df-space-2);
     }
 
-    .cell-title { font-weight: 600; color: var(--df-text); }
-
-    .skills-cell {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      max-width: 200px;
-    }
+    .busy .composer { opacity: 0.65; pointer-events: none; }
   </style>
 </head>
 <body>
@@ -316,204 +266,93 @@
       <a href="index.html">Home</a>
       <a href="dashboard.html">Dashboard</a>
       <a href="jobs.html">Jobs</a>
-      <a href="agent.html" class="active">Career Matching Wizard</a>
+      <a href="agent.html" class="active">Job Agent</a>
       <a href="about.html">About</a>
     </div>
     <div class="df-navbar-actions">
-      <a href="jobs.html" class="df-btn df-btn-ghost df-btn-sm">Job Intelligence Board</a>
+      <a href="jobs.html" class="df-btn df-btn-ghost df-btn-sm">Browse all jobs</a>
     </div>
   </div>
 </nav>
 
 <div class="df-page df-fade-in">
-  <div class="wizard-header">
-    <h1>Career Matching Wizard</h1>
-    <p>Rule-based resume matching against live job listings using skill scoring across Germany &amp; Europe</p>
+  <div class="agent-header">
+    <h1>Job Matching Agent</h1>
+    <p>Paste your resume — I search the live DataForge gold board (~14k EU openings) and rank suggestions for you.</p>
   </div>
 
-  <!-- Stepper -->
-  <div class="df-stepper" id="stepper">
-    <div class="df-step active" id="step-ind-1">
-      <span class="df-step-num">1</span>
-      <span class="df-step-label">Resume</span>
-    </div>
-    <div class="df-step-line" id="line-1"></div>
-    <div class="df-step" id="step-ind-2">
-      <span class="df-step-num">2</span>
-      <span class="df-step-label">Dream Role</span>
-    </div>
-    <div class="df-step-line" id="line-2"></div>
-    <div class="df-step" id="step-ind-3">
-      <span class="df-step-num">3</span>
-      <span class="df-step-label">Location</span>
-    </div>
-    <div class="df-step-line" id="line-3"></div>
-    <div class="df-step" id="step-ind-4">
-      <span class="df-step-num">4</span>
-      <span class="df-step-label">Results</span>
-    </div>
-  </div>
-  <div class="df-progress-bar">
-    <div class="df-progress-fill" id="progress-fill" style="width:25%"></div>
-  </div>
-
-  <!-- Wizard -->
-  <div class="wizard-card step-active" id="wizard-card">
-
-    <div class="step-container active" id="step-1">
-      <div class="wizard-card-title">Step 1 — Upload or Paste Your Resume</div>
-      <label class="df-label" for="resume-text">
-        Resume Profile Content
-        <button class="sample-btn" type="button" onclick="loadSampleResume()">Load sample resume</button>
-      </label>
-      <textarea id="resume-text" class="df-textarea" rows="10" placeholder="Paste the text contents of your resume, skills profile, or career history here..."></textarea>
-      <div class="btn-row" style="justify-content:flex-end">
-        <button class="df-btn df-btn-primary" onclick="goToStep(2)">Continue to Role →</button>
-      </div>
-    </div>
-
-    <div class="step-container" id="step-2">
-      <div class="wizard-card-title">Step 2 — What is your dream role?</div>
-      <div class="chat-card" id="chat-box-role">
-        <div class="chat-bubble agent">
-          Hi! I've scanned your resume profile. What is your ideal or target role? For example: Senior Backend Engineer, Data Engineer, MLOps, or Data Scientist?
+  <div class="agent-shell" id="agent-shell">
+    <section class="chat-panel" id="chat-panel" aria-label="Job matching chat">
+      <div class="chat-log" id="chat-log" role="log" aria-live="polite"></div>
+      <div class="composer">
+        <div class="composer-row">
+          <textarea id="composer-input" class="df-textarea" rows="3" placeholder="Paste your resume here..."></textarea>
+          <button type="button" class="df-btn df-btn-primary" id="send-btn">Send</button>
+        </div>
+        <div class="composer-actions">
+          <div class="quick-chips">
+            <button type="button" class="df-chip" id="sample-resume-btn">Load sample resume</button>
+            <button type="button" class="df-chip" id="skip-btn" style="display:none">Skip</button>
+            <button type="button" class="df-chip" id="restart-btn">Start over</button>
+          </div>
+          <div class="composer-meta">
+            <label for="match-mode">Mode
+              <select id="match-mode" class="df-select">
+                <option value="hybrid" selected>Hybrid (BM25 + embeddings)</option>
+                <option value="agent">Multi-agent graph</option>
+                <option value="rules">Client scoring (Jobs API)</option>
+              </select>
+            </label>
+            <label><input type="checkbox" id="entry-only" /> Early-career only</label>
+            <label><input type="checkbox" id="english-ok" /> English-OK</label>
+          </div>
         </div>
       </div>
-      <label class="df-label" for="input-role">Target Job Title</label>
-      <input type="text" id="input-role" class="df-input" placeholder="e.g. Data Engineer, Python Developer, MLOps Engineer" />
-      <div class="btn-row">
-        <button class="df-btn df-btn-secondary" onclick="goToStep(1)">← Back</button>
-        <button class="df-btn df-btn-primary" onclick="submitRole()">Continue to Location →</button>
-      </div>
-    </div>
-
-    <div class="step-container" id="step-3">
-      <div class="wizard-card-title">Step 3 — Location, visa profile &amp; match mode</div>
-      <div class="chat-card" id="chat-box-loc">
-        <div class="chat-bubble agent">
-          Perfect! Set your location, visa situation, and whether to use the rule-based wizard (60/20/20) or the hybrid LLM Match API (BM25 + embeddings + citations).
-        </div>
-      </div>
-      <label class="df-label" for="input-loc">Preferred Locations / Work Style</label>
-      <input type="text" id="input-loc" class="df-input" placeholder="e.g. Remote, Berlin, Munich, Germany" />
-
-      <label class="df-label" for="input-visa">Visa / residence status (advisory filters)</label>
-      <select id="input-visa" class="df-input">
-        <option value="">Prefer not to say</option>
-        <option value="eu_citizen">EU / EEA citizen</option>
-        <option value="blue_card">EU Blue Card</option>
-        <option value="chancenkarte_or_job_seeker">Chancenkarte / job-seeker visa</option>
-        <option value="student_visa">Student visa</option>
-        <option value="needs_visa_from_abroad">Need visa from abroad</option>
-      </select>
-
-      <label class="df-label" for="input-german">German level (CEFR)</label>
-      <select id="input-german" class="df-input">
-        <option value="">Unknown</option>
-        <option value="A1">A1</option>
-        <option value="A2">A2</option>
-        <option value="B1">B1</option>
-        <option value="B2">B2</option>
-        <option value="C1">C1</option>
-        <option value="C2">C2</option>
-      </select>
-
-      <label class="df-label" for="input-match-mode">Match mode</label>
-      <select id="input-match-mode" class="df-input">
-        <option value="rules">Rule-based wizard (60% skills / 20% seniority / 20% location)</option>
-        <option value="hybrid">Hybrid Match API (BM25 + dense + citations)</option>
-        <option value="agent">Multi-agent Match API (Supervisor + specialists)</option>
-      </select>
-
-      <label class="df-label" style="display:flex;align-items:center;gap:0.5rem;margin-top:0.75rem;">
-        <input type="checkbox" id="input-entry-only" />
-        Prefer entry-level / internship / working-student / junior roles
-      </label>
-      <label class="df-label" style="display:flex;align-items:center;gap:0.5rem;">
-        <input type="checkbox" id="input-english-ok" />
-        Prefer English-OK postings
-      </label>
-
-      <p style="font-size:0.75rem;color:var(--df-text-muted);margin-top:0.75rem;">
-        Visa filters are advisory signals from public JDs — not legal advice. Hybrid mode needs MATCH_API_URL (local: http://localhost:8001).
-      </p>
-
-      <div class="btn-row">
-        <button class="df-btn df-btn-secondary" onclick="goToStep(2)">← Back</button>
-        <button class="df-btn df-btn-primary" onclick="submitLocation()">Run Career Match →</button>
-      </div>
-    </div>
-
-    <div class="step-container" id="step-4">
-      <div class="scanner-wrap">
-        <div class="pulse-ring">🔍</div>
-        <div class="scanner-status" id="scanner-status">Analyzing Resume Profile...</div>
-        <div class="scanner-log" id="scanner-log">Parsing tech stack &amp; years of experience...</div>
-      </div>
-    </div>
+    </section>
   </div>
 
-  <!-- Results -->
   <div class="results-panel" id="results-panel">
-
     <div class="report-panel">
-      <div>
-        <div class="report-title">Career Match Summary Report</div>
-        <div class="report-text" id="report-summary">Loading recruiter summary...</div>
-        <div class="report-badge-list" id="report-marketable-skills"></div>
-      </div>
-      <div style="border-left:1px solid var(--df-border);padding-left:var(--df-space-6);">
-        <div class="report-title">Niche Opportunity Insights</div>
-        <div class="report-text" id="report-niche">Loading career insights...</div>
-      </div>
+      <div class="report-title">Match summary</div>
+      <div class="report-text" id="report-summary">Waiting for a resume…</div>
+      <div class="report-badge-list" id="report-marketable-skills"></div>
     </div>
 
     <div class="results-grid">
       <div>
-        <div class="group-header" style="--accent:#059669">Top 5 Strongest Matches</div>
+        <div class="group-header" style="--accent:#059669">Top matches</div>
         <div id="group-strongest"></div>
       </div>
       <div>
-        <div class="group-header" style="--accent:#D97706">Top 5 Stretch Opportunities</div>
+        <div class="group-header" style="--accent:#D97706">Stretch roles</div>
         <div id="group-stretch"></div>
       </div>
       <div>
-        <div class="group-header" style="--accent:#2563EB">Top 5 Safest Options</div>
+        <div class="group-header" style="--accent:#2563EB">Safer options</div>
         <div id="group-safest"></div>
       </div>
     </div>
 
-    <div class="wizard-card">
+    <div class="wizard-card" style="background:var(--df-surface-card);border:1px solid var(--df-border);border-radius:var(--df-radius-lg);padding:var(--df-space-6);">
       <div class="spreadsheet-actions">
-        <div class="spreadsheet-title">Complete Career Match Results</div>
-        <button class="df-btn df-btn-primary df-btn-sm" onclick="exportSpreadsheetCSV()">Export Spreadsheet (.CSV)</button>
+        <div class="spreadsheet-title">All ranked suggestions</div>
+        <button class="df-btn df-btn-primary df-btn-sm" onclick="exportSpreadsheetCSV()">Export CSV</button>
       </div>
       <div class="df-table-wrap">
         <table class="df-table" id="spreadsheet-table">
           <thead>
             <tr>
-              <th>Match Score</th>
-              <th>Job Title</th>
+              <th>Match</th>
+              <th>Title</th>
               <th>Company</th>
-              <th>Company Tier</th>
               <th>Location</th>
-              <th>Work Type</th>
-              <th>Posted</th>
-              <th>Experience Match</th>
-              <th>Skills Match</th>
-              <th>Why This Fits</th>
+              <th>Work</th>
+              <th>Why it fits</th>
               <th>Apply</th>
-              <th>Easy Apply</th>
-              <th>Priority</th>
-              <th>Compensation</th>
-              <th>Notes</th>
             </tr>
           </thead>
           <tbody id="spreadsheet-body"></tbody>
         </table>
-      </div>
-      <div style="text-align:center;margin-top:var(--df-space-6);">
-        <button class="df-btn df-btn-secondary df-btn-sm" onclick="resetWizard()">Scan New Profile</button>
       </div>
     </div>
   </div>
@@ -523,12 +362,12 @@
   <div class="df-footer-inner">
     <div>
       <div class="df-footer-brand"><img src="df-logo.png" alt="" /> DataForge</div>
-      <p>DataForge — Job Intelligence Platform · Career Matching Wizard · Rule-based scoring</p>
+      <p>Suggestions come from the public Gold lakehouse — advisory only, not legal advice.</p>
     </div>
     <div class="df-footer-links">
       <a href="index.html">Home</a>
       <a href="dashboard.html">Dashboard</a>
-      <a href="jobs.html">Job Intelligence Board</a>
+      <a href="jobs.html">Jobs</a>
     </div>
   </div>
 </footer>
@@ -538,61 +377,111 @@
   const JOBS_API_URL = isLocal
     ? "http://localhost:8000/jobs"
     : "https://br1sodhn2e.execute-api.eu-central-1.amazonaws.com/";
-  // Paste terraform output match_api_url / Function URL here after apply:
   const MATCH_API_URL = window.DATAFORGE_MATCH_API_URL || (isLocal
     ? "http://localhost:8001"
     : "https://22oqvlj4pyl4geb2lzgeisnquy0dscjk.lambda-url.eu-central-1.on.aws/");
-  // Never commit the key. For local/demo: window.DATAFORGE_MATCH_API_KEY = "…" or ?api_key=
   const MATCH_API_KEY = window.DATAFORGE_MATCH_API_KEY
     || new URLSearchParams(window.location.search).get("api_key")
     || "";
 
-  let currentStep = 1;
+  const PHASE = { RESUME: "resume", ROLE: "role", LOCATION: "location", DONE: "done" };
+  let phase = PHASE.RESUME;
   let resumeContent = "";
   let dreamRole = "";
   let targetLoc = "";
-  let visaStatus = "";
-  let germanLevel = "";
-  let matchMode = "rules";
-  let entryLevelOnly = false;
-  let englishOkOnly = false;
-  let scannedJobs = [];
+  let processedJobs = [];
   let userSkills = [];
   let userSeniority = "mid";
+  let lastMethod = "";
 
   const CANONICAL_SKILL_MAP = {
     "python": "Python", "sql": "SQL", "java": "Java", "scala": "Scala", "go": "Go", "golang": "Go",
     "typescript": "TypeScript", "javascript": "JavaScript", "c++": "C++", "rust": "Rust", "spark": "Spark",
     "kafka": "Kafka", "airflow": "Airflow", "dbt": "dbt", "pandas": "Pandas", "numpy": "NumPy",
-    "hadoop": "Hadoop", "hive": "Hive", "flink": "Flink", "databricks": "Databricks", "snowflake": "Snowflake",
-    "bigquery": "BigQuery", "redshift": "Redshift", "etl": "ETL", "aws": "AWS", "azure": "Azure", "gcp": "GCP",
-    "kubernetes": "Kubernetes", "docker": "Docker", "terraform": "Terraform", "devops": "DevOps",
-    "postgresql": "PostgreSQL", "mysql": "MySQL", "mongodb": "MongoDB", "redis": "Redis",
+    "hadoop": "Hadoop", "databricks": "Databricks", "snowflake": "Snowflake", "bigquery": "BigQuery",
+    "etl": "ETL", "aws": "AWS", "azure": "Azure", "gcp": "GCP", "kubernetes": "Kubernetes",
+    "docker": "Docker", "terraform": "Terraform", "postgresql": "PostgreSQL", "mysql": "MySQL",
     "machine learning": "Machine Learning", "deep learning": "Deep Learning", "llm": "LLM", "nlp": "NLP",
-    "pytorch": "PyTorch", "tensorflow": "TensorFlow", "scikit-learn": "Scikit-Learn", "mlflow": "MLflow",
-    "generative ai": "Generative AI", "rag": "RAG", "langchain": "LangChain", "power bi": "Power BI",
-    "tableau": "Tableau", "looker": "Looker", "excel": "Excel"
+    "pytorch": "PyTorch", "tensorflow": "TensorFlow", "rag": "RAG", "langchain": "LangChain",
+    "power bi": "Power BI", "tableau": "Tableau", "excel": "Excel"
   };
 
   const COMPANY_TIERS = {
     faang: ["google", "microsoft", "meta", "amazon", "netflix", "apple"],
-    product: ["uber", "stripe", "datadog", "atlassian", "snowflake", "airbnb", "adobe", "nvidia", "linkedin", "salesforce", "rippling", "notion", "openai", "anthropic", "palantir", "mongodb", "confluent", "coinbase", "databricks", "canonical"],
-    startup: ["bending spoons", "simovative", "delivery hero", "bmw", "bosch group", "siemens energy", "celonis", "bwi", "sap"]
+    product: ["uber", "stripe", "datadog", "atlassian", "snowflake", "airbnb", "adobe", "nvidia", "linkedin", "salesforce", "openai", "anthropic", "palantir", "mongodb", "databricks"],
+    startup: ["delivery hero", "celonis", "sap", "bosch", "siemens", "bmw"]
   };
 
-  function updateStepper(stepNum) {
-    for (let i = 1; i <= 4; i++) {
-      const el = document.getElementById(`step-ind-${i}`);
-      el.classList.remove("active", "done");
-      if (i < stepNum) el.classList.add("done");
-      else if (i === stepNum) el.classList.add("active");
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
+  }
+
+  function addBubble(text, who = "agent") {
+    const log = document.getElementById("chat-log");
+    const div = document.createElement("div");
+    div.className = `chat-bubble ${who}`;
+    div.textContent = text;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function setBusy(on) {
+    document.getElementById("agent-shell").classList.toggle("busy", on);
+    document.getElementById("send-btn").disabled = on;
+  }
+
+  function setPlaceholder() {
+    const input = document.getElementById("composer-input");
+    const skip = document.getElementById("skip-btn");
+    if (phase === PHASE.RESUME) {
+      input.placeholder = "Paste your full resume text here…";
+      skip.style.display = "none";
+    } else if (phase === PHASE.ROLE) {
+      input.placeholder = "e.g. Data Engineer, MLOps, Working Student Data Analytics";
+      skip.style.display = "";
+    } else if (phase === PHASE.LOCATION) {
+      input.placeholder = "e.g. Berlin, Remote, Germany (or Skip)";
+      skip.style.display = "";
+    } else {
+      input.placeholder = "Ask to refine, or click Start over";
+      skip.style.display = "none";
     }
-    for (let i = 1; i <= 3; i++) {
-      const line = document.getElementById(`line-${i}`);
-      if (line) line.classList.toggle("done", i < stepNum);
+  }
+
+  function extractSkills(text) {
+    const textLower = String(text || "").toLowerCase();
+    const skills = new Set();
+    for (const [kw, canonical] of Object.entries(CANONICAL_SKILL_MAP)) {
+      if (textLower.includes(kw)) skills.add(canonical);
     }
-    const pct = stepNum === 1 ? 25 : stepNum === 2 ? 50 : stepNum === 3 ? 75 : 100;
-    document.getElementById("progress-fill").style.width = pct + "%";
+    return Array.from(skills);
+  }
+
+  function detectSeniority(text) {
+    const t = String(text || "").toLowerCase();
+    if (/\b(lead|principal|staff|director|head of)\b/.test(t)) return "lead";
+    if (/\b(senior|sr\.?|5\+?\s*years?)\b/.test(t)) return "senior";
+    if (/\b(junior|graduate|entry|einsteiger|werkstudent|intern|thesis)\b/.test(t)) return "junior";
+    return "mid";
+  }
+
+  function inferDreamRole(resume) {
+    const t = resume.toLowerCase();
+    if (/data engineer|spark|airflow|etl|dbt/.test(t)) return "Data Engineer";
+    if (/machine learning|mlops|pytorch|tensorflow|llm|data scientist/.test(t)) return "Machine Learning Engineer";
+    if (/analytics|tableau|power bi|analyst/.test(t)) return "Data Analyst";
+    if (/devops|kubernetes|terraform|sre/.test(t)) return "DevOps Engineer";
+    if (/backend|fastapi|microservices/.test(t)) return "Backend Engineer";
+    if (userSkills.includes("Python") && userSkills.includes("SQL")) return "Data Engineer";
+    return "Software Engineer";
+  }
+
+  function determineCompanyTier(companyName) {
+    const name = (companyName || "").toLowerCase().trim();
+    if (COMPANY_TIERS.faang.some(c => name.includes(c))) return "FAANG";
+    if (COMPANY_TIERS.product.some(c => name.includes(c))) return "Top Product";
+    if (COMPANY_TIERS.startup.some(c => name.includes(c))) return "Strong Startup";
+    return "Mid-tier";
   }
 
   function scoreBarHtml(score) {
@@ -605,277 +494,187 @@
 
   function skillChipsHtml(skillsStr) {
     if (!skillsStr) return "—";
-    return skillsStr.split(",").map(s => s.trim()).filter(Boolean)
+    return String(skillsStr).split(",").map(s => s.trim()).filter(Boolean)
       .map(s => `<span class="df-skill-chip">${esc(s)}</span>`).join("");
   }
 
-  function loadSampleResume() {
-    document.getElementById("resume-text").value =
-      "Senior Software Engineer specializing in Python development and Cloud Infrastructure.\n\n" +
-      "Core Technologies: Python, SQL, PostgreSQL, AWS (S3, Lambda, EC2), Docker, Terraform, Git, Pandas.\n\n" +
-      "Experience:\n" +
-      "- 5 years developing data APIs and serverless microservices using Python FastAPI and AWS.\n" +
-      "- Created CI/CD deployment pipelines using GitHub Actions and managed IaC using Terraform.\n" +
-      "- Designed relational databases and optimized slow SQL queries for high scalability.\n\n" +
-      "Education: MSc in Computer Science (Technical University of Munich).";
-  }
-
-  function goToStep(stepNum) {
-    if (stepNum === 2) {
-      resumeContent = document.getElementById("resume-text").value.trim();
-      if (!resumeContent) { alert("Please paste your resume text before continuing!"); return; }
-      userSkills = extractSkills(resumeContent);
-      userSeniority = detectSeniority(resumeContent);
-    }
-    document.querySelectorAll(".step-container").forEach(el => el.classList.remove("active"));
-    document.getElementById(`step-${stepNum}`).classList.add("active");
-    const wc = document.getElementById("wizard-card");
-    if (wc) wc.classList.add("step-active");
-    updateStepper(stepNum);
-    currentStep = stepNum;
-  }
-
-  function submitRole() {
-    dreamRole = document.getElementById("input-role").value.trim();
-    if (!dreamRole) { alert("Please specify your target job title!"); return; }
-    document.getElementById("chat-box-role").innerHTML += `<div class="chat-bubble user">I am looking for a ${esc(dreamRole)} position.</div>`;
-    setTimeout(() => goToStep(3), 450);
-  }
-
-  function submitLocation() {
-    targetLoc = document.getElementById("input-loc").value.trim();
-    if (!targetLoc) { alert("Please specify your preferred location!"); return; }
-    visaStatus = document.getElementById("input-visa").value;
-    germanLevel = document.getElementById("input-german").value;
-    matchMode = document.getElementById("input-match-mode").value || "rules";
-    entryLevelOnly = document.getElementById("input-entry-only").checked;
-    englishOkOnly = document.getElementById("input-english-ok").checked;
-    document.getElementById("chat-box-loc").innerHTML += `<div class="chat-bubble user">I want to work in: ${esc(targetLoc)} (${esc(matchMode)} match).</div>`;
-    setTimeout(() => { goToStep(4); runScraperAgentSimulation(); }, 450);
-  }
-
-  function extractSkills(text) {
-    const textLower = text.toLowerCase();
-    const skills = new Set();
-    for (const [kw, canonical] of Object.entries(CANONICAL_SKILL_MAP)) {
-      if (textLower.includes(kw)) skills.add(canonical);
-    }
-    return Array.from(skills);
-  }
-
-  function detectSeniority(text) {
-    const textLower = text.toLowerCase();
-    if (textLower.includes("lead") || textLower.includes("principal") || textLower.includes("staff") || textLower.includes("director")) return "lead";
-    if (textLower.includes("senior") || textLower.includes("sr") || textLower.includes("5 years")) return "senior";
-    if (textLower.includes("junior") || textLower.includes("graduate") || textLower.includes("entry") || textLower.includes("einsteiger")) return "junior";
-    return "mid";
-  }
-
-  function determineCompanyTier(companyName) {
-    const name = (companyName || "").toLowerCase().trim();
-    if (COMPANY_TIERS.faang.some(c => name.includes(c))) return "FAANG";
-    if (COMPANY_TIERS.product.some(c => name.includes(c))) return "Top Product";
-    if (COMPANY_TIERS.startup.some(c => name.includes(c))) return "Strong Startup";
-    return "Mid-tier";
+  function fixEuresApplyUrl(url) {
+    const u = String(url || "");
+    const legacy = u.match(/\/jv-se\/jv\/([^/?]+)\/job(?:\?|$)/);
+    if (legacy) return `https://europa.eu/eures/portal/jv-se/jv/${legacy[1]}`;
+    return u || "#";
   }
 
   function scoreJobRules(j) {
-    const jobText = `${j.title || ''} ${j.tags || ''} ${j.description || ''}`.toLowerCase();
+    const jobText = `${j.title || ""} ${j.tags || ""} ${j.description || ""}`.toLowerCase();
     const jobSkills = extractSkills(jobText);
     const matched = jobSkills.filter(s => userSkills.includes(s));
-    const missing = jobSkills.filter(s => !userSkills.includes(s));
-    const skillScore = jobSkills.length ? (matched.length / jobSkills.length) * 100 : 80;
-
+    const skillScore = jobSkills.length ? (matched.length / jobSkills.length) * 100 : 70;
     const titleLower = (j.title || "").toLowerCase();
-    let jobSeniority = "mid";
-    if (titleLower.includes("lead") || titleLower.includes("principal") || titleLower.includes("staff")) jobSeniority = "lead";
-    else if (titleLower.includes("senior")) jobSeniority = "senior";
-    else if (titleLower.includes("junior") || titleLower.includes("entry") || titleLower.includes("graduate") || titleLower.includes("werkstudent") || titleLower.includes("intern")) jobSeniority = "junior";
-
-    let seniorityScore = 100;
-    if (userSeniority !== jobSeniority) {
-      const lvls = ["junior", "mid", "senior", "lead"];
-      seniorityScore = Math.max(20, 100 - Math.abs(lvls.indexOf(userSeniority) - lvls.indexOf(jobSeniority)) * 40);
-    }
-
-    let locScore = 80;
-    const targetLocLower = targetLoc.toLowerCase();
-    const jobLocLower = (j.location || "").toLowerCase();
-    if (targetLocLower.includes("remote") && (j.work_style === "remote" || j.is_remote === true || j.is_remote === "True")) locScore = 100;
-    else if (jobLocLower.includes(targetLocLower) || targetLocLower.includes(jobLocLower)) locScore = 100;
-
-    const matchPct = Math.round((skillScore * 0.60) + (seniorityScore * 0.20) + (locScore * 0.20));
-    const tier = determineCompanyTier(j.company);
-
-    let priority = "Medium";
-    if (matchPct >= 75 && (tier === "FAANG" || tier === "Top Product" || tier === "Strong Startup")) priority = "High";
-
-    let comp = "Market Standard";
-    if (j.salary && j.salary !== "nan") comp = j.salary;
-    else if (tier === "FAANG" || tier === "Top Product") comp = "Top-tier Package";
-
-    let notes = "";
-    if (j.language_requirement === "german_required" || (!j.language_requirement && (j.is_english === "False" || j.is_english === false))) {
-      notes = "Requires German proficiency";
-    }
-
+    const roleBits = dreamRole.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+    const titleHit = roleBits.length ? roleBits.filter(w => titleLower.includes(w)).length / roleBits.length : 0.5;
+    let locScore = 70;
+    const locQ = targetLoc.toLowerCase();
+    const jobLoc = (j.location || "").toLowerCase();
+    if (!locQ) locScore = 80;
+    else if (locQ.includes("remote") && (j.work_style === "remote" || j.is_remote === true || j.is_remote === "True")) locScore = 100;
+    else if (jobLoc.includes(locQ) || locQ.includes(jobLoc.split(",")[0])) locScore = 100;
+    const matchPct = Math.round(skillScore * 0.5 + titleHit * 100 * 0.3 + locScore * 0.2);
     return {
-      score: matchPct, title: j.title, company: j.company || "Unknown", tier,
-      location: j.location ? j.location.split(",")[0].trim() : "Europe",
-      work_type: j.work_style ? j.work_style.charAt(0).toUpperCase() + j.work_style.slice(1) : (j.is_remote === true ? "Remote" : "Onsite"),
+      score: matchPct,
+      title: j.title,
+      company: j.company || "Unknown",
+      tier: determineCompanyTier(j.company),
+      location: j.location ? String(j.location).split(",")[0].trim() : "Europe",
+      work_type: j.work_style ? String(j.work_style).charAt(0).toUpperCase() + String(j.work_style).slice(1) : (j.is_remote === true ? "Remote" : "Onsite"),
       date: j.date_added || "Recent",
-      exp_summary: `Candidate (${userSeniority}) matches job complexity (${jobSeniority}).`,
-      skills_match: matched.join(", ") || "General Engineering",
-      missing_skills: missing,
-      why_fits: `Strong overlap with your skills in ${matched.slice(0, 3).join(", ")}. Matches target title.`,
+      exp_summary: `Client score vs gold board (${userSeniority}).`,
+      skills_match: matched.join(", ") || "General",
+      missing_skills: jobSkills.filter(s => !userSkills.includes(s)),
+      why_fits: matched.length
+        ? `Skill overlap: ${matched.slice(0, 4).join(", ")}.`
+        : `Title/location proximity to “${dreamRole || "your profile"}”.`,
       url: fixEuresApplyUrl(j.job_url || j.url || "#"),
       easy_apply: (j.source === "arbeitnow" || j.source === "direct") ? "Yes" : "No",
-      priority, compensation: comp, notes
+      priority: matchPct >= 75 ? "High" : "Medium",
+      compensation: j.salary && j.salary !== "nan" ? j.salary : "Market Standard",
+      notes: ""
     };
   }
 
-  async function runScraperAgentSimulation() {
-    const statusEl = document.getElementById("scanner-status");
-    const logEl = document.getElementById("scanner-log");
-    const usingHybrid = matchMode === "hybrid" || matchMode === "agent";
-    const apiMethod = matchMode === "agent" ? "agent" : "hybrid";
-    const steps = [
-      { status: "Analyzing Resume Profile...", log: "Extracting skills inventory, years of experience, and seniority level..." },
-      { status: "Consulting Search Matrix...", log: `Interpreting target role: "${dreamRole}" and location boundaries: "${targetLoc}"...` },
-      {
-        status: matchMode === "agent" ? "Running multi-agent graph..." : (usingHybrid ? "Calling Match API..." : "Querying AWS Data Lakehouse..."),
-        log: matchMode === "agent"
-          ? "Supervisor → Retriever → Scorer → Explainer → Critic (bounded LLM calls)..."
-          : usingHybrid
-          ? "Hybrid BM25 + dense retrieval with PII redaction and visa-aware filters..."
-          : "Invoking metrics APIs & jobs search engine on S3 buckets..."
-      },
-      { status: "Recruiter Analysis Scoring...", log: usingHybrid ? "Attaching cited job_id explanations..." : "Processing candidate-to-job match matrix..." },
-      { status: "Complete!", log: "Compiling career match report..." }
-    ];
-
-    for (let i = 0; i < steps.length - 1; i++) {
-      statusEl.textContent = steps[i].status;
-      logEl.textContent = steps[i].log;
-      await new Promise(resolve => setTimeout(resolve, 800));
+  async function fetchAllJobPages(params, maxPages = 8) {
+    let offset = 0;
+    const jobs = [];
+    let lastKpis = {};
+    for (let i = 0; i < maxPages; i++) {
+      params.set("limit", "2000");
+      params.set("offset", String(offset));
+      const res = await fetch(`${JOBS_API_URL}?${params}`, { cache: "no-store" });
+      if (!res.ok) throw new Error("Jobs API " + res.status);
+      const data = await res.json();
+      const batch = data.jobs || [];
+      jobs.push(...batch);
+      lastKpis = data.kpis || {};
+      if (!lastKpis.truncated || !batch.length) break;
+      offset += batch.length;
     }
-
-    let processedJobs = [];
-    try {
-      if (usingHybrid) {
-        if (!MATCH_API_URL) throw new Error("MATCH_API_URL is not configured");
-        const headers = { "Content-Type": "application/json" };
-        if (MATCH_API_KEY) headers["X-API-Key"] = MATCH_API_KEY;
-        const res = await fetch(`${MATCH_API_URL.replace(/\/$/, "")}/match`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            resume: resumeContent,
-            dream_role: dreamRole,
-            location: targetLoc,
-            method: apiMethod,
-            limit: 40,
-            visa_status: visaStatus,
-            german_level: germanLevel,
-            entry_level_only: entryLevelOnly,
-            english_ok_only: englishOkOnly,
-            tech_only: true
-          })
-        });
-        if (!res.ok) throw new Error("Match API call failed: " + res.status);
-        const data = await res.json();
-        processedJobs = (data.jobs || []).map(j => {
-          const score = Math.round(Number(j.match_score) <= 1 ? Number(j.match_score) * 100 : Number(j.match_score));
-          const cites = (j.citations || []).map(c => c.reason).join(" ");
-          return {
-            score: Math.min(100, score || 0),
-            title: j.title,
-            company: j.company || "Unknown",
-            tier: determineCompanyTier(j.company),
-            location: j.location ? String(j.location).split(",")[0].trim() : "Europe",
-            work_type: j.work_style ? String(j.work_style).charAt(0).toUpperCase() + String(j.work_style).slice(1) : (j.is_remote === true ? "Remote" : "Onsite"),
-            date: j.date_added || "Recent",
-            exp_summary: `Hybrid match (${j.match_method || data.method}). Visa stance: ${j.ai_visa_stance || "n/a"}.`,
-            skills_match: j.tags || j.ai_skills || "—",
-            missing_skills: [],
-            why_fits: cites || "Retrieved by hybrid ranking.",
-            url: fixEuresApplyUrl(j.job_url || j.url || "#"),
-            easy_apply: (j.source === "arbeitnow" || j.source === "direct") ? "Yes" : "No",
-            priority: score >= 70 ? "High" : "Medium",
-            compensation: j.salary && j.salary !== "nan" ? j.salary : "Market Standard",
-            notes: j.ai_evidence_visa || ""
-          };
-        });
-      } else {
-        const params = new URLSearchParams({ limit: 800, sort: 'newest', status: 'active' });
-        params.set("search", dreamRole);
-        const res = await fetch(`${JOBS_API_URL}?${params}`);
-        if (!res.ok) throw new Error("API call failed");
-        const data = await res.json();
-        scannedJobs = data.jobs || [];
-        processedJobs = scannedJobs.map(scoreJobRules);
-      }
-    } catch(e) {
-      console.warn("Match failed", e);
-      statusEl.textContent = "Match failed — check API URL / key";
-      logEl.textContent = String(e);
-    }
-
-    processedJobs.sort((a, b) => b.score - a.score);
-
-    document.getElementById("report-summary").innerHTML =
-      `Based on your resume, we analyzed your profile as a <strong>${userSeniority.toUpperCase()}</strong> developer ` +
-      `with strong skills in <strong>${userSkills.slice(0, 4).join(", ")}</strong>. ` +
-      `We found <strong>${processedJobs.length} active opportunities</strong> matching your criteria.`;
-
-    document.getElementById("report-marketable-skills").innerHTML = userSkills.map(s =>
-      `<span class="df-skill-chip">${esc(s)}</span>`
-    ).join("");
-
-    document.getElementById("report-niche").innerHTML =
-      `Your strongest marketable niche is in <strong>${userSkills.includes("AWS") || userSkills.includes("Docker") ? "Cloud Infrastructure / Python Backend" : "Application Development"}</strong>. ` +
-      `You are most likely to be shortlisted by <strong>Strong Startups and Top Product companies</strong> looking for fast execution.`;
-
-    renderGroupColumn("group-strongest", processedJobs.slice(0, 5), "#059669");
-    renderGroupColumn("group-stretch", processedJobs.filter(j => j.score >= 50 && (j.tier === "FAANG" || j.tier === "Top Product")).slice(0, 5), "#D97706");
-    renderGroupColumn("group-safest", processedJobs.filter(j => j.score >= 65 && j.tier === "Mid-tier").slice(0, 5), "#2563EB");
-
-    document.getElementById("spreadsheet-body").innerHTML = processedJobs.map(j => {
-      const tierClass = j.tier === "FAANG" ? "faang" : j.tier === "Top Product" ? "product" : j.tier === "Strong Startup" ? "startup" : "midtier";
-      const workClass = j.work_type.toLowerCase();
-      const priClass = j.priority.toLowerCase();
-      return `
-        <tr>
-          <td>${scoreBarHtml(j.score)}</td>
-          <td class="cell-title">${esc(j.title)}</td>
-          <td>${esc(j.company)}</td>
-          <td><span class="badge-tier ${tierClass}">${j.tier}</span></td>
-          <td>${esc(j.location)}</td>
-          <td><span class="badge-type ${workClass}">${j.work_type}</span></td>
-          <td>${esc(j.date)}</td>
-          <td style="max-width:200px">${esc(j.exp_summary)}</td>
-          <td><div class="skills-cell">${skillChipsHtml(j.skills_match)}</div></td>
-          <td style="max-width:220px">${esc(j.why_fits)}</td>
-          <td><a class="table-apply-btn" href="${escUrl(j.url)}" target="_blank" rel="noopener noreferrer">Apply →</a></td>
-          <td>${j.easy_apply}</td>
-          <td><span class="badge-pri ${priClass}">${j.priority}</span></td>
-          <td style="color:var(--df-success);font-weight:600">${esc(j.compensation)}</td>
-          <td style="max-width:160px;color:var(--df-error)">${esc(j.notes || "—")}</td>
-        </tr>`;
-    }).join("");
-
-    document.getElementById("wizard-card").style.display = "none";
-    document.getElementById("results-panel").classList.add("active");
-    updateStepper(4);
+    return { jobs, kpis: lastKpis };
   }
 
-  function renderGroupColumn(elementId, jobs, color) {
-    const el = document.getElementById(elementId);
-    if (!jobs.length) {
-      el.innerHTML = `<div style="color:var(--df-text-muted);font-size:0.8125rem;text-align:center;padding:var(--df-space-6)">No matches found.</div>`;
-      return;
+  async function matchViaApi(method) {
+    const headers = { "Content-Type": "application/json" };
+    if (MATCH_API_KEY) headers["X-API-Key"] = MATCH_API_KEY;
+    const res = await fetch(`${MATCH_API_URL.replace(/\/$/, "")}/match`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        resume: resumeContent,
+        dream_role: dreamRole,
+        location: targetLoc,
+        method,
+        limit: 40,
+        visa_status: "",
+        german_level: "",
+        entry_level_only: document.getElementById("entry-only").checked,
+        english_ok_only: document.getElementById("english-ok").checked,
+        tech_only: false
+      })
+    });
+    if (!res.ok) throw new Error("Match API " + res.status);
+    const data = await res.json();
+    lastMethod = data.method || method;
+    return (data.jobs || []).map(j => {
+      const raw = Number(j.match_score || j.agent_score || 0);
+      const score = Math.round(raw <= 1 ? raw * 100 : raw);
+      const cites = (j.citations || []).map(c => c.reason).filter(Boolean).join(" ");
+      return {
+        score: Math.min(100, score || 0),
+        title: j.title,
+        company: j.company || "Unknown",
+        tier: determineCompanyTier(j.company),
+        location: j.location ? String(j.location).split(",")[0].trim() : "Europe",
+        work_type: j.work_style ? String(j.work_style).charAt(0).toUpperCase() + String(j.work_style).slice(1) : (j.is_remote === true ? "Remote" : "Onsite"),
+        date: j.date_added || "Recent",
+        exp_summary: `${lastMethod}. Visa stance: ${j.ai_visa_stance || "n/a"}.`,
+        skills_match: j.tags || j.ai_skills || "—",
+        missing_skills: [],
+        why_fits: cites || "Ranked from the DataForge gold board against your resume.",
+        url: fixEuresApplyUrl(j.job_url || j.url || "#"),
+        easy_apply: (j.source === "arbeitnow" || j.source === "direct") ? "Yes" : "No",
+        priority: score >= 70 ? "High" : "Medium",
+        compensation: j.salary && j.salary !== "nan" ? j.salary : "Market Standard",
+        notes: j.ai_evidence_visa || ""
+      };
+    });
+  }
+
+  async function matchViaJobsApi() {
+    const params = new URLSearchParams({ sort: "newest", status: "active" });
+    if (dreamRole) params.set("search", dreamRole);
+    if (targetLoc && !/remote/i.test(targetLoc)) params.set("location", targetLoc);
+    if (document.getElementById("entry-only").checked) params.set("employment_type", "early_career");
+    addBubble("Calling Jobs API over the full gold board…", "system");
+    const data = await fetchAllJobPages(params, 4);
+    lastMethod = "rules_client_over_jobs_api";
+    const scored = (data.jobs || []).map(scoreJobRules);
+    scored.sort((a, b) => b.score - a.score);
+    return scored.slice(0, 40);
+  }
+
+  async function runMatch() {
+    setBusy(true);
+    document.getElementById("results-panel").classList.remove("active");
+    addBubble(
+      `Searching the lakehouse for “${dreamRole}”${targetLoc ? ` near ${targetLoc}` : ""}…`,
+      "agent"
+    );
+    const mode = document.getElementById("match-mode").value;
+    try {
+      if (mode === "rules") {
+        processedJobs = await matchViaJobsApi();
+      } else {
+        try {
+          processedJobs = await matchViaApi(mode === "agent" ? "agent" : "hybrid");
+        } catch (err) {
+          console.warn(err);
+          addBubble("Match API unavailable — falling back to Jobs API scoring on the gold board.", "system");
+          processedJobs = await matchViaJobsApi();
+        }
+      }
+      renderResults();
+      addBubble(
+        processedJobs.length
+          ? `I found ${processedJobs.length} ranked openings from the gold database (${lastMethod}). Top pick: ${processedJobs[0].title} @ ${processedJobs[0].company} (${processedJobs[0].score}%).`
+          : "No strong matches in the current board. Try a broader role title, clear filters, or browse Jobs.",
+        "agent"
+      );
+      phase = PHASE.DONE;
+      setPlaceholder();
+    } catch (e) {
+      console.error(e);
+      addBubble(`Something went wrong: ${e.message}. Try again or open the Jobs board.`, "agent");
+    } finally {
+      setBusy(false);
     }
-    el.innerHTML = jobs.map(j => `
+  }
+
+  function renderResults() {
+    const panel = document.getElementById("results-panel");
+    panel.classList.add("active");
+    const skills = userSkills.slice(0, 12);
+    document.getElementById("report-summary").innerHTML =
+      `Profile read as <strong>${esc(userSeniority)}</strong> · target <strong>${esc(dreamRole)}</strong>` +
+      (targetLoc ? ` · location <strong>${esc(targetLoc)}</strong>` : "") +
+      ` · method <code>${esc(lastMethod)}</code>. Ranked <strong>${processedJobs.length}</strong> jobs from the live gold board.`;
+    document.getElementById("report-marketable-skills").innerHTML = skills.map(s =>
+      `<span class="df-skill-chip">${esc(s)}</span>`
+    ).join("") || "<span class='df-text-muted'>No skills auto-detected</span>";
+
+    const strongest = processedJobs.slice(0, 5);
+    const stretch = processedJobs.filter(j => j.score >= 45 && j.score < 75).slice(0, 5);
+    const safest = [...processedJobs].sort((a, b) => a.score - b.score).slice(0, 5).reverse();
+
+    const card = (j) => `
       <div class="mini-job-card">
         <div class="mini-card-top">
           <div class="mini-title">${esc(j.title)}</div>
@@ -883,58 +682,143 @@
         </div>
         <div class="mini-company">${esc(j.company)}</div>
         <div class="mini-meta">${esc(j.location)} · ${esc(j.work_type)}</div>
-        <div class="mini-reason" style="border-left-color:${color}">${esc(j.why_fits)}</div>
-      </div>`).join("");
+        <div class="mini-reason">${esc(j.why_fits)}</div>
+        <div style="margin-top:0.5rem"><a class="table-apply-btn" href="${esc(j.url)}" target="_blank" rel="noopener">Apply</a></div>
+      </div>`;
+
+    document.getElementById("group-strongest").innerHTML = strongest.map(card).join("") || "<div class='mini-meta'>None</div>";
+    document.getElementById("group-stretch").innerHTML = (stretch.length ? stretch : processedJobs.slice(5, 10)).map(card).join("") || "<div class='mini-meta'>None</div>";
+    document.getElementById("group-safest").innerHTML = safest.map(card).join("") || "<div class='mini-meta'>None</div>";
+
+    document.getElementById("spreadsheet-body").innerHTML = processedJobs.map(j => `
+      <tr>
+        <td>${scoreBarHtml(j.score)}</td>
+        <td class="cell-title">${esc(j.title)}</td>
+        <td>${esc(j.company)}</td>
+        <td>${esc(j.location)}</td>
+        <td>${esc(j.work_type)}</td>
+        <td>${esc(j.why_fits)}</td>
+        <td><a class="table-apply-btn" href="${esc(j.url)}" target="_blank" rel="noopener">Apply</a></td>
+      </tr>`).join("");
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function exportSpreadsheetCSV() {
-    const table = document.getElementById("spreadsheet-table");
-    let csv = [];
-    for (let i = 0; i < table.rows.length; i++) {
-      let row = [], cols = table.rows[i].cells;
-      for (let j = 0; j < cols.length; j++) {
-        let text = cols[j].innerText.replace(/"/g, '""');
-        if (cols[j].querySelector("a")) text = cols[j].querySelector("a").href;
-        row.push('"' + text + '"');
-      }
-      csv.push(row.join(","));
+    const rows = [["score", "title", "company", "location", "work_type", "why_fits", "url"]];
+    for (const j of processedJobs) {
+      rows.push([j.score, j.title, j.company, j.location, j.work_type, j.why_fits, j.url]);
     }
-    const link = document.createElement("a");
-    link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv.join("\n"));
-    link.download = `DataForge_Career_Match_${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const csv = rows.map(r => r.map(c => `"${String(c ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "dataforge_job_matches.csv";
+    a.click();
   }
 
-  function resetWizard() {
+  async function handleSend(raw) {
+    const text = String(raw || "").trim();
+    if (!text) return;
+    document.getElementById("composer-input").value = "";
+    addBubble(text.length > 500 ? text.slice(0, 500) + "…" : text, "user");
+
+    if (phase === PHASE.RESUME) {
+      if (text.length < 40) {
+        addBubble("That looks too short for a resume. Paste a fuller profile (skills, experience, education).", "agent");
+        return;
+      }
+      resumeContent = text;
+      userSkills = extractSkills(resumeContent);
+      userSeniority = detectSeniority(resumeContent);
+      phase = PHASE.ROLE;
+      setPlaceholder();
+      addBubble(
+        `Got it — I read you as ~${userSeniority}` +
+        (userSkills.length ? ` with skills like ${userSkills.slice(0, 6).join(", ")}` : "") +
+        ".\n\nWhat role should I target? (or Skip and I’ll infer from your resume)",
+        "agent"
+      );
+      return;
+    }
+
+    if (phase === PHASE.ROLE) {
+      dreamRole = text;
+      phase = PHASE.LOCATION;
+      setPlaceholder();
+      addBubble("Any preferred city / country / remote? (or Skip)", "agent");
+      return;
+    }
+
+    if (phase === PHASE.LOCATION) {
+      targetLoc = text;
+      await runMatch();
+      return;
+    }
+
+    if (phase === PHASE.DONE) {
+      if (/^(restart|start over|reset)$/i.test(text)) {
+        resetAgent();
+        return;
+      }
+      dreamRole = text;
+      addBubble("Updating target role and searching again…", "agent");
+      await runMatch();
+    }
+  }
+
+  async function handleSkip() {
+    if (phase === PHASE.ROLE) {
+      dreamRole = inferDreamRole(resumeContent);
+      addBubble(`Skipping — I’ll use “${dreamRole}”.`, "system");
+      phase = PHASE.LOCATION;
+      setPlaceholder();
+      addBubble("Any preferred city / country / remote? (or Skip)", "agent");
+      return;
+    }
+    if (phase === PHASE.LOCATION) {
+      targetLoc = "";
+      addBubble("Skipping location — searching EU-wide.", "system");
+      await runMatch();
+    }
+  }
+
+  function resetAgent() {
+    phase = PHASE.RESUME;
+    resumeContent = "";
+    dreamRole = "";
+    targetLoc = "";
+    processedJobs = [];
+    userSkills = [];
+    document.getElementById("chat-log").innerHTML = "";
     document.getElementById("results-panel").classList.remove("active");
-    document.getElementById("wizard-card").style.display = "block";
-    goToStep(1);
-    document.getElementById("resume-text").value = "";
-    document.getElementById("input-role").value = "";
-    document.getElementById("input-loc").value = "";
-    document.getElementById("chat-box-role").innerHTML =
-      `<div class="chat-bubble agent">Hi! I've scanned your resume profile. What is your ideal or target role? For example: Senior Backend Engineer, Data Engineer, MLOps, or Data Scientist?</div>`;
-    document.getElementById("chat-box-loc").innerHTML =
-      `<div class="chat-bubble agent">Perfect! Now, what location or working arrangement are you targeting for this role? You can say things like 'Germany', 'Munich', 'Remote only', 'Europe', or 'Hybrid in Berlin'.</div>`;
+    setPlaceholder();
+    addBubble(
+      "Hi — I’m the DataForge Job Matching Agent.\n\nPaste your resume and I’ll suggest openings from our live EU job lakehouse (BA, EURES, Arbeitnow, direct ATS, Berlin startups).",
+      "agent"
+    );
   }
 
-  function esc(s) {
-    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
+  document.getElementById("send-btn").addEventListener("click", () => handleSend(document.getElementById("composer-input").value));
+  document.getElementById("composer-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend(document.getElementById("composer-input").value);
+    }
+  });
+  document.getElementById("skip-btn").addEventListener("click", handleSkip);
+  document.getElementById("restart-btn").addEventListener("click", resetAgent);
+  document.getElementById("sample-resume-btn").addEventListener("click", () => {
+    document.getElementById("composer-input").value =
+      "Data Engineer / Working Student candidate.\n\n" +
+      "Skills: Python, SQL, Spark, Airflow, dbt, AWS (S3, Lambda), Docker, Pandas, PostgreSQL.\n\n" +
+      "Experience:\n" +
+      "- Built ETL pipelines and curated analytics tables for product metrics.\n" +
+      "- Maintained Airflow DAGs and monitored data quality checks.\n" +
+      "- Collaborated with analysts on Power BI dashboards.\n\n" +
+      "Education: MSc Data Science (TU Berlin). Looking for working student / junior data engineering roles in Berlin or remote EU.";
+  });
 
-  function escUrl(u) {
-    try { return encodeURI(String(u || "")); } catch (_) { return "#"; }
-  }
-
-  function fixEuresApplyUrl(url) {
-    const u = String(url || "");
-    const legacy = u.match(/\/jv-se\/jv\/([^/?]+)\/job(?:\?|$)/);
-    if (!legacy) return u;
-    const id = decodeURIComponent(legacy[1]);
-    return `https://europa.eu/eures/portal/jv-se/jv-details/${encodeURIComponent(id)}?jvDisplayLanguage=en&lang=en`;
-  }
+  resetAgent();
 </script>
 <script src="components/ui.js"></script>
 </body>
