@@ -83,6 +83,40 @@ def test_scorer_bad_json_does_not_crash():
     assert any("scorer" in e for e in (out.get("errors") or []))
 
 
+def test_scorer_receives_resume_in_prompt():
+    from agent.nodes import scorer_node
+
+    jobs = [
+        {
+            "job_id": "j1",
+            "title": "Junior Data Engineer",
+            "description": "Python Spark",
+            "match_score": 0.5,
+        }
+    ]
+    state: AgentState = {
+        "candidates": jobs,
+        "resume": "I know Python and AWS",
+        "resume_redacted": "I know Python and AWS",
+        "dream_role": "Data Engineer",
+        "llm_calls": 0,
+        "handoffs": 0,
+        "limit": 5,
+    }
+    mock_router = MagicMock()
+    mock_resp = MagicMock()
+    mock_resp.text = '{"scores":[{"job_id":"j1","score":0.91,"note":"strong python"}]}'
+    mock_router.complete.return_value = mock_resp
+    mock_router.cost_logger.summary.return_value = {}
+    with patch("agent.nodes._router", return_value=mock_router):
+        out = scorer_node(state)
+    assert mock_router.complete.called
+    args, kwargs = mock_router.complete.call_args
+    prompt = args[1] if len(args) > 1 else kwargs.get("prompt", "")
+    assert "I know Python and AWS" in prompt
+    assert out["scored"][0]["agent_score"] == 0.91
+
+
 def test_hitl_flag_on_low_confidence():
     state: AgentState = {
         "explanations": [
@@ -97,3 +131,4 @@ def test_hitl_flag_on_low_confidence():
     out = critic_node(state)
     assert out["critic_ok"] is True
     assert out["hitl"] is True
+

@@ -62,6 +62,8 @@ def test_critic_accepts_valid_citations():
         "explanations": [
             {
                 "job_id": "j1",
+                "title": "Junior Data Engineer Python Spark",
+                "description": "Python Spark Airflow pipelines in Berlin.",
                 "ai_confidence": 0.85,
                 "citations": [
                     {"job_id": "j1", "reason": "Python overlap", "evidence": "Python Spark"}
@@ -73,6 +75,30 @@ def test_critic_accepts_valid_citations():
     out = critic_node(state)
     assert out["critic_ok"] is True
     assert out["hitl"] is False
+
+
+def test_critic_rejects_fabricated_evidence():
+    state: AgentState = {
+        "explanations": [
+            {
+                "job_id": "j1",
+                "title": "Junior Data Engineer",
+                "description": "Python Spark Airflow pipelines in Berlin.",
+                "ai_confidence": 0.85,
+                "citations": [
+                    {
+                        "job_id": "j1",
+                        "reason": "Kubernetes expert",
+                        "evidence": "Requires five years of Kubernetes",
+                    }
+                ],
+            }
+        ],
+        "handoffs": 0,
+    }
+    out = critic_node(state)
+    assert out["critic_ok"] is False
+    assert "evidence not found" in (out.get("critic_notes") or "")
 
 
 def test_retry_budget():

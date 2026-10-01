@@ -322,6 +322,30 @@
             </label>
             <label><input type="checkbox" id="entry-only" checked /> Early-career only</label>
             <label><input type="checkbox" id="english-ok" /> English-OK</label>
+            <label for="visa-status">Visa
+              <select id="visa-status" class="df-select">
+                <option value="" selected>Any</option>
+                <option value="eu_citizen">EU citizen</option>
+                <option value="blue_card">Blue Card</option>
+                <option value="chancenkarte_or_job_seeker">Chancenkarte / job seeker</option>
+                <option value="student_visa">Student visa</option>
+                <option value="needs_visa_from_abroad">Needs visa from abroad</option>
+              </select>
+            </label>
+            <label for="german-level">German
+              <select id="german-level" class="df-select">
+                <option value="" selected>Any</option>
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="B1">B1</option>
+                <option value="B2">B2</option>
+                <option value="C1">C1</option>
+                <option value="C2">C2</option>
+              </select>
+            </label>
+            <label for="match-api-key">Match key
+              <input id="match-api-key" class="df-input" type="password" autocomplete="off" placeholder="X-API-Key" style="max-width:10rem" />
+            </label>
           </div>
         </div>
       </div>
@@ -397,8 +421,9 @@
   const MATCH_API_URL = window.DATAFORGE_MATCH_API_URL || (isLocal
     ? "http://localhost:8001"
     : "https://22oqvlj4pyl4geb2lzgeisnquy0dscjk.lambda-url.eu-central-1.on.aws/");
-  const MATCH_API_KEY = window.DATAFORGE_MATCH_API_KEY
+  let MATCH_API_KEY = window.DATAFORGE_MATCH_API_KEY
     || new URLSearchParams(window.location.search).get("api_key")
+    || localStorage.getItem("dataforge.match_api_key")
     || "";
 
   const PHASE = { RESUME: "resume", ROLE: "role", LOCATION: "location", DONE: "done" };
@@ -581,6 +606,8 @@
   async function matchViaApi(method) {
     const headers = { "Content-Type": "application/json" };
     if (MATCH_API_KEY) headers["X-API-Key"] = MATCH_API_KEY;
+    const liveKey = (document.getElementById("match-api-key")?.value || MATCH_API_KEY || "").trim();
+    if (liveKey) headers["X-API-Key"] = liveKey;
     const res = await fetch(`${MATCH_API_URL.replace(/\/$/, "")}/match`, {
       method: "POST",
       headers,
@@ -590,11 +617,13 @@
         location: targetLoc,
         method,
         limit: 40,
-        visa_status: "",
-        german_level: "",
+        visa_status: document.getElementById("visa-status")?.value || "",
+        german_level: document.getElementById("german-level")?.value || "",
         entry_level_only: document.getElementById("entry-only").checked,
         english_ok_only: document.getElementById("english-ok").checked,
-        tech_only: false
+        tech_only: false,
+        data_ai_only: true,
+        audience_only: true
       })
     });
     if (!res.ok) throw new Error("Match API " + res.status);
@@ -842,6 +871,14 @@
   }
 
   document.getElementById("send-btn").addEventListener("click", () => handleSend(document.getElementById("composer-input").value));
+  const keyInput = document.getElementById("match-api-key");
+  if (keyInput) {
+    keyInput.value = MATCH_API_KEY;
+    keyInput.addEventListener("change", () => {
+      MATCH_API_KEY = keyInput.value.trim();
+      try { localStorage.setItem("dataforge.match_api_key", MATCH_API_KEY); } catch (_) {}
+    });
+  }
   document.getElementById("composer-input").addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();

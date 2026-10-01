@@ -1,0 +1,20 @@
+[
+  {
+    "name": "berlin-ws-data",
+    "field": "data_engineering",
+    "city": "Berlin",
+    "employment": "working_student",
+    "keywords": "",
+    "webhook_url": "",
+    "email_to": ""
+  },
+  {
+    "name": "eu-internship-ai",
+    "field": "ai_ml_data_science",
+    "city": "",
+    "employment": "internship",
+    "keywords": "python",
+    "webhook_url": "",
+    "email_to": ""
+  }
+]

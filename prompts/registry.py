@@ -1,11 +1,10 @@
-"""Versioned prompt registry for LLMOps / thesis reproducibility."""
+"""Versioned prompt registry (repo-root). Loads markdown from this directory."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
 PROMPTS_DIR = Path(__file__).resolve().parent
 
 
@@ -29,7 +28,6 @@ def load_prompt(name: str, version: str = "v1") -> PromptVersion:
         return _CACHE[key]
     path = PROMPTS_DIR / f"{name}_{version}.md"
     if not path.exists():
-        # Allow name_v1.md or name.md
         alt = PROMPTS_DIR / f"{name}.md"
         if not alt.exists():
             raise FileNotFoundError(f"Prompt not found: {path}")

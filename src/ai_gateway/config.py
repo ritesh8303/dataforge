@@ -24,42 +24,44 @@ MODEL_PRICING: dict[str, ModelPricing] = {
     "eu.amazon.nova-micro-v1:0": ModelPricing(0.000035, 0.00014),
     "amazon.nova-lite-v1:0": ModelPricing(0.00006, 0.00024),
     "eu.amazon.nova-lite-v1:0": ModelPricing(0.00006, 0.00024),
+    "mistral-small-latest": ModelPricing(0.0001, 0.0003),
+    "mistral-embed": ModelPricing(0.0001, 0.0),
     "local-tfidf": ModelPricing(0.0, 0.0),
     "local-heuristic": ModelPricing(0.0, 0.0),
 }
 
 TASK_PROFILES: dict[str, dict] = {
-    # Production default: OpenAI for all GenAI tasks (Bedrock/Anthropic kept as optional overrides).
+    # Production: OpenAI first; Mistral as EU-friendly alternate; local last for non-strict tasks.
     "enrich": {
-        "preferred_providers": ["openai", "local"],
+        "preferred_providers": ["openai", "mistral", "local"],
         "max_latency_ms": 15000,
         "max_cost_usd": 0.002,
         "require_json": True,
         "prefer_eu_residency": False,
     },
     "embed": {
-        "preferred_providers": ["openai", "local"],
+        "preferred_providers": ["openai", "mistral", "local"],
         "max_latency_ms": 8000,
         "max_cost_usd": 0.0005,
         "require_json": False,
         "prefer_eu_residency": False,
     },
     "rerank": {
-        "preferred_providers": ["openai", "local"],
+        "preferred_providers": ["openai", "mistral", "local"],
         "max_latency_ms": 8000,
         "max_cost_usd": 0.005,
         "require_json": True,
         "prefer_eu_residency": False,
     },
     "summarize": {
-        "preferred_providers": ["openai", "local"],
+        "preferred_providers": ["openai", "mistral", "local"],
         "max_latency_ms": 10000,
         "max_cost_usd": 0.003,
         "require_json": False,
         "prefer_eu_residency": False,
     },
     "explain": {
-        "preferred_providers": ["openai", "local"],
+        "preferred_providers": ["openai", "mistral", "local"],
         "max_latency_ms": 12000,
         "max_cost_usd": 0.003,
         "require_json": True,

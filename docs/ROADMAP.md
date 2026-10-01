@@ -71,6 +71,28 @@ Suggested order only — swap freely if a target role weights differently.
 3. Thesis write-up on measured results (`docs/thesis/RESULTS_DRAFT.md`). **Drafted**
 4. UI polish (KPIs, visa/entry filters, About). **About + agent filters; dashboard KPIs live**
 5. Budget runbook + README honesty pass. **Done**
+### Wave 4 — Top-tier product depth (2026-10-01)
+
+1. Listwise LLM rerank on hybrid Match path (`api/rerank.py`, `MATCH_RERANK`).
+2. ESCO-inspired skill map + occupation skill gaps (`enrichment/esco_skills.py`).
+3. Canonical EN titles (`enrichment/canonical_title.py`).
+4. Salary + language heuristics on enrichment.
+5. Classification content-hash cache (local / S3).
+6. Mistral provider in router cascade (EU-friendly).
+7. DuckDB Gold search (`api/duckdb_jobs.py`, `GET /jobs?backend=duckdb`).
+8. Saved searches (`config/saved_searches.json`, alerts workflow).
+9. SEO JobPosting pages (`scripts/generate_seo_job_pages.py` → `docs/jobs/`).
+10. Local application tracker (`docs/components/app_tracker.js`).
+
+### Wave 5 — Live product polish (2026-10-01)
+
+1. Embed **product jobs first**, `INDEX_BUILD_LIMIT=2500` (covers ~2.3k board).
+2. Match CORS + Function URL origin lock to GitHub Pages; `/match` rate limit.
+3. Jobs API BM25 ranking over title/company/canonical/skills.
+4. Canonical titles on Gold + board UI; bilingual EN/DE toggle.
+5. Full SEO JobPosting set + sitemap in Gold publish CI.
+6. Agent visa/German profile + Match API key stored locally.
+
 ## Change log (roadmap pivots)
 
 | Date | Change | Why |
@@ -80,6 +102,8 @@ Suggested order only — swap freely if a target role weights differently.
 | 2026-09-13 | Phase B: FastAPI+Mangum Match API, PII, citations, visa filters, agent.html hybrid toggle, Function URL in ai.tf.optional | Portfolio Match surface |
 | 2026-09-13 | Phase D: multi-agent graph, HITL, MCP, ablation; Phase E: Step Functions Express, compose Airflow, RESPONSIBLE_AI, Spark note, dbt docs CI | Thesis-plus orchestration + governance |
 | 2026-09-16 | Demo script + RESULTS honesty; MCP auto-loads gitignored Match key; Bedrock Nova TPM increase requested (PENDING) | Wait on quota without blocking portfolio demo |
+| 2026-10-01 | **Tiers 1–4 product depth:** listwise hybrid rerank; ESCO skills + canonical titles; salary/language extract; classification cache; Mistral provider; DuckDB Jobs backend; saved-search alerts + SEO JobPosting pages; local application tracker; ATS board expansion; gold-label eval generator | Ship remaining roadmap as frugal, testable slices |
+| 2026-10-01 | **Wave 5 live polish:** product-first embeddings, Match origin lock + rate limit, Jobs BM25, SEO CI, bilingual board, visa-aware agent UI | Close remaining market-tier gaps on the live surface |
 | 2026-09-30 | Match `VECTOR_STORE_URI` (LanceDB) + JSON fallback; packaging doc; RQ2 OpenAI alternate while Bedrock case still CASE_OPENED | Close portfolio gaps without waiting on AWS |
 | 2026-09-30 | Product audience: EU + data/AI fields + fresher/WS/internship/thesis only (WSJ-inspired gate) | Thesis seeker focus |
 

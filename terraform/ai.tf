@@ -25,7 +25,8 @@ module "enrichment_lambda" {
     VECTOR_STORE_URI          = "s3://${module.s3_gold.bucket_id}/lancedb"
     AI_ENRICHMENT_SAMPLE_RATE = "1.0"
     ENRICHMENT_MAX_LLM        = "800"
-    INDEX_BUILD_LIMIT         = "500"
+    INDEX_BUILD_LIMIT         = "2500"
+    CLASSIFICATION_CACHE_S3   = "s3://${module.s3_gold.bucket_id}/classification_cache.json"
     AI_ENABLED                = "true"
     AI_DAILY_BUDGET_USD       = "5.0"
     OPENAI_API_KEY            = var.openai_api_key
@@ -56,9 +57,13 @@ module "match_api_lambda" {
     ENRICHMENT_KEY      = "ai_job_enrichment.csv"
     EMBEDDING_INDEX_KEY = "embedding_index.json"
     VECTOR_STORE_URI    = "s3://${module.s3_gold.bucket_id}/lancedb"
-    ALLOWED_ORIGIN      = "*"
+    ALLOWED_ORIGIN      = "https://ritesh8303.github.io,http://localhost:8001,http://127.0.0.1:8001"
     AI_ENABLED          = "true"
-    INDEX_BUILD_LIMIT   = "200"
+    INDEX_BUILD_LIMIT   = "2500"
+    MATCH_RERANK        = "true"
+    MATCH_BUILD_INDEX_ON_MISS = "false"
+    MATCH_RATE_LIMIT    = "40"
+    CLASSIFICATION_CACHE_S3 = "s3://${module.s3_gold.bucket_id}/classification_cache.json"
     MATCH_API_KEY       = var.match_api_key
     AI_DAILY_BUDGET_USD = "5.0"
     OPENAI_API_KEY      = var.openai_api_key
@@ -81,7 +86,11 @@ resource "aws_lambda_function_url" "match" {
   authorization_type = "NONE"
 
   cors {
-    allow_origins = ["*"]
+    allow_origins = [
+      "https://ritesh8303.github.io",
+      "http://localhost:8001",
+      "http://127.0.0.1:8001",
+    ]
     allow_methods = ["GET", "POST"]
     allow_headers = ["*"]
     max_age       = 300

@@ -19,8 +19,19 @@ from vector_store import resolve_vector_entries
 
 try:
     from api.match_insights import bilingual_blurb, company_early_career_scores, skill_gap_plan
+    from api.rerank import listwise_rerank
+    from api.seeker_profile import extract_profile
 except ImportError:  # Lambda / flat src layout
     from match_insights import bilingual_blurb, company_early_career_scores, skill_gap_plan
+    from rerank import listwise_rerank
+    from seeker_profile import extract_profile
+
+try:
+    from enrichment.canonical_title import attach_canonical_title
+except ImportError:
+    def attach_canonical_title(job: dict) -> dict:
+        return job
+
 
 _cache: dict[str, Any] = {"jobs": None, "index": None, "vector_backend": "memory", "ts": 0, "company_scores": None}
 CACHE_TTL = 300
@@ -56,6 +67,8 @@ def load_jobs_and_index(force: bool = False) -> tuple[list[dict], list[dict]]:
         jid = job.get("job_id", "")
         if jid in enrich_map:
             job.update(enrich_map[jid])
+        if not job.get("canonical_title_en"):
+            job["canonical_title_en"] = attach_canonical_title(job).get("canonical_title_en", "")
         # Labels come from Gold audience gate + enrichment CSV (no per-job LLM on load).
 
     json_raw: bytes | None = None
@@ -67,16 +80,21 @@ def load_jobs_and_index(force: bool = False) -> tuple[list[dict], list[dict]]:
 
     index, backend = resolve_vector_entries(json_raw=json_raw, uri=vector_uri or None)
     if not index:
-        router = ModelRouter()
-        limit = int(os.environ.get("INDEX_BUILD_LIMIT", "200"))
-        index = build_embedding_index(jobs[:limit], router)
-        if vector_uri:
-            index, backend = resolve_vector_entries(
-                json_raw=json.dumps({"version": 1, "entries": index}),
-                uri=vector_uri,
-            )
+        # Avoid expensive on-request embeds in production; allow tiny local rebuild for demos.
+        allow_build = os.environ.get("MATCH_BUILD_INDEX_ON_MISS", "false").lower() in {"1", "true", "yes"}
+        if allow_build:
+            router = ModelRouter()
+            limit = int(os.environ.get("INDEX_BUILD_LIMIT", "50"))
+            index = build_embedding_index(jobs[:limit], router)
+            if vector_uri:
+                index, backend = resolve_vector_entries(
+                    json_raw=json.dumps({"version": 2, "entries": index}),
+                    uri=vector_uri,
+                )
+            else:
+                backend = "built"
         else:
-            backend = "built"
+            backend = "missing"
 
     _cache["jobs"] = jobs
     _cache["index"] = index
@@ -145,8 +163,15 @@ def apply_profile_filters(
             continue
         stance = str(job.get("ai_visa_stance") or "not_mentioned")
         if visa_status in {"chancenkarte_or_job_seeker", "needs_visa_from_abroad", "student_visa"}:
-            if stance in {"eu_citizens_only", "existing_permit_required"}:
-                continue
+            try:
+                from enrichment.schemas import VISA_BLOCKING_FOR_SEEKER, normalize_visa_stance
+
+                stance = normalize_visa_stance(stance)
+                if stance in VISA_BLOCKING_FOR_SEEKER:
+                    continue
+            except Exception:
+                if stance in {"eu_citizens_only", "existing_permit_required"}:
+                    continue
             if german_level.upper() in {"", "A1", "A2", "B1"} and not _truthy(job.get("ai_english_ok")):
                 # Soft filter: keep if english_ok unknown/true; drop explicit german-only when weak German
                 lang_req = str(job.get("language_requirement") or "").lower()
@@ -218,11 +243,19 @@ def match_jobs(
         raise ValueError("resume or dream_role required")
 
     redacted = redact_pii(resume)
+    profile = extract_profile(
+        redacted.text,
+        dream_role,
+        location,
+        visa_status=visa_status,
+        german_level=german_level,
+        use_llm=False,
+    )
     jobs, index = load_jobs_and_index()
     filtered = apply_profile_filters(
         jobs,
         visa_status=visa_status,
-        german_level=german_level,
+        german_level=german_level or profile.german_level,
         entry_level_only=entry_level_only,
         english_ok_only=english_ok_only,
         tech_only=tech_only,
@@ -240,7 +273,7 @@ def match_jobs(
         if loc_filtered:
             filtered = loc_filtered
 
-    query = f"{dream_role} {redacted.text} {location}".strip()
+    query = profile.query_text or f"{dream_role} {redacted.text} {location}".strip()
     method = (method or "hybrid").lower()
     router = ModelRouter()
     vectors = {e["job_id"]: e["vector"] for e in index if e.get("job_id") and e.get("vector")}
@@ -251,9 +284,17 @@ def match_jobs(
             filtered,
             vectors_by_id=vectors,
             embed_fn=lambda t, _r=router: _r.embed("embed", t).vector,
-            top_k=min(max(limit, 1), 50),
+            top_k=min(max(limit * 2, 20), 50),
         )
-        used = "hybrid_rrf"
+        ranked = listwise_rerank(
+            query=query,
+            resume=redacted.text,
+            dream_role=dream_role,
+            jobs=ranked,
+            router=router,
+            top_n=min(10, max(limit, 5)),
+        )[: min(max(limit, 1), 50)]
+        used = ranked[0].get("match_method", "hybrid_rrf") if ranked else "hybrid_rrf"
     elif method == "bm25":
         ranked = rank_bm25(query, filtered, top_k=min(max(limit, 1), 50))
         used = "bm25"
@@ -273,7 +314,7 @@ def match_jobs(
     # Keep match path lightweight: rules blurbs for all; LLM only for top few when key present.
     llm_blurb_budget = 3
     for i, job in enumerate(ranked):
-        item = dict(job)
+        item = attach_canonical_title(dict(job))
         item["citations"] = build_citations(item, redacted.text, dream_role)
         item["skill_gap_plan"] = skill_gap_plan(redacted.text, item)
         item["bilingual_blurb"] = bilingual_blurb(item, use_llm=(i < llm_blurb_budget))
@@ -289,9 +330,10 @@ def match_jobs(
         "vector_backend": vector_backend(),
         "index_size": len(index),
         "pii_redacted": redacted.redacted_counts,
+        "seeker_profile": profile.to_dict(),
         "filters_applied": {
             "visa_status": visa_status or None,
-            "german_level": german_level or None,
+            "german_level": german_level or profile.german_level or None,
             "entry_level_only": entry_level_only,
             "english_ok_only": english_ok_only,
             "tech_only": tech_only,

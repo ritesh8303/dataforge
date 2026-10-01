@@ -32,6 +32,23 @@ LAMBDA_CONFIG = {
     "dataforge-gold-generator": {"Timeout": 900, "MemorySize": 2048},
 }
 
+ENV_PATCH = {
+    "dataforge-enrichment": {
+        "INDEX_BUILD_LIMIT": "2500",
+        "ENRICHMENT_MAX_LLM": "800",
+        "AI_ENRICHMENT_SAMPLE_RATE": "1.0",
+        "CLASSIFICATION_CACHE_S3": "s3://dataforge-gold-dev-366945363779/classification_cache.json",
+    },
+    "dataforge-match-api": {
+        "INDEX_BUILD_LIMIT": "2500",
+        "MATCH_RERANK": "true",
+        "MATCH_BUILD_INDEX_ON_MISS": "false",
+        "MATCH_RATE_LIMIT": "40",
+        "ALLOWED_ORIGIN": "https://ritesh8303.github.io,http://localhost:8001,http://127.0.0.1:8001",
+        "CLASSIFICATION_CACHE_S3": "s3://dataforge-gold-dev-366945363779/classification_cache.json",
+    },
+}
+
 
 def build_zip() -> Path:
     if ZIP_PATH.exists():
@@ -52,6 +69,7 @@ def main():
     for fn in FUNCTIONS:
         resp = lc.update_function_code(FunctionName=fn, ZipFile=payload)
         print(f"  OK {fn} -> {resp['LastModified']} ({resp['CodeSize']} bytes)")
+        lc.get_waiter("function_updated").wait(FunctionName=fn, WaiterConfig={"Delay": 2, "MaxAttempts": 30})
 
     for fn, limit in CONCURRENCY.items():
         try:
@@ -63,6 +81,31 @@ def main():
     for fn, cfg in LAMBDA_CONFIG.items():
         lc.update_function_configuration(FunctionName=fn, **cfg)
         print(f"  OK {fn} config -> {cfg}")
+
+    for fn, patch in ENV_PATCH.items():
+        cur = lc.get_function_configuration(FunctionName=fn)
+        env = dict((cur.get("Environment") or {}).get("Variables") or {})
+        env.update(patch)
+        lc.update_function_configuration(FunctionName=fn, Environment={"Variables": env})
+        print(f"  OK {fn} env patch -> {sorted(patch)}")
+
+    try:
+        lc.update_function_url_config(
+            FunctionName="dataforge-match-api",
+            Cors={
+                "AllowOrigins": [
+                    "https://ritesh8303.github.io",
+                    "http://localhost:8001",
+                    "http://127.0.0.1:8001",
+                ],
+                "AllowMethods": ["GET", "POST"],
+                "AllowHeaders": ["*"],
+                "MaxAge": 300,
+            },
+        )
+        print("  OK match Function URL CORS locked to GitHub Pages + localhost")
+    except Exception as exc:
+        print(f"  WARN Function URL CORS not updated ({exc})")
 
     print(f"Deployed {len(FUNCTIONS)} functions.")
 

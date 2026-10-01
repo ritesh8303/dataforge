@@ -42,6 +42,9 @@ jobs:
       - name: Regenerate dashboard PNG
         run: pip install matplotlib && python scripts/visualize_gold.py
 
+      - name: Generate SEO JobPosting pages
+        run: python scripts/generate_seo_job_pages.py --limit 800
+
       # Adding the directory (not *.csv) skips gitignored files: the large
       # all_jobs.csv / expired_jobs.csv are excluded so git history does not
       # grow by ~6 MB per day — S3 (and Silver history) is the system of record.
@@ -49,6 +52,6 @@ jobs:
         run: |
           git config user.name "dataforge-bot"
           git config user.email "actions@github.com"
-          git add data/gold/
+          git add data/gold/ docs/jobs/ docs/sitemap.xml docs/robots.txt
           git diff --staged --quiet || git commit -m "chore: refresh gold data $(date -u +%Y-%m-%d)"
           git push origin main

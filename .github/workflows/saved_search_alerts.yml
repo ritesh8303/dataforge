@@ -1,0 +1,38 @@
+name: Saved search alerts
+
+on:
+  schedule:
+    - cron: '0 8 * * *'   # daily 08:00 UTC
+  workflow_dispatch:
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::366945363779:role/dataforge-github-actions-dev
+          aws-region: eu-central-1
+        continue-on-error: true
+      - name: Install deps
+        run: pip install boto3
+      - name: Run alerts (dry-run unless webhook set)
+        env:
+          GOLD_BUCKET: dataforge-gold-dev-366945363779
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+          PYTHONPATH: src:.
+        run: |
+          if [ -n "$ALERT_WEBHOOK_URL" ]; then
+            python scripts/check_new_jobs_alert.py --use-config
+          else
+            python scripts/check_new_jobs_alert.py --dry-run --field data_engineering --city Berlin || true
+            echo "Set ALERT_WEBHOOK_URL secret to enable live posts"
+          fi

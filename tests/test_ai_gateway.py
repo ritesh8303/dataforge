@@ -19,13 +19,39 @@ def test_local_complete_returns_text():
     assert resp.provider in ("local", "openai", "anthropic", "bedrock")
 
 
-def test_local_enrich_returns_valid_json():
+def test_local_enrich_returns_valid_json(monkeypatch):
     router = ModelRouter()
-    resp = router.complete("enrich", "Senior Python AWS data engineer in Berlin", json_mode=True)
+    monkeypatch.setitem(
+        router._providers,
+        "openai",
+        type("X", (), {"name": "openai", "available": lambda self: False})(),
+    )
+    resp = router.complete(
+        "enrich",
+        "Senior Python AWS data engineer in Berlin",
+        json_mode=True,
+        allow_local_fallback=True,
+    )
     ok, parsed = validate_json_response(resp.text)
     assert ok
     assert "skills" in parsed
-    assert parsed["seniority"] in ("junior", "mid", "senior", "lead")
+    assert parsed["seniority"] in (
+        "internship",
+        "working_student",
+        "thesis",
+        "trainee_graduate",
+        "fresher",
+        "junior",
+        "mid",
+        "senior",
+    )
+    assert parsed["visa_stance"] in (
+        "sponsorship_offered",
+        "relocation_support",
+        "existing_permit_required",
+        "eu_citizens_only",
+        "not_mentioned",
+    )
 
 
 def test_local_embed_deterministic(monkeypatch):

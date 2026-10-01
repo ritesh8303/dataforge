@@ -21,6 +21,28 @@ def _skills_from_text(text: str) -> set[str]:
 
 
 def skill_gap_plan(resume: str, job: dict[str, Any]) -> dict[str, Any]:
+    try:
+        from enrichment.esco_skills import extract_esco_skills, occupation_skill_gap
+
+        resume_ids = [s["id"] for s in extract_esco_skills(resume)]
+        field = str(job.get("ai_field") or job.get("field") or "")
+        if field:
+            gap = occupation_skill_gap(field, resume_ids)
+            advice = (
+                f"Strengthen: {', '.join(gap['labels']['missing'][:5])}."
+                if gap["missing"]
+                else "Skill overlap looks solid for an early-career application."
+            )
+            if gap["matched"]:
+                advice = f"Lean on {', '.join(gap['labels']['matched'][:4])}. " + advice
+            return {
+                "matched": gap["labels"]["matched"],
+                "missing": gap["labels"]["missing"],
+                "advice": advice,
+                "esco": True,
+            }
+    except Exception:
+        pass
     resume_skills = _skills_from_text(resume)
     job_text = f"{job.get('title','')} {job.get('tags','')} {job.get('description','')} {job.get('ai_skills','')}"
     job_skills = _skills_from_text(job_text)
@@ -33,7 +55,7 @@ def skill_gap_plan(resume: str, job: dict[str, Any]) -> dict[str, Any]:
     )
     if matched:
         advice = f"Lean on {', '.join(matched[:4])}. " + advice
-    return {"matched": matched, "missing": missing, "advice": advice}
+    return {"matched": matched, "missing": missing, "advice": advice, "esco": False}
 
 
 def _rules_blurb(job: dict[str, Any]) -> dict[str, str]:
@@ -59,13 +81,17 @@ def bilingual_blurb(job: dict[str, Any], use_llm: bool = False) -> dict[str, str
     base = _rules_blurb(job)
     if not use_llm:
         return base
-    if not os.environ.get("OPENAI_API_KEY"):
-        return base
     if os.environ.get("AI_ENABLED", "true").lower() in {"0", "false", "no"}:
         return base
     try:
+        from ai_gateway.config import resolve_openai_api_key
         from ai_gateway.providers.base import validate_json_response
         from ai_gateway.router import ModelRouter
+
+        # Resolve via env or SSM — do not require OPENAI_API_KEY alone.
+        if not resolve_openai_api_key() and not os.environ.get("ANTHROPIC_API_KEY"):
+            # Still allow router (Bedrock / local) when configured.
+            pass
 
         router = ModelRouter()
         system = (
@@ -81,7 +107,13 @@ def bilingual_blurb(job: dict[str, Any], use_llm: bool = False) -> dict[str, str
             },
             ensure_ascii=False,
         )
-        resp = router.complete("summarize", prompt, system=system, json_mode=True)
+        resp = router.complete(
+            "summarize",
+            prompt,
+            system=system,
+            json_mode=True,
+            allow_local_fallback=True,
+        )
         ok, parsed = validate_json_response(resp.text)
         if ok and isinstance(parsed, dict) and parsed.get("en") and parsed.get("de"):
             return {"en": str(parsed["en"])[:300], "de": str(parsed["de"])[:300]}

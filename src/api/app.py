@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 
+from api.http_util import allowed_origins, rate_limit_ok
 from api.match_service import jobs_to_markdown, load_jobs_and_index, match_jobs
 from agent.graph import run_match_agent
 
@@ -57,9 +58,10 @@ app = FastAPI(
     ),
 )
 
+_ORIGINS = allowed_origins()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.environ.get("ALLOWED_ORIGIN", "*")],
+    allow_origins=_ORIGINS,
     allow_credentials=False,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
@@ -71,13 +73,43 @@ def health() -> dict[str, str]:
     return {"status": "ok", "service": "dataforge-match"}
 
 
+@app.middleware("http")
+async def match_rate_limit(request: Request, call_next):
+    path = request.url.path or ""
+    if path.startswith("/match"):
+        ip = (request.headers.get("x-forwarded-for") or "").split(",")[0].strip() or (
+            request.client.host if request.client else "anon"
+        )
+        if not rate_limit_ok(f"match:{ip}", limit=int(os.environ.get("MATCH_RATE_LIMIT", "40"))):
+            return JSONResponse({"detail": "Rate limit exceeded"}, status_code=429)
+    return await call_next(request)
+
+
 @app.get("/jobs")
 def list_jobs(
     limit: int = Query(default=50, ge=1, le=500),
     search: str = "",
     tech_only: bool = True,
+    backend: str = Query(default="s3", description="s3|duckdb"),
+    location: str = "",
+    field: str = "",
+    employment: str = "",
     _: None = Depends(require_api_key),
 ) -> dict[str, Any]:
+    if backend == "duckdb":
+        try:
+            from api.duckdb_jobs import search_jobs_duckdb
+
+            return search_jobs_duckdb(
+                query=search,
+                location=location,
+                field=field,
+                employment=employment,
+                limit=limit,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=503, detail=f"duckdb backend unavailable: {exc}") from exc
+
     jobs, _ = load_jobs_and_index()
     if tech_only:
         jobs = [j for j in jobs if j.get("is_tech") is None or str(j.get("is_tech")).lower() in {"1", "true", "yes"}]
@@ -89,7 +121,17 @@ def list_jobs(
             if q in str(j.get("title", "")).lower()
             or q in str(j.get("company", "")).lower()
             or q in str(j.get("tags", "")).lower()
+            or q in str(j.get("canonical_title_en", "")).lower()
+            or q in str(j.get("ai_skills", "")).lower()
         ]
+        try:
+            from retrieval import rank_bm25
+
+            ranked = rank_bm25(search, jobs, top_k=min(len(jobs), limit))
+            if ranked:
+                jobs = ranked
+        except Exception:
+            pass
     return {"jobs": jobs[:limit], "count": min(len(jobs), limit)}
 
 
@@ -111,6 +153,8 @@ async def match_endpoint(
                 entry_level_only=body.entry_level_only,
                 english_ok_only=body.english_ok_only,
                 tech_only=body.tech_only,
+                data_ai_only=body.data_ai_only,
+                audience_only=body.audience_only,
             )
         else:
             payload = match_jobs(

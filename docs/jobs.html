@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="components/design-system.css" />
   <script>
     (function () {
-      var BUILD = "2026-06-10.2";
+      var BUILD = "2026-10-01.1";
       try {
         var key = "dataforge.jobs.build";
         var prev = localStorage.getItem(key);
@@ -81,8 +81,9 @@
 
 <div class="df-page-narrow df-fade-in">
   <div class="page-header">
-    <h1>EU Data &amp; AI — Early Career Jobs</h1>
-    <p>Fresher, working-student, internship, and thesis roles in data, AI/ML, and related fields across the European Union</p>
+    <h1 data-i18n="title">EU Data &amp; AI — Early Career Jobs</h1>
+    <p data-i18n="subtitle">Fresher, working-student, internship, and thesis roles in data, AI/ML, and related fields across the European Union</p>
+    <button type="button" id="lang-toggle" class="df-chip" style="margin-top:0.5rem">DE</button>
   </div>
 
   <div id="error-box" class="df-error" style="display:none"></div>
@@ -98,6 +99,11 @@
     <button type="button" class="df-chip" data-preset="fresher-de">Fresher · Data Engineering</button>
     <button type="button" class="df-chip" data-preset="english">English-OK</button>
   </div>
+
+  <details class="df-surface-card" style="margin-bottom:1rem;padding:0.75rem 1rem;border:1px solid var(--df-border);border-radius:var(--df-radius)">
+    <summary style="cursor:pointer;font-weight:600">Saved applications (local)</summary>
+    <div id="app-tracker-panel" style="margin-top:0.75rem"></div>
+  </details>
 
   <div id="filter-chips" class="df-filter-chips"></div>
 
@@ -183,12 +189,12 @@
       <div class="filter-group">
         <label class="df-label">Board</label>
         <div class="df-pill-group" id="audience-pills">
-          <button class="df-pill active" data-value="">All active jobs</button>
-          <button class="df-pill" data-value="product">EU data/AI early-career</button>
+          <button class="df-pill" data-value="">All active jobs</button>
+          <button class="df-pill active" data-value="product">EU data/AI early-career</button>
         </div>
         <select id="audience" style="display:none">
-          <option value="" selected>All active jobs</option>
-          <option value="product">EU data/AI early-career only</option>
+          <option value="">All active jobs</option>
+          <option value="product" selected>EU data/AI early-career only</option>
         </select>
       </div>
 
@@ -485,10 +491,12 @@
       const company = (j.company || "").toLowerCase();
       const loc = (j.location || "").toLowerCase();
       const tags = (j.tags || "").toLowerCase();
+      const canon = (j.canonical_title_en || "").toLowerCase();
+      const skills = (j.ai_skills || "").toLowerCase();
       const aiField = (j.ai_field || j.ai_field_rule || j.field_rule || "").toLowerCase();
       const emp = (j.employment_type || j.ai_seniority || "").toLowerCase();
 
-      if (search && !title.includes(search) && !company.includes(search) && !loc.includes(search) && !tags.includes(search)) return false;
+      if (search && !title.includes(search) && !company.includes(search) && !loc.includes(search) && !tags.includes(search) && !canon.includes(search) && !skills.includes(search)) return false;
       if (location && !loc.includes(location)) return false;
       if (field && !aiField.includes(field) && !title.includes(field.replaceAll("_", " "))) return false;
 
@@ -632,6 +640,7 @@
             <div class="company-avatar" title="${esc(j.company || '')}">${esc(initials)}</div>
             <div class="job-card-info">
               <div class="job-title" title="${esc(j.title)}">${highlightText(j.title, searchQ)}</div>
+              ${j.canonical_title_en && j.canonical_title_en !== j.title ? `<div class="job-company" style="opacity:0.75">${highlightText(j.canonical_title_en, searchQ)}</div>` : ""}
               <div class="job-company">${highlightText(j.company || '—', searchQ)}</div>
               <div class="job-location">📍 ${esc(locDisplay)}</div>
             </div>
@@ -643,12 +652,16 @@
           ${descSnippet}
           <div class="job-card-footer">
             <span class="job-date">${j.date_added || ''}</span>
-            <a class="apply-btn" href="${escUrl(url)}" target="_blank" rel="noopener noreferrer">Apply →</a>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+              <button type="button" class="df-chip" data-track-job='${esc(JSON.stringify({job_id:j.job_id,title:j.title,company:j.company,job_url:url}))}' data-track-status="saved">Save</button>
+              <a class="apply-btn" href="${escUrl(url)}" target="_blank" rel="noopener noreferrer">Apply →</a>
+            </div>
           </div>
         </article>`;
     }).join("");
 
     renderPagination();
+    if (window.DataForgeTracker) window.DataForgeTracker.bindSaveButtons(document.getElementById("jobs-list"));
   }
 
   function renderPagination() {
@@ -742,8 +755,38 @@
   });
 
   document.getElementById("board-build").textContent = BOARD_BUILD;
+  const I18N = {
+    en: { title: "EU Data & AI — Early Career Jobs", subtitle: "Fresher, working-student, internship, and thesis roles in data, AI/ML, and related fields across the European Union", toggle: "DE" },
+    de: { title: "EU Data & AI — Einstiegsjobs", subtitle: "Werkstudent, Praktikum, Abschlussarbeit und Junior-Rollen in Data, KI/ML in der Europäischen Union", toggle: "EN" },
+  };
+  let uiLang = localStorage.getItem("dataforge.lang") || "en";
+  function applyLang() {
+    const pack = I18N[uiLang] || I18N.en;
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const k = el.getAttribute("data-i18n");
+      if (pack[k]) el.textContent = pack[k];
+    });
+    const tog = document.getElementById("lang-toggle");
+    if (tog) tog.textContent = pack.toggle;
+    document.documentElement.lang = uiLang;
+  }
+  document.getElementById("lang-toggle")?.addEventListener("click", () => {
+    uiLang = uiLang === "en" ? "de" : "en";
+    localStorage.setItem("dataforge.lang", uiLang);
+    applyLang();
+  });
+  applyLang();
   loadJobs();
+  if (window.DataForgeTracker) {
+    window.DataForgeTracker.render(document.getElementById("app-tracker-panel"));
+  }
 </script>
+<script src="components/app_tracker.js"></script>
 <script src="components/ui.js"></script>
+<script>
+  if (window.DataForgeTracker) {
+    window.DataForgeTracker.render(document.getElementById("app-tracker-panel"));
+  }
+</script>
 </body>
 </html>

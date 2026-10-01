@@ -14,6 +14,8 @@ class AgentState(TypedDict, total=False):
     entry_level_only: bool
     english_ok_only: bool
     tech_only: bool
+    data_ai_only: bool
+    audience_only: bool
     limit: int
     # Runtime
     plan: str
@@ -29,6 +31,8 @@ class AgentState(TypedDict, total=False):
     method: str
     cost_summary: dict[str, Any]
     pii_redacted: dict[str, int]
+    resume_redacted: str
+    seeker_profile: dict[str, Any]
     explainer_retries: int
 
 

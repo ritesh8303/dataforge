@@ -106,7 +106,19 @@ def _handle(event):
             or search in j.get("company", "").lower()
             or search in j.get("tags", "").lower()
             or search in j.get("location", "").lower()
+            or search in j.get("canonical_title_en", "").lower()
+            or search in j.get("ai_skills", "").lower()
+            or search in j.get("ai_summary", "").lower()
         ]
+        # Rank substring hits with BM25 when the query has real tokens.
+        try:
+            from retrieval import rank_bm25
+
+            ranked = rank_bm25(search, jobs, top_k=min(len(jobs), MAX_LIMIT))
+            if ranked:
+                jobs = ranked
+        except Exception:
+            pass
     if location:
         jobs = [j for j in jobs if location in j.get("location", "").lower()]
     if source:

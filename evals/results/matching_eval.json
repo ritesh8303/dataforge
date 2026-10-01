@@ -2924,12 +2924,12 @@
   "cost_summary": {
     "total_cost_usd": 0.0,
     "total_calls": 302,
-    "avg_latency_ms": 0.09,
+    "avg_latency_ms": 0.08,
     "by_provider": {
       "local": {
         "calls": 302,
         "cost_usd": 0.0,
-        "latency_ms": 27.217200009545195,
+        "latency_ms": 22.67199998459546,
         "failures": 0
       }
     },
@@ -2937,7 +2937,7 @@
       "embed": {
         "calls": 302,
         "cost_usd": 0.0,
-        "latency_ms": 27.217200009545195,
+        "latency_ms": 22.67199998459546,
         "failures": 0
       }
     }

@@ -76,6 +76,8 @@ def run_match_agent(
     entry_level_only: bool = True,
     english_ok_only: bool = False,
     tech_only: bool = False,
+    data_ai_only: bool = True,
+    audience_only: bool = True,
 ) -> dict[str, Any]:
     if not resume and not dream_role:
         raise ValueError("resume or dream_role required")
@@ -90,6 +92,8 @@ def run_match_agent(
         "entry_level_only": entry_level_only,
         "english_ok_only": english_ok_only,
         "tech_only": tech_only,
+        "data_ai_only": data_ai_only,
+        "audience_only": audience_only,
         "llm_calls": 0,
         "handoffs": 0,
         "explainer_retries": 0,
@@ -114,12 +118,15 @@ def run_match_agent(
         "handoffs": int(final.get("handoffs") or 0),
         "limits": {"max_llm_calls": MAX_LLM_CALLS, "max_handoffs": MAX_HANDOFFS},
         "pii_redacted": final.get("pii_redacted") or {},
+        "seeker_profile": final.get("seeker_profile") or {},
         "filters_applied": {
             "visa_status": visa_status or None,
             "german_level": german_level or None,
             "entry_level_only": entry_level_only,
             "english_ok_only": english_ok_only,
             "tech_only": tech_only,
+            "data_ai_only": data_ai_only,
+            "audience_only": audience_only,
             "location": location or None,
         },
         "hitl": bool(final.get("hitl")),

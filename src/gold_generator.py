@@ -419,6 +419,12 @@ def lambda_handler(event, context):
                     print(f"Local enrichment merge failed: {exc}")
 
         enriched_all = enrich_jobs_with_audience(records)
+        try:
+            from enrichment.canonical_title import attach_canonical_title
+
+            enriched_all = [attach_canonical_title(r) for r in enriched_all]
+        except Exception as exc:
+            print(f"canonical_title skipped: {exc}")
         early_career = [r for r in enriched_all if r.get("audience_accept")]
         uncertain = [r for r in enriched_all if r.get("audience_uncertain")]
         if uncertain:
@@ -441,6 +447,12 @@ def lambda_handler(event, context):
                         f"methods={summary.get('methods')}) -> {summary.get('decisions_path')}"
                     )
                     enriched_all = enrich_jobs_with_audience(records)
+                    try:
+                        from enrichment.canonical_title import attach_canonical_title as _canon
+
+                        enriched_all = [_canon(r) for r in enriched_all]
+                    except Exception:
+                        pass
                     early_career = [r for r in enriched_all if r.get("audience_accept")]
                     uncertain = [r for r in enriched_all if r.get("audience_uncertain")]
                 except Exception as exc:

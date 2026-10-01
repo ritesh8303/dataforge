@@ -74,7 +74,13 @@ class OpenAIProvider(BaseProvider):
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
         body: dict = {"model": model, "messages": messages, "temperature": kwargs.get("temperature", 0.1)}
-        if kwargs.get("json_mode"):
+        json_schema = kwargs.get("json_schema")
+        if json_schema:
+            body["response_format"] = {
+                "type": "json_schema",
+                "json_schema": json_schema,
+            }
+        elif kwargs.get("json_mode"):
             body["response_format"] = {"type": "json_object"}
 
         def _call():
