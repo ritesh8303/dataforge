@@ -180,7 +180,8 @@ def build_metrics_payload(bucket: str) -> dict:
     run_date = run_at[:10] if len(run_at) >= 10 else today
 
     # Product KPIs: audience_accept rows (EU × data/AI × early career); board may be full lakehouse
-    product_total = len(product_jobs)    product_new = sum(1 for j in product_jobs if (j.get("date_added") or "") == run_date)
+    product_total = len(product_jobs)
+    product_new = sum(1 for j in product_jobs if (j.get("date_added") or "") == run_date)
     if product_new == 0 and run_date != today:
         product_new = sum(1 for j in product_jobs if (j.get("date_added") or "") == today)
 
