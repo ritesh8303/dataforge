@@ -205,20 +205,48 @@ def build_metrics_payload(bucket: str) -> dict:
         "schema_validation_pass": str(quality.get("schema_validation_pass", "false")).lower() == "true",
     }
 
+    # Prefer live board-level remote / English counts from all_jobs.csv when available.
+    if all_jobs:
+        remote_counts = {"remote": 0, "hybrid": 0, "onsite": 0}
+        for j in all_jobs:
+            ws = str(j.get("work_style") or "").lower().strip()
+            if ws in remote_counts:
+                remote_counts[ws] += 1
+            elif str(j.get("is_remote") or "").lower() in {"1", "true", "yes"}:
+                remote_counts["remote"] += 1
+            else:
+                remote_counts["onsite"] += 1
+        remote_vs_onsite = {
+            "Remote": remote_counts["remote"],
+            "Hybrid": remote_counts["hybrid"],
+            "On-site": remote_counts["onsite"],
+        }
+        english_jobs = sum(
+            1
+            for j in all_jobs
+            if str(j.get("is_english") or "").lower() in {"1", "true", "yes"}
+            or str(j.get("language_requirement") or "").lower() == "english_only"
+            or str(j.get("ai_english_ok") or "").lower() in {"1", "true", "yes"}
+        )
+
     lakehouse_total = lakehouse_active or int(active_vs_expired.get("Active", 0)) or len(all_jobs)
     coverage_funnel = _coverage_funnel(product_jobs, lakehouse_total)
     top_companies_early_career = _top_companies_early_career(product_jobs, top_n=10)
+
     if run_at:
         last_updated = run_at.replace("+00:00", "Z") if run_at.endswith("+00:00") else run_at
     else:
         last_updated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return {
-        "total_jobs": product_total,
+        "total_jobs": len(all_jobs) or lakehouse_total,
+        "board_jobs": len(all_jobs),
         "new_today": product_new,
         "early_career_jobs": product_total,
+        "product_jobs": product_total,
         "lakehouse_total_jobs": lakehouse_total,
-        "audience": "eu_data_ai_early_career",
+        "audience": "full_board",
+        "audience_product": "eu_data_ai_early_career",
         "english_jobs": english_jobs,
         "english_jobs_title_based": english_jobs,
         "english_jobs_strict": english_jobs_strict,

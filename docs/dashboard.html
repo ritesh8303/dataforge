@@ -170,11 +170,11 @@
 
   <!-- KPI Grid -->
   <div class="df-grid-5" style="margin-bottom:var(--df-space-8);">
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.16),rgba(167,139,250,0.08));" title="Product board: EU + data/AI + fresher / working student / internship / thesis.">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.16),rgba(167,139,250,0.08));" title="All active jobs on the published Gold board (full lakehouse).">
       <div class="df-kpi-icon">📊</div>
-      <div class="df-kpi-label">Product Board Jobs</div>
+      <div class="df-kpi-label">Active Board Jobs</div>
       <div class="df-kpi-value" id="kpi-total"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub" id="kpi-total-sub">EU · data/AI · early career</div>
+      <div class="df-kpi-sub" id="kpi-total-sub">full lakehouse</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.16),rgba(34,211,238,0.06));" title="New product-board jobs first seen on the latest pipeline run date.">
       <div class="df-kpi-icon">🆕</div>
@@ -184,15 +184,15 @@
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#2dd4bf);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.12),rgba(45,212,191,0.1));">
       <div class="df-kpi-icon">🌐</div>
-      <div class="df-kpi-label">Remote Openings <span class="kpi-info" title="work_style = remote on the product board.">ⓘ</span></div>
+      <div class="df-kpi-label">Remote Openings <span class="kpi-info" title="work_style = remote on the active board.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-remote"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub">product · remote only</div>
+      <div class="df-kpi-sub">active board · remote</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#a78bfa,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(167,139,250,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🇬🇧</div>
-      <div class="df-kpi-label">English Jobs <span class="kpi-info" title="English signal on product-board jobs.">ⓘ</span></div>
+      <div class="df-kpi-label">English Jobs <span class="kpi-info" title="English signal on active board jobs.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-english"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub" id="kpi-english-sub">product board</div>
+      <div class="df-kpi-sub" id="kpi-english-sub">active board</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#fb923c,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(251,146,60,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🔥</div>
@@ -462,10 +462,15 @@
     setEl("kpi-total", (data.total_jobs || 0).toLocaleString());
     const totalSub = document.getElementById("kpi-total-sub");
     if (totalSub) {
+      const product = data.product_jobs ?? data.early_career_jobs;
       const lake = data.lakehouse_total_jobs ?? data.pipeline_stats?.lakehouse_active;
-      totalSub.textContent = lake
-        ? `EU · data/AI · early career · lakehouse ${Number(lake).toLocaleString()}`
-        : "EU · data/AI · early career";
+      if (product != null && lake != null) {
+        totalSub.textContent = `product early-career ${Number(product).toLocaleString()} · lakehouse ${Number(lake).toLocaleString()}`;
+      } else if (product != null) {
+        totalSub.textContent = `product early-career ${Number(product).toLocaleString()}`;
+      } else {
+        totalSub.textContent = "full active board";
+      }
     }
 
     const ps = data.pipeline_stats || {};
@@ -491,8 +496,8 @@
     const englishSub = document.getElementById("kpi-english-sub");
     if (englishSub) {
       englishSub.textContent = englishStrict != null
-        ? `product board · strict: ${Number(englishStrict).toLocaleString()}`
-        : "product board";
+        ? `active board · product strict: ${Number(englishStrict).toLocaleString()}`
+        : "active board";
     }
 
     if (data.top_skills?.length) {
