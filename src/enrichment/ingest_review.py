@@ -94,7 +94,26 @@ def enqueue_ingest_review(rows: Sequence[dict[str, Any]], path: str | Path | Non
         except Exception as exc:  # pragma: no cover
             logger.warning("Ingest review S3 write failed: %s", exc)
 
+    # Prefer Gold bucket when running in Lambda (filesystem is read-only outside /tmp).
+    gold_bucket = os.environ.get("GOLD_BUCKET", "").strip()
+    if gold_bucket and (os.environ.get("AWS_LAMBDA_FUNCTION_NAME") or dest == str(DEFAULT_LOCAL)):
+        try:
+            import boto3
+
+            key = f"hitl/ingest_review_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}.json"
+            boto3.client("s3").put_object(
+                Bucket=gold_bucket,
+                Key=key,
+                Body=json.dumps(prepared).encode("utf-8"),
+                ContentType="application/json",
+            )
+            return f"s3://{gold_bucket}/{key}"
+        except Exception as exc:  # pragma: no cover
+            logger.warning("Ingest review Gold S3 write failed: %s", exc)
+
     path_obj = Path(dest)
+    if os.environ.get("AWS_LAMBDA_FUNCTION_NAME") and not str(path_obj).startswith("/tmp"):
+        path_obj = Path("/tmp") / path_obj.name
     path_obj.parent.mkdir(parents=True, exist_ok=True)
     write_header = not path_obj.exists() or path_obj.stat().st_size == 0
     with path_obj.open("a", encoding="utf-8", newline="") as f:

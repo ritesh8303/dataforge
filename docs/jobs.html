@@ -181,9 +181,21 @@
       </div>
 
       <div class="filter-group">
+        <label class="df-label">Board</label>
+        <div class="df-pill-group" id="audience-pills">
+          <button class="df-pill active" data-value="">All active jobs</button>
+          <button class="df-pill" data-value="product">EU data/AI early-career</button>
+        </div>
+        <select id="audience" style="display:none">
+          <option value="" selected>All active jobs</option>
+          <option value="product">EU data/AI early-career only</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
         <label class="df-label" for="field">Field</label>
         <select id="field" class="df-select">
-          <option value="">All data / AI fields</option>
+          <option value="">All fields</option>
           <option value="ai_ml_data_science">AI / ML / Data Science</option>
           <option value="data_engineering">Data Engineering</option>
           <option value="data_analytics">Data Analytics</option>
@@ -195,11 +207,14 @@
       <div class="filter-group">
         <label class="df-label" for="experience_level">Role type</label>
         <select id="experience_level" class="df-select">
-          <option value="">All early-career types</option>
+          <option value="">All role types</option>
+          <option value="early_career">Early career (any)</option>
           <option value="working_student">Working Student</option>
           <option value="internship">Internship</option>
           <option value="thesis">Thesis</option>
           <option value="fresher">Fresher / Junior / Graduate</option>
+          <option value="mid">Mid</option>
+          <option value="senior">Senior</option>
         </select>
       </div>
 
@@ -214,7 +229,7 @@
         <h2 id="result-count">Loading...</h2>
         <span class="results-meta" id="last-updated"></span>
       </div>
-      <p class="board-note">Data loads in chunks (2,000 jobs per request) due to AWS Lambda response size limits. · Build <span id="board-build"></span></p>
+      <p class="board-note">Full active lakehouse board (paginated 2,000 / request). Use <strong>EU data/AI early-career</strong> to narrow to the product gate. · Build <span id="board-build"></span></p>
 
       <div class="job-grid" id="job-list">
         <div class="loading-msg">Loading jobs...</div>
@@ -228,7 +243,7 @@
   const JOBS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:8000/jobs"
     : "https://br1sodhn2e.execute-api.eu-central-1.amazonaws.com/";
-  const BOARD_BUILD = "2026-10-01.audience";
+  const BOARD_BUILD = "2026-10-01.fullboard";
   const JOB_PAGE_SIZE = 2000;
   const PAGE_SIZE = 25;
   const LANG_API = { en: "english_only", de: "german_required", bi: "bilingual" };
@@ -297,6 +312,17 @@
     if (language.value) chips.push({ label: language.selectedOptions[0]?.textContent, clear: () => { language.value = ""; syncPillFromSelect("language-pills", "language"); loadJobs(); } });
     if (region) chips.push({ label: `Country: ${region}`, clear: () => { document.getElementById("region").value = ""; applyFilters(); } });
     if (exp) chips.push({ label: exp, clear: () => { document.getElementById("experience_level").value = ""; applyFilters(); } });
+    const audience = document.getElementById("audience");
+    if (audience?.value === "product") {
+      chips.push({
+        label: "EU data/AI early-career",
+        clear: () => {
+          audience.value = "";
+          syncPillFromSelect("audience-pills", "audience");
+          applyFilters();
+        },
+      });
+    }
 
     const el = document.getElementById("filter-chips");
     if (!chips.length) { el.innerHTML = ""; return; }
@@ -319,9 +345,11 @@
     document.getElementById("source").value = "";
     document.getElementById("work_style").value = "";
     document.getElementById("language").value = "";
+    if (document.getElementById("audience")) document.getElementById("audience").value = "";
     syncPillFromSelect("source-pills", "source");
     syncPillFromSelect("workstyle-pills", "work_style");
     syncPillFromSelect("language-pills", "language");
+    syncPillFromSelect("audience-pills", "audience");
     const sidebar = document.querySelector(".filter-sidebar");
     const backdrop = document.querySelector(".filter-drawer-backdrop");
     if (sidebar?.classList.contains("open")) {
@@ -443,6 +471,12 @@
     const field = (document.getElementById("field")?.value || "").toLowerCase();
 
     filtered = allJobs.filter(j => {
+      const audienceMode = document.getElementById("audience")?.value || "";
+      if (audienceMode === "product") {
+        const ok = j.audience_accept === true || j.audience_accept === "True" || j.audience_accept === "1"
+          || String(j.audience_accept || "").toLowerCase() === "yes";
+        if (!ok) return false;
+      }
       if (region) {
         const jobRegion = j.region || "";
         if (jobRegion.toLowerCase() !== region.toLowerCase()) return false;
@@ -672,6 +706,7 @@
   });
   setupPillGroup("workstyle-pills", "work_style", loadJobs);
   setupPillGroup("language-pills", "language", loadJobs);
+  setupPillGroup("audience-pills", "audience", () => applyFilters());
 
   document.getElementById("region").addEventListener("change", () => applyFilters());
   document.getElementById("experience_level").addEventListener("change", () => loadJobs());

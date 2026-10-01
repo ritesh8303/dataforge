@@ -413,8 +413,9 @@ def lambda_handler(event, context):
             f"Audience gate: {len(early_career)} product jobs of {len(enriched_all)} lakehouse "
             f"(uncertain still: {len(uncertain)})"
         )
-        # Product Gold = accepted only; lakehouse breadth stays in Silver SCD
-        all_jobs = pd.DataFrame(early_career)
+        # Jobs board publishes the full active lakehouse with audience flags.
+        # Match/dashboard product KPIs keep using audience_accept=True rows.
+        all_jobs = pd.DataFrame(enriched_all)
         for col in (
             "ai_field",
             "ai_seniority",
@@ -422,17 +423,23 @@ def lambda_handler(event, context):
             "ai_entry_level",
             "ai_english_ok",
             "audience_accept",
+            "audience_eu",
+            "audience_data_ai",
+            "audience_seniority",
+            "audience_uncertain",
             "field",
             "seniority",
         ):
-            if col not in all_jobs.columns and early_career:
-                all_jobs[col] = [a.get(col) for a in early_career]
+            if col not in all_jobs.columns and enriched_all:
+                all_jobs[col] = [a.get(col) for a in enriched_all]
         product_ids = set(str(r.get("job_id")) for r in early_career)
         product = current[current["job_id"].astype(str).isin(product_ids)].copy().reset_index(drop=True)
-        if not len(product) and len(all_jobs):
-            # Fallback when job_id join misses — use enriched accepted frame for aggregates
-            product = all_jobs.copy()
-        print(f"Published product jobs: {len(all_jobs)} (lakehouse active: {lakehouse_active})")
+        if not len(product) and early_career:
+            product = pd.DataFrame(early_career)
+        print(
+            f"Published lakehouse jobs: {len(all_jobs)} "
+            f"(product/audience: {len(early_career)}, lakehouse active: {lakehouse_active})"
+        )
 
         # 1b. Expired jobs (is_current=False)
         expired_raw = df[df["is_current"] == False].copy()
@@ -564,11 +571,11 @@ def lambda_handler(event, context):
             else pd.DataFrame({"company": [], "job_count": []})
         )
 
-        # 7. Active vs expired — Active = product board size (matches all_jobs)
+        # 7. Active vs expired — Active = full published board (lakehouse active)
         expired_count = int((df["is_current"] == False).sum())
         active_vs_expired = pd.DataFrame(
             [
-                {"status": "Active", "job_count": len(product)},
+                {"status": "Active", "job_count": len(all_jobs)},
                 {"status": "Expired", "job_count": expired_count},
             ]
         )
@@ -727,7 +734,8 @@ def lambda_handler(event, context):
         print("Metrics snapshot written to metrics.json")
 
         msg = (
-            f"Gold layer refreshed. Product jobs: {len(all_jobs)}, "
+            f"Gold layer refreshed. Board jobs: {len(all_jobs)}, "
+            f"product/audience: {len(early_career)}, "
             f"lakehouse active: {lakehouse_active}, Files written: 13"
         )
         print(msg)

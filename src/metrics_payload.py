@@ -35,22 +35,38 @@ def _count_field(rows: list[dict], *keys: str) -> dict[str, int]:
     return dict(sorted(counter.items(), key=lambda kv: (-kv[1], kv[0])))
 
 
-def _coverage_funnel(all_jobs: list[dict], lakehouse_active: int) -> dict:
-    by_region = _count_field(all_jobs, "region")
+def _truthy_audience(job: dict) -> bool:
+    v = job.get("audience_accept")
+    if isinstance(v, bool):
+        return v
+    return str(v or "").strip().lower() in {"1", "true", "yes", "y"}
+
+
+def _product_jobs(all_jobs: list[dict]) -> list[dict]:
+    """Prefer audience_accept rows; if flags missing, treat board as product (legacy Gold)."""
+    if not all_jobs:
+        return []
+    if any("audience_accept" in (j or {}) for j in all_jobs):
+        return [j for j in all_jobs if _truthy_audience(j)]
+    return list(all_jobs)
+
+
+def _coverage_funnel(product_jobs: list[dict], lakehouse_active: int) -> dict:
+    by_region = _count_field(product_jobs, "region")
     top_region = dict(list(by_region.items())[:10])
     return {
         "lakehouse_active": int(lakehouse_active or 0),
-        "product_jobs": len(all_jobs),
-        "by_employment_type": _count_field(all_jobs, "employment_type", "employment_type_rule"),
-        "by_field": _count_field(all_jobs, "ai_field", "field", "ai_field_rule", "field_rule"),
+        "product_jobs": len(product_jobs),
+        "by_employment_type": _count_field(product_jobs, "employment_type", "employment_type_rule"),
+        "by_field": _count_field(product_jobs, "ai_field", "field", "ai_field_rule", "field_rule"),
         "by_region": top_region,
     }
 
 
-def _top_companies_early_career(all_jobs: list[dict], top_n: int = 10) -> list[dict]:
+def _top_companies_early_career(product_jobs: list[dict], top_n: int = 10) -> list[dict]:
     """Product-board early-career density by company (share when lakehouse totals known)."""
     product_counts: Counter[str] = Counter()
-    for job in all_jobs:
+    for job in product_jobs:
         company = str(job.get("company") or "").strip()
         if company and company.lower() not in {"nan", "none", "unknown"}:
             product_counts[company] += 1
@@ -143,8 +159,9 @@ def build_metrics_payload(bucket: str) -> dict:
 
     desc = desc_rows[0] if desc_rows else {}
     english_jobs = int(desc.get("english_jobs", 0))
+    product_jobs = _product_jobs(all_jobs)
     english_jobs_strict = sum(
-        1 for j in all_jobs if j.get("language_requirement", "").lower() == "english_only"
+        1 for j in product_jobs if j.get("language_requirement", "").lower() == "english_only"
     )
     description_insights = {
         "english_jobs": english_jobs,
@@ -162,11 +179,10 @@ def build_metrics_payload(bucket: str) -> dict:
     run_at = stats.get("run_at", "") or ""
     run_date = run_at[:10] if len(run_at) >= 10 else today
 
-    # Product KPIs: all_jobs.csv is audience-gated (EU × data/AI × early career)
-    product_total = len(all_jobs)
-    product_new = sum(1 for j in all_jobs if (j.get("date_added") or "") == run_date)
+    # Product KPIs: audience_accept rows (EU × data/AI × early career); board may be full lakehouse
+    product_total = len(product_jobs)    product_new = sum(1 for j in product_jobs if (j.get("date_added") or "") == run_date)
     if product_new == 0 and run_date != today:
-        product_new = sum(1 for j in all_jobs if (j.get("date_added") or "") == today)
+        product_new = sum(1 for j in product_jobs if (j.get("date_added") or "") == today)
 
     pipeline_stats = {
         "new_jobs": product_new,
@@ -176,6 +192,7 @@ def build_metrics_payload(bucket: str) -> dict:
         "run_at": run_at,
         "lakehouse_new_jobs": lakehouse_new,
         "lakehouse_active": lakehouse_active,
+        "board_jobs": len(all_jobs),
     }
 
     quality = quality_rows[0] if quality_rows else {}
@@ -187,10 +204,9 @@ def build_metrics_payload(bucket: str) -> dict:
         "schema_validation_pass": str(quality.get("schema_validation_pass", "false")).lower() == "true",
     }
 
-    lakehouse_total = lakehouse_active or int(active_vs_expired.get("Active", 0))
-    coverage_funnel = _coverage_funnel(all_jobs, lakehouse_total)
-    top_companies_early_career = _top_companies_early_career(all_jobs, top_n=10)
-
+    lakehouse_total = lakehouse_active or int(active_vs_expired.get("Active", 0)) or len(all_jobs)
+    coverage_funnel = _coverage_funnel(product_jobs, lakehouse_total)
+    top_companies_early_career = _top_companies_early_career(product_jobs, top_n=10)
     if run_at:
         last_updated = run_at.replace("+00:00", "Z") if run_at.endswith("+00:00") else run_at
     else:
