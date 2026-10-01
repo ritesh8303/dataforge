@@ -10,21 +10,38 @@ Region: **eu-central-1**. Idle target after thesis: **€0/month** (turn off AI 
 4. `AI_ENABLED=false` kill switch via Lambda env / SSM if spend spikes.
 5. `AI_DAILY_BUDGET_USD` on Match/enrichment (default low single digits).
 
-## Enable AI layer safely
+## Enable AI layer safely (OpenAI-first)
+
+Production GenAI path is **OpenAI** (`gpt-4o-mini` + `text-embedding-3-small`) for Match,
+enrichment, ingest-review, and agent rerank/explain. Local heuristics remain the offline fallback.
 
 ```bash
+# 1) Store the key (do not commit)
+aws ssm put-parameter \
+  --name /dataforge/openai_api_key \
+  --type SecureString \
+  --value "sk-..." \
+  --overwrite \
+  --region eu-central-1
+
+# 2) Terraform (openai_api_key optional if SSM is populated)
 cd terraform
-cp ai.tf.optional ai.tf
-# set match_api_key in tfvars
-terraform plan   # review Bedrock + Function URL
-terraform apply  # only with eyes on Budgets
+# set openai_api_key / match_api_key in tfvars OR rely on OPENAI_API_KEY_SSM
+terraform plan
+terraform apply
+
+# 3) Redeploy Lambda code
+py -3 scripts/deploy_lambdas.py
+# also update dataforge-match-api + dataforge-enrichment if not in that list
 ```
 
 Immediately after apply:
 
 - Hit Function URL `/health` once.
-- Run one Match with local-sized limit.
+- Run one Match with local-sized limit; confirm `cost_summary.by_provider` includes `openai`.
 - Confirm Langfuse (if configured) + S3 `llm_traces/` (if wired).
+
+Kill switch: `AI_ENABLED=false` on Match / enrichment / Gold.
 
 ## Disable AI layer (idle / thesis done)
 

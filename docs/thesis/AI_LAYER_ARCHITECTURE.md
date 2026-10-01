@@ -20,9 +20,12 @@ This document describes the AI-in-production layer added for the MSc thesis.
 | `AI_ENABLED` | `true` | Master kill switch |
 | `AI_ENRICHMENT_ENABLED` | unset | Enable enrichment in gold_generator |
 | `AI_ENRICHMENT_SAMPLE_RATE` | `1.0` | Fraction of jobs to enrich (cost control) |
-| `OPENAI_API_KEY` | — | OpenAI provider |
-| `ANTHROPIC_API_KEY` | — | Anthropic provider |
-| `AWS_BEDROCK_REGION` | `eu-central-1` | Bedrock region |
+| `OPENAI_API_KEY` | — | OpenAI provider (primary in production) |
+| `OPENAI_API_KEY_SSM` | `/dataforge/openai_api_key` | SSM SecureString fallback for the key |
+| `OPENAI_COMPLETION_MODEL` | `gpt-4o-mini` | Chat / enrich / rerank / explain |
+| `OPENAI_EMBEDDING_MODEL` | `text-embedding-3-small` | Match embeddings |
+| `ANTHROPIC_API_KEY` | — | Anthropic provider (optional) |
+| `AWS_BEDROCK_REGION` | `eu-central-1` | Bedrock region (optional fallback) |
 
 ## Deployment
 

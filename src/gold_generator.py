@@ -394,7 +394,7 @@ def lambda_handler(event, context):
                     from agent.ingest_review_agent import run_ingest_review_agent
 
                     summary = run_ingest_review_agent(
-                        use_llm=os.environ.get("INGEST_REVIEW_USE_LLM", "false").lower()
+                        use_llm=os.environ.get("INGEST_REVIEW_USE_LLM", "true").lower()
                         in {"1", "true", "yes"},
                         max_llm=int(os.environ.get("INGEST_REVIEW_MAX_LLM", "40")),
                     )

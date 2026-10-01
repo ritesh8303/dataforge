@@ -182,8 +182,15 @@ module "gold_lambda" {
   timeout          = 900
   layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   env_vars = {
-    SILVER_PATH = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
-    GOLD_BUCKET = module.s3_gold.bucket_id
+    SILVER_PATH             = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
+    GOLD_BUCKET             = module.s3_gold.bucket_id
+    AI_ENABLED              = "true"
+    INGEST_REVIEW_AGENT     = "true"
+    INGEST_REVIEW_USE_LLM   = "true"
+    OPENAI_API_KEY          = var.openai_api_key
+    OPENAI_COMPLETION_MODEL = "gpt-4o-mini"
+    OPENAI_EMBEDDING_MODEL  = "text-embedding-3-small"
+    OPENAI_API_KEY_SSM      = "/dataforge/openai_api_key"
   }
   bronze_bucket_arn = module.s3_bronze.arn
   enable_alerts     = true

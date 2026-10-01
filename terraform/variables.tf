@@ -40,6 +40,13 @@ variable "match_api_key" {
   sensitive   = true
 }
 
+variable "openai_api_key" {
+  description = "OpenAI API key for Match / enrichment / ingest-review (prefer SSM in prod)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 variable "enable_sfn_schedule" {
   description = "When true, EventBridge triggers the Silver→Gold Express state machine (default off — keep Lambda crons)"
   type        = bool

@@ -6,7 +6,7 @@ import time
 
 import requests
 
-from ai_gateway.config import get_env
+from ai_gateway.config import get_env, resolve_openai_api_key
 from ai_gateway.providers.base import BaseProvider, timed_call
 from ai_gateway.types import EmbeddingResponse, ProviderResponse
 
@@ -15,7 +15,7 @@ class OpenAIProvider(BaseProvider):
     name = "openai"
 
     def __init__(self, api_key: str | None = None, base_url: str | None = None):
-        self.api_key = api_key or get_env("OPENAI_API_KEY")
+        self.api_key = api_key or resolve_openai_api_key()
         self.base_url = (base_url or get_env("OPENAI_BASE_URL", "https://api.openai.com/v1")).rstrip("/")
 
     def available(self) -> bool:

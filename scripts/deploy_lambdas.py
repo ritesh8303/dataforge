@@ -19,6 +19,8 @@ FUNCTIONS = [
     "dataforge-gold-generator",
     "dataforge-metrics",
     "dataforge-jobs-api",
+    "dataforge-match-api",
+    "dataforge-enrichment",
 ]
 
 # Only the transformer must be single-flight; account concurrency limits may block more.
