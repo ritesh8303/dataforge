@@ -37,9 +37,9 @@ Public APIs / ATS / RSS ──► Bronze (raw Parquet, 14d TTL)
 
 Details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/DATA_DICTIONARY.md`](docs/DATA_DICTIONARY.md) · [`docs/ROADMAP.md`](docs/ROADMAP.md) · [`docs/RESPONSIBLE_AI.md`](docs/RESPONSIBLE_AI.md) · [`docs/DATA_SOURCING.md`](docs/DATA_SOURCING.md)
 
-### Before sharing widely
+### Match API auth
 
-> Match Function URL is **open for portfolio demo** (daily € budget + concurrency 2). **Before posting the URL broadly**, set `match_api_key` in Terraform tfvars (`MATCH_API_KEY` → `X-API-Key` header) and re-apply `ai.tf`. Leave unset only for local/`agent.html` demos.
+> Live Match `/match` and `/jobs` require **`X-API-Key`** (`match_api_key` in gitignored `terraform.tfvars` → Lambda `MATCH_API_KEY`). `/health` stays open. Enter the key in [agent.html](https://ritesh8303.github.io/dataforge/agent.html) (stored in localStorage) or pass `?api_key=…`. Leave the variable empty only for unlocked local demos. Daily € budget + API GW throttle still apply.
 
 ### Pipeline schedule
 

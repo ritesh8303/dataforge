@@ -6,6 +6,11 @@ environment = "dev"
 # After copying backends/eu.hcl.example → backends/eu.hcl:
 #   terraform init -reconfigure -backend-config=backends/eu.hcl
 
+# Required before wide sharing of the Match Function URL (X-API-Key).
+# Generate with: python -c "import secrets; print(secrets.token_urlsafe(32))"
+# match_api_key = "replace-me"
+# openai_api_key = ""  # prefer SSM /dataforge/openai_api_key in prod
+
 # Optional: point the direct careers ingestor at a large registry.
 # company_careers_config_s3_uri = "s3://dataforge-config/company-careers.json"
 # company_careers_config_mode   = "append" # or "replace"
