@@ -1,10 +1,8 @@
 # DataForge architecture — layer contracts
 
-**Shipped:** AWS medallion lakehouse for European job postings.  
-**Integrating (local, not on `main` until reviewed):** LLM enrichment + embedding match.  
-**Planned:** Docker one-command demo, persisted vector DB, LangGraph agent, honest eval report.
-
-Do not describe integrating or planned items as live in CVs or interviews.
+**Shipped (AWS):** medallion lakehouse, Metrics/Jobs APIs, Match Function URL, enrichment Lambda, GitHub Pages.  
+**Shipped (repo):** dbt on Gold, hybrid Match, MCP, honest evals.  
+**Thin / skip:** Spark/streaming design note; K8s; foundation training.
 
 ## Pipeline
 
@@ -13,8 +11,8 @@ Do not describe integrating or planned items as live in CVs or interviews.
   → Bronze S3  (raw Parquet, 1 file / source / day, 14-day expiry)
   → Silver S3  (SCD Type 2 Parquet, job lifecycle)
   → Gold S3    (analytics CSVs + metrics.json)
-  → API Gateway (metrics + jobs search)
-  → GitHub Pages (docs/)
+  → API Gateway (metrics + jobs search) + Match Function URL
+  → GitHub Pages (docs/) — KPIs hydrate from docs/metrics.json then live API
 ```
 
 Schedule (CEST): EURES 06:00 + 21:15 · Lambda ingest 22:00 · transform 22:30 · Gold publish 23:00.

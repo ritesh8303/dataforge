@@ -177,32 +177,32 @@
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.16),rgba(167,139,250,0.08));" title="All active jobs currently published on the Jobs board.">
       <div class="df-kpi-icon">📊</div>
       <div class="df-kpi-label">Active Jobs</div>
-      <div class="df-kpi-value" id="kpi-total"><span class="df-skeleton kpi-skeleton"></span></div>
+      <div class="df-kpi-value" id="kpi-total">15,025</div>
       <div class="df-kpi-sub" id="kpi-total-sub">all open postings</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.16),rgba(34,211,238,0.06));" title="New active-board jobs first seen on the latest pipeline run date.">
       <div class="df-kpi-icon">🆕</div>
       <div class="df-kpi-label">New On Board <span class="kpi-info" title="Jobs newly appearing on the published active board for the latest pipeline run. Early-career product new count is in the subtitle.">ⓘ</span></div>
-      <div class="df-kpi-value" id="kpi-today"><span class="df-skeleton kpi-skeleton"></span></div>
+      <div class="df-kpi-value" id="kpi-today">186</div>
       <div class="df-kpi-sub" id="kpi-today-sub">latest pipeline run</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#2dd4bf);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.12),rgba(45,212,191,0.1));">
       <div class="df-kpi-icon">🌐</div>
       <div class="df-kpi-label">Remote Jobs</div>
-      <div class="df-kpi-value" id="kpi-remote"><span class="df-skeleton kpi-skeleton"></span></div>
+      <div class="df-kpi-value" id="kpi-remote">941</div>
       <div class="df-kpi-sub">among all active jobs</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#a78bfa,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(167,139,250,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🇬🇧</div>
       <div class="df-kpi-label">English-Friendly <span class="kpi-info" title="Heuristic signal from title/language fields — not a guarantee the role is English-only.">ⓘ</span></div>
-      <div class="df-kpi-value" id="kpi-english"><span class="df-skeleton kpi-skeleton"></span></div>
+      <div class="df-kpi-value" id="kpi-english">7,141</div>
       <div class="df-kpi-sub" id="kpi-english-sub">signal on active jobs</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#fb923c,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(251,146,60,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🔥</div>
       <div class="df-kpi-label">Top Mentioned Skill</div>
-      <div class="df-kpi-value" id="kpi-top-skill-count"><span class="df-skeleton kpi-skeleton"></span></div>
-      <div class="df-kpi-sub" id="kpi-top-skill">loading...</div>
+      <div class="df-kpi-value" id="kpi-top-skill-count">147 mentions</div>
+      <div class="df-kpi-sub" id="kpi-top-skill">#1: Databricks · all active</div>
     </div>
   </div>
 
@@ -632,21 +632,31 @@
     return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   }
 
-  async function fetchMetrics() {
+  const METRICS_SNAPSHOT_URL = "metrics.json";
+
+  async function fetchMetrics(url, { quiet } = {}) {
     try {
-      const res = await fetch(METRICS_API_URL);
+      const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       document.getElementById("error-box").style.display = "none";
       render(data);
+      return true;
     } catch(e) {
-      document.getElementById("error-box").style.display = "block";
-      document.getElementById("error-box").textContent = `⚠ ${e.message}`;
+      if (!quiet && !lastData) {
+        document.getElementById("error-box").style.display = "block";
+        document.getElementById("error-box").textContent = `⚠ ${e.message}`;
+      }
+      return false;
     }
   }
 
-  fetchMetrics();
-  setInterval(fetchMetrics, REFRESH_MS);
+  // First paint: committed Gold snapshot (same origin), then live Metrics API.
+  (async () => {
+    await fetchMetrics(METRICS_SNAPSHOT_URL, { quiet: true });
+    await fetchMetrics(METRICS_API_URL);
+    setInterval(() => fetchMetrics(METRICS_API_URL), REFRESH_MS);
+  })();
   const themeMedia = window.matchMedia('(prefers-color-scheme: light)');
   themeMedia.addEventListener('change', function () {
     if (lastData) render(lastData);

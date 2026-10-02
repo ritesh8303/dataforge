@@ -1,14 +1,33 @@
 # DataForge
 
-Live European **early-career data & AI job lakehouse**: multi-source ingest → medallion on AWS → Gold analytics → APIs → GitHub Pages — scoped to **fresher, working-student, internship, and thesis** roles in **data / AI / related fields across the EU**, with a **frugal GenAI match layer** in-repo (Bedrock-first, hybrid retrieval, multi-agent optional).
+Live European **early-career data & AI job lakehouse** on AWS Free Tier → Gold analytics → APIs → GitHub Pages, plus a **frugal GenAI Match** layer (hybrid BM25+dense, FastAPI Function URL).
 
-**Hard nos:** no LinkedIn / Indeed / StepStone / Xing scrape; do not scrape workingstudentjobs.de (see [`docs/DATA_SOURCING.md`](docs/DATA_SOURCING.md)).
-
-**Live:** [Dashboard](https://ritesh8303.github.io/dataforge/) · **Code:** this repo  
+**Live:** [Dashboard](https://ritesh8303.github.io/dataforge/) · [Job board](https://ritesh8303.github.io/dataforge/jobs.html) · [Match agent](https://ritesh8303.github.io/dataforge/agent.html)  
 **Thesis:** UE Applied Sciences M.Sc. Data Science — [`docs/thesis/`](docs/thesis/)
 
-> Production AWS today: medallion ETL (Bronze / Silver SCD2 / Gold), Terraform, CI, Jobs/Metrics APIs, Pages UI, **Match Function URL** (FastAPI hybrid), enrichment Lambda (scheduled), Step Functions Express (Silver→Gold).  
-> Set `MATCH_API_KEY` in tfvars when you want to lock the Match endpoint; currently open for portfolio demo under daily € budget + API GW throttle.
+### Impact (scanners)
+
+- **~15k** active EU jobs from **5** public sources (BA, EURES, ATS, Arbeitnow, Berlin startups) — medallion Bronze → Silver SCD2 → Gold on AWS Lambda/S3
+- **Match quality:** dense nDCG@10 **0.217** vs rule wizard **0.146** vs BM25 **0.135** (103 queries × 96 jobs; hybrid is product default)
+- **Unit cost:** modelled OpenAI-first enrichment ≈ **€0.10 / 1k jobs**; live RQ2 `gpt-4o-mini` 40/40 ≈ **$0.0011**
+
+### Architecture (1 page)
+
+```
+Public APIs / ATS / RSS ──► Bronze (raw Parquet, 14d TTL)
+                         ──► Silver (SCD Type 2 history)
+                         ──► Gold (CSVs + metrics.json)
+                                ├── GitHub Pages UI + Metrics/Jobs APIs
+                                └── Enrichment Lambda + Match Function URL (FastAPI)
+```
+
+| Layer | What | Consumers |
+|---|---|---|
+| Bronze | One raw file / source / day | Silver only |
+| Silver | Deduped SCD2 (`job_id` versions) | Gold, audit |
+| Gold | KPIs, quality report, search extract | Pages, APIs, dbt, Match |
+
+**Hard nos:** no LinkedIn / Indeed / StepStone / Xing scrape; do not scrape workingstudentjobs.de ([`docs/DATA_SOURCING.md`](docs/DATA_SOURCING.md)).
 
 | | |
 |---|---|
@@ -18,7 +37,11 @@ Live European **early-career data & AI job lakehouse**: multi-source ingest → 
 
 Details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/DATA_DICTIONARY.md`](docs/DATA_DICTIONARY.md) · [`docs/ROADMAP.md`](docs/ROADMAP.md) · [`docs/RESPONSIBLE_AI.md`](docs/RESPONSIBLE_AI.md) · [`docs/DATA_SOURCING.md`](docs/DATA_SOURCING.md)
 
-## Architecture
+### Before sharing widely
+
+> Match Function URL is **open for portfolio demo** (daily € budget + concurrency 2). **Before posting the URL broadly**, set `match_api_key` in Terraform tfvars (`MATCH_API_KEY` → `X-API-Key` header) and re-apply `ai.tf`. Leave unset only for local/`agent.html` demos.
+
+### Pipeline schedule
 
 ```
 EventBridge (daily at 20:00 UTC ≈ 22:00 CEST)
@@ -28,19 +51,8 @@ EventBridge (daily at 20:00 UTC ≈ 22:00 CEST)
   ├── dataforge-berlin-startups-ingestor → Berlin Startup Jobs RSS
   └── GitHub Action (04:00 + 19:15 UTC) → EURES
             │
-            ▼ S3 Parquet
-      Bronze (14-day expiry) → Silver SCD Type 2 → Gold CSVs
-            │
-            ├── GitHub Pages (docs/)  +  API Gateway (metrics + jobs search)
-            ├── Step Functions Express (Silver→Gold thin proof; schedule off by default)
-            └── Enrichment + Match Function URL (FastAPI + multi-agent) — live
+            ▼ S3 Parquet → Bronze → Silver SCD2 → Gold
 ```
-
-### Layers
-
-- **Bronze** — raw Parquet, one file per source per day.
-- **Silver** — deduplicated SCD Type 2 history (`is_tech`, rules fields).
-- **Gold** — analytics CSVs + `metrics.json`. Row-level `all_jobs` stays in S3; small aggregates are committed under `data/gold/` for dbt/CI.
 
 ## Tech stack
 

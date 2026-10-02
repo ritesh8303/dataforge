@@ -45,6 +45,9 @@ jobs:
       - name: Generate SEO JobPosting pages
         run: python scripts/generate_seo_job_pages.py --limit 800
 
+      - name: Mirror metrics.json for Pages first paint
+        run: cp data/gold/metrics.json docs/metrics.json
+
       # Adding the directory (not *.csv) skips gitignored files: the large
       # all_jobs.csv / expired_jobs.csv are excluded so git history does not
       # grow by ~6 MB per day — S3 (and Silver history) is the system of record.
@@ -52,6 +55,6 @@ jobs:
         run: |
           git config user.name "dataforge-bot"
           git config user.email "actions@github.com"
-          git add data/gold/ docs/jobs/ docs/sitemap.xml docs/robots.txt
+          git add data/gold/ docs/metrics.json docs/jobs/ docs/sitemap.xml docs/robots.txt
           git diff --staged --quiet || git commit -m "chore: refresh gold data $(date -u +%Y-%m-%d)"
           git push origin main

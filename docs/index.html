@@ -135,19 +135,19 @@
         </div>
         <div class="hero-preview-body">
           <div class="hero-preview-kpi">
-            <div class="val" id="hero-kpi-total">—</div>
+            <div class="val" id="hero-kpi-total">15,025</div>
             <div class="lbl">Total Jobs</div>
           </div>
           <div class="hero-preview-kpi">
-            <div class="val" id="hero-kpi-remote">—</div>
+            <div class="val" id="hero-kpi-remote">941</div>
             <div class="lbl">Remote</div>
           </div>
           <div class="hero-preview-kpi">
-            <div class="val" id="hero-kpi-english">—</div>
+            <div class="val" id="hero-kpi-english">7,141</div>
             <div class="lbl">English</div>
           </div>
           <div class="hero-preview-kpi">
-            <div class="val" id="hero-kpi-companies">—</div>
+            <div class="val" id="hero-kpi-companies">20+</div>
             <div class="lbl">Companies</div>
           </div>
         </div>
@@ -211,19 +211,19 @@
     <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:var(--df-space-8);letter-spacing:-0.02em;">Platform at a glance</h2>
     <div class="df-grid-4">
       <div class="stat-item df-stat-glass">
-        <div class="num" id="stat-total"><span class="df-skeleton stat-skeleton"></span></div>
+        <div class="num" id="stat-total">15,025</div>
         <div class="lbl">Total Jobs</div>
       </div>
       <div class="stat-item df-stat-glass">
-        <div class="num" id="stat-remote"><span class="df-skeleton stat-skeleton"></span></div>
+        <div class="num" id="stat-remote">941</div>
         <div class="lbl">Remote Jobs</div>
       </div>
       <div class="stat-item df-stat-glass">
-        <div class="num" id="stat-english"><span class="df-skeleton stat-skeleton"></span></div>
+        <div class="num" id="stat-english">7,141</div>
         <div class="lbl">English Jobs</div>
       </div>
       <div class="stat-item df-stat-glass">
-        <div class="num" id="stat-companies"><span class="df-skeleton stat-skeleton"></span></div>
+        <div class="num" id="stat-companies">20+</div>
         <div class="lbl">Active Companies</div>
       </div>
     </div>
@@ -341,40 +341,44 @@
   const METRICS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:8000/metrics"
     : "https://xy9g3m33wj.execute-api.eu-central-1.amazonaws.com/";
+  const METRICS_SNAPSHOT_URL = "metrics.json";
 
   function setText(id, val) {
     const el = document.getElementById(id);
     if (el) el.textContent = val;
   }
 
-  async function loadStats() {
-    try {
-      const res = await fetch(METRICS_API_URL);
-      if (!res.ok) throw new Error("API unavailable");
-      const data = await res.json();
+  function applyStats(data) {
+    const total = (data.total_jobs || 0).toLocaleString();
+    const remote = (data.remote_counts?.remote ?? data.remote_vs_onsite?.Remote ?? 0).toLocaleString();
+    const english = Number(data.english_jobs_title_based ?? data.english_jobs ?? 0).toLocaleString();
+    const companyCount = data.top_companies
+      ? new Set(data.top_companies.map(c => c.company)).size + "+"
+      : "20+";
 
-      const total = (data.total_jobs || 0).toLocaleString();
-      const remote = (data.remote_counts?.remote ?? data.remote_vs_onsite?.Remote ?? 0).toLocaleString();
-      const english = Number(data.english_jobs_title_based ?? data.english_jobs ?? 0).toLocaleString();
-      const companies = (data.top_companies?.length ? data.top_companies.reduce((s, c) => s + 1, 0) : 0);
-      const companyCount = data.top_companies ? new Set(data.top_companies.map(c => c.company)).size + "+" : "—";
+    ["stat-total", "hero-kpi-total"].forEach(id => setText(id, total));
+    ["stat-remote", "hero-kpi-remote"].forEach(id => setText(id, remote));
+    ["stat-english", "hero-kpi-english"].forEach(id => setText(id, english));
+    setText("stat-companies", companyCount);
+    setText("hero-kpi-companies", companyCount);
 
-      ["stat-total", "hero-kpi-total"].forEach(id => setText(id, total));
-      ["stat-remote", "hero-kpi-remote"].forEach(id => setText(id, remote));
-      ["stat-english", "hero-kpi-english"].forEach(id => setText(id, english));
-      setText("stat-companies", companyCount);
-      setText("hero-kpi-companies", companyCount);
-
-      if (data.last_updated) {
-        setText("footer-updated", "Updated " + new Date(data.last_updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }));
-      }
-    } catch (_) {
-      ["stat-total","stat-remote","stat-english","stat-companies","hero-kpi-total","hero-kpi-remote","hero-kpi-english","hero-kpi-companies"].forEach(id => setText(id, "—"));
-      setText("footer-updated", "Connect to API for live data");
+    if (data.last_updated) {
+      setText("footer-updated", "Updated " + new Date(data.last_updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }));
     }
   }
 
-  loadStats();
+  async function loadStats(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("unavailable");
+    applyStats(await res.json());
+  }
+
+  // Seeded HTML numbers → Gold snapshot → live Metrics API (never wipe to "—" on failure).
+  (async () => {
+    try { await loadStats(METRICS_SNAPSHOT_URL); } catch (_) { /* keep HTML seed */ }
+    try { await loadStats(METRICS_API_URL); }
+    catch (_) { setText("footer-updated", "Showing Gold snapshot · live API unavailable"); }
+  })();
 </script>
 <script src="components/ui.js"></script>
 </body>
