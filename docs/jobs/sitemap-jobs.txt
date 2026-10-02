@@ -11,7 +11,6 @@ https://ritesh8303.github.io/dataforge/jobs/devops-engineer-m-w-d-er-oberpfalz.h
 https://ritesh8303.github.io/dataforge/jobs/r-d-engineer-gineer_se224.html
 https://ritesh8303.github.io/dataforge/jobs/masterarbeit-m-w-d-mit-dem-themenschwerpunkt-datenanalyse-mi-t-t_mannheim.html
 https://ritesh8303.github.io/dataforge/jobs/busmechanieker-ker_be-be234.html
-https://ritesh8303.github.io/dataforge/jobs/consultant-automotive-value-chain-transformation-f-m-x-f-m-x_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/accompio-gmbh-werkstudent-m-w-d-data-analytics-business-inte-al_wuppertal.html
 https://ritesh8303.github.io/dataforge/jobs/engineer-software-ai-devops-m-w-d-vops_m-nchen.html
 https://ritesh8303.github.io/dataforge/jobs/bi-und-data-analyst-m-w-d-st_stuttgart.html
@@ -79,8 +78,10 @@ https://ritesh8303.github.io/dataforge/jobs/working-student-in-department-analyt
 https://ritesh8303.github.io/dataforge/jobs/internship-d-f-m-within-airbus-site-artificial-intelligence--e-aic_bremen.html
 https://ritesh8303.github.io/dataforge/jobs/internship-within-aerodynamic-machine-learning-d-f-m--f-m_hamburg.html
 https://ritesh8303.github.io/dataforge/jobs/werkstudent-f-r-scientific-computing-machine-learning-d-m-w-d-m-w_bremen.html
+https://ritesh8303.github.io/dataforge/jobs/product-manager-intern-paris-office.html
 https://ritesh8303.github.io/dataforge/jobs/papyrus-devops-engineer-m-w-d-neu-isenburg.html
 https://ritesh8303.github.io/dataforge/jobs/platform-engineer-linux-azure-m-w-d-neu-isenburg.html
+https://ritesh8303.github.io/dataforge/jobs/full-stack-software-engineer-front-end-focus-m-f-d-berlin-hy-ybrid_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/data-scientist--floridsdorf.html
 https://ritesh8303.github.io/dataforge/jobs/business-analyst-agroalimentaire-h-f-h-f_fr-frk26.html
 https://ritesh8303.github.io/dataforge/jobs/data-analyst-datenanalyst-m-w-d-st_darmstadt.html
@@ -97,7 +98,6 @@ https://ritesh8303.github.io/dataforge/jobs/devops-engineer-m-w-d-ittelfranken.h
 https://ritesh8303.github.io/dataforge/jobs/operations-engineer-m-w-d-data-ki-plattform-tform_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/informatiker-m-w-d-oder-data-scientist-m-w-d-ch-an-der-ri.html
 https://ritesh8303.github.io/dataforge/jobs/analytics-and-pricing-expert-insurance-re-in-france.html
-https://ritesh8303.github.io/dataforge/jobs/data-engineer-paris-france.html
 https://ritesh8303.github.io/dataforge/jobs/devsecops-platform-engineer-w-m-d-ineer_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/ing-nieur-devops-confirm-diteur-saas-fintech-h-f-h-f_fr-fr101.html
 https://ritesh8303.github.io/dataforge/jobs/responsable-ia-data-b-timent-second-uvre-h-f-h-f_fr-fr105.html
@@ -123,6 +123,7 @@ https://ritesh8303.github.io/dataforge/jobs/devops-engineer-m-w-d-ineer_berlin.h
 https://ritesh8303.github.io/dataforge/jobs/dualer-master-mit-der-sibe-junior-ki-referent-im-bereich-hr--unterf-hring.html
 https://ritesh8303.github.io/dataforge/jobs/duales-studium-bachelor-of-science-m-w-d-data-science-und-k--_engen-hegau.html
 https://ritesh8303.github.io/dataforge/jobs/consultant-ki-technologien-all-genders-rs_stuttgart.html
+https://ritesh8303.github.io/dataforge/jobs/forward-deployed-engineer-h-f-er-h-f_paris.html
 https://ritesh8303.github.io/dataforge/jobs/architecte-ia-mlops-h-f-h-f_fr-frj23.html
 https://ritesh8303.github.io/dataforge/jobs/data-analyst-all-gender--all-gender_.html
 https://ritesh8303.github.io/dataforge/jobs/business-intelligence-analyst-all-gender--all-gender_.html
@@ -144,7 +145,6 @@ https://ritesh8303.github.io/dataforge/jobs/business-analyst-data-python-m-w-d-i
 https://ritesh8303.github.io/dataforge/jobs/cloud-architect-m-w-d-itect_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/microsoft-data-platform-engineer-azure-m-w-d-azure_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/software-development-engineer-aws-billing-lling_berlin.html
-https://ritesh8303.github.io/dataforge/jobs/devsecops-security-engineer-m-f-r-m-f_aachen.html
 https://ritesh8303.github.io/dataforge/jobs/backend-engineer-php-r-php_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/werkstudent-in-im-bereich-data-engineering-m-w-d-ittelfranken.html
 https://ritesh8303.github.io/dataforge/jobs/data-bi-analyst-w-m-x-_brannenburg.html
@@ -178,11 +178,9 @@ https://ritesh8303.github.io/dataforge/jobs/mitarbeiter-data-analytics-m-w-d-aly
 https://ritesh8303.github.io/dataforge/jobs/postgresql-platform-engineer-m-w-d-am-standort-k-ln-rt-k-ln_k-ln.html
 https://ritesh8303.github.io/dataforge/jobs/werkstudent-w-m-d-ki-prozessautomatisierung-hh-uz-h-uz_hamburg.html
 https://ritesh8303.github.io/dataforge/jobs/ai-ml-engineer-gineer_se110.html
-https://ritesh8303.github.io/dataforge/jobs/it-consultant-m-w-d-m-w-d_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/alternance-gestion-de-projet-data-engineering-h-f-h-f_fr-fr105.html
 https://ritesh8303.github.io/dataforge/jobs/atcon-global-data-ai-business-associate-ate_be-be241.html
 https://ritesh8303.github.io/dataforge/jobs/data-ai-business-associate-ate_be-be241.html
-https://ritesh8303.github.io/dataforge/jobs/software-engineer-gn-stealth-ai-venture-berlin-rlin-germany.html
 https://ritesh8303.github.io/dataforge/jobs/duales-studium-data-science-k-nstliche-intelligenz-b-sc-karl-lsruhe-baden.html
 https://ritesh8303.github.io/dataforge/jobs/data-scientist-h-f-h-f_fr-fre11.html
 https://ritesh8303.github.io/dataforge/jobs/werkstudent-in-it-service-management-prozessmanagement-ki-m--nt-ki_munich.html
@@ -211,7 +209,6 @@ https://ritesh8303.github.io/dataforge/jobs/data-engineer-scientist-im-fachberei
 https://ritesh8303.github.io/dataforge/jobs/data-reporting-analyst-r-ckversicherung-p-c-m-w-d-ung-p-c_k-ln.html
 https://ritesh8303.github.io/dataforge/jobs/voll-jurist-data-privacy-artificial-intelligence-m-w-d-ligence_k-ln.html
 https://ritesh8303.github.io/dataforge/jobs/dualer-student-b-sc-k-nstliche-intelligenz-data-science-mit--er_melsungen.html
-https://ritesh8303.github.io/dataforge/jobs/advanced-seller-success-manager-fluent-french-english-ish_bordeaux.html
 https://ritesh8303.github.io/dataforge/jobs/market-data-analyst-m-w-d-lyst_hamburg.html
 https://ritesh8303.github.io/dataforge/jobs/devops-engineer-m-w-d-cloud-infrastruktur-ci-cd-cd_wuppertal.html
 https://ritesh8303.github.io/dataforge/jobs/data-engineer-m-w-d-zentrale-entrale_kiel.html
@@ -245,7 +242,6 @@ https://ritesh8303.github.io/dataforge/jobs/werkstudent-business-intelligence-lo
 https://ritesh8303.github.io/dataforge/jobs/produktmanager-m-w-d-twincat-agentic-ai-ntic-ai_verl.html
 https://ritesh8303.github.io/dataforge/jobs/data-scientist-m-w-d-st_espelkamp.html
 https://ritesh8303.github.io/dataforge/jobs/data-analyst-m-w-d-bellandvision-gmbh-sion_pegnitz.html
-https://ritesh8303.github.io/dataforge/jobs/marketing-content-specialist-bereal-bereal_paris.html
 https://ritesh8303.github.io/dataforge/jobs/team-manager-sales-controlling-business-intelligence-w-m-d-ce_hasel-nne.html
 https://ritesh8303.github.io/dataforge/jobs/cloud-engineer-openshift-m-w-d-infrastruktur-und-netzwerktec-ittelfranken.html
 https://ritesh8303.github.io/dataforge/jobs/data-scientist-m-w-d-people-analytics-ittelfranken.html
@@ -257,7 +253,6 @@ https://ritesh8303.github.io/dataforge/jobs/data-engineer-data-warehouse-w-m-d-s
 https://ritesh8303.github.io/dataforge/jobs/data-scientist-f-r-algorithmenentwicklung-messtechnik-m-w-d-k_oberkochen.html
 https://ritesh8303.github.io/dataforge/jobs/sap-bi-consultant-m-w-d-_bargteheide.html
 https://ritesh8303.github.io/dataforge/jobs/software-devops-engineer-ai-automation-m-w-d-tion_m-nchen.html
-https://ritesh8303.github.io/dataforge/jobs/software-engineer-architekt-po-devops-oder-projektleiter-iter_m-nchen.html
 https://ritesh8303.github.io/dataforge/jobs/datenanalyst-m-w-d-in-wiesbaden-en_wiesbaden.html
 https://ritesh8303.github.io/dataforge/jobs/cloud-engineer-azure-local-enterprise-backup-solutions-w-m-d-p-solutions_.html
 https://ritesh8303.github.io/dataforge/jobs/m365-engineer-power-bi-plattform-m365-platform-services-w-m--rm-services_.html
@@ -275,7 +270,6 @@ https://ritesh8303.github.io/dataforge/jobs/sap-architect-m-w-d-analytics-data-p
 https://ritesh8303.github.io/dataforge/jobs/sap-architect-m-w-d-analytics-data-platforms-orms_m-nchen.html
 https://ritesh8303.github.io/dataforge/jobs/trainee-it-artificial-intelligence-f-m-x-gence-f-m-x_.html
 https://ritesh8303.github.io/dataforge/jobs/automotive-security-backend-ai-engineer-f-m-x--m-x_m-nchen.html
-https://ritesh8303.github.io/dataforge/jobs/azubi-zum-fachinformatiker-f-r-daten-und-prozessanalyse-w-m--l-tze_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/azubi-zum-fachinformatiker-f-r-daten-und-prozessanalyse-w-m--ze-1_m-nchen.html
 https://ritesh8303.github.io/dataforge/jobs/doktorand-multimodale-ki-systeme-zur-erkennung-elektronische--m-x_m-nchen.html
 https://ritesh8303.github.io/dataforge/jobs/intern-artificial-intelligence-in-robotics-f-m-x--m-x_m-nchen.html
@@ -349,7 +343,6 @@ https://ritesh8303.github.io/dataforge/jobs/data-platform-architect-w-m-d-t-w-m-
 https://ritesh8303.github.io/dataforge/jobs/devops-coach-tool-integration-expert-w-m-d--m-d_m-nchen.html
 https://ritesh8303.github.io/dataforge/jobs/genai-solutions-architect-w-m-d-m-d_mannheim.html
 https://ritesh8303.github.io/dataforge/jobs/junior-cloud-devops-engineer-w-m-d-furt-am-main.html
-https://ritesh8303.github.io/dataforge/jobs/sales-go-to-market-manager-pipeline-growth-rowth_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/analytics-bi-specialist-m-w-d-_taunusstein.html
 https://ritesh8303.github.io/dataforge/jobs/machine-learning-engineer-w-m-d-braunschweig.html
 https://ritesh8303.github.io/dataforge/jobs/datenanalyst-w-m-d-assel-hessen.html
@@ -420,6 +413,7 @@ https://ritesh8303.github.io/dataforge/jobs/junior-data-engineer-bi-developer-m-
 https://ritesh8303.github.io/dataforge/jobs/junior-data-scientist-m-w-d-in-vollzeit-oder-teilzeit-eilzeit_k-ln.html
 https://ritesh8303.github.io/dataforge/jobs/werkstudent-m-w-d-data-analytics-bi-tics-bi_k-ln.html
 https://ritesh8303.github.io/dataforge/jobs/duales-studium-artificial-intelligence-street-one-in-isernha-n_isernhagen.html
+https://ritesh8303.github.io/dataforge/jobs/solution-architect-m-w-d-data-ai--deutschland.html
 https://ritesh8303.github.io/dataforge/jobs/architecte-technique-ia-f-h-f-h_fr-fr105.html
 https://ritesh8303.github.io/dataforge/jobs/ing-nieur-devops-expert-kubernetes-f-h-f-h_fr-fr105.html
 https://ritesh8303.github.io/dataforge/jobs/system-owner-chef-de-projet-technique-f-h-f-h_fr-fr105.html
@@ -454,6 +448,7 @@ https://ritesh8303.github.io/dataforge/jobs/data-engineer-desland-wien.html
 https://ritesh8303.github.io/dataforge/jobs/junior-data-engineer-datawarehouse-all-genders-denburg-oldb.html
 https://ritesh8303.github.io/dataforge/jobs/data-engineer-m-w-d-datawarehouse-denburg-oldb.html
 https://ritesh8303.github.io/dataforge/jobs/data-scientist-h-f-h-f_fr-fre11.html
+https://ritesh8303.github.io/dataforge/jobs/data-scientist-data-engineer-bi-m-w-d-r-bi_waldems.html
 https://ritesh8303.github.io/dataforge/jobs/data-scientist-projektmanagement-m-w-d-ment_waldems.html
 https://ritesh8303.github.io/dataforge/jobs/technical-consultant-architect-w-m-d-enterprise-service-mana--in_de-dea26.html
 https://ritesh8303.github.io/dataforge/jobs/fullstack-developer-m-w-d-ki-fokus-insurtech-check24-versich-furt-am-main.html
@@ -494,9 +489,6 @@ https://ritesh8303.github.io/dataforge/jobs/partner-engineer-spain-_distributed.
 https://ritesh8303.github.io/dataforge/jobs/cloud-engineer-platform-engineer-m-w-d-braunschweig.html
 https://ritesh8303.github.io/dataforge/jobs/it-cloud-engineer-m-w-d-ineer_coburg.html
 https://ritesh8303.github.io/dataforge/jobs/data-engineer-m-w-d-ittelfranken.html
-https://ritesh8303.github.io/dataforge/jobs/solutions-architect-hitect_paris.html
-https://ritesh8303.github.io/dataforge/jobs/java-developer-m-w-d-furt-am-main.html
-https://ritesh8303.github.io/dataforge/jobs/java-developer-m-w-d-loper_munich.html
 https://ritesh8303.github.io/dataforge/jobs/ai-engineer-data-scientist-genai-rag-llm-speech-to-text-free-h-f_fr-fr101.html
 https://ritesh8303.github.io/dataforge/jobs/ai-engineer-freelance-h-f-h-f_fr-fr101.html
 https://ritesh8303.github.io/dataforge/jobs/ai-engineer-ia-g-n-rative-agents-et-llmops-freelance-h-f-h-f_fr-fr101.html
@@ -585,6 +577,7 @@ https://ritesh8303.github.io/dataforge/jobs/bachelor-angewandte-mathematik-data-
 https://ritesh8303.github.io/dataforge/jobs/berufsausbildung-fachinformatiker-f-r-daten-und-prozessanaly-nover-nds-de.html
 https://ritesh8303.github.io/dataforge/jobs/berufsausbildung-fachinformatiker-f-r-daten-und-prozessanaly-ch-hessen-de.html
 https://ritesh8303.github.io/dataforge/jobs/cloud-platform-engineer-tires-i-oara-tm-ro.html
+https://ritesh8303.github.io/dataforge/jobs/data-engineer-digital-solutions-ado-braga-pt.html
 https://ritesh8303.github.io/dataforge/jobs/salesforce-devops-engineer-r-o-braga-pt.html
 https://ritesh8303.github.io/dataforge/jobs/devops-engineer-m-w-d-eer_dortmund.html
 https://ritesh8303.github.io/dataforge/jobs/devops-engineer-m-w-d-eer_dortmund.html
@@ -607,11 +600,8 @@ https://ritesh8303.github.io/dataforge/jobs/werkstudent-m-w-d-digitalisierung-ki
 https://ritesh8303.github.io/dataforge/jobs/duales-studium-data-science-und-k-nstliche-intelligenz-m-w-d-eim_mannheim.html
 https://ritesh8303.github.io/dataforge/jobs/duales-studium-data-science-und-k-nstliche-intelligenz-m-w-d-rth-am-rhein.html
 https://ritesh8303.github.io/dataforge/jobs/solution-owner-cloud-platform-azure-m-w-d-zure_hamburg.html
+https://ritesh8303.github.io/dataforge/jobs/werkstudent-m-w-d-rechnungswesen-systeme-mit-schwerpunkt-pro-inz-am-rhein.html
 https://ritesh8303.github.io/dataforge/jobs/data-process-analyst-yst_be-be257.html
-https://ritesh8303.github.io/dataforge/jobs/analytics-engineer-gineer_paris.html
-https://ritesh8303.github.io/dataforge/jobs/engineering-manager-confidential-computing-ai-products-oducts_paris.html
-https://ritesh8303.github.io/dataforge/jobs/engineering-manager-enterprise-products-oducts_paris.html
-https://ritesh8303.github.io/dataforge/jobs/software-engineer-security-features-atures_paris.html
 https://ritesh8303.github.io/dataforge/jobs/ai-forward-deployed-engineer-netherlands--netherlands.html
 https://ritesh8303.github.io/dataforge/jobs/ai-forward-deployed-engineer-sweden-kholm-sweden.html
 https://ritesh8303.github.io/dataforge/jobs/business-development-representative-french-speaking-paris-france.html
@@ -692,8 +682,6 @@ https://ritesh8303.github.io/dataforge/jobs/software-engineering-intern-madrid-s
 https://ritesh8303.github.io/dataforge/jobs/software-engineering-intern-paris-france.html
 https://ritesh8303.github.io/dataforge/jobs/technical-account-manager-2-madrid-madrid-spain.html
 https://ritesh8303.github.io/dataforge/jobs/cloud-devops-engineer-kubernetes-edge-cloud-cloud_berlin.html
-https://ritesh8303.github.io/dataforge/jobs/ai-engineer-ai-genai-people-domain-_paris-paris.html
-https://ritesh8303.github.io/dataforge/jobs/data-product-manager-finance-fp-a-f-m-d--paris-paris.html
 https://ritesh8303.github.io/dataforge/jobs/data-steward-corporate-operations-finance-f-m-d--paris-paris.html
 https://ritesh8303.github.io/dataforge/jobs/data-steward-corporate-operations-rh-f-m-d--paris-paris.html
 https://ritesh8303.github.io/dataforge/jobs/consultant-data-engineer-m-w-d-ld-rheinland.html
@@ -718,7 +706,6 @@ https://ritesh8303.github.io/dataforge/jobs/consultant-data-science-ml-engineeri
 https://ritesh8303.github.io/dataforge/jobs/consultant-genai-agentic-ai-insurance-m-w-d-it-berater-in--in_de-de300.html
 https://ritesh8303.github.io/dataforge/jobs/consultant-genai-agentic-ai-insurance-m-w-d-rance_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/consultant-genai-agentic-ai-m-w-d-ic-ai_berlin.html
-https://ritesh8303.github.io/dataforge/jobs/manager-ai-data-engineering-m-w-d-ering_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/praktikant-ai-data-engineering-m-w-d-ering_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/praktikant-ai-data-strategy-m-w-d-tegy_m-nchen.html
 https://ritesh8303.github.io/dataforge/jobs/praktikant-werkstudent-audit-center-of-competence-data-analy-ytics_berlin.html
@@ -763,17 +750,16 @@ https://ritesh8303.github.io/dataforge/jobs/forward-deployed-engineer-gen-ai-m-w
 https://ritesh8303.github.io/dataforge/jobs/forward-deployed-engineer-gen-ai-m-w-d-it-systemadministrato--in_de-de712.html
 https://ritesh8303.github.io/dataforge/jobs/forward-deployed-engineer-gen-ai-m-w-d-furt-am-main.html
 https://ritesh8303.github.io/dataforge/jobs/forward-deployed-engineer-gen-ai-m-w-d-n-ai_m-nchen.html
+https://ritesh8303.github.io/dataforge/jobs/stateful-services-engineer-gineer_paris.html
 https://ritesh8303.github.io/dataforge/jobs/teamleitung-digitalisierung-ki-w-m-d-gruppen-teamleiter-in--in_de-de300.html
 https://ritesh8303.github.io/dataforge/jobs/teamleitung-digitalisierung-ki-w-m-d-ng-ki_berlin.html
 https://ritesh8303.github.io/dataforge/jobs/genai-developer-m-w-d-100-remote-mote_hamburg.html
 https://ritesh8303.github.io/dataforge/jobs/linux-system-engineer-devops-m-w-d-100-remote-mote_hamburg.html
 https://ritesh8303.github.io/dataforge/jobs/data-analyst-m-w-d-st_magdeburg.html
-https://ritesh8303.github.io/dataforge/jobs/automation-engineer-wet-lab-t-lab_munich.html
-https://ritesh8303.github.io/dataforge/jobs/research-working-student-microbiology-ology_munich.html
-https://ritesh8303.github.io/dataforge/jobs/senior-scientist-upstream-fermentation-r-d-n-r-d_munich.html
 https://ritesh8303.github.io/dataforge/jobs/elasticsearch-devops-engineer-emote-m-w-d-ote_ismaning.html
 https://ritesh8303.github.io/dataforge/jobs/devops-engineer-m-f-d-ineer_passau.html
 https://ritesh8303.github.io/dataforge/jobs/cloud-it-administrator-m-w-d-schwerpunkt-microsoft-azure-zure_gescher.html
+https://ritesh8303.github.io/dataforge/jobs/engineering-manager-ai-platform-s-la-d-fense.html
 https://ritesh8303.github.io/dataforge/jobs/business-intelligence-developer-m-w-d-schwerpunkt-qlik-ik_burgwedel.html
 https://ritesh8303.github.io/dataforge/jobs/junior-data-engineer-m-w-d-logistics-business-analysis-is_burgwedel.html
 https://ritesh8303.github.io/dataforge/jobs/cloud-engineer-m-w-d-eer_wiesloch.html
@@ -798,3 +784,17 @@ https://ritesh8303.github.io/dataforge/jobs/cloud-engineer-m-w-d-azure-ure_pfron
 https://ritesh8303.github.io/dataforge/jobs/devops-engineer-m-w-d-eer_pfronten.html
 https://ritesh8303.github.io/dataforge/jobs/ausbildung-fachinformatiker-daten-und-prozessanalyse-m-w-d-f-er-westfalen.html
 https://ritesh8303.github.io/dataforge/jobs/endpoint-platform-engineer-w-m-d-lsruhe-baden.html
+https://ritesh8303.github.io/dataforge/jobs/platform-engineer-ai-devops-w-m-d-lsruhe-baden.html
+https://ritesh8303.github.io/dataforge/jobs/account-executive-k-ln-x-f-m-n-x-f-m_k-ln.html
+https://ritesh8303.github.io/dataforge/jobs/account-executive-x-f-m-au-endienst-enst_germany.html
+https://ritesh8303.github.io/dataforge/jobs/account-manager-bestandskunden-x-f-m-rlin-germany.html
+https://ritesh8303.github.io/dataforge/jobs/account-manager-ki-x-f-m-rlin-germany.html
+https://ritesh8303.github.io/dataforge/jobs/account-manager-x-f-m-er-osnabr-ck.html
+https://ritesh8303.github.io/dataforge/jobs/ai-talent-pool-paris-france.html
+https://ritesh8303.github.io/dataforge/jobs/b2b-sales-manager-k-ln-x-f-m-n-x-f-m_k-ln.html
+https://ritesh8303.github.io/dataforge/jobs/engineering-manager-observability-reliability-engineering-ob-rlin-germany.html
+https://ritesh8303.github.io/dataforge/jobs/engineering-manager-observability-reliability-engineering-ob-paris-france.html
+https://ritesh8303.github.io/dataforge/jobs/engineering-manager-site-reliability-observability-x-f-m-rlin-germany.html
+https://ritesh8303.github.io/dataforge/jobs/engineering-manager-site-reliability-observability-x-f-m-paris-france.html
+https://ritesh8303.github.io/dataforge/jobs/inside-sales-manager-ai-x-f-m--f-m_m-nchen.html
+https://ritesh8303.github.io/dataforge/jobs/inside-sales-manager-bestandskunden-x-f-m-rlin-germany.html

@@ -78,12 +78,6 @@
     "job_id": "sem_accent_busmechanieker_be-be234"
   },
   {
-    "slug": "consultant-automotive-value-chain-transformation-f-m-x-f-m-x_berlin",
-    "title": "Consultant - Automotive Value Chain Transformation (f/m/x)",
-    "company": "accilium Group GmbH",
-    "job_id": "sem_accilium-group_consultant-automotive-value-chain-transformation-f-m-x_berlin"
-  },
-  {
     "slug": "accompio-gmbh-werkstudent-m-w-d-data-analytics-business-inte-al_wuppertal",
     "title": "accompio GmbH: Werkstudent (m/w/d) Data Analytics / Business Intelligence - Wuppertal",
     "company": "accompio GmbH",
@@ -486,6 +480,12 @@
     "job_id": "sem_airbus-operations-werk-bremen_werkstudent-f-r-scientific-computing-machine-learning-d-m-w_bremen"
   },
   {
+    "slug": "product-manager-intern-paris-office",
+    "title": "Product Manager Intern",
+    "company": "Aircall",
+    "job_id": "sem_aircall_product-manager-intern_paris-office"
+  },
+  {
     "slug": "papyrus-devops-engineer-m-w-d-neu-isenburg",
     "title": "Papyrus DevOps Engineer (m/w/d)",
     "company": "AirPlus",
@@ -496,6 +496,12 @@
     "title": "Platform Engineer Linux / Azure (m/w/d)",
     "company": "AirPlus",
     "job_id": "sem_airplus_platform-engineer-linux-azure_neu-isenburg"
+  },
+  {
+    "slug": "full-stack-software-engineer-front-end-focus-m-f-d-berlin-hy-ybrid_berlin",
+    "title": "Full Stack Software Engineer (Front-end focus) (m/f/d) | Berlin, Hybrid",
+    "company": "Airteam Aerial Intelligence GmbH",
+    "job_id": "sem_airteam-aerial-intelligence_full-stack-software-engineer-front-end-focus-berlin-hybrid_berlin"
   },
   {
     "slug": "data-scientist--floridsdorf",
@@ -592,12 +598,6 @@
     "title": "Analytics and pricing expert - Insurance",
     "company": "Alan",
     "job_id": "sem_alan_analytics-and-pricing-expert-insurance_anywhere-in-france"
-  },
-  {
-    "slug": "data-engineer-paris-france",
-    "title": "Data Engineer",
-    "company": "Alan",
-    "job_id": "sem_alan_data-engineer_paris-france"
   },
   {
     "slug": "devsecops-platform-engineer-w-m-d-ineer_berlin",
@@ -750,6 +750,12 @@
     "job_id": "sem_almato_consultant-ki-technologien-all-genders_stuttgart"
   },
   {
+    "slug": "forward-deployed-engineer-h-f-er-h-f_paris",
+    "title": "Forward Deployed Engineer H/F",
+    "company": "Alta Ares",
+    "job_id": "sem_alta-ares_forward-deployed-engineer-h-f_paris"
+  },
+  {
     "slug": "architecte-ia-mlops-h-f-h-f_fr-frj23",
     "title": "Architecte IA / MLOps (H/F)",
     "company": "ALTECA",
@@ -874,12 +880,6 @@
     "title": "Software Development Engineer, AWS Billing",
     "company": "Amazon Web Services Developmen t Center Germany GmbH",
     "job_id": "sem_amazon-web-services-developmen-t-center-germany_software-development-engineer-aws-billing_berlin"
-  },
-  {
-    "slug": "devsecops-security-engineer-m-f-r-m-f_aachen",
-    "title": "DevSecOps / Security Engineer (M/F/*)",
-    "company": "Amber",
-    "job_id": "sem_amber_devsecops-security-engineer-m-f_aachen"
   },
   {
     "slug": "backend-engineer-php-r-php_berlin",
@@ -1080,12 +1080,6 @@
     "job_id": "sem_assa-abloy-ab_ai-ml-engineer_se110"
   },
   {
-    "slug": "it-consultant-m-w-d-m-w-d_berlin",
-    "title": "IT-Consultant (m|w|d)",
-    "company": "Assecor GmbH",
-    "job_id": "sem_assecor_it-consultant-m-w-d_berlin"
-  },
-  {
     "slug": "alternance-gestion-de-projet-data-engineering-h-f-h-f_fr-fr105",
     "title": "Alternance - Gestion de projet & Data Engineering (H/F)",
     "company": "ATC FRANCE",
@@ -1102,12 +1096,6 @@
     "title": "Data & AI Business Associate",
     "company": "Atcon Global",
     "job_id": "sem_atcon-global_data-ai-business-associate_be-be241"
-  },
-  {
-    "slug": "software-engineer-gn-stealth-ai-venture-berlin-rlin-germany",
-    "title": "Software Engineer (gn) @ Stealth AI Venture, Berlin",
-    "company": "atlantic.vc",
-    "job_id": "sem_atlantic-vc_software-engineer-gn-stealth-ai-venture-berlin_berlin-berlin-germany"
   },
   {
     "slug": "duales-studium-data-science-k-nstliche-intelligenz-b-sc-karl-lsruhe-baden",
@@ -1276,12 +1264,6 @@
     "title": "Dualer Student (B.Sc) K\u00fcnstliche Intelligenz & Data Science mit Ausbildung Elektroniker (w/m/d)",
     "company": "B. Braun Service SE & Co. KG",
     "job_id": "sem_b-braun-service-kg_dualer-student-b-sc-k-nstliche-intelligenz-data-science-mit-ausbildung-elektroniker_melsungen"
-  },
-  {
-    "slug": "advanced-seller-success-manager-fluent-french-english-ish_bordeaux",
-    "title": "Advanced Seller Success Manager (fluent French & English)",
-    "company": "Backmarket",
-    "job_id": "sem_backmarket_advanced-seller-success-manager-fluent-french-english_bordeaux"
   },
   {
     "slug": "market-data-analyst-m-w-d-lyst_hamburg",
@@ -1482,12 +1464,6 @@
     "job_id": "sem_bellandvision_data-analyst-bellandvision_pegnitz"
   },
   {
-    "slug": "marketing-content-specialist-bereal-bereal_paris",
-    "title": "Marketing Content Specialist - BeReal",
-    "company": "BeReal",
-    "job_id": "sem_bereal_marketing-content-specialist-bereal_paris"
-  },
-  {
     "slug": "team-manager-sales-controlling-business-intelligence-w-m-d-ce_hasel-nne",
     "title": "Team Manager Sales Controlling & Business Intelligence (w/m/d)",
     "company": "Berentzen-Gruppe Aktiengesellschaft",
@@ -1552,12 +1528,6 @@
     "title": "Software & DevOps Engineer - AI Automation (m/w/d).",
     "company": "Bertrandt AG",
     "job_id": "sem_bertrandt_software-devops-engineer-ai-automation_m-nchen"
-  },
-  {
-    "slug": "software-engineer-architekt-po-devops-oder-projektleiter-iter_m-nchen",
-    "title": "Software Engineer, Architekt, PO, DevOps oder Projektleiter",
-    "company": "Best Profile",
-    "job_id": "sem_best-profile_software-engineer-architekt-po-devops-oder-projektleiter_m-nchen"
   },
   {
     "slug": "datenanalyst-m-w-d-in-wiesbaden-en_wiesbaden",
@@ -1660,12 +1630,6 @@
     "title": "Automotive Security Backend AI Engineer (f/m/x)",
     "company": "BMW AG",
     "job_id": "sem_bmw_automotive-security-backend-ai-engineer-f-m-x_m-nchen"
-  },
-  {
-    "slug": "azubi-zum-fachinformatiker-f-r-daten-und-prozessanalyse-w-m--l-tze_berlin",
-    "title": "Azubi zum Fachinformatiker f\u00fcr Daten- und Prozessanalyse (w/m/x) im Werk [3 Pl\u00e4tze]",
-    "company": "BMW AG",
-    "job_id": "sem_bmw_azubi-zum-fachinformatiker-f-r-daten-und-prozessanalyse-w-m-x-im-werk-3-pl-tze_berlin"
   },
   {
     "slug": "azubi-zum-fachinformatiker-f-r-daten-und-prozessanalyse-w-m--ze-1_m-nchen",
@@ -2106,12 +2070,6 @@
     "job_id": "sem_bridgingit_junior-cloud-devops-engineer-w-m-d_frankfurt-am-main"
   },
   {
-    "slug": "sales-go-to-market-manager-pipeline-growth-rowth_berlin",
-    "title": "Sales & Go-to-Market Manager \u2013 Pipeline & Growth",
-    "company": "Brighter Ai",
-    "job_id": "sem_brighter-ai_sales-go-to-market-manager-pipeline-growth_berlin"
-  },
-  {
     "slug": "analytics-bi-specialist-m-w-d-_taunusstein",
     "title": "Analytics & BI Specialist (m/w/d)",
     "company": "BRITA SE",
@@ -2532,6 +2490,12 @@
     "job_id": "sem_cbr-service_duales-studium-artificial-intelligence-street-one-in-isernhagen_isernhagen"
   },
   {
+    "slug": "solution-architect-m-w-d-data-ai--deutschland",
+    "title": "Solution Architect (m/w/d) Data & AI",
+    "company": "cbs Corporate Business Solutions GmbH",
+    "job_id": "sem_cbs-corporate-business-solutions_solution-architect-data-ai_heidelberg-baden-w-rttemberg-deutschland"
+  },
+  {
     "slug": "architecte-technique-ia-f-h-f-h_fr-fr105",
     "title": "Architecte technique IA F/H",
     "company": "CDC Informatique",
@@ -2734,6 +2698,12 @@
     "title": "Data Scientist H/F",
     "company": "CGI FINANCE",
     "job_id": "sem_cgi-finance_data-scientist-h-f_fr-fre11"
+  },
+  {
+    "slug": "data-scientist-data-engineer-bi-m-w-d-r-bi_waldems",
+    "title": "Data Scientist - Data Engineer BI (m/w/d)",
+    "company": "CGM",
+    "job_id": "sem_cgm_data-scientist-data-engineer-bi_waldems"
   },
   {
     "slug": "data-scientist-projektmanagement-m-w-d-ment_waldems",
@@ -2974,24 +2944,6 @@
     "title": "Data Engineer (m/w/d)",
     "company": "CodeCamp:N GmbH",
     "job_id": "sem_codecamp-n_data-engineer_n-rnberg-mittelfranken"
-  },
-  {
-    "slug": "solutions-architect-hitect_paris",
-    "title": "Solutions Architect",
-    "company": "Cohere",
-    "job_id": "sem_cohere_solutions-architect_paris"
-  },
-  {
-    "slug": "java-developer-m-w-d-furt-am-main",
-    "title": "Java Developer (m/w/d)",
-    "company": "Collaboration Betters The World GmbH",
-    "job_id": "sem_collaboration-betters-the-world_java-developer_frankfurt-am-main"
-  },
-  {
-    "slug": "java-developer-m-w-d-loper_munich",
-    "title": "Java Developer (m/w/d)",
-    "company": "Collaboration Betters The World GmbH",
-    "job_id": "sem_collaboration-betters-the-world_java-developer_munich"
   },
   {
     "slug": "ai-engineer-data-scientist-genai-rag-llm-speech-to-text-free-h-f_fr-fr101",
@@ -3522,6 +3474,12 @@
     "job_id": "sem_continental_cloud-platform-engineer-tires_timi-oara-tm-ro"
   },
   {
+    "slug": "data-engineer-digital-solutions-ado-braga-pt",
+    "title": "Data Engineer (Digital Solutions)",
+    "company": "Continental",
+    "job_id": "sem_continental_data-engineer-digital-solutions_lousado-braga-pt"
+  },
+  {
     "slug": "salesforce-devops-engineer-r-o-braga-pt",
     "title": "Salesforce DevOps Engineer",
     "company": "Continental",
@@ -3654,34 +3612,16 @@
     "job_id": "sem_dak-gesundheit_solution-owner-cloud-platform-azure_hamburg"
   },
   {
+    "slug": "werkstudent-m-w-d-rechnungswesen-systeme-mit-schwerpunkt-pro-inz-am-rhein",
+    "title": "Werkstudent (m/w/d) Rechnungswesen & Systeme mit Schwerpunkt Prozessmanagement & KI, Mainz",
+    "company": "DAL",
+    "job_id": "sem_dal_werkstudent-rechnungswesen-systeme-mit-schwerpunkt-prozessmanagement-ki-mainz_mainz-am-rhein"
+  },
+  {
     "slug": "data-process-analyst-yst_be-be257",
     "title": "Data & Process Analyst",
     "company": "DANIS",
     "job_id": "sem_danis_data-process-analyst_be-be257"
-  },
-  {
-    "slug": "analytics-engineer-gineer_paris",
-    "title": "Analytics Engineer",
-    "company": "Dashlane",
-    "job_id": "sem_dashlane_analytics-engineer_paris"
-  },
-  {
-    "slug": "engineering-manager-confidential-computing-ai-products-oducts_paris",
-    "title": "Engineering Manager - Confidential Computing & AI Products",
-    "company": "Dashlane",
-    "job_id": "sem_dashlane_engineering-manager-confidential-computing-ai-products_paris"
-  },
-  {
-    "slug": "engineering-manager-enterprise-products-oducts_paris",
-    "title": "Engineering Manager - Enterprise Products",
-    "company": "Dashlane",
-    "job_id": "sem_dashlane_engineering-manager-enterprise-products_paris"
-  },
-  {
-    "slug": "software-engineer-security-features-atures_paris",
-    "title": "Software Engineer - Security Features",
-    "company": "Dashlane",
-    "job_id": "sem_dashlane_software-engineer-security-features_paris"
   },
   {
     "slug": "ai-forward-deployed-engineer-netherlands--netherlands",
@@ -4164,18 +4104,6 @@
     "job_id": "sem_datatroniq_cloud-devops-engineer-kubernetes-edge-cloud_berlin"
   },
   {
-    "slug": "ai-engineer-ai-genai-people-domain-_paris-paris",
-    "title": "AI engineer (AI & GenAI) - People Domain",
-    "company": "Decathlontechnology",
-    "job_id": "sem_decathlontechnology_ai-engineer-ai-genai-people-domain_paris-paris"
-  },
-  {
-    "slug": "data-product-manager-finance-fp-a-f-m-d--paris-paris",
-    "title": "Data Product Manager - Finance FP&A (f/m/d)",
-    "company": "Decathlontechnology",
-    "job_id": "sem_decathlontechnology_data-product-manager-finance-fp-a_lille-jardin-des-plantes-nord-paris-paris"
-  },
-  {
     "slug": "data-steward-corporate-operations-finance-f-m-d--paris-paris",
     "title": "Data Steward - Corporate Operations Finance (f/m/d)",
     "company": "Decathlontechnology",
@@ -4318,12 +4246,6 @@
     "title": "Consultant GenAI & Agentic AI (m/w/d)",
     "company": "Deloitte GmbH",
     "job_id": "sem_deloitte_consultant-genai-agentic-ai_berlin"
-  },
-  {
-    "slug": "manager-ai-data-engineering-m-w-d-ering_berlin",
-    "title": "Manager AI & Data Engineering (m/w/d)",
-    "company": "Deloitte GmbH",
-    "job_id": "sem_deloitte_manager-ai-data-engineering_berlin"
   },
   {
     "slug": "praktikant-ai-data-engineering-m-w-d-ering_berlin",
@@ -4590,6 +4512,12 @@
     "job_id": "sem_devoteam_forward-deployed-engineer-gen-ai_m-nchen"
   },
   {
+    "slug": "stateful-services-engineer-gineer_paris",
+    "title": "Stateful Services Engineer",
+    "company": "Diabolocom",
+    "job_id": "sem_diabolocom_stateful-services-engineer_paris"
+  },
+  {
     "slug": "teamleitung-digitalisierung-ki-w-m-d-gruppen-teamleiter-in--in_de-de300",
     "title": "Teamleitung Digitalisierung & KI (w/m/d) (Gruppen-, Teamleiter/in)",
     "company": "Die Autobahn GmbH des Bundes Zentrale Berlin, Weidt Park Corner",
@@ -4620,24 +4548,6 @@
     "job_id": "sem_diepa-filiale-magdeburg_data-analyst_magdeburg"
   },
   {
-    "slug": "automation-engineer-wet-lab-t-lab_munich",
-    "title": "Automation Engineer, Wet Lab",
-    "company": "Differential.bio",
-    "job_id": "sem_differential-bio_automation-engineer-wet-lab_munich"
-  },
-  {
-    "slug": "research-working-student-microbiology-ology_munich",
-    "title": "Research Working Student, Microbiology",
-    "company": "Differential.bio",
-    "job_id": "sem_differential-bio_research-working-student-microbiology_munich"
-  },
-  {
-    "slug": "senior-scientist-upstream-fermentation-r-d-n-r-d_munich",
-    "title": "Senior Scientist, Upstream Fermentation R&D",
-    "company": "Differential.bio",
-    "job_id": "sem_differential-bio_senior-scientist-upstream-fermentation-r-d_munich"
-  },
-  {
     "slug": "elasticsearch-devops-engineer-emote-m-w-d-ote_ismaning",
     "title": "Elasticsearch DevOps Engineer (emote) (M/W/D)",
     "company": "DIGIT4U Gruppe",
@@ -4654,6 +4564,12 @@
     "title": "Cloud & IT Administrator (m/w/d) \u2013 Schwerpunkt Microsoft Azure",
     "company": "Digital Life Sciences GmbH",
     "job_id": "sem_digital-life-sciences_cloud-it-administrator-schwerpunkt-microsoft-azure_gescher"
+  },
+  {
+    "slug": "engineering-manager-ai-platform-s-la-d-fense",
+    "title": "Engineering Manager - AI platform",
+    "company": "DiliTrust",
+    "job_id": "sem_dilitrust_engineering-manager-ai-platform_paris-la-d-fense"
   },
   {
     "slug": "business-intelligence-developer-m-w-d-schwerpunkt-qlik-ik_burgwedel",
@@ -4798,5 +4714,89 @@
     "title": "Endpoint Platform Engineer (w/m/d)",
     "company": "dmTECH GmbH",
     "job_id": "sem_dmtech_endpoint-platform-engineer_karlsruhe-baden"
+  },
+  {
+    "slug": "platform-engineer-ai-devops-w-m-d-lsruhe-baden",
+    "title": "Platform Engineer - AI & DevOps (w/m/d)",
+    "company": "dmTECH GmbH",
+    "job_id": "sem_dmtech_platform-engineer-ai-devops_karlsruhe-baden"
+  },
+  {
+    "slug": "account-executive-k-ln-x-f-m-n-x-f-m_k-ln",
+    "title": "Account Executive - K\u00f6ln (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_account-executive-k-ln-x-f-m_k-ln"
+  },
+  {
+    "slug": "account-executive-x-f-m-au-endienst-enst_germany",
+    "title": "Account Executive (x/f/m) Au\u00dfendienst",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_account-executive-x-f-m-au-endienst_germany"
+  },
+  {
+    "slug": "account-manager-bestandskunden-x-f-m-rlin-germany",
+    "title": "Account Manager - Bestandskunden (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_account-manager-bestandskunden-x-f-m_berlin-berlin-germany"
+  },
+  {
+    "slug": "account-manager-ki-x-f-m-rlin-germany",
+    "title": "Account Manager - KI (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_account-manager-ki-x-f-m_berlin-berlin-germany"
+  },
+  {
+    "slug": "account-manager-x-f-m-er-osnabr-ck",
+    "title": "Account Manager (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_account-manager-x-f-m_m-nster-osnabr-ck"
+  },
+  {
+    "slug": "ai-talent-pool-paris-france",
+    "title": "AI Talent Pool",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_ai-talent-pool_paris-paris-france"
+  },
+  {
+    "slug": "b2b-sales-manager-k-ln-x-f-m-n-x-f-m_k-ln",
+    "title": "B2B Sales Manager - K\u00f6ln (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_b2b-sales-manager-k-ln-x-f-m_k-ln"
+  },
+  {
+    "slug": "engineering-manager-observability-reliability-engineering-ob-rlin-germany",
+    "title": "Engineering Manager - Observability & Reliability Engineering Obsession (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_engineering-manager-observability-reliability-engineering-obsession-x-f-m_berlin-berlin-germany"
+  },
+  {
+    "slug": "engineering-manager-observability-reliability-engineering-ob-paris-france",
+    "title": "Engineering Manager - Observability & Reliability Engineering Obsession (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_engineering-manager-observability-reliability-engineering-obsession-x-f-m_paris-paris-france"
+  },
+  {
+    "slug": "engineering-manager-site-reliability-observability-x-f-m-rlin-germany",
+    "title": "Engineering Manager - Site Reliability & Observability (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_engineering-manager-site-reliability-observability-x-f-m_berlin-berlin-germany-berlin-berlin-germany"
+  },
+  {
+    "slug": "engineering-manager-site-reliability-observability-x-f-m-paris-france",
+    "title": "Engineering Manager - Site Reliability & Observability (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_engineering-manager-site-reliability-observability-x-f-m_paris-paris-france"
+  },
+  {
+    "slug": "inside-sales-manager-ai-x-f-m--f-m_m-nchen",
+    "title": "Inside Sales Manager - AI (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_inside-sales-manager-ai-x-f-m_m-nchen"
+  },
+  {
+    "slug": "inside-sales-manager-bestandskunden-x-f-m-rlin-germany",
+    "title": "Inside Sales Manager - Bestandskunden (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_inside-sales-manager-bestandskunden-x-f-m_berlin-berlin-germany"
   }
 ]
