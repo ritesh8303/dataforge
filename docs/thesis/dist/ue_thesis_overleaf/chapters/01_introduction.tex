@@ -1,0 +1,51 @@
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Background and motivation}
+\label{sec:motivation}
+
+Job information in Germany and in the European Union is not in one place. It sits on public employment websites, commercial job boards, and company career pages. This is a problem for junior candidates, such as interns, working students, and early-career staff. It is also hard for people who need English-friendly jobs or visa information. Search takes a long time. Job texts mix German and English. Seniority words are not used in the same way. Visa rules are often missing or buried in long descriptions.
+
+The OECD notes that artificial intelligence is changing labour markets. It affects how jobs are advertised, screened, and matched \cf{oecd2023ai}. Public services such as the Bundesagentur f\"ur Arbeit and EURES publish APIs and portals. However, a single candidate still needs to search many channels. Data products that unify public vacancy data can reduce search cost. They must still respect data quality, history, and European law.
+
+DataForge is an applied data-science system that deals with this engineering problem. It already runs as a serverless lakehouse on Amazon Web Services in the Frankfurt region (\texttt{eu-central-1}). It collects data from several sources. It stores raw files in Bronze, historical job versions in Silver, and reports in Gold. It offers public APIs and a GitHub Pages website. This live system is the base of the thesis. The thesis does not start from an empty project.
+
+Industry demand has moved from simple data collection to \emph{augmented analytics}. This means using machine learning and language processing to add labels, find similar jobs, and explain results \cf{provost2013ds,vial2019digital,demiroglu2015dsr}. In software companies, similar ideas appear under names such as hyperautomation and experiment-driven development \cf{fagerholm2017right,gartner2020hyper}. The research problem is not ``build a chatbot''. The problem is: how can generative AI be added to a live pipeline so that data history, repeatable tests, cost, and the law stay under control? Claims must also be possible to test.
+
+\section{Problem statement}
+\label{sec:problem}
+
+When companies add large language models to existing data platforms, three problems appear often.
+
+First, \emph{broken data history}. The model may overwrite job IDs or old versions. Then nobody can check what changed. Kimball and Ross warn that slowly changing dimensions need explicit rules. Type~2 history must not be replaced by silent rewrites \cf[p.~~220]{kimball2013dwt}. Second, \emph{quality that is not measured}. Demos show almost perfect ranking scores on tiny examples. They often skip a simple non-AI baseline. IR research has known for decades that ranking must be tested against labels \cf{manning2008ir,jarvelin2002ndcg}. Third, \emph{cost with no limit}. Expensive models are run on all documents. There is no sample rate, no budget, and no stop switch. These problems are part of a wider software issue: hidden extra work in machine-learning systems \cf{sculley2015debt,kreuzberger2023mlops}.
+
+This study uses DataForge as one detailed case. The money limit is small (about \EUR{0}--25 per month in normal use, and a hard thesis cap of \EUR{40}). All cloud work stays in \texttt{eu-central-1}. EU data location is treated as a main design choice, not as a later extra.
+
+\section{Stakeholders and intended use}
+\label{sec:stakeholders}
+
+Three stakeholder groups matter for this thesis.
+
+\emph{Job seekers} want shorter lists of relevant vacancies. They care about language, seniority fit, and visa hints. \emph{Platform engineers} want a pipeline that they can operate, pause, and audit. \emph{Supervisors and examiners} want a thesis that connects theory, a built system, and honest evaluation. DataForge Match is designed as \emph{decision support} for seekers. It is not an employer screening tool. This boundary affects both metrics and law, as Chapters~\ref{ch:theory-ai} and~\ref{ch:discussion} explain.
+
+\section{Aim and contribution of the study}
+\label{sec:aim}
+
+The aim is to design, build, and test a low-cost generative-AI layer on the existing DataForge lakehouse. The layer has a multi-provider model gateway, rule-based enrichment first, hybrid search for resume--job matching, a Match API that removes personal data, and a repeatable test set.
+
+The thesis has four contributions. First, a reference architecture. Generative models add extra columns. They do not replace job history. Second, a matching experiment. It compares meaning-based search, keyword search, hybrid search, and the old rule-based wizard on a labelled set. Third, a simple cost model. It links model prices and sample rates to product cost. Fourth, a responsible-AI discussion. It maps an advice tool for job seekers to the GDPR and the EU Artificial Intelligence Act \cf{eu2016gdpr,eu2024aiact,veale2021demystifying}.
+
+\section{Link to the Master Colloquium topics}
+\label{sec:alignment}
+
+This is an applied Data Science thesis. It is not only a software-engineering paper. It still matches several topics from the Master Colloquium of Prof.\ Dr.\ Rand Kouatly (Summer Semester 2026). The main topics are \emph{augmented analytics} and \emph{hyperautomation}. AI is used to add labels to job text and to automate matching that used to be keyword-based. Secondary topics are \emph{digitalisation of software-intensive services} (what changes when a live data product gets a generative layer) and \emph{automation of data cleaning} (rules first, then expensive language-model calls). Continuous experimentation is the test style: product claims are checked with held-out metrics, not only with a demo story \cf{fagerholm2017right}. Quantum computing, module clustering, and automated fault finding are nearby software topics. They are outside the scope of this thesis.
+
+\section{Structure of the thesis}
+\label{sec:structure}
+
+Chapter~\ref{ch:theory-data} reviews digitalisation, lakehouse design, historical data modelling, data quality, and classical information retrieval. Chapter~\ref{ch:theory-ai} reviews language models, dense and hybrid search, retrieval-augmented generation, LLM operations, agents, and EU law. It then states the research gap. Chapter~\ref{ch:rqs} states the research questions and hypotheses. Chapter~\ref{ch:method} explains why design science and a single case study are used. Chapter~\ref{ch:results} reports what was built and what was measured. Chapter~\ref{ch:discussion} discusses the meaning of the results and the limits. Chapter~\ref{ch:implications} discusses theory, practice, and future research.
+
+\section{Scope note for the reader}
+\label{sec:scope-note}
+
+The empirical core of this thesis is European public job text and a student-built AWS lakehouse. Results should be read as evidence for frugal GenAI integration under those constraints. They should not be read as a universal ranking of all foundation models, or as a labour-market policy evaluation. Where AWS quota blocked a live Bedrock cell, the text says so. Where labels are author-made, the text says so. That honesty is part of the scientific claim.

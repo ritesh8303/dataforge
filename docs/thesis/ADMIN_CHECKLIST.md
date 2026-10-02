@@ -19,6 +19,7 @@ This repo holds **research artefacts** (LaTeX, slides, results). **Personal admi
 | Optional IEEE short-paper stub | `latex/ieee_short_paper.tex` |
 | Proposal / exposé for supervisors | `THESIS_PROPOSAL.md`, `THESIS_EXPOSE.md` |
 | Living RQ results tables | `RESULTS_DRAFT.md`, `evals/results/` |
+| Plain-English technical guide | `docs/TECHNICAL_GUIDE_EASY_ENGLISH.md` |
 | UE rules extracted from lectures | `UE_REQUIREMENTS.md` |
 
 ---
@@ -47,7 +48,7 @@ existing serverless medallion lakehouse for European job intelligence (project: 
 The study is design-science oriented: four research questions cover (1) integration without
 breaking SCD Type 2 history, (2) multi-provider cost/quality trade-offs, (3) embedding-based
 matching vs a rule-based baseline, and (4) unit economics. A labelled evaluation already
-shows dense retrieval at nDCG@10 0.22 vs 0.16 for the heuristic wizard; live Bedrock RQ2
+shows dense retrieval at nDCG@10 0.22 vs 0.15 for the heuristic wizard (103×96 packaging run); live OpenAI RQ2 is 40/40; live Bedrock RQ2
 runs are pending AWS quota approval — I report limits openly.
 
 I attach a short proposal and exposé. The live system and evaluation scripts are in my
@@ -162,7 +163,7 @@ Supervisor Zweit:
 - [ ] Binding layout per `UE_REQUIREMENTS.md` (margins, Harvard citations, one-sided A4).
 - [ ] Digital upload per Examination Office instructions (usually PDF + sometimes source).
 - [ ] Optional **IEEE short paper** (4–8 pages) — stub in `latex/ieee_short_paper.tex`; confirm if it earns extra points in your cohort.
-- [ ] Complete **RQ2** Bedrock runs after quota approval; update `RESULTS_DRAFT.md` and thesis Chapter Results before final print.
+- [ ] Complete **RQ2 Bedrock** runs after quota approval; OpenAI cells are already in `RESULTS_DRAFT.md`. Update thesis Chapter Results before final print if Bedrock numbers change.
 
 ---
 
@@ -175,7 +176,7 @@ Supervisor Zweit:
 5. Colloquium practice (slides ready in repo)  
 6. Continue writing + character count tracking  
 7. Rewrite AI-assisted drafts in own voice ongoing  
-8. Optional: run OpenAI RQ2 Pareto (`PACKAGING.md` / `RESULTS_DRAFT.md`) when API key available  
+8. Optional: Bedrock RQ2 Pareto after quota (`PACKAGING.md` / `RESULTS_DRAFT.md`)  
 
 **CV / Loom packaging:** [PACKAGING.md](PACKAGING.md)
 

@@ -1,0 +1,77 @@
+% UE Master's thesis preamble — Prof. Dr. Rand Kouatly, SS 2026
+% Layout from "Writing Good thesis" lecture:
+%   margins 2 cm left, 4 cm right, 2.5 cm top, 3 cm bottom
+%   Times (Times New Roman equivalent) 12 pt body, 10 pt footnotes
+%   justified, 1 cm first-line indent, 6 pt paragraph skip
+%   Harvard (author-year) citations
+%   DIN 1421 numbering via report class
+\usepackage[
+  a4paper,
+  left=2cm,
+  right=4cm,
+  top=2.5cm,
+  bottom=3cm
+]{geometry}
+\usepackage[onehalfspacing]{setspace}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\graphicspath{{figures/}{chapters/figures/}}
+% Compile even when figure PNGs are not yet exported to Overleaf
+\newcommand{\maybeincludegraphics}[2][]{%
+  \IfFileExists{#2}{%
+    \includegraphics[#1]{#2}%
+  }{%
+    \fbox{\parbox[c][0.22\textheight][c]{0.92\textwidth}{\centering\small Place \texttt{#2} in the project.}}%
+  }%
+}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{eurosym}
+\usepackage{url}
+\usepackage{csquotes}
+\usepackage{indentfirst}
+\usepackage{tocloft}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage[round,authoryear,sort]{natbib}
+\setcitestyle{authoryear,round,aysep={,},yysep={;}}
+\usepackage[hidelinks]{hyperref}
+
+\hypersetup{
+  pdftitle={Augmented Analytics on a Production Lakehouse: Integrating Generative AI into European Job Intelligence},
+  pdfauthor={Ritesh Rakesh Jadhav}
+}
+
+% Paragraph layout (lecture: Justify, 6 Points, Indent 1 cm)
+\setlength{\parindent}{1cm}
+\setlength{\parskip}{6pt}
+\frenchspacing
+\raggedbottom
+
+\captionsetup{font=small,labelfont=bf,skip=6pt}
+\setlist[itemize]{leftmargin=1.5cm,itemsep=3pt,topsep=4pt}
+\setlist[enumerate]{leftmargin=1.5cm,itemsep=3pt,topsep=4pt}
+
+% Harvard paraphrase helper: (cf. Author, Year[, p. x])
+\newcommand{\cf}[2][]{\citep[cf.][#1]{#2}}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  frame=single,
+  columns=fullflexible,
+  keepspaces=true,
+  captionpos=b
+}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}

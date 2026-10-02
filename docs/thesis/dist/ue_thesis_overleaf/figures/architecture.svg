@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 420" font-family="Segoe UI, Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#444"/>
+    </marker>
+    <style>
+      .box { fill: #f5f7fa; stroke: #2c5282; stroke-width: 1.5; rx: 6; }
+      .gold { fill: #fef3c7; stroke: #b45309; }
+      .ai { fill: #e0f2fe; stroke: #0369a1; stroke-dasharray: 4 2; }
+      .label { fill: #1a202c; font-weight: 600; }
+      .sub { fill: #4a5568; font-size: 11px; }
+      .flow { stroke: #444; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .opt { stroke: #718096; stroke-dasharray: 5 3; }
+    </style>
+  </defs>
+  <text x="460" y="28" text-anchor="middle" class="label" font-size="16">DataForge medallion + AI layer</text>
+
+  <!-- Main pipeline -->
+  <rect x="30" y="70" width="120" height="56" class="box"/>
+  <text x="90" y="95" text-anchor="middle" class="label">Public JDs</text>
+  <text x="90" y="112" text-anchor="middle" class="sub">scrapers / APIs</text>
+
+  <rect x="190" y="70" width="100" height="56" class="box"/>
+  <text x="240" y="98" text-anchor="middle" class="label">Bronze</text>
+  <text x="240" y="115" text-anchor="middle" class="sub">raw landing</text>
+
+  <rect x="330" y="70" width="120" height="56" class="box"/>
+  <text x="390" y="95" text-anchor="middle" class="label">Silver</text>
+  <text x="390" y="112" text-anchor="middle" class="sub">SCD2 history</text>
+
+  <rect x="490" y="70" width="100" height="56" class="box gold"/>
+  <text x="540" y="98" text-anchor="middle" class="label">Gold</text>
+  <text x="540" y="115" text-anchor="middle" class="sub">curated tables</text>
+
+  <rect x="630" y="70" width="120" height="56" class="box"/>
+  <text x="690" y="95" text-anchor="middle" class="label">APIs</text>
+  <text x="690" y="112" text-anchor="middle" class="sub">Jobs / Metrics</text>
+
+  <line x1="150" y1="98" x2="190" y2="98" class="flow"/>
+  <line x1="290" y1="98" x2="330" y2="98" class="flow"/>
+  <line x1="450" y1="98" x2="490" y2="98" class="flow"/>
+  <line x1="590" y1="98" x2="630" y2="98" class="flow"/>
+
+  <!-- Enrichment branch -->
+  <rect x="430" y="180" width="220" height="70" class="box ai"/>
+  <text x="540" y="205" text-anchor="middle" class="label">Enrichment (optional)</text>
+  <text x="540" y="222" text-anchor="middle" class="sub">rules ’ LLM (Bedrock Nova)</text>
+  <text x="540" y="238" text-anchor="middle" class="sub">additive Gold columns</text>
+  <line x1="540" y1="126" x2="540" y2="180" class="flow opt"/>
+
+  <!-- Match API -->
+  <rect x="680" y="180" width="200" height="70" class="box ai"/>
+  <text x="780" y="205" text-anchor="middle" class="label">Match API</text>
+  <text x="780" y="222" text-anchor="middle" class="sub">hybrid retrieval</text>
+  <text x="780" y="238" text-anchor="middle" class="sub">BM25 + dense + citations</text>
+  <line x1="690" y1="126" x2="780" y2="180" class="flow opt"/>
+
+  <!-- HITL -->
+  <rect x="200" y="300" width="520" height="70" class="box"/>
+  <text x="460" y="328" text-anchor="middle" class="label">Human-in-the-loop (HITL)</text>
+  <text x="460" y="348" text-anchor="middle" class="sub">review queue · visa/seniority overrides · eval label curation</text>
+  <line x1="540" y1="250" x2="460" y2="300" class="flow opt"/>
+  <line x1="780" y1="250" x2="560" y2="300" class="flow opt"/>
+
+  <!-- Embedding index note -->
+  <rect x="30" y="180" width="180" height="70" class="box ai"/>
+  <text x="120" y="205" text-anchor="middle" class="label">Embedding index</text>
+  <text x="120" y="222" text-anchor="middle" class="sub">Titan / local embed</text>
+  <text x="120" y="238" text-anchor="middle" class="sub">job vectors</text>
+  <line x1="210" y1="215" x2="680" y2="215" class="flow opt"/>
+</svg>

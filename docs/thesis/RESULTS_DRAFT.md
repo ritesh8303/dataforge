@@ -2,7 +2,7 @@
 
 **Programme:** M.Sc. Data Science, University of Europe for Applied Sciences, Potsdam  
 **Artefact root:** this repository.  
-**Last status check:** 2026-10-01
+**Last status check:** 2026-10-02
 
 Numbers below are reproducible via `evals/` + `scripts/` unless marked *pending*.
 
@@ -39,7 +39,7 @@ Numbers below are reproducible via `evals/` + `scripts/` unless marked *pending*
 | total cost | $0 | **~$0.0011** |
 | provider | rules | openai |
 
-- Artefact: `evals/results/rq2_pareto.json` (strict pin; paced `--sleep 2`).
+- Artefacts: `evals/results/rq2_pareto.json` (strict pin; paced `--sleep 2`); console log `evals/results/rq2_run.log`.
 - Production router is **OpenAI-first** while Bedrock Nova Micro quota remains blocked.
 
 **Live Bedrock (still blocked):**
@@ -72,7 +72,7 @@ Dense leads on all metrics on this expanded set; hybrid remains the product defa
 
 `evals/results/agent_ablation.json`: local-provider citation *structure* validity ≈ 1.0 for hybrid and multi-agent (saturated).
 
-`evals/results/faithfulness_spotcheck.json` (2026-10-01): hybrid citation structural spot-check via `evals/run_faithfulness_spotcheck.py` (CI gate, `--limit 10`). Optional `--use-llm-judge` with OpenAI when budget allows.
+`evals/results/faithfulness_spotcheck.json` (2026-10-02): hybrid citation structural spot-check via `evals/run_faithfulness_spotcheck.py` (**20** citations in the committed artefact; CI gate uses `--limit 10`). Optional `--use-llm-judge` with OpenAI when budget allows.
 
 ## Ethics
 
@@ -84,10 +84,11 @@ Obligation → control table: `docs/RESPONSIBLE_AI.md`. Visa signals advisory + 
 |-------|------------|
 | Live medallion lakehouse + Jobs/Metrics APIs + Pages | Yes |
 | Live Match Function URL (hybrid, API key) | Yes |
+| Nightly **OpenAI** enrichment (sample rate 0.25) | Yes — 304 product-board jobs → 28 LLM rows (2026-10-01) |
 | Multi-agent / MCP in repo + callable with key | Yes |
 | LanceDB vector path with JSON fallback | Yes (code + tf env; confirm backend in Match response `vector_backend`) |
-| Enrichment running nightly on Bedrock | **No** — paused until quota |
-| Live Bedrock RQ2 Pareto table | **No** — case still open |
-| Live OpenAI RQ2 cells | **Yes (partial)** — 16/40 gpt-4o-mini ok; rest 429 — see RESULTS_DRAFT |
+| Enrichment running nightly on **Bedrock** | **No** — Nova Micro quota still 0 |
+| Live Bedrock RQ2 Pareto table | **No** — case `178955627400906` still open |
+| Live OpenAI RQ2 cells | **Yes** — gpt-4o-mini **40/40**, ~$0.0011, ~1125 ms avg |
 
 Demo talk-track: `docs/DEMO_SCRIPT.md`. Packaging: [`PACKAGING.md`](PACKAGING.md).

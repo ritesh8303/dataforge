@@ -2,6 +2,8 @@
 
 **Use `overleaf_main.tex` on Overleaf as the Main document.** Compiler: **pdfLaTeX**.
 
+**Ready zip (upload this):** `docs/thesis/DataForge_UE_Thesis_Overleaf_2026-10-02.zip`
+
 This project follows the Summer Semester 2026 materials of Prof.\ Dr.\ Rand Kouatly:
 
 - *Master Colloquium* (topic selection, proposal, registration, 10-minute exam)

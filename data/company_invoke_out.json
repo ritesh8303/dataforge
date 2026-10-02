@@ -1,0 +1,1 @@
+{"statusCode": 200, "body": "{\"message\": \"Company careers ingestor complete; wrote 3930 jobs to s3://dataforge-bronze-dev-366945363779/direct_careers/ingested_at=2026-10-01/jobs.parquet\", \"total_jobs\": 3930, \"targets\": 81, \"by_ats\": {\"greenhouse\": 2097, \"smartrecruiters\": 1544, \"personio\": 194, \"ashby\": 83, \"recruitee\": 8, \"workable\": 4}}"}

@@ -1,0 +1,55 @@
+\chapter{Research Questions}
+\label{ch:rqs}
+
+\section{Objectives}
+\label{sec:objectives}
+
+The general objective is to find out how generative AI can be added to an existing European job-data lakehouse. Data history, honest evaluation, cost control, and legal duties must stay intact. The specific objectives are:
+
+\begin{enumerate}
+  \item to write layer contracts so that enrichment and matching only add data to Silver and Gold;
+  \item to build a multi-provider gateway with task types, logs, and a stop switch;
+  \item to compare keyword, dense, hybrid, and rule-based matching on a labelled query set;
+  \item to estimate the cost of rules-first enrichment and embeddings for 1{,}000 jobs;
+  \item to map the system to GDPR and AI Act duties for an advice tool for job seekers.
+\end{enumerate}
+
+\section{Research questions}
+\label{sec:questions}
+
+Table~\ref{tab:rqs} states the four research questions. They are mixed on purpose. RQ1 is about architecture. RQ2 and RQ3 are empirical. RQ4 is about cost. This mix matches a design-science thesis, which must both build a system and evaluate it \cf{hevner2004dsr}.
+
+\begin{table}[ht]
+\centering
+\caption{Research questions}
+\label{tab:rqs}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{ID} & \textbf{Question} \\
+\midrule
+RQ1 & How can generative AI be added to an existing Bronze$\rightarrow$Silver$\rightarrow$Gold$\rightarrow$API lakehouse without breaking SCD Type~2 history, repeatable tests, or a low-budget cost limit? \\
+RQ2 & For enrichment and related tasks, which provider or model class is best on quality, cost, latency, and EU data location? \\
+RQ3 & Do embeddings and hybrid retrieval beat the existing 60/20/20 rule-based Career Matching Wizard on ranked job relevance? \\
+RQ4 & Under which product packaging does AI-on-pipeline give better unit cost than selling raw open job files only? \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Hypotheses}
+\label{sec:hypotheses}
+
+The testable hypotheses for RQ2--RQ4 are:
+
+\begin{itemize}
+  \item \textbf{H1.} Dense or hybrid retrieval improves nDCG@10 compared with the rule-based wizard on a held-out labelled query set.
+  \item \textbf{H2.} Cheap or small models, used only when rules are unclear, are enough for structured enrichment in this domain, compared with unlimited frontier models.
+  \item \textbf{H3.} A task-aware router with budgets reduces spend at similar quality, compared with always using one unconstrained provider.
+  \item \textbf{H4.} Match and enrichment features give better euro-per-value economics than selling raw CSV extracts of public jobs alone.
+\end{itemize}
+
+RQ1 is evaluated with architecture contracts and operational evidence (keys that cannot change, extra columns only, stop switch, budget runbook). It is not evaluated with one single score.
+
+\section{Scope and limits of the questions}
+\label{sec:rq-scope}
+
+The questions are about \emph{integration} of generative models into one live case. They are not about inventing a new retrieval algorithm. They do not ask whether language models can replace public employment services. They also do not ask whether an employer ranking system is fair. Visa-related fields are advice signals extracted from text. They are not legal advice. Live multi-provider tests for RQ2 depend on cloud-account quotas. If quotas block measurement, the thesis reports a fixed test method. It does not invent a result table.

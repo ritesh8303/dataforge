@@ -25,6 +25,7 @@ Aligned to Prof.\ Dr.\ Rand Kouatly, SS 2026: Master Colloquium, Writing Good th
 | [THESIS_PAPER.md](THESIS_PAPER.md) | Older ARM-style content draft (superseded as structure; numbers still valid) |
 | **[latex/ieee_short_paper.tex](latex/ieee_short_paper.tex)** | Optional 4–8 page IEEE conference stub |
 | [../DEMO_SCRIPT.md](../DEMO_SCRIPT.md) | 2–3 min product demo (not the colloquium) |
+| [../TECHNICAL_GUIDE_EASY_ENGLISH.md](../TECHNICAL_GUIDE_EASY_ENGLISH.md) | Plain-English architecture guide (portfolio / onboarding) |
 
 ---
 
@@ -39,14 +40,16 @@ Aligned to Prof.\ Dr.\ Rand Kouatly, SS 2026: Master Colloquium, Writing Good th
 | Beamer slide PDF source (16:9) | `latex/colloquium_slides.tex` |
 | IEEE short-paper stub (abstract → conclusion + results table) | `latex/ieee_short_paper.tex` |
 | Admin checklist + supervisor email template | `ADMIN_CHECKLIST.md` |
-| RQ3 matching numbers (dense 0.217 vs wizard 0.146 on **103×96**) | `RESULTS_DRAFT.md`, `evals/results/matching_eval.json` |
+| RQ1 architecture + integration evidence | code + thesis Chapter Results; nightly OpenAI enrich live |
+| RQ2 live OpenAI Pareto | `evals/results/rq2_pareto.json` — gpt-4o-mini 40/40, ~$0.0011 |
+| Rules-only RQ2 baseline scripts | `evals/run_rq2_pareto.py` |
+| RQ3 matching numbers (packaging dense 0.217 vs wizard 0.146 on **103×96**) | `RESULTS_DRAFT.md`, `evals/results/matching_eval.json` |
+| CI local-tfidf nDCG pin (dense 0.1258) | `evals/baselines/ndcg_baseline.json` |
+| RQ4 modelled unit cost (~€0.10 / 1k jobs OpenAI-first) | `evals/results/roi_report.json` |
 | Error / ablation analysis | `evals/results/error_analysis.md` |
 | Architecture + RQ3 figures | `latex/figures/` (PNG + SVG) |
 | Expanded literature + DSR methodology + discussion | `latex/chapters/` (~74k+ chars w/o spaces target band) |
 | List of abbreviations / tables / figures in LaTeX | `latex/overleaf_main.tex` |
-| RQ4 modelled unit cost (~€0.06 / 1k jobs) | `evals/results/roi_report.json` |
-| RQ1 architecture + integration evidence | code + thesis Chapter Results |
-| Rules-only RQ2 baseline scripts | `evals/run_rq2_pareto.py` |
 
 ### You must still do manually
 
@@ -58,7 +61,7 @@ Aligned to Prof.\ Dr.\ Rand Kouatly, SS 2026: Master Colloquium, Writing Good th
 | **Character count** without spaces (track by ECTS) | ADMIN_CHECKLIST targets |
 | **Rewrite in your own voice** — UE fails >20 % AI-written text | All LaTeX/Markdown drafts are starting points only |
 | **Loom / practice recording** (optional self-study) | Not stored in repo |
-| **Complete RQ2 live Bedrock Pareto** after AWS quota approval | Re-run `evals/run_rq2_pareto.py --live-providers`; update RESULTS_DRAFT |
+| **Complete RQ2 live Bedrock Pareto** after AWS quota approval | Re-run `evals/run_rq2_pareto.py --live-providers --provider bedrock`; OpenAI cells are already in RESULTS_DRAFT |
 | **Examination Office contacts** | Keep private — placeholder in ADMIN_CHECKLIST |
 | **Attend all three colloquium periods** | Dates in [UE_REQUIREMENTS.md](UE_REQUIREMENTS.md) |
 | Fill **matriculation number** and final supervisor names in LaTeX cover | `latex/overleaf_main.tex` |
@@ -68,9 +71,11 @@ Aligned to Prof.\ Dr.\ Rand Kouatly, SS 2026: Master Colloquium, Writing Good th
 
 ---
 
-## Status (2026-09-30)
+## Status (2026-10-02)
 
-LaTeX project follows the official UE chapter list. Body text is written in **clear IELTS Band 6 academic English** (short sentences, common words, same facts). Fill matriculation number and supervisors. Expand literature with page numbers after you read the cited works. **RQ2:** Bedrock still quota-blocked; OpenAI/Anthropic alternate path is documented in RESULTS_DRAFT (~€0.004 for 40 jobs). **Rewrite in your own voice before submission** — the writing lecture lists LLM-authored text above 20 % as a fail reason.
+LaTeX project follows the official UE chapter list. Body text is written in **clear IELTS Band 6 academic English**. Fill matriculation number and supervisors. Expand literature with page numbers after you read the cited works. **RQ2:** OpenAI `gpt-4o-mini` live Pareto is **complete** (40/40, ~$0.0011). Bedrock Nova Micro is still quota-blocked. Production is **OpenAI-first**; nightly enrichment sample rate 0.25. **RQ4:** modelled ≈ **€0.10 / 1k jobs**. **RQ3:** packaging table dense 0.2174; CI local-tfidf pin 0.1258 — both reported. **Rewrite in your own voice before submission** — the writing lecture lists LLM-authored text above 20 % as a fail reason.
 
 **Packaging:** [PACKAGING.md](PACKAGING.md) for CV bullets + Loom + admin order.  
 **Colloquium prep:** Start with [COLLOQUIUM_SLIDES.md](COLLOQUIUM_SLIDES.md) or compile [latex/colloquium_slides.tex](latex/colloquium_slides.tex) on Overleaf.
+
+**Overleaf upload (thesis):** ready-made ZIP — [`dist/DataForge_UE_Thesis_Overleaf_2026-10-02.zip`](dist/DataForge_UE_Thesis_Overleaf_2026-10-02.zip) (main file `overleaf_main.tex`, pdfLaTeX). See `OVERLEAF_README.txt` inside the archive.

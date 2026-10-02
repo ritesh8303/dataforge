@@ -3,7 +3,7 @@
 **University:** University of Europe for Applied Sciences, Potsdam  
 **Programme:** MSc Data Science  
 **Author:** Ritesh Rakesh Jadhav  
-**Date:** September 2026
+**Date:** October 2026
 
 ---
 
@@ -26,6 +26,8 @@ Industry demand has moved from raw lists of jobs to **AI-augmented intelligence*
 3. **Money:** Raw open-data files are easy to copy. AI features (semantic matching, enrichment) may support a higher price.
 
 DataForge now uses rule-based keyword matching in the Career Matching Wizard, and regex for skills. These baselines are labelled as non-AI on purpose. This thesis closes the gap with controlled AI integration and empirical tests.
+
+**Status 2 October 2026:** Match API and nightly **OpenAI** enrichment (sample rate 0.25) are live. Live RQ2 on `gpt-4o-mini` completed 40/40 jobs (~$0.0011). Amazon Bedrock Nova Micro is still quota-blocked. Modelled OpenAI-first unit cost is about €0.10 per 1,000 jobs.
 
 ---
 

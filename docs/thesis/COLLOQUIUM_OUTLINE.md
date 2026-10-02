@@ -15,9 +15,9 @@ Use clear English (IELTS Band 6): short sentences, common words, define one tech
 5. **Theory (90 seconds)** — Lakehouse / SCD2; BM25 vs dense retrieval; GDPR / AI Act boundary (advice tool for seekers is not employer screening). Name two authors (Hevner; Järvelin and Kekäläinen).
 6. **Method** — Design science + one case. Why not a literature-only thesis or a survey.
 7. **Artefact** — One architecture figure: Bronze → Silver SCD2 → Gold; extra rules / LLM; Match API.
-8. **Results** — Table: dense 0.217 nDCG@10 vs wizard 0.146 vs BM25 0.135. Cost about €0.06 / 1k jobs. RQ2 pending quota (say this; do not hide it).
+8. **Results** — Table: dense 0.217 nDCG@10 vs wizard 0.146 vs BM25 0.135 (packaging run). Cost about €0.10 / 1k jobs (OpenAI-first). RQ2 OpenAI 40/40; Bedrock still pending quota (say this; do not hide it).
 9. **Implications** — Rules before tokens; freeze identity; measure against a simple baseline; in-region inference.
-10. **Next 12–16 weeks** — Supervisor signatures, CampusNet registration (title cannot change), complete RQ2, enlarge gold set, write to the character count.
+10. **Next 12–16 weeks** — Supervisor signatures, CampusNet registration (title cannot change), complete **Bedrock** RQ2, write to the character count.
 
 ## Backup slides (only if asked)
 

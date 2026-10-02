@@ -1,0 +1,84 @@
+\chapter{Theoretical Background II: Generative AI, Retrieval Systems, and Responsible Automation}
+\label{ch:theory-ai}
+
+\section{Transformer language models}
+\label{sec:transformers}
+
+Today's generative models are based on the transformer architecture. Transformers use self-attention instead of older recurrent networks. This makes large-scale pre-training more practical \cf{vaswani2017attention}. Encoder models such as BERT showed that pre-trained text representations transfer well to search and classification after fine-tuning \cf{devlin2019bert}. Very large decoder models, such as GPT-3, showed that a model can solve new tasks from examples in the prompt, without changing weights \cf{brown2020gpt3}. Jurafsky and Martin give a textbook view of how tokenisation, embeddings, and sequence models fit together in modern NLP pipelines \cf{jurafsky2023speech}.
+
+Foundation-model reports later argued that a small number of large models may become shared infrastructure. They also warned about opacity and concentration of power \cf{bommasani2021foundation}. For this thesis, the practical lesson is simple. Encoder-style embeddings are the right tool for meaning-based matching. Decoder-style completion models are the right tool for writing extra labels and explanations. Mixing the two without a plan increases cost. There is no need to generate a paragraph only to rank a document. Chain-of-thought prompting can help reasoning on some tasks \cf{wei2022cot}, but it also uses more tokens. A low-cost design therefore treats generation as an expensive, optional step.
+
+\section{Dense retrieval, embeddings, and retrieval-augmented generation}
+\label{sec:dense}
+
+Dense passage retrieval turns queries and documents into vectors in the same space. It then finds nearest neighbours. On several open-domain question-answering tests, it beat BM25 \cf{karpukhin2020dpr}. Sentence-BERT showed that a special training setup produces embeddings that work well for clustering and semantic search. Simple BERT CLS vectors often do not \cf{reimers2019sbert}. Lin, Nogueira and Yates review later work on transformers for ranking. Cross-encoders can be more accurate, but they are expensive on a large collection \cf[p.~~45]{lin2021transformers}. Gao et al.\ discuss zero-shot dense retrieval when no in-domain labels exist \cf{gao2023precise}. That setting is close to a cold-start job corpus, although this thesis \emph{does} use a small labelled set for evaluation.
+
+Retrieval-augmented generation (RAG) joins a retriever (the documents) with a generator (the language model). This can reduce invented facts on knowledge-heavy tasks, compared with generation only \cf{lewis2020rag}. Recent surveys list open problems: citation faithfulness, latency, and evaluation of grounded answers \cf{wang2024rag}. In a job-matching product the same idea is: first retrieve a short list of vacancies with embeddings, then optionally ask a language model to explain or re-rank that short list, with citations. The generator must not invent jobs. This is both an IR design pattern and a responsible-AI control.
+
+\section{Hybrid retrieval and rank fusion}
+\label{sec:hybrid}
+
+Keyword rankers and dense rankers fail on different queries. Hybrid pipelines therefore combine BM25 with dense scores. Reciprocal rank fusion (RRF) is a simple method for merging ranked lists. Cormack, Clarke and Buettcher showed that RRF can beat more complex learning-to-rank combinations on several collections \cf{cormack2009rrf}. Thakur et al.\ show on BEIR that no single retriever wins on all dataset types \cf{thakur2021beir}. Hybrid retrieval is therefore the usual engineering default in many production RAG stacks, even when one labelled set favours pure dense retrieval.
+
+This difference between \emph{best score on one gold set} and \emph{best default for a product with several goals} will later explain a design choice. DataForge may still use hybrid matching even if dense retrieval has a higher nDCG@10. A thesis that reports only the winning number would be incomplete. A thesis that reports the number and the reasons for not using it blindly is closer to applied data science.
+
+\section{Augmented analytics and hyperautomation}
+\label{sec:augmented}
+
+Augmented analytics means using machine learning and natural language processing to automate parts of data preparation, insight, and explanation that used to need a specialist \cf{provost2013ds}. Hyperautomation, a term used by industry analysts, goes further. It says that if a business process can be automated, it should be automated, by combining analytics, process tools, and robots \cf{gartner2020hyper}. Both terms sit next to the colloquium topic list. They are also easy to over-claim.
+
+A careful academic use of these terms needs three limits. First, automation is a means, not the goal. ISO/IEC 25010 quality characteristics still apply to the system \cf{iso25010}. Second, not every step should go to a large language model. Rules, indexes, and tests are also automation. They are cheaper and easier to audit. Third, ``real-time insight'' is a claim about speed and freshness. It is not the same as ``we called an API''. The architecture in this thesis is therefore a \emph{limited} case of augmented analytics. Enrichment and matching are automated under budgets. The lakehouse contracts stay human-defined.
+
+\section{MLOps, LLMOps, and cost--quality routing}
+\label{sec:llmops}
+
+Sculley and colleagues warned that machine-learning systems collect hidden technical debt. Causes include tight coupling, extra users that were not planned, and glue code \cf{sculley2015debt}. MLOps literature answers with life-cycle practices: versioning, monitoring, continuous delivery, and governance of models as software \cf{kreuzberger2023mlops}. Empirical lists of software-engineering challenges for machine learning also stress data management, experiment tracking, and the gap between research and production \cf{lwakatare2019mlse}. Raji et al.\ propose internal algorithmic auditing as a way to close accountability gaps before deployment \cf{raji2020closing}.
+
+Large language models add a billing problem that older MLOps work did not stress enough. Chen, Zaharia and Zou show that sending easy cases to cheap models and hard cases to expensive models (FrugalGPT) can match the quality of one strong model at much lower cost \cf{chen2023frugalgpt}. For a master's system with a free-tier budget, the lesson is direct. A task-aware router with daily budgets is part of the research design. It is not only an extra feature. Multi-provider routing also encodes an EU choice: inference in the region (for example Amazon Bedrock in Frankfurt) versus US software-as-a-service APIs. Quality, cost, latency, and data location are therefore several goals at once. They are not a single accuracy table.
+
+\section{Agents and tool use}
+\label{sec:agents}
+
+Tool-using agents mix reasoning steps with actions, as in the ReAct pattern \cf{yao2023react}. A graph of specialist steps can, in principle, split retrieval, scoring, explanation, and checking. The scientific warning is clear. Open-ended agent loops are hard to cost, hard to test, and hard to explain when they fail. This thesis therefore treats agents as an optional, \emph{limited} graph. There is a fixed maximum number of language-model calls and handoffs. The Model Context Protocol bridge is a thin tool interface. It is not an independent workforce. This limit matches the low-cost stance of the previous section.
+
+\section{Responsible AI, GDPR, and the EU Artificial Intelligence Act}
+\label{sec:responsible}
+
+Algorithm systems raise ethics issues of opacity, bias, and accountability. These issues existed before generative models \cf{mittelstadt2016ethics}. Frameworks such as AI4People turn those issues into principles: do good, avoid harm, respect autonomy, be fair, and be able to explain \cf{floridi2018ai4people}. Jobin, Ienca and Vayena map hundreds of AI ethics guidelines globally. They show convergence on transparency and accountability, but weak operational detail \cf{jobin2019global}. In European law, two instruments dominate.
+
+The General Data Protection Regulation requires lawful, fair, and transparent processing. It also requires purpose limitation, data minimisation, and storage limitation for personal data \cf{eu2016gdpr}. A matching service that accepts a resume processes personal data, even if job text is public. Removing personal data, using the resume only for job discovery, and avoiding extra profiling are therefore design requirements. They are not only an ethics appendix. Veale et al.\ discuss how model inversion and memorisation create legal risk even when outputs look anonymised \cf{veale2018fairness}.
+
+The Artificial Intelligence Act uses a risk-based system \cf{eu2024aiact}. Some AI systems used in employment and access to work are high-risk when they are used to recruit or to decide about an employment relationship. Veale and Borgesius explain the draft and final structure for practitioners \cf{veale2021demystifying}. An advice ranker of \emph{public vacancies} for a job seeker is a different use from an employer tool that ranks \emph{people}. Mixing these two uses would over-state legal risk in one way, and under-state remaining duties of transparency and human oversight in another way. Wachter, Mittelstadt and Floridi have also argued that a general ``right to explanation'' of automated decisions is weaker in the GDPR than popular comments suggest \cf{wachter2017explanation}. Edwards and Veale discuss how users may still deserve \emph{better decisions} and meaningful information even when a full explanation right is narrow \cf{edwards2021regulating}. Product-level citations and disclaimers are therefore an ethics design choice, and they may also reduce legal risk.
+
+Selbst et al.\ warn that fairness discussions often abstract away the sociotechnical system \cf{selbst2019fairness}. For DataForge, the sociotechnical picture includes: public job text, a user-uploaded resume, a GitHub Pages wizard, and optional API keys. Responsible design must fit that whole path, not only the embedding model.
+
+\section{Design science as the frame for building a system}
+\label{sec:dsr-theory}
+
+Information-systems research separates behavioural science, which explains phenomena, from design science, which builds and evaluates artefacts to solve identified problems \cf[p.~~75]{hevner2004dsr}. Peffers and colleagues describe a process: identify the problem, set objectives, design and develop, demonstrate, evaluate, and communicate \cf{peffers2007dsr}. Vom Brocke and Maedche later offer a planning grid for such projects \cf{vomBrocke2015dsr}. Gregor and Hevner explain how to position design science so that contributions are visible to reviewers \cf{gregor2013positioning}. Gregor also classifies types of theory in information systems. This thesis mainly produces an \emph{analytical} and \emph{explanatory} contribution about integration, not a new grand law \cf{gregor2007theory}.
+
+Design science is the right frame because this thesis produces a working system (the integration layer), not only a statistical model. It is not a licence to skip theory. Hevner requires that artefacts rest on existing theories and that evaluation methods match the claims. The base theories here are dimensional modelling, IR evaluation, MLOps, and European data-protection law. The evaluation methods are a labelled ranking experiment, a cost model, and an architecture argument about data history. Yin's case-study logic supports design science. It justifies one current, information-rich case---DataForge---when the questions are of the ``how'' and ``why'' type \cf{yin2018casestudy}.
+
+\section{Research gap}
+\label{sec:gap}
+
+Each reviewed stream is mature on its own. Lakehouses, SCD Type~2, BM25, dense retrieval, RAG, MLOps, and the AI Act are not forgotten topics. What is still thin in applied master's work and in practitioner writing is their \emph{joint} use under production limits:
+
+\begin{enumerate}
+  \item a live multi-source medallion system with history contracts that must not be broken;
+  \item a generative layer with stop switches, budgets, and EU location limits;
+  \item a matching experiment that can fail, and that keeps an honest non-AI baseline;
+  \item a cost discussion based on token prices and sample rates, not on slide return-on-investment.
+\end{enumerate}
+
+New chatbot studies usually skip (1). Pure data-engineering theses usually skip (2)--(4). Vendor white papers usually skip (3). The gap of this thesis is therefore an integration gap. It is not a claim that embeddings or lakehouses are new.
+
+\section{Interim summary}
+\label{sec:interim2}
+
+Generative models change how matching and enrichment can be built. They do not cancel IR evaluation, dimensional history, or European law. Augmented analytics is used here as limited automation of enrichment and retrieval. LLM operations and FrugalGPT-style routing supply the cost discipline. Design science plus a single-case study supply the research method that Chapter~\ref{ch:method} will defend. The research questions in the next chapter turn the gap into empirical work.
+
+\section{Summary of the theory chapters}
+\label{sec:theory-summary}
+
+Chapter~2 and this chapter together give the theoretical background that the colloquium structure requires. Lakehouse and SCD Type~2 theory explain why GenAI must not rewrite identity keys. Retrieval theory explains why nDCG@10 and a non-AI baseline are used. LLMOps and FrugalGPT explain budgets and routers. GDPR and the AI Act explain why seeker-side ranking is treated as advisory search rather than employer selection. Design science explains why building and evaluating one artefact is a valid master's method. The next chapters state the research questions and the concrete method used on DataForge.

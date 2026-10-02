@@ -86,7 +86,7 @@
 
 - I have four research questions. RQ1 is architectural: integration without breaking history. RQ2 is multi-objective provider selection. RQ3 is the matching experiment. RQ4 is business: euros per thousand jobs.
 - My main testable hypothesis is **H1**: dense retrieval beats the wizard on nDCG@10. I will show that table on slide 8.
-- Secondary hypotheses on enrichment cost and routing are tied to RQ2 and RQ4; RQ2 live Bedrock runs are still pending quota — I will be explicit about that.
+- Secondary hypotheses on enrichment cost and routing are tied to RQ2 and RQ4. Live OpenAI RQ2 is done. Live Bedrock is still pending quota — I will be explicit about that.
 
 ---
 
@@ -118,9 +118,9 @@
 - **Why not literature-only?** Artefact + measured properties; coding thesis still needs **15–50 % literature** (UE rule)
 - **Why not a broad survey?** One deep case with reproducible scripts beats many shallow stacks
 - **Evaluation:**
-  - RQ3: 42 labelled queries × 96 jobs · nDCG@10, P@5, Recall@20, MRR
-  - RQ2: rules baseline now; live Bedrock Pareto when quota approved
-  - RQ4: modelled €/1k jobs from public price lists + rules-first enrichment share
+  - RQ3: 103 labelled queries × 96 jobs · nDCG@10, P@5, Recall@20, MRR
+  - RQ2: live OpenAI gpt-4o-mini 40/40; Bedrock Pareto when quota approved
+  - RQ4: modelled €/1k jobs (OpenAI-first) + live CostLogger
 
 **Speaker notes (~60 s)**
 
@@ -143,15 +143,15 @@ Public jobs → Bronze → Silver (SCD2) → Gold + APIs
 
 - **ModelRouter:** task profiles, JSON schema check, `AI_ENABLED` kill switch, daily budget
 - **Guardrails:** LLM never mutates `job_id` / SCD keys; prompt versions in git
-- **Live today:** lakehouse, Jobs/Metrics APIs, Match Function URL (API key)
-- **Paused:** nightly Bedrock enrichment (Nova Micro account quota = 0 — increase requested)
+- **Live today:** lakehouse, Jobs/Metrics APIs, Match Function URL (API key), nightly **OpenAI** enrichment (sample 0.25)
+- **Paused:** nightly **Bedrock** enrichment (Nova Micro account quota = 0 — increase requested)
 
 **Speaker notes (~60 s)**
 
 - One architecture picture: the existing pipeline stays; generative components read Silver and Gold.
 - Enrichment is **rules-first**; LLM calls only on unclear cases or sampled rows when enabled.
 - Match API exposes hybrid retrieval and optional agent path; production uses API key and CORS.
-- Honesty slide inside the artefact: enrichment is **paused** until AWS raises Bedrock quota. Architecture and eval harness are complete.
+- Honesty: Bedrock enrichment is **paused** until AWS raises quota. OpenAI enrichment **is live**. Architecture and eval harness are complete.
 
 ---
 
@@ -159,25 +159,25 @@ Public jobs → Bronze → Silver (SCD2) → Gold + APIs
 
 **On slide**
 
-**RQ3 — Matching (103 queries, 96 jobs)**
+**RQ3 — Matching (103 queries, 96 jobs; packaging semantic-embed run)**
 
 | Method | nDCG@10 | P@5 | Recall@20 |
 |--------|--------:|----:|----------:|
-| BM25 | 0.135 | 0.162 | 0.214 |
-| **Dense** | **0.217** | **0.219** | **0.274** |
-| Hybrid (product default) | 0.171 | 0.171 | 0.234 |
-| Heuristic wizard | 0.146 | 0.191 | 0.240 |
+| BM25 | 0.135 | 0.144 | 0.193 |
+| **Dense** | **0.217** | **0.218** | **0.286** |
+| Hybrid (product default) | 0.167 | 0.167 | 0.223 |
+| Heuristic wizard | 0.146 | 0.173 | 0.207 |
 
-- **H1 supported** on this label set: dense > wizard (0.217 vs 0.146)
-- **RQ4:** rules-first path ≈ **€0.06 / 1k jobs** (modelled)
-- **RQ2:** rules baseline done; **live Bedrock Pareto pending quota** — not hidden
+- **H1 supported** on the packaging run: dense > wizard (0.217 vs 0.146)
+- **RQ4:** OpenAI-first rules-first path ≈ **€0.10 / 1k jobs** (modelled)
+- **RQ2:** OpenAI gpt-4o-mini **40/40** (~$0.0011, ~1.1 s). **Live Bedrock still pending quota** — not hidden
 
 **Speaker notes (~90 s)**
 
-- Main empirical result: dense retrieval leads on nDCG@10 at 0.217 versus 0.146 for the rule-based wizard and 0.135 for BM25 alone. Hypothesis H1 is supported on this pilot set. Absolute scores are modest — far from perfect — which is scientifically useful.
-- Hybrid is the **product default** because it balances lexical and semantic signals and supports citations; on this gold set it sits between dense and wizard.
-- Unit cost under rules-first enrichment is about six euro cents per thousand jobs in the modelled scenario.
-- RQ2: I have the rules-only point and the runner ready. Live Nova Micro completions were blocked at zero TPM/TPD; quota increase submitted 16 Sep 2026. I state that openly.
+- Main empirical result: on the packaging semantic-embed run, dense retrieval leads on nDCG@10 at 0.217 versus 0.146 for the rule-based wizard. Hypothesis H1 is supported on that run. CI later pins local tf-idf embeddings; under that pin dense is 0.126. I name both numbers if asked.
+- Hybrid is the **product default** because it balances lexical and semantic signals and supports citations.
+- Unit cost under OpenAI-first rules-first enrichment is about **ten euro cents** per thousand jobs in the modelled scenario. Live RQ2 OpenAI cost for 40 jobs was about one tenth of a US cent.
+- RQ2: OpenAI is measured. Live Nova Micro completions were blocked at zero TPM/TPD; quota increase submitted 16 Sep 2026. I state that openly.
 
 ---
 
@@ -206,7 +206,7 @@ Public jobs → Bronze → Silver (SCD2) → Gold + APIs
 **On slide**
 
 - **Now → Oct/Nov 2026:** supervisor signatures · CampusNet registration (**title frozen**)
-- **Build:** complete **RQ2** after Bedrock quota · enlarge gold label set (optional peer review)
+- **Build:** complete **RQ2 Bedrock** after quota · optional second annotator on the 103-query set
 - **Write:** expand literature with page numbers · hit **character count** (72k–82k w/o spaces for 120 ECTS)
 - **Submit → Feb/Mar 2027:** binding PDF · colloquium on same topic
 - **Reminder:** rewrite in **your own voice** — UE fails theses with **>20 % AI-written** text (check with supervisor)
@@ -217,7 +217,7 @@ Public jobs → Bronze → Silver (SCD2) → Gold + APIs
 
 - Close with the plan, not a demo cliffhanger.
 - Immediate admin: two supervisors, paper form, CampusNet — details in ADMIN_CHECKLIST.md locally.
-- Scientific debt: RQ2 live cells and optional larger label set.
+- Scientific debt: RQ2 **Bedrock** live cells (OpenAI is done) and optional second annotator.
 - Writing debt: literature depth and personal voice per UE writing lecture.
 - Thank the committee and invite questions. Keep 30 seconds buffer.
 
@@ -243,7 +243,7 @@ Use these if asked during the 10-minute Q&A. Keep answers under 45 seconds each.
 
 ### Why keep hybrid if dense wins on nDCG@10?
 
-- Dense wins on **this** 42-query author label set. Hybrid still helps when queries are **short or misspelled** — BM25 catches exact tokens dense models skip.
+- Dense wins on **this** 103-query packaging run with a semantic embedder. Hybrid still helps when queries are **short or misspelled** — BM25 catches exact tokens dense models skip.
 - The **product** must be robust across German/English mixes and sparse résumés, not only optimise one metric on one gold set.
 - Hybrid also supports **explainability**: lexical hits plus semantic rank are easier to cite in a career-advice UI.
 - I report dense as the scientific winner for H1; hybrid remains the **default deploy** until a larger label set says otherwise.
@@ -257,10 +257,10 @@ Use these if asked during the 10-minute Q&A. Keep answers under 45 seconds each.
 
 ### Why not OpenAI only?
 
-- **EU data residency** and university ethics favour **in-region** Bedrock for the primary thesis track.
-- **Vendor lock-in:** ModelRouter supports Bedrock, OpenAI, Anthropic, and local fallback for reproducibility and cost experiments (RQ2).
-- OpenAI may win some quality benchmarks, but the research question is **multi-objective**: quality, €, latency, residency — not single-vendor accuracy slides.
-- Rules-first enrichment already covers many fields at **€0** model cost.
+- Production is **OpenAI-first today** because Bedrock Nova Micro quota is zero. That is an operations fact, not the preferred EU-residency design.
+- **EU data residency** still favours **in-region** Bedrock when quota opens. The thesis reports both.
+- **Vendor lock-in:** ModelRouter supports Bedrock, OpenAI, Anthropic, and local fallback (RQ2).
+- Rules-first enrichment already covers field and seniority at **€0** model cost (macro-F1 1.0 on 150 labelled jobs).
 
 ### Why is literature 15–50 % of a coding thesis?
 

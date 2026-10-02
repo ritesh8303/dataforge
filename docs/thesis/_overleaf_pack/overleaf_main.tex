@@ -1,0 +1,157 @@
+% University of Europe for Applied Sciences --- Master's thesis
+% Structure and layout follow Prof. Dr. Rand Kouatly, SS 2026
+%   "Writing Good thesis" + "Master Colloquium" + "Thesis Structure"
+% Compiler: pdfLaTeX   |   Main document: overleaf_main.tex
+%
+% Fill \Matrikel, \Erstbetreuung, \Zweitbetreuung before binding.
+% Confirm any Prüfungsamt wording that differs from the lecture declaration.
+\documentclass[12pt,a4paper,oneside]{report}
+
+\input{preamble}
+
+\newcommand{\Matrikel}{[Matriculation number]}
+\newcommand{\Erstbetreuung}{[First supervisor --- Prof.\ Dr.\ \ldots]}
+\newcommand{\Zweitbetreuung}{[Second supervisor]}
+\newcommand{\Abgabedatum}{[Submission date]}
+\newcommand{\ThesisTitle}{Augmented Analytics on a Production Lakehouse: Integrating Generative AI into European Job Intelligence}
+\newcommand{\ThesisSubtitle}{A Case Study on DataForge}
+
+\begin{document}
+
+% -------------------------------------------------------------------------
+% 1. Cover sheet
+% -------------------------------------------------------------------------
+\begin{titlepage}
+\centering
+{\large University of Europe for Applied Sciences\par}
+\vspace{0.3em}
+{\large University of Applied Sciences Europe\par}
+\vspace{0.3em}
+{\large Faculty of Business / Fachbereich Wirtschaft\par}
+\vspace{0.3em}
+{\large Campus Potsdam\par}
+\vspace{2.2em}
+{\LARGE\bfseries \ThesisTitle\par}
+\vspace{1em}
+{\large \ThesisSubtitle\par}
+\vspace{2.2em}
+{\large Master's Thesis\par}
+\vspace{0.4em}
+{\normalsize Programme: M.Sc.\ Data Science\par}
+\vspace{1.8em}
+\begin{tabular}{rl}
+Submitted by: & Ritesh Rakesh Jadhav \\
+Matriculation no.: & \Matrikel \\
+First supervisor: & \Erstbetreuung \\
+Second supervisor: & \Zweitbetreuung \\
+Submission date: & \Abgabedatum \\
+\end{tabular}
+\vspace{1.8em}
+\par
+Reference implementation: \url{https://github.com/ritesh8303/dataforge}
+\vfill
+{\small Draft for supervisor review. Print on one side only, on 80\,g/m$^2$ white A4 paper, as required in the writing lecture.}
+\end{titlepage}
+
+% -------------------------------------------------------------------------
+% Statutory declaration (wording from the SS 2026 writing lecture)
+% -------------------------------------------------------------------------
+\clearpage
+\thispagestyle{empty}
+\section*{Statutory Declaration}
+\addcontentsline{toc}{chapter}{Statutory Declaration}
+
+\noindent I hereby declare that I have developed and written the enclosed Master Thesis completely by myself and have not used sources or means without declaration in the text. I clearly marked and separately listed all the literature and all the other sources which I employed when producing this academic work, either literally or in content. I am aware that the violation of this regulation will lead to failure of the thesis.
+
+\vspace{2.5em}
+\noindent Berlin, \underline{\hspace{6.5cm}}\\[0.4em]
+{\small Place, Date}
+
+\vspace{2.5em}
+\noindent Signature: \underline{\hspace{7cm}}
+
+\vspace{2em}
+\noindent{\small If the Examination Office issues a different official wording, replace this page with that wording before binding.}
+
+% -------------------------------------------------------------------------
+% 2. Table of contents
+% -------------------------------------------------------------------------
+\clearpage
+\tableofcontents
+
+% -------------------------------------------------------------------------
+% 3. Indices
+% -------------------------------------------------------------------------
+\clearpage
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\begin{tabular}{@{}ll@{}}
+AI    & Artificial Intelligence \\
+API   & Application Programming Interface \\
+ATS   & Applicant Tracking System \\
+AWS   & Amazon Web Services \\
+BA    & Bundesagentur f\"ur Arbeit \\
+BM25  & Best Match 25 (probabilistic retrieval function) \\
+CI    & Continuous Integration \\
+DSR   & Design Science Research \\
+ECTS  & European Credit Transfer and Accumulation System \\
+EU    & European Union \\
+GDPR  & General Data Protection Regulation \\
+HITL  & Human in the Loop \\
+IR    & Information Retrieval \\
+LLM   & Large Language Model \\
+MCP   & Model Context Protocol \\
+MLOps & Machine Learning Operations \\
+MRR   & Mean Reciprocal Rank \\
+nDCG  & Normalised Discounted Cumulative Gain \\
+NLP   & Natural Language Processing \\
+RAG   & Retrieval-Augmented Generation \\
+RRF   & Reciprocal Rank Fusion \\
+RQ    & Research Question \\
+SCD   & Slowly Changing Dimension \\
+UE    & University of Europe for Applied Sciences \\
+\end{tabular}
+
+\clearpage
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+
+\clearpage
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+
+% -------------------------------------------------------------------------
+% 4. Abstract
+% -------------------------------------------------------------------------
+\clearpage
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\input{chapters/00_abstract}
+
+% -------------------------------------------------------------------------
+% 5--11. Numbered chapters (DIN 1421)
+% -------------------------------------------------------------------------
+\input{chapters/01_introduction}
+\input{chapters/02_related_work}
+\input{chapters/02b_theoretical_ai}
+\input{chapters/03_research_questions}
+\input{chapters/04_methodology}
+\input{chapters/05_results}
+\input{chapters/06_discussion}
+\input{chapters/07_implications}
+
+% -------------------------------------------------------------------------
+% Bibliography (Harvard / author-year)
+% -------------------------------------------------------------------------
+\clearpage
+\bibliographystyle{apalike}
+\bibliography{references}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+% -------------------------------------------------------------------------
+% Appendices
+% -------------------------------------------------------------------------
+\appendix
+\input{chapters/A_appendices}
+
+\end{document}

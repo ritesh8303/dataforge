@@ -2929,7 +2929,7 @@
       "local": {
         "calls": 302,
         "cost_usd": 0.0,
-        "latency_ms": 22.67199998459546,
+        "latency_ms": 23.59049999358831,
         "failures": 0
       }
     },
@@ -2937,7 +2937,7 @@
       "embed": {
         "calls": 302,
         "cost_usd": 0.0,
-        "latency_ms": 22.67199998459546,
+        "latency_ms": 23.59049999358831,
         "failures": 0
       }
     }

@@ -31,9 +31,9 @@ Potsdam, Germany\\
 European labour-market data is fragmented across government portals, aggregators, and company applicant-tracking systems.
 DataForge is a live serverless medallion lakehouse on AWS that ingests multi-source vacancies, preserves slowly changing history, and serves public analytics APIs.
 This paper describes a design-science integration of generative AI---model gateway, rules-first enrichment, hybrid retrieval Match API, and reproducible evaluation harness---without mutating dimensional keys.
-On a labelled set of 103 queries over 96 jobs, dense embedding retrieval achieves nDCG@10 of 0.217 compared with 0.146 for a rule-based Career Matching Wizard and 0.135 for BM25 alone.
-A modelled rules-first enrichment path costs approximately \EUR{0.06} per thousand jobs.
-Live multi-provider Pareto experiments on AWS Bedrock remain pending account quota approval; architecture, baselines, and partial results are reported with explicit operational limits.
+On a labelled set of 103 queries over 96 jobs, dense embedding retrieval achieves nDCG@10 of 0.217 compared with 0.146 for a rule-based Career Matching Wizard (packaging semantic-embed run).
+A modelled OpenAI-first rules-first enrichment path costs approximately \EUR{0.10} per thousand jobs.
+Live OpenAI \texttt{gpt-4o-mini} Pareto experiments completed 40/40 jobs at about \$0.0011; AWS Bedrock Nova Micro remains pending account quota approval.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -77,7 +77,7 @@ DataForge provides that combined setting.
 
 Public job documents flow Bronze $\rightarrow$ Silver (SCD2) $\rightarrow$ Gold and APIs.
 Generative components are \emph{consumers}: rules-first enrichment and hybrid Match API read Silver/Gold without rewriting \texttt{job\_id} or validity intervals.
-A \texttt{ModelRouter} routes tasks (\texttt{enrich}, \texttt{embed}, \texttt{explain}) across Bedrock (EU), OpenAI, Anthropic, and local providers with JSON schema checks, prompt versioning, daily budget caps, and an \texttt{AI\_ENABLED} kill switch.
+A \texttt{ModelRouter} routes tasks (\texttt{enrich}, \texttt{embed}, \texttt{explain}) with an OpenAI-first production cascade while Bedrock quota is zero (Bedrock EU, Anthropic, and local remain fallbacks), plus JSON schema checks, prompt versioning, daily budget caps, and an \texttt{AI\_ENABLED} kill switch.
 
 \subsection{Matching pipeline}
 
@@ -86,16 +86,16 @@ The Career Matching Wizard baseline applies fixed keyword weights (60\% skills, 
 
 \subsection{Evaluation design}
 
-RQ3 uses 42 author-graded queries against 96 jobs; primary metric nDCG@10, with P@5, Recall@20, and MRR as secondary measures.
-RQ2 compares provider quality--cost--latency Pareto points; rules-only baseline is complete; live Bedrock Nova Micro runs were blocked at zero account quota at measurement time.
-RQ4 models enrichment, embedding, and match cost for a 1{,}000-job scenario using public list prices and a 30\% LLM-call share under rules-first enrichment.
+RQ3 uses 103 author-graded queries against 96 jobs; primary metric nDCG@10, with P@5, Recall@20, and MRR as secondary measures.
+RQ2 compares provider quality--cost--latency Pareto points; live OpenAI \texttt{gpt-4o-mini} completed 40/40 jobs; live Bedrock Nova Micro runs were blocked at zero account quota at measurement time.
+RQ4 models enrichment, embedding, and match cost for a 1{,}000-job OpenAI-first scenario using public list prices and a 30\% LLM-call share under rules-first enrichment.
 
 \section{Results}
 \label{sec:results}
 
 Table~\ref{tab:rq3} summarises matching quality.
 Dense retrieval leads on nDCG@10 (0.217), supporting hypothesis H1 on this label set.
-Hybrid retrieval (0.171) remains the product default for robustness across lexical and semantic signals despite lower nDCG on this gold set.
+Hybrid retrieval (0.167) remains the product default for robustness across lexical and semantic signals despite lower nDCG on this gold set.
 
 \begin{table}[ht]
 \centering
@@ -105,16 +105,16 @@ Hybrid retrieval (0.171) remains the product default for robustness across lexic
 \toprule
 Method & nDCG@10 & P@5 & R@20 & MRR \\
 \midrule
-BM25 & 0.135 & 0.162 & 0.214 & 0.184 \\
-Dense & \textbf{0.217} & \textbf{0.219} & \textbf{0.274} & \textbf{0.268} \\
-Hybrid & 0.171 & 0.171 & 0.234 & 0.234 \\
-Heuristic wizard & 0.146 & 0.191 & 0.240 & 0.212 \\
+BM25 & 0.135 & 0.144 & 0.193 & 0.191 \\
+Dense & \textbf{0.217} & \textbf{0.218} & \textbf{0.286} & \textbf{0.271} \\
+Hybrid & 0.167 & 0.167 & 0.223 & 0.233 \\
+Heuristic wizard & 0.146 & 0.173 & 0.207 & 0.195 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Integration checks (RQ1) confirm additive schemas, operational kill switch, and unchanged SCD semantics; nightly Bedrock enrichment was paused pending quota increase.
-Unit-cost modelling (RQ4) yields approximately \EUR{0.06} per thousand jobs on the rules-first path (enrichment sample 30\%, embeddings, 100 match requests).
+Integration checks (RQ1) confirm additive schemas, operational kill switch, and unchanged SCD semantics; nightly OpenAI enrichment is live at sample rate 0.25 while nightly Bedrock enrichment remains paused pending quota increase.
+Unit-cost modelling (RQ4) yields approximately \EUR{0.10} per thousand jobs on the OpenAI-first rules-first path. Live CostLogger on 40 OpenAI enrich calls totals about \$0.0011.
 
 \section{Discussion and Limitations}
 \label{sec:discussion}
@@ -122,7 +122,7 @@ Unit-cost modelling (RQ4) yields approximately \EUR{0.06} per thousand jobs on t
 Results support three practical implications: enforce rules-before-tokens enrichment, treat AI outputs as additive artefacts, and always benchmark against simple baselines.
 Compliance framing treats Match as decision support for job seekers on public vacancy text, not automated hiring; GDPR and EU AI Act documentation remains necessary.
 
-Limitations include author labels, a single cloud region, modest absolute nDCG, and incomplete live RQ2 provider cells.
+Limitations include author labels, a single cloud region, modest absolute nDCG, embedder-dependent RQ3 scores (CI local tf-idf pin vs packaging table), and incomplete live Bedrock RQ2 cells.
 Absolute scores should not be compared to open-domain QA benchmarks.
 
 \section{Conclusion}
@@ -130,7 +130,7 @@ Absolute scores should not be compared to open-domain QA benchmarks.
 
 This case study shows that generative AI can extend a production European job lakehouse when integration is constrained by historical keys, evaluation harnesses, and cost controls.
 Dense retrieval outperforming a transparent heuristic wizard demonstrates measurable value for augmented analytics claims.
-Future work includes completing Bedrock Pareto experiments after quota approval, enlarging the gold label set with peer review, and flushing live cost logs from production Lambdas.
+Future work includes completing Bedrock Pareto experiments after quota approval, adding a second annotator on the gold set, and an optional LLM faithfulness judge.
 
 \section*{Acknowledgment}
 

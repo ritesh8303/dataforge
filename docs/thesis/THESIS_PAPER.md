@@ -1,15 +1,15 @@
 # Content ledger (superseded as the official outline)
 
-**The binding thesis is** [`latex/overleaf_main.tex`](latex/overleaf_main.tex), restructured on 18 September 2026 to the University of Europe lecture format (Kouatly, SS 2026).
+**The binding thesis is** [`latex/overleaf_main.tex`](latex/overleaf_main.tex). **Current measured numbers:** [`RESULTS_DRAFT.md`](RESULTS_DRAFT.md) (last check 2026-10-02).
 
-This Markdown file keeps the earlier ARM-style chapter order so measured tables are easy to copy. Do not submit this file as the thesis.
+This Markdown file keeps an older ARM-style chapter order. Do not submit this file as the thesis.
 
 **Working title (UE):** Augmented Analytics on a Production Lakehouse: Integrating Generative AI into European Job Intelligence — A Case Study on DataForge
 
 **Programme:** M.Sc. Data Science (2-year)  
 **Institution:** University of Europe for Applied Sciences, Potsdam  
 **Author:** Ritesh Rakesh Jadhav  
-**Date:** September 2026  
+**Date:** October 2026  
 **Reference implementation:** https://github.com/ritesh8303/dataforge
 
 ---
@@ -18,9 +18,9 @@ This Markdown file keeps the earlier ARM-style chapter order so measured tables 
 
 European job postings are fragmented across public employment services, aggregators, and applicant-tracking systems. DataForge is a production serverless medallion lakehouse on Amazon Web Services (AWS) that already ingests multi-source vacancy data into Bronze, Silver (SCD Type 2), and Gold layers with public Jobs/Metrics APIs. Industry demand, however, has shifted from raw aggregation toward generative-AI (GenAI) features such as semantic matching and structured enrichment—features that risk breaking lineage, exploding cost, and creating non-reproducible “AI theatre” if bolted on without measurement.
 
-This thesis designs, implements, and evaluates a **frugal GenAI integration layer** on the existing DataForge system: a multi-provider model gateway with kill switches and budgets; rules-first enrichment with Bedrock as the primary EU-resident LLM path; hybrid BM25 + dense retrieval for Match; FastAPI Match API with PII redaction and cited explanations; optional bounded multi-agent orchestration and an MCP tool bridge. Four research questions address (RQ1) non-destructive integration under cost envelopes, (RQ2) provider trade-offs under residency and budget constraints, (RQ3) ranked relevance versus a rule-based Career Matching Wizard, and (RQ4) unit economics of the AI layer.
+This thesis designs, implements, and evaluates a **frugal GenAI integration layer** on the existing DataForge system: a multi-provider model gateway with kill switches and budgets; rules-first enrichment with **OpenAI-first** production (`gpt-4o-mini`) while Bedrock quota is blocked; hybrid BM25 + dense retrieval for Match; FastAPI Match API with PII redaction and cited explanations; optional bounded multi-agent orchestration and an MCP tool bridge. Four research questions address (RQ1) non-destructive integration under cost envelopes, (RQ2) provider trade-offs under residency and budget constraints, (RQ3) ranked relevance versus a rule-based Career Matching Wizard, and (RQ4) unit economics of the AI layer.
 
-On a labelled matching set (42 queries × 96 jobs), dense retrieval achieves the highest nDCG@10 (0.220) versus heuristic (0.159) and BM25 (0.145), supporting the hypothesis that embedding retrieval improves ranked relevance relative to the keyword wizard—while hybrid remains the product default for lexical robustness and citation workflows. Modelled unit economics for rules-first enrichment plus embeddings on a 1,000-job scenario remain on the order of **€0.06**. Live multi-provider Bedrock completion experiments for RQ2 are **pending AWS Nova Micro account quota approval** (applied account limits were zero at measurement time); the thesis records this limitation honestly and provides a reproducible protocol to complete the Pareto table once quotas are restored.
+On an expanded labelled matching set (103 queries × 96 jobs), dense retrieval achieves the highest nDCG@10 (**0.217**) versus heuristic (**0.146**) and BM25 (**0.135**) in the packaging semantic-embed run. Hybrid remains the product default. CI later pins local tf-idf embeddings (dense nDCG@10 **0.126**); both numbers are reported. Modelled OpenAI-first unit economics on a 1,000-job scenario are about **€0.10**. Live RQ2 on OpenAI gpt-4o-mini completed **40/40** jobs (~$0.0011). Live Bedrock Nova Micro remains **pending AWS quota**. Nightly OpenAI enrichment is on (sample 0.25).
 
 **Keywords:** medallion architecture; LLMOps; hybrid retrieval; job matching; unit economics; responsible AI; AWS Bedrock; European labour-market data.
 
@@ -207,9 +207,9 @@ Orchestration proofs: EventBridge + Lambda (production), Step Functions Express 
 
 ### 5.1 Model gateway (`src/ai_gateway/`)
 
-`ModelRouter` implements task profiles (`enrich`, `embed`, `explain`, …) with preferred provider cascades (Bedrock → OpenAI → Anthropic → local), JSON validation, CostLogger, daily budget checks, and `AI_ENABLED` kill switch. Prompt versions live under `prompts/` with a registry. Tracing helpers support Langfuse (env-gated) and S3/CloudWatch-oriented spans.
+`ModelRouter` implements task profiles (`enrich`, `embed`, `explain`, …) with an **OpenAI-first** production cascade while Bedrock Nova Micro quota is zero (then Anthropic, then local). Bedrock in `eu-central-1` remains the preferred EU-resident path when quota is approved. JSON validation, CostLogger, daily budget checks, and `AI_ENABLED` kill switch apply to all paths. Prompt versions live under `prompts/` with a registry. Tracing helpers support Langfuse (env-gated) and S3/CloudWatch-oriented spans.
 
-Bedrock completion defaults to the EU inference profile **`eu.amazon.nova-micro-v1:0`** after Titan Text Express reached end-of-life on the account. Embeddings use Titan Embed Text v2 when available.
+Production enrichment uses **`gpt-4o-mini`**; embeddings use **`text-embedding-3-small`**. Bedrock completion target is **`eu.amazon.nova-micro-v1:0`**; Titan Embed Text v2 when Bedrock quota opens.
 
 ### 5.2 Rules-first enrichment (`src/enrichment/`)
 
@@ -240,10 +240,12 @@ In-process graph: Supervisor → Retriever → Scorer → Explainer → Critic w
 |------------|--------|
 | Lakehouse + Jobs/Metrics + Pages | Live |
 | Match Function URL + API key | Live |
-| Enrichment nightly Bedrock | **Paused** (Nova Micro account quota was 0; increase requested) |
+| Nightly OpenAI enrichment (sample 0.25) | **Live** (304 jobs → 28 LLM rows, 2026-10-01) |
+| Nightly Bedrock enrichment | **Paused** (Nova Micro quota 0) |
+| RQ2 live OpenAI Pareto (`gpt-4o-mini`) | **Complete** (40/40, ~$0.0011) |
 | RQ2 live Bedrock Pareto | **Pending** quota approval |
-| RQ3 labelled matching eval | Complete |
-| RQ4 modelled ROI | Complete |
+| RQ3 labelled matching eval | Complete (103×96) |
+| RQ4 modelled ROI + live CostLogger | Complete |
 
 ---
 
@@ -253,33 +255,34 @@ In-process graph: Supervisor → Retriever → Scorer → Explainer → Critic w
 
 | Experiment | Protocol | Metric |
 |------------|----------|--------|
-| Matching (RQ3) | 42 graded queries × 96 jobs; BM25 / dense / hybrid / heuristic | nDCG@10, P@5, Recall@20, MRR |
+| Matching (RQ3) | 103 graded queries × 96 jobs; BM25 / dense / hybrid / heuristic | nDCG@10, P@5, Recall@20, MRR |
 | Rules enrichment | Labelled jobs for field/seniority/visa/English | Precision / Recall / F1 |
 | Agent ablation | 30 queries; hybrid vs multi-agent | Citation structure validity |
-| RQ2 Pareto | Rules vs pinned provider (Bedrock) | Latency, €, success rate |
-| ROI model | Pricing assumptions × token scenario | € per 1k jobs / per match share |
+| RQ2 Pareto | Rules vs pinned provider (OpenAI complete; Bedrock when quota opens) | Latency, €, success rate |
+| ROI model | OpenAI-first pricing × token scenario | € per 1k jobs / per match share |
 
 Fixtures and runners live under `evals/`; results under `evals/results/`.
 
 ### 6.2 RQ3 — Matching quality
 
-From `evals/results/eval_report.md`:
+From `evals/results/matching_eval.json` (packaging semantic-embed run):
 
 | Method | nDCG@10 | P@5 | Recall@20 | MRR |
 |--------|--------:|----:|----------:|----:|
-| bm25 | 0.1452 | 0.1619 | 0.2143 | 0.1844 |
-| **dense** | **0.2203** | **0.2190** | **0.2738** | **0.2677** |
-| hybrid | 0.1714 | 0.1714 | 0.2341 | 0.2344 |
-| heuristic | 0.1585 | 0.1905 | 0.2401 | 0.2117 |
+| bm25 | 0.1351 | 0.1437 | 0.1926 | 0.1906 |
+| **dense** | **0.2174** | **0.2175** | **0.2856** | **0.2706** |
+| hybrid | 0.1668 | 0.1670 | 0.2225 | 0.2327 |
+| heuristic | 0.1462 | 0.1728 | 0.2071 | 0.1952 |
 
-**Interpretation.** Dense retrieval outperforms the heuristic wizard on nDCG@10 (**H1 supported** on this gold set). Hybrid trails pure dense on this particular label distribution but remains the **product default** because Match also emphasises lexical fallback, filterability, and citation workflows that combine lexical hits with structured JD evidence. Scores are intentionally **non-saturated** (unlike trivial demos with nDCG≈1.0).
+**Interpretation.** Dense retrieval outperforms the heuristic wizard on nDCG@10 (**H1 supported** on this packaging run). Hybrid trails pure dense on this label distribution but remains the **product default** for lexical fallback and citations. CI later pins local tf-idf embeddings (dense nDCG@10 **0.1258**); both numbers are reported separately.
 
-### 6.3 RQ2 — Provider trade-offs (partial)
+### 6.3 RQ2 — Provider trade-offs
 
-**Available now:** rules-only Pareto point (near-zero latency, €0).  
-**Blocked:** live Nova Micro completions due to applied account quotas of **0 tokens/minute and 0 tokens/day** for Nova Micro, despite higher AWS default TPM. A Service Quotas increase (cross-region Nova Micro TPM → 1,000,000) was submitted on 2026-09-16 and was **PENDING** at draft time.
+**Rules baseline:** 40/40 jobs, ~0.18 ms avg latency, €0 model spend.
 
-This is a **measurement gap**, not an architecture gap: the runner `evals/run_rq2_pareto.py --live-providers --provider bedrock` is ready. The thesis will update Table RQ2 after approval without changing the protocol.
+**Live OpenAI `gpt-4o-mini` (2026-10-01):** 40/40 jobs, ~1125 ms avg latency, **~$0.0011** total (`evals/results/rq2_pareto.json`, strict pin).
+
+**Blocked:** live Nova Micro completions at **0 tokens/minute and 0 tokens/day**. Quota case `178955627400906` was still open. RQ2 is **closed for OpenAI** and **still open for Bedrock**; the runner `evals/run_rq2_pareto.py --live-providers --provider bedrock` is unchanged for post-quota runs.
 
 ### 6.4 Multi-agent ablation (thesis-plus)
 
@@ -287,10 +290,10 @@ On the local provider, average citation **structure** validity was 1.0 for both 
 
 ### 6.5 Threats to validity
 
-- Label set size (42×96) is adequate for an applied MSc pilot, not an industrial IR benchmark.  
-- Dense advantage may partly reflect label construction; hybrid product choice is multi-objective.  
-- ROI uses public pricing assumptions until live CostLogger traces accumulate.  
-- RQ2 live cells incomplete pending quota.
+- Label set size (103×96) is adequate for an applied MSc pilot, not an industrial IR benchmark.  
+- Dense advantage may partly reflect label construction and embedder choice; CI local tf-idf pin differs from the packaging table.  
+- ROI combines modelled OpenAI-first list prices with a live CostLogger flush from RQ2 OpenAI (40 calls).  
+- RQ2 Bedrock live cells remain incomplete pending quota.
 
 ---
 
@@ -302,13 +305,13 @@ Scenario: 1,000 jobs with rules-first enrichment (≈30% LLM calls) + embeddings
 
 | Component | Approx. USD | Approx. EUR (FX 0.92) |
 |-----------|------------:|----------------------:|
-| Enrich LLM full corpus | 0.077 | 0.071 |
-| Enrich rules-first (30%) | 0.023 | 0.021 |
-| Embeddings | 0.044 | 0.040 |
-| **Total (rules-first path)** | **0.067** | **0.062** |
-| Per enriched job (rules-first) | 2.3e-5 | 2.1e-5 |
+| Enrich LLM full corpus | 0.330 | 0.304 |
+| Enrich rules-first (30%) | 0.099 | 0.091 |
+| Embeddings (`text-embedding-3-small`) | 0.009 | 0.008 |
+| **Total (rules-first path)** | **0.108** | **0.099** |
+| Per enriched job (rules-first) | 9.9e-5 | 9.1e-5 |
 
-**Interpretation.** At Nova Micro / Titan Embed price points, AI enrichment + embedding for a 1k-job batch is **cents**, not tens of euros—supporting **H2/H4** directionally for this workload, provided quotas allow execution and sample rates remain controlled.
+**Interpretation.** OpenAI-first rules-first enrichment for a 1k-job batch is about **€0.10**, not tens of euros—supporting **H2/H4** directionally. Live RQ2 CostLogger on 40 enrich calls totals **~$0.0011** (~€0.025/1k jobs enrich-only proxy). Nova/Titan remain cheaper on list price once Bedrock quota opens.
 
 ### 7.2 Control levers
 
@@ -332,10 +335,10 @@ Pure CSV dumps of public jobs have weak differentiation. **Cited semantic Match*
 
 | RQ | Answer (draft) |
 |----|----------------|
-| RQ1 | Achieved via additive schemas, immutable SCD keys, Terraform AI module, budgets/kill switch; enrichment paused only for quota, not design failure. |
-| RQ2 | Protocol ready; **live Bedrock cells pending** quota. Rules baseline established. |
-| RQ3 | Dense > heuristic on nDCG@10; H1 supported on labelled set. |
-| RQ4 | Modelled €/1k jobs ≪ €1 under frugal settings; live logs to follow. |
+| RQ1 | Achieved via additive schemas, immutable SCD keys, Terraform AI module, budgets/kill switch; nightly **OpenAI** enrichment live (Bedrock path paused for quota). |
+| RQ2 | **Closed for OpenAI** (40/40, ~$0.0011). **Bedrock cells pending** quota. Rules baseline established. |
+| RQ3 | Dense > heuristic on packaging run (0.217 vs 0.146); H1 supported there; CI tf-idf pin reported separately. |
+| RQ4 | Modelled OpenAI-first ≈ **€0.10/1k jobs**; live CostLogger from RQ2 OpenAI run recorded. |
 
 ### 8.2 Responsible AI
 
@@ -343,8 +346,8 @@ DataForge Match is an **advisory job-discovery** aid, not an employer hiring dec
 
 ### 8.3 Limitations
 
-1. Bedrock Nova Micro account quota blocked live RQ2 at draft time.  
-2. Matching label scale is pilot-sized.  
+1. Bedrock Nova Micro quota still blocks live Bedrock RQ2; OpenAI RQ2 is complete.  
+2. Matching label scale is pilot-sized (103 queries).  
 3. Multi-agent faithfulness under real LLMs not yet spot-checked.  
 4. Official UE formatting rules must still be applied in the bound version.  
 5. Source coverage and `not_mentioned` visa majority limit some product KPIs.
@@ -359,7 +362,7 @@ Applied GenAI theses should treat **quota and billing mechanics** as first-class
 
 ### 9.1 Conclusion
 
-This thesis showed how to extend a live European job-intelligence lakehouse with a frugal GenAI layer without destroying SCD Type 2 lineage or abandoning evaluation honesty. On labelled matching data, dense retrieval improved nDCG@10 over a transparent heuristic wizard. Cost modelling suggests Nova-class enrichment and embeddings are inexpensive at 1k-job scale when rules-first controls apply. Remaining work is primarily **operational measurement** (Bedrock quota → RQ2 Pareto → enrichment re-enable → faithfulness spot-check), not redesign.
+This thesis showed how to extend a live European job-intelligence lakehouse with a frugal GenAI layer without destroying SCD Type 2 lineage or abandoning evaluation honesty. On labelled matching data, dense retrieval improved nDCG@10 over a transparent heuristic wizard on the packaging semantic-embed run. OpenAI-first cost modelling and live RQ2 runs show enrichment at cents per thousand jobs when rules-first sampling applies. Remaining work is primarily **Bedrock quota → live Nova Pareto → optional Bedrock enrichment re-enable**, not redesign.
 
 ### 9.2 Future work
 

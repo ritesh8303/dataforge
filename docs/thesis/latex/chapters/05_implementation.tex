@@ -3,9 +3,9 @@
 
 \section{Model gateway (\texttt{src/ai\_gateway/})}
 
-\texttt{ModelRouter} implements task profiles (\texttt{enrich}, \texttt{embed}, \texttt{explain}, \ldots) with preferred provider cascades (Bedrock $\rightarrow$ OpenAI $\rightarrow$ Anthropic $\rightarrow$ local), JSON validation, CostLogger, daily budget checks, and \texttt{AI\_ENABLED} kill switch. Prompt versions live under \texttt{prompts/} with a registry. Tracing helpers support Langfuse (env-gated) and S3/CloudWatch-oriented spans.
+\texttt{ModelRouter} implements task profiles (\texttt{enrich}, \texttt{embed}, \texttt{explain}, \ldots) with an \textbf{OpenAI-first} cascade while Bedrock Nova Micro quota is 0 (then Anthropic, then local). JSON validation, CostLogger, daily budget checks, and \texttt{AI\_ENABLED} kill switch remain. Prompt versions live under \texttt{prompts/} with a registry. Tracing helpers support Langfuse (env-gated) and S3/CloudWatch-oriented spans.
 
-Bedrock completion defaults to the EU inference profile \texttt{eu.amazon.nova-micro-v1:0} after Titan Text Express reached end-of-life on the account. Embeddings use Titan Embed Text v2 when available.
+Production completion uses \texttt{gpt-4o-mini}. Embeddings use \texttt{text-embedding-3-small}. Bedrock \texttt{eu.amazon.nova-micro-v1:0} and Titan Embed remain the preferred EU-resident path when quota is approved.
 
 \section{Rules-first enrichment (\texttt{src/enrichment/})}
 
@@ -44,10 +44,12 @@ In-process graph: Supervisor $\rightarrow$ Retriever $\rightarrow$ Scorer $\righ
 \midrule
 Lakehouse + Jobs/Metrics + Pages & Live \\
 Match Function URL + API key & Live \\
-Enrichment nightly Bedrock & \textbf{Paused} (Nova Micro account quota was 0; increase requested) \\
+Enrichment nightly OpenAI (sample 0.25) & \textbf{Live} (304 jobs $\rightarrow$ 28 LLM rows, 2026-10-01) \\
+Enrichment nightly Bedrock & \textbf{Paused} (Nova Micro quota 0) \\
+RQ2 live OpenAI Pareto & \textbf{Done} (gpt-4o-mini 40/40) \\
 RQ2 live Bedrock Pareto & \textbf{Pending} quota approval \\
-RQ3 labelled matching eval & Complete \\
-RQ4 modelled ROI & Complete \\
+RQ3 labelled matching eval & Complete (103$\times$96) \\
+RQ4 modelled + live CostLogger & Complete \\
 \bottomrule
 \end{tabularx}
 \end{table}

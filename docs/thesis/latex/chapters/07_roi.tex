@@ -1,50 +1,30 @@
-\chapter{Business / ROI analysis}
-\label{ch:roi}
+% LEGACY: not \input by overleaf_main.tex — kept for diff history only.
+% Current RQ4 tables: chapters/05_results.tex and evals/results/roi_report.json
+
+\chapter{Business / ROI analysis (legacy snapshot)}
+\label{ch:roi-legacy}
+
+\noindent\textit{Superseded by Section~RQ4 in \texttt{05\_results.tex}. OpenAI-first model from \texttt{scripts/roi\_report.py}, 2 October 2026.}
 
 \section{Cost model (RQ4)}
-\label{sec:rq4}
 
-Scenario: 1{,}000 jobs with rules-first enrichment ($\approx$30\% LLM calls) + embeddings for corpus and 100 match requests (\texttt{scripts/roi\_report.py}):
+Scenario: 1{,}000 jobs with rules-first enrichment ($\approx$30\% LLM calls) + embeddings for corpus and 100 match requests:
 
 \begin{table}[ht]
 \centering
-\caption{Unit economics for a 1{,}000-job scenario}
-\label{tab:roi}
+\caption{Unit economics for a 1{,}000-job scenario (OpenAI-first)}
+\label{tab:roi-legacy}
 \begin{tabular}{@{}lrr@{}}
 \toprule
 \textbf{Component} & \textbf{Approx.\ USD} & \textbf{Approx.\ EUR (FX 0.92)} \\
 \midrule
-Enrich LLM full corpus & 0.077 & 0.071 \\
-Enrich rules-first (30\%) & 0.023 & 0.021 \\
-Embeddings & 0.044 & 0.040 \\
-\textbf{Total (rules-first path)} & \textbf{0.067} & \textbf{0.062} \\
-Per enriched job (rules-first) & $2.3\times10^{-5}$ & $2.1\times10^{-5}$ \\
+Enrich LLM full corpus & 0.330 & 0.304 \\
+Enrich rules-first (30\%) & 0.099 & 0.091 \\
+Embeddings (\texttt{text-embedding-3-small}) & 0.009 & 0.008 \\
+\textbf{Total (rules-first path)} & \textbf{0.108} & \textbf{0.099} \\
+Per enriched job (rules-first) & $9.9\times10^{-5}$ & $9.1\times10^{-5}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{Interpretation.}
-At Nova Micro / Titan Embed price points, AI enrichment + embedding for a 1k-job batch is \textbf{cents}, not tens of euros---supporting \textbf{H2/H4} directionally for this workload, provided quotas allow execution and sample rates remain controlled.
-
-\section{Control levers}
-
-\begin{table}[ht]
-\centering
-\caption{Cost and abuse control levers}
-\label{tab:levers}
-\begin{tabularx}{\textwidth}{@{}lX@{}}
-\toprule
-\textbf{Lever} & \textbf{Effect} \\
-\midrule
-Rules-first + sample rate & Cuts LLM volume \\
-Daily budget + kill switch & Hard stop \\
-Match API key + API GW throttle & Abuse control \\
-Enrichment schedule pause & Emergency quota protection \\
-Reserved concurrency & Limited on new accounts (unreserved floor) \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\section{Product packaging implications}
-
-Pure CSV dumps of public jobs have weak differentiation. \textbf{Cited semantic Match}, visa/entry filters, and quality-gated lakehouse lineage are the monetisable / hireable artefacts---even when absolute \EUR{} spend is tiny---because they demonstrate controlled GenAI operations, not only scrapers.
+Live CostLogger on RQ2 OpenAI (40 enrich calls): \$0.0011 total ($\approx$\EUR{0.025} per 1k jobs as enrich-only proxy).

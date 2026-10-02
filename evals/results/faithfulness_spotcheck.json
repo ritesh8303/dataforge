@@ -1,147 +1,148 @@
 {
-  "n_citations": 17,
+  "n_citations": 20,
   "structural_faithfulness_rate": 1.0,
   "llm_faithfulness_rate": null,
-  "method": "hybrid_rrf",
-  "cost_summary": {
-    "total_cost_usd": 0.0,
-    "total_calls": 1,
-    "avg_latency_ms": 425.86,
-    "by_provider": {
-      "openai": {
-        "calls": 1,
-        "cost_usd": 3.6e-07,
-        "latency_ms": 425.8592999995017,
-        "failures": 0
-      }
-    },
-    "by_task": {
-      "embed": {
-        "calls": 1,
-        "cost_usd": 3.6e-07,
-        "latency_ms": 425.8592999995017,
-        "failures": 0
-      }
-    }
-  },
+  "method": "hybrid_offline_fixture",
+  "cost_summary": {},
   "rows": [
     {
-      "job_id": "sem_iabg-industrieanlagen-betriebs_data-analyst-waffensystemdaten_berlin",
-      "title": "(Junior) Data Analyst Waffensystemdaten (m/w/d)",
+      "job_id": "sem_eval_041_data_eng",
+      "title": "Werkstudent Data Engineer (m/w/d)",
       "reason": "Title aligns with target role 'Data Engineer'.",
-      "evidence": "(Junior) Data Analyst Waffensystemdaten (m/w/d)",
+      "evidence": "Werkstudent Data Engineer (m/w/d)",
       "structural_ok": true
     },
     {
-      "job_id": "sem_iabg-industrieanlagen-betriebs_data-analyst-waffensystemdaten_berlin",
-      "title": "(Junior) Data Analyst Waffensystemdaten (m/w/d)",
+      "job_id": "sem_eval_041_data_eng",
+      "title": "Werkstudent Data Engineer (m/w/d)",
       "reason": "Skill/tag overlap with the posting.",
-      "evidence": "Analytics / BI,Junior / Entry Level",
+      "evidence": "data_engineering,working_student",
       "structural_ok": true
     },
     {
-      "job_id": "sem_eberhardt-service-group_werkstudent-martech-data-analytics_berlin",
-      "title": "Werkstudent (m/w/d) MarTech, Data & Analytics",
+      "job_id": "sem_eval_045_data_eng",
+      "title": "Junior Data Engineer (m/w/d)",
       "reason": "Title aligns with target role 'Data Engineer'.",
-      "evidence": "Werkstudent (m/w/d) MarTech, Data & Analytics",
+      "evidence": "Junior Data Engineer (m/w/d)",
       "structural_ok": true
     },
     {
-      "job_id": "sem_eberhardt-service-group_werkstudent-martech-data-analytics_berlin",
-      "title": "Werkstudent (m/w/d) MarTech, Data & Analytics",
+      "job_id": "sem_eval_045_data_eng",
+      "title": "Junior Data Engineer (m/w/d)",
       "reason": "Skill/tag overlap with the posting.",
-      "evidence": "Analytics / BI,Working Student",
+      "evidence": "data_engineering,junior",
       "structural_ok": true
     },
     {
-      "job_id": "sem_bundesdruckerei-gruppe_werkstudent-data-analytics_berlin",
-      "title": "Werkstudent Data Analytics (m/w/d)",
+      "job_id": "sem_eval_040_data_eng",
+      "title": "Werkstudent Data Engineer (m/w/d)",
       "reason": "Title aligns with target role 'Data Engineer'.",
-      "evidence": "Werkstudent Data Analytics (m/w/d)",
+      "evidence": "Werkstudent Data Engineer (m/w/d)",
       "structural_ok": true
     },
     {
-      "job_id": "sem_bundesdruckerei-gruppe_werkstudent-data-analytics_berlin",
-      "title": "Werkstudent Data Analytics (m/w/d)",
+      "job_id": "sem_eval_040_data_eng",
+      "title": "Werkstudent Data Engineer (m/w/d)",
       "reason": "Skill/tag overlap with the posting.",
-      "evidence": "Analytics / BI,Working Student",
+      "evidence": "data_engineering,working_student",
       "structural_ok": true
     },
     {
-      "job_id": "sem_deloitte_praktikant-werkstudent-it-audit-it-assurance-data-analytics_berlin",
-      "title": "Praktikant / Werkstudent IT Audit & IT Assurance - Data Analytics (m/w/d)",
+      "job_id": "sem_eval_039_data_eng",
+      "title": "Werkstudent Data Engineer (m/w/d)",
       "reason": "Title aligns with target role 'Data Engineer'.",
-      "evidence": "Praktikant / Werkstudent IT Audit & IT Assurance - Data Analytics (m/w/d)",
+      "evidence": "Werkstudent Data Engineer (m/w/d)",
       "structural_ok": true
     },
     {
-      "job_id": "sem_deloitte_praktikant-werkstudent-it-audit-it-assurance-data-analytics_berlin",
-      "title": "Praktikant / Werkstudent IT Audit & IT Assurance - Data Analytics (m/w/d)",
+      "job_id": "sem_eval_039_data_eng",
+      "title": "Werkstudent Data Engineer (m/w/d)",
       "reason": "Skill/tag overlap with the posting.",
-      "evidence": "Analytics / BI,Working Student,Internship",
+      "evidence": "data_engineering,working_student",
       "structural_ok": true
     },
     {
-      "job_id": "sem_deloitte_praktikant-werkstudent-audit-center-of-competence-data-analytics_berlin",
-      "title": "Praktikant / Werkstudent Audit - Center of Competence Data Analytics (m/w/d)",
+      "job_id": "sem_eval_046_data_eng",
+      "title": "Junior Data Engineer (m/w/d)",
       "reason": "Title aligns with target role 'Data Engineer'.",
-      "evidence": "Praktikant / Werkstudent Audit - Center of Competence Data Analytics (m/w/d)",
+      "evidence": "Junior Data Engineer (m/w/d)",
       "structural_ok": true
     },
     {
-      "job_id": "sem_deloitte_praktikant-werkstudent-audit-center-of-competence-data-analytics_berlin",
-      "title": "Praktikant / Werkstudent Audit - Center of Competence Data Analytics (m/w/d)",
+      "job_id": "sem_eval_046_data_eng",
+      "title": "Junior Data Engineer (m/w/d)",
       "reason": "Skill/tag overlap with the posting.",
-      "evidence": "Analytics / BI,Working Student,Internship",
+      "evidence": "data_engineering,junior",
       "structural_ok": true
     },
     {
-      "job_id": "sem_deloitte_praktikant-ai-data-engineering_berlin",
-      "title": "Praktikant AI & Data Engineering (m/w/d)",
+      "job_id": "sem_eval_048_data_eng",
+      "title": "Mid-level Data Engineer (m/w/d)",
       "reason": "Title aligns with target role 'Data Engineer'.",
-      "evidence": "Praktikant AI & Data Engineering (m/w/d)",
+      "evidence": "Mid-level Data Engineer (m/w/d)",
       "structural_ok": true
     },
     {
-      "job_id": "sem_deloitte_praktikant-ai-data-engineering_berlin",
-      "title": "Praktikant AI & Data Engineering (m/w/d)",
+      "job_id": "sem_eval_048_data_eng",
+      "title": "Mid-level Data Engineer (m/w/d)",
       "reason": "Skill/tag overlap with the posting.",
-      "evidence": "Internship",
+      "evidence": "data_engineering,mid",
       "structural_ok": true
     },
     {
-      "job_id": "sem_flix_working-student_berlin",
-      "title": "Working Student",
-      "reason": "Skill/tag overlap with the posting.",
-      "evidence": "Data Engineering,Analytics / BI,Working Student",
-      "structural_ok": true
-    },
-    {
-      "job_id": "sem_doctolib-gh_medical-data-intern-x-f-m_berlin-berlin-germany",
-      "title": "Medical Data Intern (x/f/m)",
+      "job_id": "sem_eval_047_data_eng",
+      "title": "Junior Data Engineer (m/w/d)",
       "reason": "Title aligns with target role 'Data Engineer'.",
-      "evidence": "Medical Data Intern (x/f/m)",
+      "evidence": "Junior Data Engineer (m/w/d)",
       "structural_ok": true
     },
     {
-      "job_id": "sem_doctolib-gh_medical-data-intern-x-f-m_berlin-berlin-germany",
-      "title": "Medical Data Intern (x/f/m)",
+      "job_id": "sem_eval_047_data_eng",
+      "title": "Junior Data Engineer (m/w/d)",
       "reason": "Skill/tag overlap with the posting.",
-      "evidence": "Data Engineering,Internship",
+      "evidence": "data_engineering,junior",
       "structural_ok": true
     },
     {
-      "job_id": "sem_360-consulting_praktikum-als-fachinformatiker-fachrichtung-daten-und-prozessanalyse-m-w-d-in-berlin_berlin",
-      "title": "Praktikum als Fachinformatiker Fachrichtung Daten- und Prozessanalyse (m/ w/ d) in Berlin",
-      "reason": "Skill/tag overlap with the posting.",
-      "evidence": "Internship",
+      "job_id": "sem_eval_042_data_eng",
+      "title": "Graduate Data Engineer (m/w/d)",
+      "reason": "Title aligns with target role 'Data Engineer'.",
+      "evidence": "Graduate Data Engineer (m/w/d)",
       "structural_ok": true
     },
     {
-      "job_id": "sem_autarcenergy_gtm-uk-intern-working-student_berlin",
-      "title": "GTM UK · Intern / Working Student",
+      "job_id": "sem_eval_042_data_eng",
+      "title": "Graduate Data Engineer (m/w/d)",
       "reason": "Skill/tag overlap with the posting.",
-      "evidence": "Working Student,Internship,Go to market internship,Sales internship,Founders Associate,GTM,BD,AI,KI",
+      "evidence": "data_engineering,trainee_graduate",
+      "structural_ok": true
+    },
+    {
+      "job_id": "sem_eval_050_data_eng",
+      "title": "Mid-level Data Engineer (m/w/d)",
+      "reason": "Title aligns with target role 'Data Engineer'.",
+      "evidence": "Mid-level Data Engineer (m/w/d)",
+      "structural_ok": true
+    },
+    {
+      "job_id": "sem_eval_050_data_eng",
+      "title": "Mid-level Data Engineer (m/w/d)",
+      "reason": "Skill/tag overlap with the posting.",
+      "evidence": "data_engineering,mid",
+      "structural_ok": true
+    },
+    {
+      "job_id": "sem_eval_051_data_eng",
+      "title": "Senior Data Engineer (m/w/d)",
+      "reason": "Title aligns with target role 'Data Engineer'.",
+      "evidence": "Senior Data Engineer (m/w/d)",
+      "structural_ok": true
+    },
+    {
+      "job_id": "sem_eval_051_data_eng",
+      "title": "Senior Data Engineer (m/w/d)",
+      "reason": "Skill/tag overlap with the posting.",
+      "evidence": "data_engineering,senior",
       "structural_ok": true
     }
   ]
