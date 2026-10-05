@@ -457,6 +457,49 @@ def lambda_handler(event, context):
                     uncertain = [r for r in enriched_all if r.get("audience_uncertain")]
                 except Exception as exc:
                     print(f"Ingest review agent skipped: {exc}")
+
+        # Link health (optional CSV from scripts/check_apply_links.py) + trust chrome fields.
+        link_health: dict = {}
+        try:
+            from processing.trust_signals import enrich_jobs_with_trust
+
+            lh_key = os.environ.get("LINK_HEALTH_KEY", "link_health.csv")
+            lh_df = None
+            if gold_bucket:
+                try:
+                    lh_df = wr.s3.read_csv(f"s3://{gold_bucket}/{lh_key}")
+                except Exception:
+                    lh_df = None
+            local_lh = Path("data/gold") / lh_key
+            if lh_df is None and local_lh.exists():
+                try:
+                    lh_df = pd.read_csv(local_lh)
+                except Exception:
+                    lh_df = None
+            if lh_df is not None and not lh_df.empty and "job_id" in lh_df.columns:
+                link_health = lh_df.set_index(lh_df["job_id"].astype(str)).to_dict(orient="index")
+                print(f"Merged link health for {len(link_health)} jobs")
+            enriched_all = enrich_jobs_with_trust(enriched_all, link_health=link_health or None)
+            # Optional hard drop of dead/stale from published CSV (UI also hides by default).
+            # Keep TRUST_DROP_STALE=false so lakehouse research can still inspect aging rows.
+            drop_stale = os.environ.get("TRUST_DROP_STALE", "false").lower() in {"1", "true", "yes"}
+            if drop_stale:
+                before = len(enriched_all)
+                enriched_all = [
+                    r
+                    for r in enriched_all
+                    if r.get("trust_tier") not in {"dead", "stale"}
+                ]
+                print(f"Trust SLA: dropped {before - len(enriched_all)} dead/stale from published board")
+            early_career = [r for r in enriched_all if r.get("audience_accept")]
+            uncertain = [r for r in enriched_all if r.get("audience_uncertain")]
+            print(
+                f"Trust chrome: tiers="
+                f"{ {t: sum(1 for r in enriched_all if r.get('trust_tier')==t) for t in ('verified','aggregator','uncertain','stale','dead')} }"
+            )
+        except Exception as exc:
+            print(f"trust_signals skipped: {exc}")
+
         print(
             f"Audience gate: {len(early_career)} product jobs of {len(enriched_all)} lakehouse "
             f"(uncertain still: {len(uncertain)})"
@@ -479,6 +522,16 @@ def lambda_handler(event, context):
             "audience_uncertain",
             "field",
             "seniority",
+            "trust_tier",
+            "classify_confidence",
+            "freshness_days",
+            "is_stale",
+            "is_aging",
+            "preferred_apply_url",
+            "english_badge",
+            "last_seen",
+            "link_status",
+            "link_checked_at",
         ):
             if col not in all_jobs.columns and enriched_all:
                 all_jobs[col] = [a.get(col) for a in enriched_all]

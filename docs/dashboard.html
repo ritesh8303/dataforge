@@ -156,10 +156,10 @@
   <div class="dash-header">
     <div>
       <h1>Job Intelligence Dashboard</h1>
-      <p>European job postings collected from BA Jobsuche, EURES, Arbeitnow, company career pages, and Berlin startups.</p>
+      <p>Product-first view of EU early-career data &amp; AI roles from BA, EURES, ATS, Arbeitnow, and Berlin startups. Lakehouse volume is secondary.</p>
       <p id="scope-note" class="df-kpi-sub" style="margin-top:0.5rem;max-width:46rem;line-height:1.45;">
-        Big numbers = <strong>all active jobs</strong> on the public board.
-        Charts labeled <strong>Early-career product</strong> = EU data/AI roles for students, interns, graduates (~few hundred).
+        Headline KPIs = <strong>EU data/AI early-career product gate</strong>.
+        Lakehouse totals (all active tech postings) appear in subtitles only.
       </p>
     </div>
     <div class="dash-header-actions">
@@ -174,41 +174,41 @@
 
   <!-- KPI Grid -->
   <div class="df-grid-5" style="margin-bottom:var(--df-space-8);">
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.16),rgba(167,139,250,0.08));" title="All active jobs currently published on the Jobs board.">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.16),rgba(167,139,250,0.08));" title="EU data/AI early-career product gate.">
       <div class="df-kpi-icon">📊</div>
-      <div class="df-kpi-label">Active Jobs</div>
-      <div class="df-kpi-value" id="kpi-total">15,025</div>
-      <div class="df-kpi-sub" id="kpi-total-sub">all open postings</div>
+      <div class="df-kpi-label">Product Jobs</div>
+      <div class="df-kpi-value" id="kpi-total">2,282</div>
+      <div class="df-kpi-sub" id="kpi-total-sub">EU data/AI early-career</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.16),rgba(34,211,238,0.06));" title="New active-board jobs first seen on the latest pipeline run date.">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.16),rgba(34,211,238,0.06));" title="New product-gate jobs on the latest pipeline run.">
       <div class="df-kpi-icon">🆕</div>
-      <div class="df-kpi-label">New On Board <span class="kpi-info" title="Jobs newly appearing on the published active board for the latest pipeline run. Early-career product new count is in the subtitle.">ⓘ</span></div>
-      <div class="df-kpi-value" id="kpi-today">186</div>
+      <div class="df-kpi-label">Product New <span class="kpi-info" title="Newly seen on the early-career product board for the latest run.">ⓘ</span></div>
+      <div class="df-kpi-value" id="kpi-today">—</div>
       <div class="df-kpi-sub" id="kpi-today-sub">latest pipeline run</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#2dd4bf);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.12),rgba(45,212,191,0.1));">
       <div class="df-kpi-icon">🌐</div>
       <div class="df-kpi-label">Remote Jobs</div>
-      <div class="df-kpi-value" id="kpi-remote">941</div>
-      <div class="df-kpi-sub">among all active jobs</div>
+      <div class="df-kpi-value" id="kpi-remote">—</div>
+      <div class="df-kpi-sub">on product board</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#a78bfa,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(167,139,250,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🇬🇧</div>
-      <div class="df-kpi-label">English-Friendly <span class="kpi-info" title="Heuristic signal from title/language fields — not a guarantee the role is English-only.">ⓘ</span></div>
-      <div class="df-kpi-value" id="kpi-english">7,141</div>
-      <div class="df-kpi-sub" id="kpi-english-sub">signal on active jobs</div>
+      <div class="df-kpi-label">English Only (strict) <span class="kpi-info" title="language_requirement=english_only only — not title heuristics.">ⓘ</span></div>
+      <div class="df-kpi-value" id="kpi-english">—</div>
+      <div class="df-kpi-sub" id="kpi-english-sub">strict english_only</div>
     </div>
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#fb923c,#f472b6);--kpi-tint:linear-gradient(145deg,rgba(251,146,60,0.16),rgba(244,114,182,0.08));">
       <div class="df-kpi-icon">🔥</div>
       <div class="df-kpi-label">Top Mentioned Skill</div>
-      <div class="df-kpi-value" id="kpi-top-skill-count">147 mentions</div>
-      <div class="df-kpi-sub" id="kpi-top-skill">#1: Databricks · all active</div>
+      <div class="df-kpi-value" id="kpi-top-skill-count">—</div>
+      <div class="df-kpi-sub" id="kpi-top-skill">#1 · product board</div>
     </div>
   </div>
 
   <!-- Coverage Funnel -->
   <div class="df-card chart-card" id="coverage-funnel-card" style="display:none;margin-bottom:var(--df-space-8);">
-    <div class="card-heading">Early-career product funnel <span class="df-kpi-sub">all active jobs → EU data/AI early-career subset → type · field · country</span></div>
+    <div class="card-heading">Coverage funnel <span class="df-kpi-sub">lakehouse active → EU data/AI early-career product → type · field · country</span></div>
     <div class="df-grid-4" id="coverage-funnel-kpis" style="margin-bottom:var(--df-space-4);"></div>
     <div class="df-grid-3" id="coverage-funnel-breakdown"></div>
   </div>
@@ -216,13 +216,13 @@
   <div class="main-grid">
     <div class="col-left">
       <div class="df-card chart-card">
-        <div class="card-heading">New Early-Career Product Jobs — 30 Days <span class="df-kpi-sub">product gate only · not the full board</span></div>
+        <div class="card-heading">New Early-Career Product Jobs — 30 Days <span class="df-kpi-sub">product gate only · not the full lakehouse</span></div>
         <div class="chart-wrap">
           <canvas id="trend-chart"></canvas>
         </div>
       </div>
       <div class="df-card chart-card">
-        <div class="card-heading">Skill Mentions (Top 8) <span class="df-kpi-sub">all active jobs · title/tags/description keyword hits</span></div>
+        <div class="card-heading">Skill Mentions (Top 8) <span class="df-kpi-sub">product board · title/tags/description keyword hits</span></div>
         <div id="top-skills"></div>
       </div>
     </div>
@@ -463,13 +463,13 @@
     const rc = data.remote_counts || {};
     const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-    setEl("kpi-total", (data.total_jobs || 0).toLocaleString());
+    setEl("kpi-total", (data.product_jobs ?? data.early_career_jobs ?? data.total_jobs ?? 0).toLocaleString());
     const totalSub = document.getElementById("kpi-total-sub");
     if (totalSub) {
-      const product = data.product_jobs ?? data.early_career_jobs;
-      totalSub.textContent = product != null
-        ? `early-career product subset: ${Number(product).toLocaleString()}`
-        : "all open postings";
+      const lake = data.lakehouse_total_jobs ?? data.board_jobs;
+      totalSub.textContent = lake != null
+        ? `product gate · lakehouse active: ${Number(lake).toLocaleString()}`
+        : "EU data/AI early-career product gate";
     }
 
     const scopeNote = document.getElementById("scope-note");
@@ -478,8 +478,8 @@
     }
 
     const ps = data.pipeline_stats || {};
-    const boardNew = ps.lakehouse_new_jobs ?? data.new_today ?? ps.board_new_jobs ?? 0;
-    const productNew = ps.product_new_jobs ?? 0;
+    const boardNew = ps.product_new_jobs ?? data.new_today ?? ps.board_new_jobs ?? 0;
+    const lakeNew = ps.lakehouse_new_jobs ?? 0;
     setEl("kpi-today", Number(boardNew).toLocaleString());
     const todaySub = document.getElementById("kpi-today-sub");
     if (todaySub) {
@@ -487,23 +487,22 @@
       const runBit = runAt
         ? `run ${new Date(runAt).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}`
         : "latest pipeline run";
-      todaySub.textContent = `early-career product new: ${Number(productNew).toLocaleString()} · ${runBit}`;
+      todaySub.textContent = `product new · lakehouse new: ${Number(lakeNew).toLocaleString()} · ${runBit}`;
     }
 
     setEl("kpi-remote", (rc.remote != null ? rc.remote : (rv["Remote"] || 0)).toLocaleString());
 
-    const englishTitle = data.english_jobs_title_based ?? data.english_jobs ?? data.description_insights?.english_jobs ?? 0;
-    setEl("kpi-english", Number(englishTitle).toLocaleString());
+    const englishStrict = data.english_jobs_strict ?? data.english_jobs ?? 0;
+    setEl("kpi-english", Number(englishStrict).toLocaleString());
     const englishSub = document.getElementById("kpi-english-sub");
     if (englishSub) {
-      const total = Number(data.total_jobs || 0) || 1;
-      const pct = Math.round((Number(englishTitle) / total) * 100);
-      englishSub.textContent = `~${pct}% of active jobs · heuristic signal`;
+      const titleBased = data.english_jobs_title_based ?? 0;
+      englishSub.textContent = `strict english_only · title-heuristic: ${Number(titleBased).toLocaleString()} (not used in headline)`;
     }
 
     if (data.top_skills?.length) {
       setEl("kpi-top-skill-count", data.top_skills[0].count.toLocaleString() + " mentions");
-      setEl("kpi-top-skill", "#1: " + data.top_skills[0].skill + " · all active");
+      setEl("kpi-top-skill", "#1: " + data.top_skills[0].skill + " · product board");
     }
 
     setEl("last-updated", "Updated " + new Date(data.last_updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }));

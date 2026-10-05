@@ -295,7 +295,11 @@
 <div class="df-page df-fade-in">
   <div class="agent-header">
     <h1>Job Matching Agent</h1>
-    <p>Paste your resume — I search the DataForge product board (EU data/AI early-career roles) and rank suggestions for you.</p>
+    <p>Paste your resume — I search the DataForge <strong>product board</strong> (EU data/AI early-career) and return a <strong>suggested shortlist</strong>. Scores are advisory, not hiring decisions. Always open the employer careers page before applying. Visa / language flags are JD heuristics — not legal advice.</p>
+  </div>
+
+  <div class="df-surface-card" style="margin-bottom:1rem;padding:0.75rem 1rem;border:1px solid var(--df-border);border-radius:var(--df-radius);font-size:0.8rem;line-height:1.5;color:var(--df-text-secondary)">
+    <strong>Eval honesty:</strong> Published nDCG uses synthetic labels for CI regression. Human-graded labels are the trust standard when available (<code>evals/data/human_label_protocol.md</code>). Treat Match as lead generation, not calibrated fit.
   </div>
 
   <div class="agent-shell" id="agent-shell">
@@ -576,7 +580,7 @@
       why_fits: matched.length
         ? `Skill overlap: ${matched.slice(0, 4).join(", ")}.`
         : `Title/location proximity to “${dreamRole || "your profile"}”.`,
-      url: fixEuresApplyUrl(j.job_url || j.url || "#"),
+      url: fixEuresApplyUrl(j.preferred_apply_url || j.careers_url || j.job_url || j.url || "#"),
       easy_apply: (j.source === "arbeitnow" || j.source === "direct") ? "Yes" : "No",
       priority: matchPct >= 75 ? "High" : "Medium",
       compensation: j.salary && j.salary !== "nan" ? j.salary : "Market Standard",
@@ -653,7 +657,7 @@
         bilingual_blurb: blurb,
         company_early_career_score: j.company_early_career_score,
         why_fits: cites || "Ranked from the DataForge gold board against your resume.",
-        url: fixEuresApplyUrl(j.job_url || j.url || "#"),
+        url: fixEuresApplyUrl(j.preferred_apply_url || j.careers_url || j.job_url || j.url || "#"),
         easy_apply: (j.source === "arbeitnow" || j.source === "direct") ? "Yes" : "No",
         priority: score >= 70 ? "High" : "Medium",
         compensation: j.salary && j.salary !== "nan" ? j.salary : "Market Standard",
@@ -865,7 +869,7 @@
     document.getElementById("results-panel").classList.remove("active");
     setPlaceholder();
     addBubble(
-      "Hi — I’m the DataForge Job Matching Agent.\n\nPaste your resume and I’ll suggest fresher, working-student, internship, and thesis openings in data/AI from our gated EU gold board.",
+      "Hi — I’m the DataForge Job Matching Agent.\n\nPaste your resume and I’ll suggest fresher, working-student, internship, and thesis openings in data/AI from our gated EU product board.\n\nScores are advisory leads — always verify on the employer site before applying.",
       "agent"
     );
   }

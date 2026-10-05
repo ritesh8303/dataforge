@@ -7,9 +7,10 @@ Live European **early-career data & AI job lakehouse** on AWS Free Tier → Gold
 
 ### Impact (scanners)
 
-- **~15k** active EU jobs from **5** public sources (BA, EURES, ATS, Arbeitnow, Berlin startups) — medallion Bronze → Silver SCD2 → Gold on AWS Lambda/S3
-- **Match quality:** dense nDCG@10 **0.217** vs rule wizard **0.146** vs BM25 **0.135** (103 queries × 96 jobs; hybrid is product default)
+- **~2.3k** product jobs (EU × data/AI × early-career) from **5** public sources; full lakehouse ~15k active for research — medallion Bronze → Silver SCD2 → Gold on AWS Lambda/S3
+- **Match quality:** dense nDCG@10 **0.217** vs rule wizard **0.146** vs BM25 **0.135** (103 queries × 96 jobs; **synthetic** labels — Match is a suggested shortlist)
 - **Unit cost:** modelled OpenAI-first enrichment ≈ **€0.10 / 1k jobs**; live RQ2 `gpt-4o-mini` 40/40 ≈ **$0.0011**
+- **Trust:** product-first KPIs, source/freshness badges, link-health probe, stale SLA (14d), seeker feedback
 
 ### Architecture (1 page)
 

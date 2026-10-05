@@ -54,6 +54,18 @@
     .page-header { margin-bottom: var(--df-space-6); }
     .page-header p { font-size: 0.9rem; margin-top: var(--df-space-1); }
     .filter-toggle-row { display: none; margin-bottom: var(--df-space-4); }
+    .trust-row { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.35rem; }
+    .tag.trust-verified { background: rgba(34, 197, 94, 0.16); color: var(--df-success); }
+    .tag.trust-aggregator { background: rgba(34, 211, 238, 0.14); color: var(--df-badge-fg-cyan); }
+    .tag.trust-uncertain { background: rgba(251, 191, 36, 0.18); color: var(--df-warning); }
+    .tag.trust-stale, .tag.trust-dead { background: var(--df-error-bg); color: var(--df-error); }
+    .tag.trust-conf-high { border: 1px solid rgba(34, 197, 94, 0.35); }
+    .tag.trust-conf-medium { border: 1px solid rgba(34, 211, 238, 0.3); }
+    .tag.trust-conf-low { border: 1px dashed rgba(251, 191, 36, 0.45); }
+    .job-card.is-stale { opacity: 0.72; }
+    .job-card.is-uncertain { border-color: rgba(251, 191, 36, 0.35); }
+    .feedback-row { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.4rem; }
+    .feedback-row button { font-size: 0.68rem; }
     @media (max-width: 900px) { .filter-toggle-row { display: block; } }
   </style>
 </head>
@@ -82,11 +94,16 @@
 <div class="df-page-narrow df-fade-in">
   <div class="page-header">
     <h1 data-i18n="title">EU Data &amp; AI — Early Career Jobs</h1>
-    <p data-i18n="subtitle">Fresher, working-student, internship, and thesis roles in data, AI/ML, and related fields across the European Union</p>
+    <p data-i18n="subtitle">Fresher, working-student, internship, and thesis roles in data, AI/ML, and related fields across the European Union. Listings are public-feed leads — verify on the employer site before applying.</p>
     <button type="button" id="lang-toggle" class="df-chip" style="margin-top:0.5rem">DE</button>
   </div>
 
   <div id="error-box" class="df-error" style="display:none"></div>
+  <div class="df-surface-card" style="margin-bottom:1rem;padding:0.75rem 1rem;border:1px solid var(--df-border);border-radius:var(--df-radius);font-size:0.8rem;line-height:1.5;color:var(--df-text-secondary)">
+    <strong>Trust note:</strong> Default board = product gate (EU × data/AI × early career).
+    Badges show source tier (ATS verified / aggregator / uncertain), last seen, and label confidence.
+    Stale (&gt;14d) and dead links are demoted or hidden. Match scores are suggestions only.
+  </div>
 
   <div class="search-hero">
     <input id="search" class="df-input df-input-search" type="text" placeholder="Search title, company, or skill (e.g. Python, Spark, LLM)..." />
@@ -189,12 +206,24 @@
       <div class="filter-group">
         <label class="df-label">Board</label>
         <div class="df-pill-group" id="audience-pills">
-          <button class="df-pill" data-value="">All active jobs</button>
           <button class="df-pill active" data-value="product">EU data/AI early-career</button>
+          <button class="df-pill" data-value="">Full lakehouse</button>
         </div>
         <select id="audience" style="display:none">
-          <option value="">All active jobs</option>
           <option value="product" selected>EU data/AI early-career only</option>
+          <option value="">All active jobs (lakehouse)</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="df-label">Freshness</label>
+        <div class="df-pill-group" id="freshness-pills">
+          <button class="df-pill active" data-value="hide_stale">Hide stale (&gt;14d)</button>
+          <button class="df-pill" data-value="">Show aging</button>
+        </div>
+        <select id="freshness" style="display:none">
+          <option value="hide_stale" selected>Hide stale (&gt;14d)</option>
+          <option value="">Show aging / stale</option>
         </select>
       </div>
 
@@ -235,7 +264,7 @@
         <h2 id="result-count">Loading...</h2>
         <span class="results-meta" id="last-updated"></span>
       </div>
-      <p class="board-note">Full active lakehouse board (paginated 2,000 / request). Use <strong>EU data/AI early-career</strong> to narrow to the product gate. · Build <span id="board-build"></span></p>
+      <p class="board-note">Default: <strong>EU data/AI early-career</strong> product gate. Switch to Full lakehouse for research volume. Prefer Direct ATS cards when applying. · Build <span id="board-build"></span></p>
 
       <div class="job-grid" id="job-list">
         <div class="loading-msg">Loading jobs...</div>
@@ -249,10 +278,11 @@
   const JOBS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:8000/jobs"
     : "https://br1sodhn2e.execute-api.eu-central-1.amazonaws.com/";
-  const BOARD_BUILD = "2026-10-01.fullboard";
+  const BOARD_BUILD = "2026-10-05.trust";
   const JOB_PAGE_SIZE = 2000;
   const PAGE_SIZE = 25;
   const LANG_API = { en: "english_only", de: "german_required", bi: "bilingual" };
+  const STALE_DAYS = 14;
 
   let allJobs = [];
   let filtered = [];
@@ -351,11 +381,13 @@
     document.getElementById("source").value = "";
     document.getElementById("work_style").value = "";
     document.getElementById("language").value = "";
-    if (document.getElementById("audience")) document.getElementById("audience").value = "";
+    if (document.getElementById("audience")) document.getElementById("audience").value = "product";
+    if (document.getElementById("freshness")) document.getElementById("freshness").value = "hide_stale";
     syncPillFromSelect("source-pills", "source");
     syncPillFromSelect("workstyle-pills", "work_style");
     syncPillFromSelect("language-pills", "language");
     syncPillFromSelect("audience-pills", "audience");
+    syncPillFromSelect("freshness-pills", "freshness");
     const sidebar = document.querySelector(".filter-sidebar");
     const backdrop = document.querySelector(".filter-drawer-backdrop");
     if (sidebar?.classList.contains("open")) {
@@ -483,6 +515,17 @@
           || String(j.audience_accept || "").toLowerCase() === "yes";
         if (!ok) return false;
       }
+      if (window.DataForgeFeedback?.isHidden?.(j.job_id)) return false;
+
+      const freshnessMode = document.getElementById("freshness")?.value || "";
+      const days = jobFreshnessDays(j);
+      const tier = inferTrustTier(j);
+      if (freshnessMode === "hide_stale") {
+        if (tier === "dead") return false;
+        if (j.is_stale === true || j.is_stale === "True" || j.is_stale === "1") return false;
+        if (days != null && days > STALE_DAYS) return false;
+      }
+
       if (region) {
         const jobRegion = j.region || "";
         if (jobRegion.toLowerCase() !== region.toLowerCase()) return false;
@@ -501,8 +544,9 @@
       if (field && !aiField.includes(field) && !title.includes(field.replaceAll("_", " "))) return false;
 
       if (language === "en") {
+        // Strict English only — never fall back to title-heuristic is_english alone.
         if (j.language_requirement) { if (j.language_requirement !== "english_only") return false; }
-        else { if (j.is_english !== "True" && j.is_english !== true && j.ai_english_ok !== true && j.ai_english_ok !== "True") return false; }
+        else if (!(j.ai_english_ok === true || j.ai_english_ok === "True" || j.ai_english_ok === "1")) return false;
       } else if (language === "de") {
         if (j.language_requirement) { if (j.language_requirement !== "german_required") return false; }
         else { if (j.is_english === "True" || j.is_english === true) return false; }
@@ -547,12 +591,52 @@
       return true;
     });
 
-    filtered.sort((a, b) => (b.date_added || "").localeCompare(a.date_added || ""));
+    filtered.sort((a, b) => {
+      const ta = trustSortRank(a);
+      const tb = trustSortRank(b);
+      if (ta !== tb) return ta - tb;
+      const da = jobFreshnessDays(a);
+      const db = jobFreshnessDays(b);
+      if (da != null && db != null && da !== db) return da - db;
+      return (b.date_added || "").localeCompare(a.date_added || "");
+    });
     page = 1;
     document.getElementById("result-count").textContent = `${filtered.length.toLocaleString()} jobs`;
     updateSummaryLine(summaryData, filtered.length);
     renderFilterChips();
     renderJobs();
+  }
+
+  function jobFreshnessDays(j) {
+    if (j.freshness_days != null && j.freshness_days !== "" && !Number.isNaN(Number(j.freshness_days))) {
+      return Number(j.freshness_days);
+    }
+    const raw = j.ingested_at || j.last_seen || j.date_added || "";
+    if (!raw) return null;
+    const t = Date.parse(String(raw).slice(0, 10));
+    if (Number.isNaN(t)) return null;
+    return Math.max(0, Math.floor((Date.now() - t) / 86400000));
+  }
+
+  function inferTrustTier(j) {
+    if (j.trust_tier) return String(j.trust_tier).toLowerCase();
+    if (String(j.link_status || "").toLowerCase() === "dead") return "dead";
+    const days = jobFreshnessDays(j);
+    if (days != null && days > STALE_DAYS) return "stale";
+    if (j.audience_uncertain === true || j.audience_uncertain === "True" || j.audience_uncertain === "1") return "uncertain";
+    if (j.source === "direct") return "verified";
+    if (["ba_api", "eures", "arbeitnow", "berlin_startups"].includes(j.source)) return "aggregator";
+    return "uncertain";
+  }
+
+  function trustSortRank(j) {
+    const tier = inferTrustTier(j);
+    const order = { verified: 0, aggregator: 1, uncertain: 2, stale: 3, dead: 4 };
+    return order[tier] ?? 2;
+  }
+
+  function preferredUrl(j) {
+    return fixEuresApplyUrl(j.preferred_apply_url || j.careers_url || j.apply_url || j.job_url || j.url || "#");
   }
 
   function renderJobs() {
@@ -573,13 +657,17 @@
       const sourceLabel = j.source === "ba_api" ? "BA Jobsuche"
         : j.source === "berlin_startups" ? "Berlin Startup Jobs"
         : j.source === "eures" ? "EURES"
-        : isDirect ? `${j.ats || 'Direct'}`
+        : isDirect ? `${j.ats || 'Direct ATS'}`
         : "Arbeitnow";
       const sourceClass = j.source === "ba_api" ? "source-ba"
         : j.source === "berlin_startups" ? "source-bsj"
         : j.source === "eures" ? "source-eures"
         : isDirect ? "source-direct" : "";
-      const url = fixEuresApplyUrl(j.job_url || j.url || "#");
+      const url = preferredUrl(j);
+      const tier = inferTrustTier(j);
+      const conf = String(j.classify_confidence || (j.audience_uncertain ? "low" : (isDirect ? "high" : "medium"))).toLowerCase();
+      const days = jobFreshnessDays(j);
+      const lastSeen = (j.last_seen || j.ingested_at || j.date_added || "").toString().slice(0, 10);
 
       let workStyleBadge = "";
       if (j.work_style) {
@@ -591,16 +679,30 @@
       }
 
       let langReqBadge = "";
-      if (j.language_requirement) {
-        langReqBadge = j.language_requirement === "english_only"
-          ? `<span class="tag lang-en">English Only</span>`
-          : `<span class="tag lang-de">German Required</span>`;
-      } else {
-        const isEn = j.is_english === "True" || j.is_english === true;
-        langReqBadge = isEn ? `<span class="tag lang-en">English Only</span>` : `<span class="tag lang-de">German Required</span>`;
+      if (j.english_badge) {
+        langReqBadge = `<span class="tag lang-en">${esc(j.english_badge)}</span>`;
+      } else if (j.language_requirement === "english_only") {
+        langReqBadge = `<span class="tag lang-en">English only (strict)</span>`;
+      } else if (j.language_requirement === "bilingual") {
+        langReqBadge = `<span class="tag lang-en">Bilingual</span>`;
+      } else if (j.language_requirement === "german_required") {
+        langReqBadge = `<span class="tag lang-de">German required</span>`;
       }
 
-      const directBadge = isDirect ? `<span class="tag direct-apply">Direct Apply</span>` : "";
+      const trustLabel = tier === "verified" ? "ATS verified"
+        : tier === "aggregator" ? "Aggregator"
+        : tier === "stale" ? "Stale"
+        : tier === "dead" ? "Link dead"
+        : "Uncertain";
+      const trustBadge = `<span class="tag trust-${esc(tier)}">${trustLabel}</span>`;
+      const confBadge = `<span class="tag trust-conf-${esc(conf)}">Labels: ${esc(conf)}</span>`;
+      const ageBadge = days != null
+        ? `<span class="tag">Seen ${days}d ago</span>`
+        : (lastSeen ? `<span class="tag">Last seen ${esc(lastSeen)}</span>` : "");
+      const uncertainNote = (j.audience_uncertain === true || j.audience_uncertain === "True" || j.audience_uncertain === "1")
+        ? `<span class="tag trust-uncertain">HITL / uncertain class</span>` : "";
+
+      const directBadge = isDirect ? `<span class="tag direct-apply">Company careers</span>` : "";
       let regionBadge = "";
       if (j.region && j.region !== "Other" && j.region !== "Unspecified") {
         regionBadge = `<span class="tag region-${j.region.toLowerCase().replace(/[^a-z0-9]+/g, '-')}">${esc(j.region)}</span>`;
@@ -633,9 +735,16 @@
 
       const locDisplay = (j.location || '—').split(',')[0].trim();
       const initials = companyInitials(j.company);
+      const metaJson = esc(JSON.stringify({ title: j.title, company: j.company, url }));
+      const cardClass = [
+        "job-card",
+        (tier === "stale" || tier === "dead") ? "is-stale" : "",
+        (tier === "uncertain") ? "is-uncertain" : "",
+      ].filter(Boolean).join(" ");
+      const applyLabel = isDirect ? "Apply on careers →" : "Verify & apply →";
 
       return `
-        <article class="job-card" style="animation-delay:${(i % 8) * 0.04}s">
+        <article class="${cardClass}" style="animation-delay:${(i % 8) * 0.04}s">
           <div class="job-card-top">
             <div class="company-avatar" title="${esc(j.company || '')}">${esc(initials)}</div>
             <div class="job-card-info">
@@ -643,6 +752,7 @@
               ${j.canonical_title_en && j.canonical_title_en !== j.title ? `<div class="job-company" style="opacity:0.75">${highlightText(j.canonical_title_en, searchQ)}</div>` : ""}
               <div class="job-company">${highlightText(j.company || '—', searchQ)}</div>
               <div class="job-location">📍 ${esc(locDisplay)}</div>
+              <div class="trust-row">${trustBadge}${confBadge}${ageBadge}${uncertainNote}</div>
             </div>
           </div>
           <div class="job-tags">
@@ -650,18 +760,25 @@
             ${directBadge}${regionBadge}${workStyleBadge}${langReqBadge}${typeTags}${tagChips}
           </div>
           ${descSnippet}
+          <div class="feedback-row">
+            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="closed" data-feedback-meta='${metaJson}'>Closed</button>
+            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="spam" data-feedback-meta='${metaJson}'>Spam</button>
+            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="wrong_location" data-feedback-meta='${metaJson}'>Wrong location</button>
+            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="not_early_career" data-feedback-meta='${metaJson}'>Not early-career</button>
+          </div>
           <div class="job-card-footer">
-            <span class="job-date">${j.date_added || ''}</span>
+            <span class="job-date">${esc(lastSeen || j.date_added || '')}</span>
             <div style="display:flex;gap:0.5rem;align-items:center">
               <button type="button" class="df-chip" data-track-job='${esc(JSON.stringify({job_id:j.job_id,title:j.title,company:j.company,job_url:url}))}' data-track-status="saved">Save</button>
-              <a class="apply-btn" href="${escUrl(url)}" target="_blank" rel="noopener noreferrer">Apply →</a>
+              <a class="apply-btn" href="${escUrl(url)}" target="_blank" rel="noopener noreferrer">${applyLabel}</a>
             </div>
           </div>
         </article>`;
     }).join("");
 
     renderPagination();
-    if (window.DataForgeTracker) window.DataForgeTracker.bindSaveButtons(document.getElementById("jobs-list"));
+    if (window.DataForgeTracker) window.DataForgeTracker.bindSaveButtons(document.getElementById("job-list"));
+    if (window.DataForgeFeedback) window.DataForgeFeedback.bindButtons(document.getElementById("job-list"));
   }
 
   function renderPagination() {
@@ -720,6 +837,7 @@
   setupPillGroup("workstyle-pills", "work_style", loadJobs);
   setupPillGroup("language-pills", "language", loadJobs);
   setupPillGroup("audience-pills", "audience", () => applyFilters());
+  setupPillGroup("freshness-pills", "freshness", () => applyFilters());
 
   document.getElementById("region").addEventListener("change", () => applyFilters());
   document.getElementById("experience_level").addEventListener("change", () => loadJobs());
@@ -734,7 +852,11 @@
       document.getElementById("field").value = "";
       document.getElementById("experience_level").value = "";
       document.getElementById("language").value = "";
+      document.getElementById("audience").value = "product";
+      document.getElementById("freshness").value = "hide_stale";
       syncPillFromSelect("language-pills", "language");
+      syncPillFromSelect("audience-pills", "audience");
+      syncPillFromSelect("freshness-pills", "freshness");
       if (preset === "berlin-ws") {
         document.getElementById("location").value = "Berlin";
         document.getElementById("experience_level").value = "working_student";
@@ -756,8 +878,8 @@
 
   document.getElementById("board-build").textContent = BOARD_BUILD;
   const I18N = {
-    en: { title: "EU Data & AI — Early Career Jobs", subtitle: "Fresher, working-student, internship, and thesis roles in data, AI/ML, and related fields across the European Union", toggle: "DE" },
-    de: { title: "EU Data & AI — Einstiegsjobs", subtitle: "Werkstudent, Praktikum, Abschlussarbeit und Junior-Rollen in Data, KI/ML in der Europäischen Union", toggle: "EN" },
+    en: { title: "EU Data & AI — Early Career Jobs", subtitle: "Fresher, working-student, internship, and thesis roles in data, AI/ML across the EU. Verify on the employer site before applying.", toggle: "DE" },
+    de: { title: "EU Data & AI — Einstiegsjobs", subtitle: "Werkstudent, Praktikum, Abschlussarbeit und Junior-Rollen in Data/KI in der EU. Bitte auf der Firmenwebsite prüfen.", toggle: "EN" },
   };
   let uiLang = localStorage.getItem("dataforge.lang") || "en";
   function applyLang() {
@@ -781,6 +903,7 @@
     window.DataForgeTracker.render(document.getElementById("app-tracker-panel"));
   }
 </script>
+<script src="components/job_feedback.js"></script>
 <script src="components/app_tracker.js"></script>
 <script src="components/ui.js"></script>
 <script>

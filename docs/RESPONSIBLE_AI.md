@@ -36,6 +36,20 @@ Fields such as `ai_visa_stance`, `job_seeker_visa_friendly`, and profile `visa_s
 - Local-provider ablation can score citation *structure* highly; use `evals/run_faithfulness_spotcheck.py` (and optional OpenAI judge) for semantic grounding checks.
 - Multi-agent path is bounded (≤4 LLM calls, ≤6 handoffs) — not an unbounded agent swarm.
 - Rules classifier and LLM enricher can disagree; rules-first is the cost control, not ground truth.
+- Match nDCG in CI uses **synthetic** labels; public claims should cite `evals/data/human_label_protocol.md` when human grades exist.
+- Product UI headlines use the **EU data/AI early-career gate**; lakehouse volume is secondary research context.
+- Link health probes (`scripts/check_apply_links.py`) demote dead URLs; “Active” still means “seen in source feeds,” not a guarantee the employer is accepting applications today.
+- Seeker feedback (closed / spam / wrong location) is stored locally in the browser until an export/webhook is wired.
+
+## Trust chrome (product)
+
+| Signal | Meaning |
+|--------|---------|
+| `trust_tier=verified` | Direct company ATS feed |
+| `trust_tier=aggregator` | BA / EURES / Arbeitnow / Berlin startups |
+| `trust_tier=uncertain` | Ambiguous audience classification / HITL |
+| `trust_tier=stale` / `dead` | Past freshness SLA or failed apply-link probe |
+| `english_jobs` headline | `language_requirement=english_only` only |
 
 ## References in-repo
 

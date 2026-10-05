@@ -342,8 +342,10 @@ def match_jobs(
             "location": location or None,
         },
         "disclaimer": (
-            "Visa and entry-level flags are advisory signals extracted from public JDs — "
-            "not legal advice. Always verify with the employer and Ausländerbehörde."
+            "Match results are a suggested shortlist from public job feeds — not hiring decisions "
+            "and not calibrated fit scores. Synthetic eval labels power CI regression; prefer "
+            "human-graded labels when available. Visa / language / seniority flags are JD heuristics — "
+            "not legal advice. Always verify the opening on the employer careers page before applying."
         ),
         "cost_summary": router.cost_logger.summary(),
     }
@@ -356,6 +358,8 @@ def jobs_to_markdown(payload: dict[str, Any]) -> str:
         "",
         "Filters: `visa_status`, `german_level`, `entry_level_only`, `english_ok_only`, `location`",
         "",
+        str(payload.get("disclaimer", "")),
+        "",
     ]
     for job in payload.get("jobs") or []:
         lines.append(f"## {job.get('title', 'Untitled')} — {job.get('company', '')}")
@@ -363,11 +367,17 @@ def jobs_to_markdown(payload: dict[str, Any]) -> str:
         lines.append(f"- location: {job.get('location', '')}")
         lines.append(f"- score: {job.get('match_score')}")
         lines.append(f"- visa_stance: {job.get('ai_visa_stance', 'n/a')}")
-        url = job.get("job_url") or job.get("url") or ""
+        lines.append(f"- trust_tier: {job.get('trust_tier', 'n/a')}")
+        url = (
+            job.get("preferred_apply_url")
+            or job.get("careers_url")
+            or job.get("job_url")
+            or job.get("url")
+            or ""
+        )
         if url:
             lines.append(f"- apply: {url}")
         for c in job.get("citations") or []:
             lines.append(f"  - {c.get('reason')} _(evidence: {c.get('evidence', '')})_")
         lines.append("")
-    lines.append(str(payload.get("disclaimer", "")))
     return "\n".join(lines)

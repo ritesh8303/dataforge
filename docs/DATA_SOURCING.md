@@ -35,6 +35,7 @@ Do not scrape workingstudentjobs.de (`/api/` disallowed in their robots.txt).
 - Personio XML: ~200 ms delay between tenants, daily cadence, ETag/cache when available.
 - Honour `robots.txt` for any future JSON-LD career-page connector.
 - Store posting content only; never scrape candidate profiles.
+- Apply-link health probes (`scripts/check_apply_links.py`) use polite HEAD/GET with delay; merge via Gold `link_health.csv`.
 
 ## Saved-search alert stub
 

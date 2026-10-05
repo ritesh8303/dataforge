@@ -129,7 +129,7 @@ _SKILL_KEYWORDS = [
 
 
 def _board_breakdown(all_jobs: list[dict], *, run_date: str) -> dict:
-    """Live aggregates from published all_jobs.csv (full active board)."""
+    """Live aggregates from a job list (product or full board)."""
     by_source: Counter[str] = Counter()
     by_region: Counter[str] = Counter()
     by_company: Counter[str] = Counter()
@@ -137,7 +137,10 @@ def _board_breakdown(all_jobs: list[dict], *, run_date: str) -> dict:
     skill_counts: Counter[str] = Counter()
     remote_counts = {"remote": 0, "hybrid": 0, "onsite": 0}
     english = 0
+    english_strict = 0
     board_new = 0
+    trust_tiers: Counter[str] = Counter()
+    stale = 0
 
     for j in all_jobs:
         src = str(j.get("source") or "unknown").strip() or "unknown"
@@ -159,15 +162,24 @@ def _board_breakdown(all_jobs: list[dict], *, run_date: str) -> dict:
         else:
             remote_counts["onsite"] += 1
 
-        if (
+        lang_req = str(j.get("language_requirement") or "").lower()
+        if lang_req == "english_only":
+            english_strict += 1
+            english += 1
+        elif (
             str(j.get("is_english") or "").lower() in {"1", "true", "yes"}
-            or str(j.get("language_requirement") or "").lower() == "english_only"
             or str(j.get("ai_english_ok") or "").lower() in {"1", "true", "yes"}
         ):
             english += 1
 
         if (j.get("date_added") or "") == run_date:
             board_new += 1
+
+        tier = str(j.get("trust_tier") or "").strip()
+        if tier:
+            trust_tiers[tier] += 1
+        if str(j.get("is_stale") or "").lower() in {"1", "true", "yes"}:
+            stale += 1
 
         hay = " ".join(
             str(j.get(k) or "") for k in ("title", "tags", "description", "ai_skills")
@@ -178,15 +190,15 @@ def _board_breakdown(all_jobs: list[dict], *, run_date: str) -> dict:
                 skill_counts[skill] += 1
 
     top_companies = [
-        {"company": c, "count": n, "scope": "all_active"}
+        {"company": c, "count": n, "scope": "product_early_career"}
         for c, n in by_company.most_common(20)
     ]
     top_locations = [
-        {"location": loc, "count": n, "scope": "all_active"}
+        {"location": loc, "count": n, "scope": "product_early_career"}
         for loc, n in by_location.most_common(10)
     ]
     top_skills = [
-        {"skill": s, "count": n, "scope": "all_active"}
+        {"skill": s, "count": n, "scope": "product_early_career"}
         for s, n in skill_counts.most_common(15)
     ]
     return {
@@ -202,7 +214,10 @@ def _board_breakdown(all_jobs: list[dict], *, run_date: str) -> dict:
             "On-site": remote_counts["onsite"],
         },
         "english_jobs": english,
+        "english_jobs_strict": english_strict,
         "board_new_jobs": board_new,
+        "trust_tiers": dict(trust_tiers.most_common()),
+        "stale_jobs_count": stale,
     }
 
 
@@ -245,18 +260,9 @@ def build_metrics_payload(bucket: str) -> dict:
     top_skills = [{"skill": r["skill"], "count": int(r["job_count"])} for r in skill_rows[:15]]
 
     desc = desc_rows[0] if desc_rows else {}
-    english_jobs = int(desc.get("english_jobs", 0))
+    english_jobs_title = int(desc.get("english_jobs", 0))
     product_jobs = _product_jobs(all_jobs)
-    english_jobs_strict = sum(
-        1 for j in product_jobs if j.get("language_requirement", "").lower() == "english_only"
-    )
-    description_insights = {
-        "english_jobs": english_jobs,
-        "arbeitnow_english_descriptions": int(desc.get("arbeitnow_english_descriptions", 0)),
-        "homeoffice_mentioned": int(desc.get("homeoffice_mentioned", 0)),
-        "jobs_with_benefits": int(desc.get("jobs_with_benefits", 0)),
-        "arbeitnow_total": int(desc.get("arbeitnow_total", 0)),
-    }
+    lakehouse_jobs = list(all_jobs)
 
     stats = stats_rows[0] if stats_rows else {}
     lakehouse_new = int(stats.get("new_jobs", 0) or 0)
@@ -271,26 +277,30 @@ def build_metrics_payload(bucket: str) -> dict:
     if product_new == 0 and run_date != today:
         product_new = sum(1 for j in product_jobs if (j.get("date_added") or "") == today)
 
-    board = _board_breakdown(all_jobs, run_date=run_date) if all_jobs else {}
-    if board:
-        jobs_by_source = board["jobs_by_source"]
-        jobs_by_region = board["jobs_by_region"]
-        top_companies = board["top_companies"]
-        top_locations = board["top_locations"]
-        top_skills = board["top_skills"]
-        remote_counts = board["remote_counts"]
-        remote_vs_onsite = board["remote_vs_onsite"]
-        english_jobs = board["english_jobs"]
-    board_new = int(board.get("board_new_jobs") or 0)
-    board_total = len(all_jobs)
-    # Prefer published board as the headline active count; silver may differ slightly.
+    # Headline KPIs = product gate (EU data/AI early-career). Lakehouse kept as secondary.
+    product_board = _board_breakdown(product_jobs, run_date=run_date) if product_jobs else {}
+    lakehouse_board = _board_breakdown(lakehouse_jobs, run_date=run_date) if lakehouse_jobs else {}
+    if product_board:
+        jobs_by_source = product_board["jobs_by_source"]
+        jobs_by_region = product_board["jobs_by_region"]
+        top_companies = product_board["top_companies"]
+        top_locations = product_board["top_locations"]
+        top_skills = product_board["top_skills"]
+        remote_counts = product_board["remote_counts"]
+        remote_vs_onsite = product_board["remote_vs_onsite"]
+        english_jobs_title = product_board["english_jobs"]
+    english_jobs_strict = int(
+        product_board.get("english_jobs_strict")
+        or sum(1 for j in product_jobs if str(j.get("language_requirement") or "").lower() == "english_only")
+    )
+    board_new = int(product_board.get("board_new_jobs") or 0)
+    board_total = len(lakehouse_jobs)
     lakehouse_total = lakehouse_active or board_total
-    # Prefer pipeline SCD "new" for the headline; board_new is first-seen on run_date in Gold.
-    headline_new = lakehouse_new or board_new
+    headline_new = product_new or board_new
 
     pipeline_stats = {
         "new_jobs": headline_new,
-        "board_new_jobs": board_new,
+        "board_new_jobs": int(lakehouse_board.get("board_new_jobs") or 0),
         "product_new_jobs": product_new,
         "updated_jobs": lakehouse_updated,
         "expired_jobs": lakehouse_expired,
@@ -305,7 +315,11 @@ def build_metrics_payload(bucket: str) -> dict:
         "missing_company_rate": float(quality.get("missing_company_rate", 0)),
         "missing_location_rate": float(quality.get("missing_location_rate", 0)),
         "duplicate_job_id_rate": float(quality.get("duplicate_job_id_rate", 0)),
-        "stale_jobs_count": int(quality.get("stale_jobs_count", 0)),
+        "stale_jobs_count": int(
+            product_board.get("stale_jobs_count")
+            or quality.get("stale_jobs_count", 0)
+            or 0
+        ),
         "schema_validation_pass": str(quality.get("schema_validation_pass", "false")).lower() == "true",
     }
 
@@ -323,22 +337,33 @@ def build_metrics_payload(bucket: str) -> dict:
     else:
         last_updated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+    description_insights = {
+        "english_jobs": english_jobs_title,
+        "arbeitnow_english_descriptions": int(desc.get("arbeitnow_english_descriptions", 0)),
+        "homeoffice_mentioned": int(desc.get("homeoffice_mentioned", 0)),
+        "jobs_with_benefits": int(desc.get("jobs_with_benefits", 0)),
+        "arbeitnow_total": int(desc.get("arbeitnow_total", 0)),
+    }
+
     return {
-        "total_jobs": board_total or lakehouse_total,
+        # Product-first headlines (do not lead with full lakehouse volume).
+        "total_jobs": product_total or board_total,
         "board_jobs": board_total,
         "new_today": headline_new,
         "early_career_jobs": product_total,
         "product_jobs": product_total,
         "lakehouse_total_jobs": lakehouse_total,
-        "audience": "full_board",
+        "audience": "eu_data_ai_early_career",
         "audience_product": "eu_data_ai_early_career",
+        "headline_scope": "product_early_career",
         "scope_note": (
-            "Headline KPIs and source/company/skill/remote charts use all published active jobs. "
-            "Coverage funnel and early-career company list use the EU data/AI early-career product gate. "
-            "New-jobs trend is product-gated first-seen history."
+            "Headline KPIs use the EU data/AI early-career product gate. "
+            "Lakehouse totals (all active tech postings) are secondary. "
+            "English Only badges use language_requirement=english_only (strict), not title heuristics. "
+            "Always verify openings on the employer site before applying."
         ),
-        "english_jobs": english_jobs,
-        "english_jobs_title_based": english_jobs,
+        "english_jobs": english_jobs_strict,
+        "english_jobs_title_based": english_jobs_title,
         "english_jobs_strict": english_jobs_strict,
         "remote_counts": remote_counts,
         "jobs_by_source": jobs_by_source,
@@ -352,6 +377,7 @@ def build_metrics_payload(bucket: str) -> dict:
         "remote_vs_onsite": remote_vs_onsite,
         "active_vs_expired": active_vs_expired,
         "top_skills": top_skills,
+        "trust_tiers": product_board.get("trust_tiers") or {},
         "description_insights": description_insights,
         "pipeline_stats": pipeline_stats,
         "data_quality": data_quality,

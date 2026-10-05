@@ -16,6 +16,10 @@ Gold is the contract for BI, APIs, and (later) the matching agent. Row-level `al
 | `source` | Ingest channel | `ba_api` \| `eures` \| `arbeitnow` \| `direct` \| `berlin_startups` | Closed set |
 | `work_style` | remote / hybrid / onsite | Derived | Gold `remote_vs_onsite` |
 | `url` / `job_url` | Apply link | Source | Renamed in Gold extract |
+| `preferred_apply_url` | Best apply URL | `trust_signals` | Prefer ATS/careers over portal pages |
+| `trust_tier` | verified / aggregator / uncertain / stale / dead | `trust_signals` + optional link health | Card provenance |
+| `classify_confidence` | high / medium / low | Audience + AI labels | HITL when low / uncertain |
+| `freshness_days` | Days since last seen | `ingested_at` / `date_added` | Stale SLA = 14d |
 | `is_current` | Open SCD2 version | Transformer | Gold active vs expired |
 | `scd_start_date` / `scd_end_date` | Version window | Transformer | First start date = trend “new jobs” |
 | `ingested_at` | Landed in pipeline | Ingest | Freshness / stale counts |
@@ -53,5 +57,7 @@ Gold is the contract for BI, APIs, and (later) the matching agent. Row-level `al
 
 - Git `data_quality_report.csv` can lag live S3 Gold (snapshot vs daily publish).
 - Skill tags are regex, not an ontology or LLM extraction, until enrichment is deployed.
-- No PII-masking contract on resume upload yet (matching wizard is client-side today).
+- Resume text is processed in-request for Match (PII-redacted); not written to Gold by default.
 - dbt models the **Gold aggregates**, not a second copy of SCD2 logic.
+- Headline product KPIs use `audience_accept` / early-career gate; `lakehouse_total_jobs` is secondary.
+- Trust fields (`trust_tier`, `freshness_days`, `preferred_apply_url`, `classify_confidence`, `english_badge`) are attached in Gold via `processing.trust_signals` and optional `link_health.csv`.

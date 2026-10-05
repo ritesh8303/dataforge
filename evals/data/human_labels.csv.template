@@ -1,0 +1,2 @@
+query_id,resume_id,job_id,grade,rater,notes
+# example,,sem_acme_data_engineer_berlin,2,rater_a,good DE fit
