@@ -3,86 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataForge — EU early-career data &amp; AI jobs</title>
-  <meta name="description" content="DataForge aggregates public EU job feeds (BA Jobsuche, EURES, company ATS, Arbeitnow, Berlin startups) into an early-career data &amp; AI board. Verify every opening on the employer site." />
+  <title>DataForge — Find early-career data &amp; AI jobs in Europe</title>
+  <meta name="description" content="Browse fresher, working-student, internship, and thesis jobs in data and AI across Europe. From public job sites. Always check the company page before you apply." />
   <link rel="icon" href="df-logo.png" type="image/png" />
   <link rel="stylesheet" href="components/design-system.css" />
   <meta name="theme-color" content="#f3f6fb" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#05060d" media="(prefers-color-scheme: dark)" />
   <style>
-    .hero-content { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; }
+    .hero-content { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
     .hero-logo {
-      width: 104px; height: 104px; margin: 0 auto var(--df-space-5);
+      width: 88px; height: 88px; margin: 0 auto var(--df-space-5);
       animation: df-fadeIn 0.7s ease-out forwards;
-      filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.55)) drop-shadow(0 8px 18px rgba(0,0,0,0.45));
-      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(34,211,238,0.1) 45%, transparent 70%);
+      filter: drop-shadow(0 0 24px rgba(34, 211, 238, 0.45));
       object-fit: contain;
     }
-    .hero-sub { font-size: 1.15rem; line-height: 1.75; margin-bottom: var(--df-space-8); max-width: 620px; margin-left: auto; margin-right: auto; color: var(--df-text-secondary); }
-    .hero-cta { display: flex; gap: var(--df-space-4); justify-content: center; flex-wrap: wrap; }
-    .hero-preview-frame {
-      background: var(--df-surface-card);
-      backdrop-filter: blur(18px);
-      border: 1px solid var(--df-border);
-      border-radius: var(--df-radius-xl);
-      box-shadow: var(--df-shadow-lg), 0 0 60px rgba(34, 211, 238, 0.12), inset 0 1px 0 rgba(255,255,255,0.06);
-      padding: var(--df-space-2);
-      overflow: hidden;
+    .hero-sub { font-size: 1.1rem; line-height: 1.7; margin-bottom: var(--df-space-6); max-width: 34rem; margin-left: auto; margin-right: auto; color: var(--df-text-secondary); }
+    .hero-cta { display: flex; gap: var(--df-space-3); justify-content: center; flex-wrap: wrap; }
+    .hero-count {
+      margin-top: var(--df-space-8);
+      display: inline-flex; flex-direction: column; align-items: center; gap: 0.25rem;
+      padding: var(--df-space-4) var(--df-space-6);
+      background: var(--df-surface-card); border: 1px solid var(--df-border);
+      border-radius: var(--df-radius-lg); box-shadow: var(--df-shadow);
     }
-    .hero-preview-bar { display: flex; gap: 6px; padding: var(--df-space-3) var(--df-space-4); border-bottom: 1px solid var(--df-border); }
-    .hero-preview-dot { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
-    .hero-preview-dot:nth-child(1) { background: var(--df-pink); color: var(--df-pink); }
-    .hero-preview-dot:nth-child(2) { background: var(--df-peach); color: var(--df-peach); }
-    .hero-preview-dot:nth-child(3) { background: var(--df-mint); color: var(--df-mint); }
-    .hero-preview-body { padding: var(--df-space-6); display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--df-space-4); min-height: 180px; }
-    .hero-preview-kpi {
-      background: linear-gradient(160deg, rgba(34, 211, 238, 0.1), rgba(167, 139, 250, 0.08));
-      border-radius: var(--df-radius);
-      padding: var(--df-space-4);
-      text-align: left;
-      border: 1px solid var(--df-border);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    .hero-count .num { font-size: 2.4rem; font-family: var(--df-font-serif); color: var(--df-text); line-height: 1; }
+    .hero-count .lbl { font-size: 0.8rem; color: var(--df-text-muted); }
+    .steps { max-width: var(--df-max-width); margin: 0 auto; }
+    .step-card h3 { margin-bottom: 0.35rem; }
+    .step-card p { font-size: 0.9rem; line-height: 1.6; color: var(--df-text-secondary); }
+    .step-num {
+      width: 2rem; height: 2rem; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(34,211,238,0.15); color: var(--df-primary); font-weight: 700; font-size: 0.85rem; margin-bottom: var(--df-space-3);
     }
-    .hero-preview-kpi .val { font-size: 1.4rem; font-weight: 400; color: var(--df-text); font-family: var(--df-font-serif); }
-    .hero-preview-kpi .lbl { font-size: 0.7rem; color: var(--df-text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
-    .features-section { max-width: var(--df-max-width); margin: 0 auto; }
-    .feature-icon {
-      width: 48px; height: 48px; border-radius: 16px;
-      background: var(--df-gradient-subtle); border: 1px solid var(--df-border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.25rem; margin-bottom: var(--df-space-4);
-      box-shadow: 0 0 20px rgba(34, 211, 238, 0.12);
-    }
-    .feature-card p { font-size: 0.875rem; line-height: 1.65; }
-    .stats-inner { max-width: var(--df-max-width); margin: 0 auto; text-align: center; }
-    .stat-item .num { font-size: 2.4rem; font-weight: 400; letter-spacing: -0.02em; color: var(--df-text); font-family: var(--df-font-serif); }
-    .stat-item .lbl { font-size: 0.8125rem; margin-top: var(--df-space-1); }
-    .pipeline-section { max-width: var(--df-max-width); margin: 0 auto; text-align: center; }
-    .preview-inner { max-width: var(--df-max-width); margin: 0 auto; }
-    .preview-card { text-align: center; }
-    .preview-mock {
-      background: var(--df-gradient-subtle); border-radius: var(--df-radius);
-      height: 160px; margin-bottom: var(--df-space-5);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.5rem; border: 1px solid var(--df-border);
-      box-shadow: inset 0 0 40px rgba(34, 211, 238, 0.08);
-    }
-    .preview-card p { font-size: 0.875rem; margin-bottom: var(--df-space-4); }
-    .stat-skeleton { display: inline-block; width: 80px; height: 2rem; border-radius: var(--df-radius-sm); }
-    .ticker {
-      overflow: hidden; border-top: 1px solid var(--df-border); border-bottom: 1px solid var(--df-border);
-      background: var(--df-ticker-bg); padding: 0.85rem 0;
-    }
-    .ticker-track { display: flex; gap: 2.5rem; width: max-content; animation: ticker 28s linear infinite; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--df-text-muted); }
-    .ticker-track span { white-space: nowrap; }
-    .ticker-track span::before { content: '✦'; color: var(--df-blue); margin-right: 0.65rem; }
-    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-    @media (max-width: 640px) { .hero-preview-body { grid-template-columns: repeat(2, 1fr); } }
+    .simple-note { font-size: 0.85rem; color: var(--df-text-muted); max-width: 36rem; margin: 0 auto; line-height: 1.5; text-align: center; }
   </style>
 </head>
 <body>
 
-<!-- Navbar -->
 <nav class="df-navbar">
   <div class="df-navbar-inner">
     <a href="index.html" class="df-navbar-brand">
@@ -91,224 +48,112 @@
     </a>
     <div class="df-navbar-links">
       <a href="index.html" class="active">Home</a>
-      <a href="dashboard.html">Dashboard</a>
       <a href="jobs.html">Jobs</a>
-      <a href="agent.html">Job Agent</a>
-      <a href="roi.html">ROI</a>
+      <a href="agent.html">Match my resume</a>
+      <a href="dashboard.html">Charts</a>
       <a href="about.html">About</a>
     </div>
     <div class="df-navbar-actions">
-      <a href="jobs.html" class="df-btn df-btn-ghost df-btn-sm">Explore Jobs</a>
-      <a href="dashboard.html" class="df-btn df-btn-primary df-btn-sm">View Dashboard</a>
+      <a href="jobs.html" class="df-btn df-btn-primary df-btn-sm">Browse jobs</a>
     </div>
   </div>
 </nav>
 
-<!-- Hero -->
 <section class="df-hero">
   <div class="df-hero-grid"></div>
   <div class="hero-content df-fade-in">
     <img src="df-logo.png" alt="DataForge" class="hero-logo" />
-    <div class="df-status-pill"><span class="df-live-dot"></span> Public feeds · daily Gold refresh</div>
-    <h1>EU early-career<br>data &amp; AI jobs</h1>
+    <div class="df-status-pill"><span class="df-live-dot"></span> Updated daily</div>
+    <h1>Find early-career<br>data &amp; AI jobs in Europe</h1>
     <p class="hero-sub">
-      Official and public sources — BA Jobsuche, EURES, company ATS, Arbeitnow, Berlin startups — into one board for fresher, working-student, internship, and thesis roles. Always verify on the employer site before you apply.
+      Internships, working-student roles, thesis topics, and junior jobs — collected from public job sites.
+      Always open the company page before you apply.
     </p>
     <div class="hero-cta">
-      <a href="jobs.html" class="df-btn df-btn-primary df-btn-lg">Browse product board</a>
-      <a href="dashboard.html" class="df-btn df-btn-secondary df-btn-lg">Open dashboard</a>
+      <a href="jobs.html" class="df-btn df-btn-primary df-btn-lg">Browse jobs</a>
+      <a href="agent.html" class="df-btn df-btn-secondary df-btn-lg">Match my resume</a>
     </div>
-  </div>
-
-  <div class="df-hero-stage df-fade-in df-fade-in-delay-2">
-    <div class="df-hero-ring"></div>
-    <div class="df-hero-ring df-hero-ring-2"></div>
-    <div class="df-sat df-sat-1"><div class="k">Signal</div><div class="v">Product gate</div></div>
-    <div class="df-sat df-sat-2"><div class="k">Coverage</div><div class="v">EU · 5 sources</div></div>
-    <div class="df-sat df-sat-3"><div class="k">Match</div><div class="v">Suggested leads</div></div>
-    <div class="df-hero-deck">
-      <div class="hero-preview-frame">
-        <div class="hero-preview-bar">
-          <span class="hero-preview-dot"></span>
-          <span class="hero-preview-dot"></span>
-          <span class="hero-preview-dot"></span>
-        </div>
-        <div class="hero-preview-body">
-          <div class="hero-preview-kpi">
-            <div class="val" id="hero-kpi-total">2,282</div>
-            <div class="lbl">Early-career jobs</div>
-          </div>
-          <div class="hero-preview-kpi">
-            <div class="val" id="hero-kpi-remote">—</div>
-            <div class="lbl">Remote (product)</div>
-          </div>
-          <div class="hero-preview-kpi">
-            <div class="val" id="hero-kpi-english">—</div>
-            <div class="lbl">English only (strict)</div>
-          </div>
-          <div class="hero-preview-kpi">
-            <div class="val" id="hero-kpi-companies">—</div>
-            <div class="lbl">Employers</div>
-          </div>
-        </div>
-      </div>
+    <div class="hero-count">
+      <div class="num" id="hero-kpi-total">…</div>
+      <div class="lbl">open early-career roles right now</div>
     </div>
   </div>
 </section>
 
-<div class="ticker" aria-hidden="true">
-  <div class="ticker-track">
-    <span>BA Jobsuche</span><span>EURES</span><span>Arbeitnow</span><span>Direct ATS</span><span>Berlin Startups</span><span>Remote radar</span><span>Skill demand</span><span>Career matching</span>
-    <span>BA Jobsuche</span><span>EURES</span><span>Arbeitnow</span><span>Direct ATS</span><span>Berlin Startups</span><span>Remote radar</span><span>Skill demand</span><span>Career matching</span>
-  </div>
-</div>
-
-<!-- Features -->
-<section class="df-section features-section df-section-alt df-reveal">
+<section class="df-section steps df-section-alt df-reveal">
   <div class="df-section-header" style="text-align:center;margin-left:auto;margin-right:auto;">
-    <div class="df-section-eyebrow">What you get</div>
-    <h2>Public job feeds, gated for early career</h2>
-    <p style="margin:0 auto;">A serverless lakehouse that publishes only EU data/AI fresher, working-student, internship, and thesis roles by default. Full lakehouse volume stays available on the dashboard for research.</p>
+    <div class="df-section-eyebrow">How it works</div>
+    <h2>Three simple steps</h2>
+    <p class="simple-note">No account needed. Built for students and juniors looking for data / AI roles in the EU.</p>
   </div>
-  <div class="df-grid-3" style="margin-top:var(--df-space-10);">
-    <div class="df-card df-card-hover feature-card df-fade-in">
-      <div class="feature-icon">⚡</div>
-      <h3>Daily public aggregation</h3>
-      <p>Five sources unified daily — BA Jobsuche, EURES, Arbeitnow, direct ATS, and Berlin startup feeds. No LinkedIn/Indeed scrape.</p>
+  <div class="df-grid-3" style="margin-top:var(--df-space-8);">
+    <div class="df-card step-card">
+      <div class="step-num">1</div>
+      <h3>Browse the job list</h3>
+      <p>See roles filtered for early career in data and AI. Use city, remote, or English filters if you want.</p>
     </div>
-    <div class="df-card df-card-hover feature-card df-fade-in df-fade-in-delay-1">
-      <div class="feature-icon">🎯</div>
-      <h3>Job Agent (suggested leads)</h3>
-      <p>Paste your resume — get a ranked shortlist from the product board. Scores are advisory; verify every posting before applying.</p>
+    <div class="df-card step-card">
+      <div class="step-num">2</div>
+      <h3>Check the badges</h3>
+      <p><strong>Company page</strong> = link goes to the employer. <strong>Job portal</strong> = from BA / EURES / similar. Prefer company pages.</p>
     </div>
-    <div class="df-card df-card-hover feature-card df-fade-in df-fade-in-delay-2">
-      <div class="feature-icon">📊</div>
-      <h3>Remote &amp; skill analytics</h3>
-      <p>Track remote vs on-site trends and skill demand on the early-career product slice, with lakehouse context on the dashboard.</p>
-    </div>
-    <div class="df-card df-card-hover feature-card df-fade-in">
-      <div class="feature-icon">🏢</div>
-      <h3>Source &amp; trust badges</h3>
-      <p>Every card shows provenance (ATS vs aggregator), freshness, and classification confidence so you know what to double-check.</p>
-    </div>
-    <div class="df-card df-card-hover feature-card df-fade-in df-fade-in-delay-1">
-      <div class="feature-icon">🌍</div>
-      <h3>Europe-wide early career</h3>
-      <p>Product gate: EU + data/AI-related fields + fresher / working student / internship / thesis.</p>
-    </div>
-    <div class="df-card df-card-hover feature-card df-fade-in df-fade-in-delay-2">
-      <div class="feature-icon">☁️</div>
-      <h3>Serverless lakehouse</h3>
-      <p>Lambda → S3 Bronze → Silver SCD → Gold → API Gateway. Built for AWS Free Tier / low cost.</p>
+    <div class="df-card step-card">
+      <div class="step-num">3</div>
+      <h3>Apply on the company site</h3>
+      <p>DataForge only helps you find leads. Confirm the job is still open on the employer website, then apply there.</p>
     </div>
   </div>
 </section>
 
-<!-- Live Stats -->
-<section class="df-section-lg stats-section df-reveal">
-  <div class="stats-inner">
-    <div class="df-section-eyebrow">Product board (not full lakehouse)</div>
-    <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:var(--df-space-2);letter-spacing:-0.02em;">Early-career data &amp; AI at a glance</h2>
-    <p id="home-scope-note" style="font-size:0.85rem;color:var(--df-text-muted);max-width:36rem;margin:0 auto var(--df-space-8);line-height:1.5;">Headline counts use the EU data/AI early-career gate. Lakehouse total is shown separately.</p>
-    <div class="df-grid-4">
-      <div class="stat-item df-stat-glass">
-        <div class="num" id="stat-total">2,282</div>
-        <div class="lbl">Product jobs</div>
-      </div>
-      <div class="stat-item df-stat-glass">
-        <div class="num" id="stat-remote">—</div>
-        <div class="lbl">Remote (product)</div>
-      </div>
-      <div class="stat-item df-stat-glass">
-        <div class="num" id="stat-english">—</div>
-        <div class="lbl">English only (strict)</div>
-      </div>
-      <div class="stat-item df-stat-glass">
-        <div class="num" id="stat-companies">—</div>
-        <div class="lbl">Employers</div>
-      </div>
-    </div>
-    <p style="margin-top:var(--df-space-6);font-size:0.8rem;color:var(--df-text-muted)">Full lakehouse active: <span id="stat-lakehouse">—</span> · always verify apply links on the company site</p>
-  </div>
-</section>
-
-<!-- Pipeline -->
-<section class="df-section pipeline-section df-section-mint df-reveal">
-  <div class="df-section-header" style="text-align:center;margin:0 auto var(--df-space-10);">
-    <div class="df-section-eyebrow">Data Pipeline</div>
-    <h2>From raw feeds to actionable insights</h2>
-    <p style="margin:0 auto;">A medallion architecture that transforms job data through every quality layer.</p>
-  </div>
-  <div class="df-pipeline">
-    <div class="df-pipeline-step df-card-hover">
-      <div class="icon">📥</div>
-      <div class="name">Ingest</div>
-      <div class="desc">5 source APIs</div>
-    </div>
-    <span class="df-pipeline-arrow">→</span>
-    <div class="df-pipeline-step df-card-hover">
-      <div class="icon">🥉</div>
-      <div class="name">Bronze</div>
-      <div class="desc">Raw Parquet</div>
-    </div>
-    <span class="df-pipeline-arrow">→</span>
-    <div class="df-pipeline-step df-card-hover">
-      <div class="icon">🥈</div>
-      <div class="name">Silver</div>
-      <div class="desc">SCD Type 2</div>
-    </div>
-    <span class="df-pipeline-arrow">→</span>
-    <div class="df-pipeline-step df-card-hover">
-      <div class="icon">🥇</div>
-      <div class="name">Gold</div>
-      <div class="desc">Analytics CSVs</div>
-    </div>
-    <span class="df-pipeline-arrow">→</span>
-    <div class="df-pipeline-step df-card-hover">
-      <div class="icon">🔌</div>
-      <div class="name">API</div>
-      <div class="desc">Gateway REST</div>
-    </div>
-    <span class="df-pipeline-arrow">→</span>
-    <div class="df-pipeline-step df-card-hover">
-      <div class="icon">✨</div>
-      <div class="name">UI</div>
-      <div class="desc">This product</div>
-    </div>
-  </div>
-</section>
-
-<!-- Previews -->
-<section class="df-section preview-section df-section-peach df-reveal">
-  <div class="preview-inner">
-    <div class="df-section-header" style="text-align:center;margin:0 auto var(--df-space-10);">
-      <div class="df-section-eyebrow">Product Preview</div>
-      <h2>Built for seekers and analysts</h2>
-    </div>
+<section class="df-section df-reveal">
+  <div style="max-width:var(--df-max-width);margin:0 auto;text-align:center;">
+    <div class="df-section-eyebrow">What’s included</div>
+    <h2 style="margin-bottom:var(--df-space-2);">Who these jobs are for</h2>
+    <p class="simple-note" style="margin-bottom:var(--df-space-8);">Fresher · Working student (Werkstudent) · Internship · Thesis — in data, AI/ML, analytics, and data engineering across Europe.</p>
     <div class="df-grid-3">
-      <div class="df-card df-card-hover preview-card">
-        <div class="preview-mock">📊</div>
-        <h3>Dashboard</h3>
-        <p>Product KPIs first; lakehouse totals labeled separately.</p>
-        <a href="dashboard.html" class="df-btn df-btn-secondary df-btn-sm">Open Dashboard →</a>
+      <div class="df-card">
+        <h3>Jobs</h3>
+        <p style="font-size:0.9rem;color:var(--df-text-secondary);line-height:1.6;">Search and filter openings. Start here.</p>
+        <a href="jobs.html" class="df-btn df-btn-primary df-btn-sm" style="margin-top:1rem">Open Jobs</a>
       </div>
-      <div class="df-card df-card-hover preview-card">
-        <div class="preview-mock">🔍</div>
-        <h3>Job board</h3>
-        <p>Default: EU data/AI early-career with source, age, and trust badges.</p>
-        <a href="jobs.html" class="df-btn df-btn-secondary df-btn-sm">Browse Jobs →</a>
+      <div class="df-card">
+        <h3>Match my resume</h3>
+        <p style="font-size:0.9rem;color:var(--df-text-secondary);line-height:1.6;">Paste your CV for a short suggested list. Not a hiring decision.</p>
+        <a href="agent.html" class="df-btn df-btn-secondary df-btn-sm" style="margin-top:1rem">Try Match</a>
       </div>
-      <div class="df-card df-card-hover preview-card">
-        <div class="preview-mock">🎯</div>
-        <h3>Job Agent</h3>
-        <p>Suggested shortlist from the gated board — not a hiring decision.</p>
-        <a href="agent.html" class="df-btn df-btn-secondary df-btn-sm">Ask the agent →</a>
+      <div class="df-card">
+        <h3>Charts</h3>
+        <p style="font-size:0.9rem;color:var(--df-text-secondary);line-height:1.6;">Trends and totals for people who like charts. Optional.</p>
+        <a href="dashboard.html" class="df-btn df-btn-ghost df-btn-sm" style="margin-top:1rem">Open Charts</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Footer -->
+<section class="df-section df-section-alt df-reveal">
+  <div style="max-width:40rem;margin:0 auto;text-align:center;">
+    <div class="df-section-eyebrow">Please remember</div>
+    <h2>We help you discover. You decide.</h2>
+    <p class="simple-note" style="margin-top:var(--df-space-4);">
+      Listings come from public sources (German BA, EURES, company career pages, and a few job boards).
+      A listing here does not guarantee the role is still open. Always verify before applying.
+    </p>
+    <p class="simple-note" style="margin-top:var(--df-space-3);">
+      Right now: <strong id="stat-total">…</strong> early-career roles ·
+      <strong id="stat-remote">…</strong> remote ·
+      <strong id="stat-english">…</strong> English-only
+    </p>
+  </div>
+</section>
+
+<details style="max-width:40rem;margin:0 auto var(--df-space-12);padding:0 1rem;">
+  <summary style="cursor:pointer;color:var(--df-text-muted);font-size:0.85rem;">For builders / recruiters (technical details)</summary>
+  <p style="font-size:0.8rem;color:var(--df-text-secondary);line-height:1.6;margin-top:0.75rem;">
+    DataForge is also a data-engineering portfolio: public APIs → AWS lakehouse → match API.
+    See <a href="about.html">About</a> and <a href="dashboard.html">Charts</a>. Full tech job volume (not only early-career): <span id="stat-lakehouse">…</span>.
+  </p>
+</details>
+
 <footer class="df-footer">
   <div class="df-footer-inner">
     <div>
@@ -316,25 +161,22 @@
         <img src="df-logo.png" alt="DataForge" />
         DataForge
       </div>
-      <p>DataForge — EU early-career data &amp; AI job lakehouse<br />Public feeds · verify before apply · eu-central-1</p>
+      <p>Early-career data &amp; AI jobs in Europe<br />Public sources · verify before you apply</p>
     </div>
     <div class="df-footer-links">
-      <strong style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--df-text-muted);">Product</strong>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="jobs.html">Job board</a>
-      <a href="agent.html">Job Agent</a>
+      <strong style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--df-text-muted);">Start here</strong>
+      <a href="jobs.html">Jobs</a>
+      <a href="agent.html">Match my resume</a>
       <a href="about.html">About</a>
     </div>
     <div class="df-footer-links">
-      <strong style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--df-text-muted);">APIs</strong>
-      <a href="https://xy9g3m33wj.execute-api.eu-central-1.amazonaws.com/" target="_blank" rel="noopener">Metrics API</a>
-      <a href="https://br1sodhn2e.execute-api.eu-central-1.amazonaws.com/" target="_blank" rel="noopener">Jobs API</a>
-      <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      <strong style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--df-text-muted);">More</strong>
+      <a href="dashboard.html">Charts</a>
+      <a href="roi.html">ROI</a>
     </div>
     <div class="df-footer-links">
-      <strong style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--df-text-muted);">Version</strong>
-      <span>UI trust pass · product-first KPIs</span>
-      <span id="footer-updated">Data loading...</span>
+      <strong style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--df-text-muted);">Updated</strong>
+      <span id="footer-updated">Loading…</span>
     </div>
   </div>
 </footer>
@@ -353,25 +195,16 @@
   function applyStats(data) {
     const product = Number(data.product_jobs ?? data.early_career_jobs ?? data.total_jobs ?? 0);
     const lakehouse = Number(data.lakehouse_total_jobs ?? data.board_jobs ?? 0);
-    const total = product.toLocaleString();
-    const remote = (data.remote_counts?.remote ?? data.remote_vs_onsite?.Remote ?? 0).toLocaleString();
+    const total = product ? product.toLocaleString() : "…";
+    const remote = Number(data.remote_counts?.remote ?? data.remote_vs_onsite?.Remote ?? 0).toLocaleString();
     const english = Number(data.english_jobs_strict ?? data.english_jobs ?? 0).toLocaleString();
-    const companyCount = data.top_companies_early_career?.length
-      ? data.top_companies_early_career.length + "+"
-      : (data.top_companies
-        ? new Set(data.top_companies.map(c => c.company)).size + "+"
-        : "—");
-
-    ["stat-total", "hero-kpi-total"].forEach(id => setText(id, total));
-    ["stat-remote", "hero-kpi-remote"].forEach(id => setText(id, remote));
-    ["stat-english", "hero-kpi-english"].forEach(id => setText(id, english));
-    setText("stat-companies", companyCount);
-    setText("hero-kpi-companies", companyCount);
-    setText("stat-lakehouse", lakehouse ? lakehouse.toLocaleString() : "—");
-    if (data.scope_note) setText("home-scope-note", data.scope_note);
-
+    setText("hero-kpi-total", total);
+    setText("stat-total", total);
+    setText("stat-remote", remote);
+    setText("stat-english", english);
+    setText("stat-lakehouse", lakehouse ? lakehouse.toLocaleString() : "…");
     if (data.last_updated) {
-      setText("footer-updated", "Updated " + new Date(data.last_updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }));
+      setText("footer-updated", new Date(data.last_updated).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }));
     }
   }
 
@@ -381,11 +214,10 @@
     applyStats(await res.json());
   }
 
-  // Seeded HTML numbers → Gold snapshot → live Metrics API (never wipe to "—" on failure).
   (async () => {
-    try { await loadStats(METRICS_SNAPSHOT_URL); } catch (_) { /* keep HTML seed */ }
+    try { await loadStats(METRICS_SNAPSHOT_URL); } catch (_) {}
     try { await loadStats(METRICS_API_URL); }
-    catch (_) { setText("footer-updated", "Showing Gold snapshot · live API unavailable"); }
+    catch (_) { setText("footer-updated", "Showing saved snapshot"); }
   })();
 </script>
 <script src="components/ui.js"></script>

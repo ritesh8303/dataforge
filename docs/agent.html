@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataForge — Job Matching Agent</title>
-  <meta name="description" content="Paste your resume and get ranked job suggestions from the DataForge EU lakehouse." />
+  <title>DataForge — Match my resume</title>
+  <meta name="description" content="Paste your resume to get a short suggested list of early-career data and AI jobs in Europe. Always verify on the company website." />
   <link rel="icon" href="df-logo.png" type="image/png" />
   <meta name="theme-color" content="#f3f6fb" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#05060d" media="(prefers-color-scheme: dark)" />
@@ -280,26 +280,25 @@
     </a>
     <div class="df-navbar-links">
       <a href="index.html">Home</a>
-      <a href="dashboard.html">Dashboard</a>
       <a href="jobs.html">Jobs</a>
-      <a href="agent.html" class="active">Job Agent</a>
-      <a href="roi.html">ROI</a>
+      <a href="agent.html" class="active">Match my resume</a>
+      <a href="dashboard.html">Charts</a>
       <a href="about.html">About</a>
     </div>
     <div class="df-navbar-actions">
-      <a href="jobs.html" class="df-btn df-btn-ghost df-btn-sm">Browse all jobs</a>
+      <a href="jobs.html" class="df-btn df-btn-ghost df-btn-sm">Browse jobs</a>
     </div>
   </div>
 </nav>
 
 <div class="df-page df-fade-in">
   <div class="agent-header">
-    <h1>Job Matching Agent</h1>
-    <p>Paste your resume — I search the DataForge <strong>product board</strong> (EU data/AI early-career) and return a <strong>suggested shortlist</strong>. Scores are advisory, not hiring decisions. Always open the employer careers page before applying. Visa / language flags are JD heuristics — not legal advice.</p>
+    <h1>Match my resume</h1>
+    <p>Paste your CV. You’ll get a <strong>short suggested list</strong> of early-career data &amp; AI jobs in Europe. This is not a hiring decision — always open the company page before applying.</p>
   </div>
 
-  <div class="df-surface-card" style="margin-bottom:1rem;padding:0.75rem 1rem;border:1px solid var(--df-border);border-radius:var(--df-radius);font-size:0.8rem;line-height:1.5;color:var(--df-text-secondary)">
-    <strong>Eval honesty:</strong> Published nDCG uses synthetic labels for CI regression. Human-graded labels are the trust standard when available (<code>evals/data/human_label_protocol.md</code>). Treat Match as lead generation, not calibrated fit.
+  <div class="df-surface-card" style="margin-bottom:1rem;padding:0.85rem 1rem;border:1px solid var(--df-border);border-radius:var(--df-radius);font-size:0.82rem;line-height:1.55;color:var(--df-text-secondary)">
+    <strong>Tip:</strong> Click <em>Try a sample resume</em> below to see how it works — no key needed for a basic demo. For the full match service, ask the project owner for access if a key field appears.
   </div>
 
   <div class="agent-shell" id="agent-shell">
@@ -308,25 +307,25 @@
       <div class="composer">
         <div class="composer-row">
           <textarea id="composer-input" class="df-textarea" rows="3" placeholder="Paste your resume here..."></textarea>
-          <button type="button" class="df-btn df-btn-primary" id="send-btn">Send</button>
+          <button type="button" class="df-btn df-btn-primary" id="send-btn">Find jobs</button>
         </div>
         <div class="composer-actions">
           <div class="quick-chips">
-            <button type="button" class="df-chip" id="sample-resume-btn">Load sample resume</button>
+            <button type="button" class="df-chip" id="sample-resume-btn">Try a sample resume</button>
             <button type="button" class="df-chip" id="skip-btn" style="display:none">Skip</button>
             <button type="button" class="df-chip" id="restart-btn">Start over</button>
           </div>
           <div class="composer-meta">
-            <label for="match-mode">Mode
+            <label for="match-mode">How to rank
               <select id="match-mode" class="df-select">
-                <option value="hybrid" selected>Hybrid (BM25 + embeddings)</option>
-                <option value="agent">Multi-agent graph</option>
-                <option value="rules">Client scoring (Jobs API)</option>
+                <option value="hybrid" selected>Best match (recommended)</option>
+                <option value="agent">Deeper AI ranking</option>
+                <option value="rules">Simple keyword score</option>
               </select>
             </label>
-            <label><input type="checkbox" id="entry-only" checked /> Early-career only</label>
-            <label><input type="checkbox" id="english-ok" /> English-OK</label>
-            <label for="visa-status">Visa
+            <label><input type="checkbox" id="entry-only" checked /> Early career only</label>
+            <label><input type="checkbox" id="english-ok" /> Prefer English</label>
+            <label for="visa-status">Visa (optional)
               <select id="visa-status" class="df-select">
                 <option value="" selected>Any</option>
                 <option value="eu_citizen">EU citizen</option>
@@ -336,7 +335,7 @@
                 <option value="needs_visa_from_abroad">Needs visa from abroad</option>
               </select>
             </label>
-            <label for="german-level">German
+            <label for="german-level">German level
               <select id="german-level" class="df-select">
                 <option value="" selected>Any</option>
                 <option value="A1">A1</option>
@@ -347,9 +346,12 @@
                 <option value="C2">C2</option>
               </select>
             </label>
-            <label for="match-api-key">Match key
-              <input id="match-api-key" class="df-input" type="password" autocomplete="off" placeholder="Required X-API-Key" style="max-width:10rem" title="Live Match requires X-API-Key from the project owner" />
-            </label>
+            <details style="width:100%;margin-top:0.25rem">
+              <summary style="cursor:pointer;font-size:0.75rem;color:var(--df-text-muted)">Advanced: access key (only if you were given one)</summary>
+              <label for="match-api-key" style="display:block;margin-top:0.5rem">Access key
+                <input id="match-api-key" class="df-input" type="password" autocomplete="off" placeholder="Optional" style="max-width:12rem" title="Only needed for the full live match service" />
+              </label>
+            </details>
           </div>
         </div>
       </div>
@@ -869,7 +871,7 @@
     document.getElementById("results-panel").classList.remove("active");
     setPlaceholder();
     addBubble(
-      "Hi — I’m the DataForge Job Matching Agent.\n\nPaste your resume and I’ll suggest fresher, working-student, internship, and thesis openings in data/AI from our gated EU product board.\n\nScores are advisory leads — always verify on the employer site before applying.",
+      "Hi — I’m here to help you find early-career data & AI jobs in Europe.\n\nPaste your resume, or click “Try a sample resume”.\n\nI’ll suggest a short list. Always check the company website before you apply.",
       "agent"
     );
   }

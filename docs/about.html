@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About — DataForge</title>
-  <meta name="description" content="How DataForge turns public EU job postings into a medallion lakehouse with frugal GenAI matching for interns, working students, and juniors." />
+  <meta name="description" content="DataForge helps students and juniors find early-career data and AI jobs in Europe from public job sources." />
   <link rel="icon" href="df-logo.png" type="image/png" />
   <meta name="theme-color" content="#f3f6fb" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#05060d" media="(prefers-color-scheme: dark)" />
@@ -28,59 +28,60 @@
     </a>
     <div class="df-navbar-links">
       <a href="index.html">Home</a>
-      <a href="dashboard.html">Dashboard</a>
       <a href="jobs.html">Jobs</a>
-      <a href="agent.html">Job Agent</a>
-      <a href="roi.html">ROI</a>
+      <a href="agent.html">Match my resume</a>
+      <a href="dashboard.html">Charts</a>
       <a href="about.html" class="active">About</a>
     </div>
   </div>
 </nav>
 
 <main class="about-wrap">
-  <p class="about-eyebrow">Portfolio · UE M.Sc. thesis reference</p>
-  <h1>Problem → pipeline → AI → bio</h1>
+  <p class="about-eyebrow">In plain English</p>
+  <h1>What is DataForge?</h1>
   <p>
-    Public job boards bury <strong>fresher, Werkstudent, internship, and thesis</strong> openings in
-    <strong>data / AI</strong> under mid/senior and non-data noise across the EU.
-    DataForge gates Gold / Jobs / Match to that audience and adds an advisory match surface.
-    We only use legal public APIs and ATS feeds — never LinkedIn or workingstudentjobs.de scrapes.
+    DataForge is a <strong>free job finder</strong> for students and juniors looking for
+    <strong>data and AI roles in Europe</strong> — internships, working-student (Werkstudent) jobs,
+    thesis topics, and junior positions.
+  </p>
+  <p>
+    Jobs come from public sources (German BA Jobsuche, EURES, company career pages, and a few open job boards).
+    We do <strong>not</strong> scrape LinkedIn or Indeed.
   </p>
 
-  <h2>1. Pipeline</h2>
+  <h2>How to use it</h2>
   <ul>
-    <li>Bronze → Silver (SCD2) → Gold on AWS S3 (<code>eu-central-1</code>)</li>
-    <li>Sources: Arbeitnow, BA, EURES, ATS/Personio, Berlin startups (optional Himalayas / HN)</li>
-    <li>Product gate: EU × data/AI fields × early-career only; ambiguous rows → ingest review queue</li>
-    <li>dbt + DuckDB on Gold aggregates; quality gate in CI</li>
+    <li><a href="jobs.html"><strong>Jobs</strong></a> — browse and filter (start here)</li>
+    <li><a href="agent.html"><strong>Match my resume</strong></a> — paste your CV for a short suggested list</li>
+    <li><a href="dashboard.html"><strong>Charts</strong></a> — optional market counts</li>
   </ul>
 
-  <h2>2. AI matching (frugal)</h2>
+  <h2>Important limits</h2>
   <ul>
-    <li>Rules-first enrichment; Bedrock Nova / Titan when ambiguous</li>
-    <li>Hybrid BM25 + dense (LanceDB-on-S3 helper) + RRF</li>
-    <li>FastAPI Match API with PII redaction and cited <code>job_id</code> explanations</li>
-    <li>Optional multi-agent graph (Supervisor → Retriever → Scorer → Explainer → Critic) + MCP tools</li>
-    <li>Kill switch, daily € budget, HITL queue for low confidence</li>
+    <li>A listing here does <strong>not</strong> guarantee the role is still open — always check the company website</li>
+    <li>Match scores are <strong>suggestions</strong>, not hiring decisions</li>
+    <li>Visa / language flags are hints from the job text — not legal advice</li>
   </ul>
 
-  <h2>3. Honest limits</h2>
+  <h2>Who built this</h2>
   <p>
-    Visa flags are advisory, not legal advice. Match URLs go live only after <code>terraform/ai.tf</code> is applied.
-    See <a href="https://github.com/ritesh8303/dataforge/blob/main/docs/RESPONSIBLE_AI.md">RESPONSIBLE_AI.md</a>
-    and the living <a href="https://github.com/ritesh8303/dataforge/blob/main/docs/ROADMAP.md">ROADMAP</a>.
+    Built by Ritesh Rakesh Jadhav as a portfolio project (and M.Sc. Data Science thesis packaging)
+    to show real data + AI engineering — while staying useful for early-career seekers.
   </p>
 
-  <h2>4. Bio</h2>
-  <p>
-    Built by Ritesh Rakesh Jadhav as a hireable DE + applied GenAI portfolio that also packages the
-    University of Europe (Potsdam) M.Sc. Data Science thesis (RQ1–RQ4).
-  </p>
+  <details style="margin-top:var(--df-space-8)">
+    <summary style="cursor:pointer;color:var(--df-text-muted)">Technical details (for recruiters / engineers)</summary>
+    <ul style="margin-top:0.75rem">
+      <li>Public APIs → AWS Bronze / Silver / Gold lakehouse → Jobs + Match APIs → this website</li>
+      <li>Early-career filter: EU × data/AI fields × fresher / working student / internship / thesis</li>
+      <li>Match uses hybrid search; eval scores use synthetic labels unless human labels are added</li>
+      <li>Governance: <a href="https://github.com/ritesh8303/dataforge/blob/main/docs/RESPONSIBLE_AI.md">Responsible AI</a></li>
+    </ul>
+  </details>
 
   <div class="about-cta">
-    <a class="df-btn df-btn-primary" href="agent.html">Try Job Agent</a>
-    <a class="df-btn df-btn-secondary" href="dashboard.html">Open dashboard</a>
-    <a class="df-btn df-btn-ghost" href="https://github.com/ritesh8303/dataforge">GitHub</a>
+    <a href="jobs.html" class="df-btn df-btn-primary">Browse jobs</a>
+    <a href="agent.html" class="df-btn df-btn-secondary">Match my resume</a>
   </div>
 </main>
 <script src="components/ui.js"></script>

@@ -4,15 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <title>DataForge — Job Intelligence Board</title>
-  <meta name="description" content="DataForge Job Intelligence Board — EU fresher, working-student, internship, and thesis roles in data and AI." />
+  <title>DataForge — Early-career data &amp; AI jobs</title>
+  <meta name="description" content="Browse fresher, working-student, internship, and thesis jobs in data and AI across Europe. Verify on the company website before applying." />
   <link rel="icon" href="df-logo.png" type="image/png" />
   <meta name="theme-color" content="#f3f6fb" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#05060d" media="(prefers-color-scheme: dark)" />
   <link rel="stylesheet" href="components/design-system.css" />
   <script>
     (function () {
-      var BUILD = "2026-10-01.1";
+      var BUILD = "2026-10-05.clarity";
       try {
         var key = "dataforge.jobs.build";
         var prev = localStorage.getItem(key);
@@ -79,30 +79,33 @@
     </a>
     <div class="df-navbar-links">
       <a href="index.html">Home</a>
-      <a href="dashboard.html">Dashboard</a>
       <a href="jobs.html" class="active">Jobs</a>
-      <a href="agent.html">Job Agent</a>
-      <a href="roi.html">ROI</a>
+      <a href="agent.html">Match my resume</a>
+      <a href="dashboard.html">Charts</a>
       <a href="about.html">About</a>
     </div>
     <div class="df-navbar-actions">
-      <a href="agent.html" class="df-btn df-btn-primary df-btn-sm">Job Agent</a>
+      <a href="agent.html" class="df-btn df-btn-primary df-btn-sm">Match my resume</a>
     </div>
   </div>
 </nav>
 
 <div class="df-page-narrow df-fade-in">
   <div class="page-header">
-    <h1 data-i18n="title">EU Data &amp; AI — Early Career Jobs</h1>
-    <p data-i18n="subtitle">Fresher, working-student, internship, and thesis roles in data, AI/ML, and related fields across the European Union. Listings are public-feed leads — verify on the employer site before applying.</p>
+    <h1 data-i18n="title">Early-career data &amp; AI jobs in Europe</h1>
+    <p data-i18n="subtitle">Internships, working-student roles, thesis topics, and junior jobs. Always check the company website before you apply.</p>
     <button type="button" id="lang-toggle" class="df-chip" style="margin-top:0.5rem">DE</button>
   </div>
 
   <div id="error-box" class="df-error" style="display:none"></div>
-  <div class="df-surface-card" style="margin-bottom:1rem;padding:0.75rem 1rem;border:1px solid var(--df-border);border-radius:var(--df-radius);font-size:0.8rem;line-height:1.5;color:var(--df-text-secondary)">
-    <strong>Trust note:</strong> Default board = product gate (EU × data/AI × early career).
-    Badges show source tier (ATS verified / aggregator / uncertain), last seen, and label confidence.
-    Stale (&gt;14d) and dead links are demoted or hidden. Match scores are suggestions only.
+  <div class="df-surface-card" style="margin-bottom:1rem;padding:0.85rem 1rem;border:1px solid var(--df-border);border-radius:var(--df-radius);font-size:0.82rem;line-height:1.55;color:var(--df-text-secondary)">
+    <strong>How to read this list</strong>
+    <ul style="margin:0.4rem 0 0;padding-left:1.1rem">
+      <li><strong>Company page</strong> — apply link goes to the employer (preferred)</li>
+      <li><strong>Job portal</strong> — from BA, EURES, or a public board — still verify on the company site</li>
+      <li><strong>Check carefully</strong> — details may be incomplete or outdated</li>
+      <li>Old listings (&gt;14 days) are hidden by default</li>
+    </ul>
   </div>
 
   <div class="search-hero">
@@ -204,26 +207,26 @@
       </div>
 
       <div class="filter-group">
-        <label class="df-label">Board</label>
+        <label class="df-label">Which jobs?</label>
         <div class="df-pill-group" id="audience-pills">
-          <button class="df-pill active" data-value="product">EU data/AI early-career</button>
-          <button class="df-pill" data-value="">Full lakehouse</button>
+          <button class="df-pill active" data-value="product">Early career (default)</button>
+          <button class="df-pill" data-value="">All tech jobs</button>
         </div>
         <select id="audience" style="display:none">
-          <option value="product" selected>EU data/AI early-career only</option>
-          <option value="">All active jobs (lakehouse)</option>
+          <option value="product" selected>Early career only</option>
+          <option value="">All tech jobs</option>
         </select>
       </div>
 
       <div class="filter-group">
-        <label class="df-label">Freshness</label>
+        <label class="df-label">Age of listing</label>
         <div class="df-pill-group" id="freshness-pills">
-          <button class="df-pill active" data-value="hide_stale">Hide stale (&gt;14d)</button>
-          <button class="df-pill" data-value="">Show aging</button>
+          <button class="df-pill active" data-value="hide_stale">Hide older than 14 days</button>
+          <button class="df-pill" data-value="">Show older too</button>
         </div>
         <select id="freshness" style="display:none">
-          <option value="hide_stale" selected>Hide stale (&gt;14d)</option>
-          <option value="">Show aging / stale</option>
+          <option value="hide_stale" selected>Hide older than 14 days</option>
+          <option value="">Show older too</option>
         </select>
       </div>
 
@@ -264,7 +267,7 @@
         <h2 id="result-count">Loading...</h2>
         <span class="results-meta" id="last-updated"></span>
       </div>
-      <p class="board-note">Default: <strong>EU data/AI early-career</strong> product gate. Switch to Full lakehouse for research volume. Prefer Direct ATS cards when applying. · Build <span id="board-build"></span></p>
+      <p class="board-note">Showing <strong>early-career</strong> data &amp; AI roles by default. Prefer cards marked <strong>Company page</strong>. · <span id="board-build"></span></p>
 
       <div class="job-grid" id="job-list">
         <div class="loading-msg">Loading jobs...</div>
@@ -278,7 +281,7 @@
   const JOBS_API_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:"
     ? "http://localhost:8000/jobs"
     : "https://br1sodhn2e.execute-api.eu-central-1.amazonaws.com/";
-  const BOARD_BUILD = "2026-10-05.trust";
+  const BOARD_BUILD = "2026-10-05.clarity";
   const JOB_PAGE_SIZE = 2000;
   const PAGE_SIZE = 25;
   const LANG_API = { en: "english_only", de: "german_required", bi: "bilingual" };
@@ -351,7 +354,7 @@
     const audience = document.getElementById("audience");
     if (audience?.value === "product") {
       chips.push({
-        label: "EU data/AI early-career",
+        label: "Early career",
         clear: () => {
           audience.value = "";
           syncPillFromSelect("audience-pills", "audience");
@@ -689,18 +692,18 @@
         langReqBadge = `<span class="tag lang-de">German required</span>`;
       }
 
-      const trustLabel = tier === "verified" ? "ATS verified"
-        : tier === "aggregator" ? "Aggregator"
-        : tier === "stale" ? "Stale"
-        : tier === "dead" ? "Link dead"
-        : "Uncertain";
+      const trustLabel = tier === "verified" ? "Company page"
+        : tier === "aggregator" ? "Job portal"
+        : tier === "stale" ? "Possibly outdated"
+        : tier === "dead" ? "Link may be broken"
+        : "Check carefully";
       const trustBadge = `<span class="tag trust-${esc(tier)}">${trustLabel}</span>`;
-      const confBadge = `<span class="tag trust-conf-${esc(conf)}">Labels: ${esc(conf)}</span>`;
+      const confBadge = "";
       const ageBadge = days != null
-        ? `<span class="tag">Seen ${days}d ago</span>`
-        : (lastSeen ? `<span class="tag">Last seen ${esc(lastSeen)}</span>` : "");
+        ? `<span class="tag">${days === 0 ? "Seen today" : `Seen ${days}d ago`}</span>`
+        : (lastSeen ? `<span class="tag">Seen ${esc(lastSeen)}</span>` : "");
       const uncertainNote = (j.audience_uncertain === true || j.audience_uncertain === "True" || j.audience_uncertain === "1")
-        ? `<span class="tag trust-uncertain">HITL / uncertain class</span>` : "";
+        ? `<span class="tag trust-uncertain">Check carefully</span>` : "";
 
       const directBadge = isDirect ? `<span class="tag direct-apply">Company careers</span>` : "";
       let regionBadge = "";
@@ -741,7 +744,7 @@
         (tier === "stale" || tier === "dead") ? "is-stale" : "",
         (tier === "uncertain") ? "is-uncertain" : "",
       ].filter(Boolean).join(" ");
-      const applyLabel = isDirect ? "Apply on careers →" : "Verify & apply →";
+      const applyLabel = isDirect ? "Open company page →" : "Check & apply →";
 
       return `
         <article class="${cardClass}" style="animation-delay:${(i % 8) * 0.04}s">
@@ -761,10 +764,10 @@
           </div>
           ${descSnippet}
           <div class="feedback-row">
-            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="closed" data-feedback-meta='${metaJson}'>Closed</button>
-            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="spam" data-feedback-meta='${metaJson}'>Spam</button>
-            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="wrong_location" data-feedback-meta='${metaJson}'>Wrong location</button>
-            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="not_early_career" data-feedback-meta='${metaJson}'>Not early-career</button>
+            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="closed" data-feedback-meta='${metaJson}'>Already closed</button>
+            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="spam" data-feedback-meta='${metaJson}'>Looks fake</button>
+            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="wrong_location" data-feedback-meta='${metaJson}'>Wrong place</button>
+            <button type="button" class="df-chip" data-feedback-job="${esc(j.job_id)}" data-feedback-reason="not_early_career" data-feedback-meta='${metaJson}'>Not junior</button>
           </div>
           <div class="job-card-footer">
             <span class="job-date">${esc(lastSeen || j.date_added || '')}</span>
@@ -878,8 +881,8 @@
 
   document.getElementById("board-build").textContent = BOARD_BUILD;
   const I18N = {
-    en: { title: "EU Data & AI — Early Career Jobs", subtitle: "Fresher, working-student, internship, and thesis roles in data, AI/ML across the EU. Verify on the employer site before applying.", toggle: "DE" },
-    de: { title: "EU Data & AI — Einstiegsjobs", subtitle: "Werkstudent, Praktikum, Abschlussarbeit und Junior-Rollen in Data/KI in der EU. Bitte auf der Firmenwebsite prüfen.", toggle: "EN" },
+    en: { title: "Early-career data & AI jobs in Europe", subtitle: "Internships, working-student roles, thesis topics, and junior jobs. Always check the company website before you apply.", toggle: "DE" },
+    de: { title: "Einstiegsjobs in Data & KI in Europa", subtitle: "Praktikum, Werkstudent, Abschlussarbeit und Junior-Rollen. Bitte vor der Bewerbung auf der Firmenwebsite prüfen.", toggle: "EN" },
   };
   let uiLang = localStorage.getItem("dataforge.lang") || "en";
   function applyLang() {

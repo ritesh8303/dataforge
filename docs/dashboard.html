@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataForge — Job Intelligence Dashboard</title>
-  <meta name="description" content="DataForge Job Intelligence Dashboard — aggregated analytics across BA Jobsuche, EURES, Arbeitnow, direct ATS feeds, and Berlin startups." />
+  <title>DataForge — Market charts</title>
+  <meta name="description" content="Simple charts for early-career data and AI jobs in Europe." />
   <link rel="icon" href="df-logo.png" type="image/png" />
   <meta name="theme-color" content="#f3f6fb" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#05060d" media="(prefers-color-scheme: dark)" />
@@ -139,15 +139,14 @@
     </a>
     <div class="df-navbar-links">
       <a href="index.html">Home</a>
-      <a href="dashboard.html" class="active">Dashboard</a>
       <a href="jobs.html">Jobs</a>
-      <a href="agent.html">Job Agent</a>
-      <a href="roi.html">ROI</a>
+      <a href="agent.html">Match my resume</a>
+      <a href="dashboard.html" class="active">Charts</a>
       <a href="about.html">About</a>
     </div>
     <div class="df-navbar-actions">
       <a href="jobs.html" class="df-btn df-btn-ghost df-btn-sm">Explore Jobs</a>
-      <a href="agent.html" class="df-btn df-btn-primary df-btn-sm">Job Agent</a>
+      <a href="jobs.html" class="df-btn df-btn-primary df-btn-sm">Browse jobs</a>
     </div>
   </div>
 </nav>
@@ -155,11 +154,11 @@
 <div class="df-page df-fade-in" id="root">
   <div class="dash-header">
     <div>
-      <h1>Job Intelligence Dashboard</h1>
-      <p>Product-first view of EU early-career data &amp; AI roles from BA, EURES, ATS, Arbeitnow, and Berlin startups. Lakehouse volume is secondary.</p>
+      <h1>Market charts</h1>
+      <p>Simple counts for early-career data &amp; AI jobs in Europe. Optional — most people only need the <a href="jobs.html">Jobs</a> list.</p>
       <p id="scope-note" class="df-kpi-sub" style="margin-top:0.5rem;max-width:46rem;line-height:1.45;">
-        Headline KPIs = <strong>EU data/AI early-career product gate</strong>.
-        Lakehouse totals (all active tech postings) appear in subtitles only.
+        Big numbers below = <strong>early-career roles</strong> (interns, working students, thesis, juniors).
+        Broader tech-job totals appear in small print only.
       </p>
     </div>
     <div class="dash-header-actions">
@@ -176,13 +175,13 @@
   <div class="df-grid-5" style="margin-bottom:var(--df-space-8);">
     <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#22d3ee,#a78bfa);--kpi-tint:linear-gradient(145deg,rgba(34,211,238,0.16),rgba(167,139,250,0.08));" title="EU data/AI early-career product gate.">
       <div class="df-kpi-icon">📊</div>
-      <div class="df-kpi-label">Product Jobs</div>
-      <div class="df-kpi-value" id="kpi-total">2,282</div>
-      <div class="df-kpi-sub" id="kpi-total-sub">EU data/AI early-career</div>
+      <div class="df-kpi-label">Early-career jobs</div>
+      <div class="df-kpi-value" id="kpi-total">…</div>
+      <div class="df-kpi-sub" id="kpi-total-sub">interns · working students · thesis · juniors</div>
     </div>
-    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.16),rgba(34,211,238,0.06));" title="New product-gate jobs on the latest pipeline run.">
+    <div class="df-kpi-card" style="--kpi-accent:linear-gradient(90deg,#2dd4bf,#22d3ee);--kpi-tint:linear-gradient(145deg,rgba(45,212,191,0.16),rgba(34,211,238,0.06));" title="New early-career jobs on the latest update.">
       <div class="df-kpi-icon">🆕</div>
-      <div class="df-kpi-label">Product New <span class="kpi-info" title="Newly seen on the early-career product board for the latest run.">ⓘ</span></div>
+      <div class="df-kpi-label">New today <span class="kpi-info" title="Newly seen early-career roles on the latest update.">ⓘ</span></div>
       <div class="df-kpi-value" id="kpi-today">—</div>
       <div class="df-kpi-sub" id="kpi-today-sub">latest pipeline run</div>
     </div>
@@ -468,8 +467,8 @@
     if (totalSub) {
       const lake = data.lakehouse_total_jobs ?? data.board_jobs;
       totalSub.textContent = lake != null
-        ? `product gate · lakehouse active: ${Number(lake).toLocaleString()}`
-        : "EU data/AI early-career product gate";
+        ? `early-career focus · all tech jobs in system: ${Number(lake).toLocaleString()}`
+        : "early-career data & AI roles";
     }
 
     const scopeNote = document.getElementById("scope-note");
@@ -497,7 +496,7 @@
     const englishSub = document.getElementById("kpi-english-sub");
     if (englishSub) {
       const titleBased = data.english_jobs_title_based ?? 0;
-      englishSub.textContent = `strict english_only · title-heuristic: ${Number(titleBased).toLocaleString()} (not used in headline)`;
+      englishSub.textContent = `confirmed English-only roles · title guesses not counted`;
     }
 
     if (data.top_skills?.length) {
