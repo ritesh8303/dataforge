@@ -89,3 +89,60 @@ def test_reject_non_data_field():
         "tags": "",
     }
     assert passes_audience(job) is False
+
+
+def test_us_remote_junior_ds_not_eu_but_remote_ww():
+    job = {
+        "title": "Junior Data Scientist (Remote)",
+        "description": "Entry-level ML Python role. Fully remote worldwide.",
+        "location": "Remote, United States",
+        "region": "United States",
+        "remote": True,
+        "work_style": "remote",
+        "tags": "data science",
+        "ai_field": "ai_ml_data_science",
+        "ai_seniority": "fresher",
+        "ai_entry_level": True,
+    }
+    decision = classify_for_audience(job)
+    assert decision["audience_eu"] is False
+    assert decision["audience_accept"] is False
+    assert decision["audience_data_ai"] is True
+    assert decision["audience_seniority"] is True
+    assert decision["audience_remote_ww"] is True
+
+
+def test_eu_remote_junior_in_both_boards():
+    job = {
+        "title": "Junior Data Analyst — Remote",
+        "description": "SQL Python analytics. Entry level.",
+        "location": "Remote, Germany",
+        "region": "Germany",
+        "remote": True,
+        "work_style": "remote",
+        "tags": "",
+        "ai_field": "data_analytics",
+        "ai_seniority": "fresher",
+        "ai_entry_level": True,
+    }
+    decision = classify_for_audience(job)
+    assert decision["audience_accept"] is True
+    assert decision["audience_remote_ww"] is True
+
+
+def test_us_onsite_junior_not_remote_ww():
+    job = {
+        "title": "Junior Data Engineer",
+        "description": "Python Spark. Entry-level. On-site office.",
+        "location": "Seattle, WA",
+        "region": "United States",
+        "remote": False,
+        "work_style": "onsite",
+        "tags": "",
+        "ai_field": "data_engineering",
+        "ai_seniority": "fresher",
+        "ai_entry_level": True,
+    }
+    decision = classify_for_audience(job)
+    assert decision["audience_accept"] is False
+    assert decision["audience_remote_ww"] is False

@@ -156,6 +156,9 @@
           <button class="df-pill" data-value="direct">Direct</button>
           <button class="df-pill" data-value="eures">EURES</button>
           <button class="df-pill" data-value="berlin_startups">Berlin Startups</button>
+          <button class="df-pill" data-value="remotive">Remotive</button>
+          <button class="df-pill" data-value="himalayas">Himalayas</button>
+          <button class="df-pill" data-value="jobicy">Jobicy</button>
         </div>
         <select id="source" style="display:none">
           <option value="">All sources</option>
@@ -164,6 +167,9 @@
           <option value="direct">Direct company feeds</option>
           <option value="eures">EURES</option>
           <option value="berlin_startups">Berlin Startup Jobs</option>
+          <option value="remotive">Remotive</option>
+          <option value="himalayas">Himalayas</option>
+          <option value="jobicy">Jobicy</option>
         </select>
       </div>
 
@@ -209,11 +215,16 @@
       <div class="filter-group">
         <label class="df-label">Which jobs?</label>
         <div class="df-pill-group" id="audience-pills">
-          <button class="df-pill active" data-value="product">Early career (default)</button>
+          <button class="df-pill active" data-value="product">Early career EU (default)</button>
+          <button class="df-pill" data-value="remote_ww">Worldwide remote</button>
           <button class="df-pill" data-value="">All tech jobs</button>
         </div>
+        <p class="df-hint" style="margin:0.35rem 0 0;font-size:0.85rem;opacity:0.85">
+          Worldwide remote = data/AI early-career roles you can do from anywhere.
+        </p>
         <select id="audience" style="display:none">
-          <option value="product" selected>Early career only</option>
+          <option value="product" selected>Early career EU only</option>
+          <option value="remote_ww">Worldwide remote</option>
           <option value="">All tech jobs</option>
         </select>
       </div>
@@ -354,9 +365,18 @@
     const audience = document.getElementById("audience");
     if (audience?.value === "product") {
       chips.push({
-        label: "Early career",
+        label: "Early career EU",
         clear: () => {
           audience.value = "";
+          syncPillFromSelect("audience-pills", "audience");
+          applyFilters();
+        },
+      });
+    } else if (audience?.value === "remote_ww") {
+      chips.push({
+        label: "Worldwide remote",
+        clear: () => {
+          audience.value = "product";
           syncPillFromSelect("audience-pills", "audience");
           applyFilters();
         },
@@ -516,6 +536,10 @@
       if (audienceMode === "product") {
         const ok = j.audience_accept === true || j.audience_accept === "True" || j.audience_accept === "1"
           || String(j.audience_accept || "").toLowerCase() === "yes";
+        if (!ok) return false;
+      } else if (audienceMode === "remote_ww") {
+        const ok = j.audience_remote_ww === true || j.audience_remote_ww === "True" || j.audience_remote_ww === "1"
+          || String(j.audience_remote_ww || "").toLowerCase() === "yes";
         if (!ok) return false;
       }
       if (window.DataForgeFeedback?.isHidden?.(j.job_id)) return false;

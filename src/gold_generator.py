@@ -520,6 +520,7 @@ def lambda_handler(event, context):
             "audience_data_ai",
             "audience_seniority",
             "audience_uncertain",
+            "audience_remote_ww",
             "field",
             "seniority",
             "trust_tier",

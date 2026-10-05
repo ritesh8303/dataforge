@@ -146,6 +146,63 @@ module "berlin_startups_ingestor" {
   alert_email       = var.alert_email
 }
 
+# Remotive worldwide remote jobs
+module "remotive_ingestor" {
+  source           = "./modules/lambda"
+  function_name    = "dataforge-remotive-ingestor"
+  handler          = "ingest_remotive.lambda_handler"
+  lambda_role_arn  = module.iam.lambda_role_arn
+  lambda_role_name = module.iam.lambda_role_name
+  source_dir       = "../src"
+  layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  memory_size      = 512
+  timeout          = 300
+  env_vars = {
+    BRONZE_BUCKET = module.s3_bronze.bucket_id
+  }
+  bronze_bucket_arn = module.s3_bronze.arn
+  enable_schedule   = true
+  alert_email       = var.alert_email
+}
+
+# Himalayas worldwide remote jobs
+module "himalayas_ingestor" {
+  source           = "./modules/lambda"
+  function_name    = "dataforge-himalayas-ingestor"
+  handler          = "ingest_himalayas.lambda_handler"
+  lambda_role_arn  = module.iam.lambda_role_arn
+  lambda_role_name = module.iam.lambda_role_name
+  source_dir       = "../src"
+  layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  memory_size      = 512
+  timeout          = 300
+  env_vars = {
+    BRONZE_BUCKET = module.s3_bronze.bucket_id
+  }
+  bronze_bucket_arn = module.s3_bronze.arn
+  enable_schedule   = true
+  alert_email       = var.alert_email
+}
+
+# Jobicy worldwide remote jobs
+module "jobicy_ingestor" {
+  source           = "./modules/lambda"
+  function_name    = "dataforge-jobicy-ingestor"
+  handler          = "ingest_jobicy.lambda_handler"
+  lambda_role_arn  = module.iam.lambda_role_arn
+  lambda_role_name = module.iam.lambda_role_name
+  source_dir       = "../src"
+  layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
+  memory_size      = 512
+  timeout          = 300
+  env_vars = {
+    BRONZE_BUCKET = module.s3_bronze.bucket_id
+  }
+  bronze_bucket_arn = module.s3_bronze.arn
+  enable_schedule   = true
+  alert_email       = var.alert_email
+}
+
 
 # Silver Transformer (SCD Type 2 Logic)
 module "transformer_lambda" {

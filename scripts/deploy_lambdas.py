@@ -15,6 +15,9 @@ FUNCTIONS = [
     "dataforge-ba-ingestor",
     "dataforge-company-ingestor",
     "dataforge-berlin-startups-ingestor",
+    "dataforge-remotive-ingestor",
+    "dataforge-himalayas-ingestor",
+    "dataforge-jobicy-ingestor",
     "dataforge-transformer",
     "dataforge-gold-generator",
     "dataforge-metrics",
@@ -67,9 +70,14 @@ def main():
     with open(ZIP_PATH, "rb") as f:
         payload = f.read()
     for fn in FUNCTIONS:
-        resp = lc.update_function_code(FunctionName=fn, ZipFile=payload)
-        print(f"  OK {fn} -> {resp['LastModified']} ({resp['CodeSize']} bytes)")
-        lc.get_waiter("function_updated").wait(FunctionName=fn, WaiterConfig={"Delay": 2, "MaxAttempts": 30})
+        try:
+            resp = lc.update_function_code(FunctionName=fn, ZipFile=payload)
+            print(f"  OK {fn} -> {resp['LastModified']} ({resp['CodeSize']} bytes)")
+            lc.get_waiter("function_updated").wait(FunctionName=fn, WaiterConfig={"Delay": 2, "MaxAttempts": 30})
+        except lc.exceptions.ResourceNotFoundException:
+            print(f"  SKIP {fn} (not created yet — run terraform apply)")
+        except Exception as exc:
+            print(f"  FAIL {fn}: {exc}")
 
     for fn, limit in CONCURRENCY.items():
         try:

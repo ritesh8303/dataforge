@@ -68,13 +68,32 @@ def _repo_config_path(*parts: str) -> str:
     return candidates[0]
 
 
+def _dedupe_targets(targets: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Dedupe by normalized careers_url (or ats+slug)."""
+    seen: set[str] = set()
+    out: list[dict[str, Any]] = []
+    for row in targets:
+        url = str(row.get("careers_url") or "").strip().lower().rstrip("/")
+        if not url:
+            ats = str(row.get("ats") or "").strip().lower()
+            slug = str(row.get("slug") or "").strip().lower()
+            url = f"{ats}:{slug}" if ats and slug else ""
+        if not url or url in seen:
+            continue
+        seen.add(url)
+        out.append(row)
+    return out
+
+
 def _default_dach_targets() -> list[dict[str, Any]]:
-    """DACH-focused ATS boards (tech employers). US-only boards removed."""
-    path = os.environ.get("DACH_ATS_CONFIG") or _repo_config_path("dach_ats.json")
-    loaded = _load_json_targets(path)
+    """DACH + worldwide remote-friendly ATS boards (Greenhouse / Lever / Ashby focus)."""
+    dach_path = os.environ.get("DACH_ATS_CONFIG") or _repo_config_path("dach_ats.json")
+    global_path = os.environ.get("GLOBAL_ATS_CONFIG") or _repo_config_path("global_ats.json")
+    loaded = _load_json_targets(dach_path) + _load_json_targets(global_path)
+    loaded = _dedupe_targets(loaded)
     if loaded:
         return loaded
-    # Hardcoded fallback if config file missing in Lambda package.
+    # Hardcoded fallback if config files missing in Lambda package.
     return [
         {"company": "N26", "careers_url": "https://boards.greenhouse.io/n26"},
         {"company": "HelloFresh", "careers_url": "https://boards.greenhouse.io/hellofresh"},
@@ -91,6 +110,11 @@ def _default_dach_targets() -> list[dict[str, Any]]:
         {"company": "Qonto", "ats": "workable", "slug": "qonto"},
         {"company": "Bunq", "careers_url": "https://bunq.recruitee.com"},
         {"company": "Bosch Group", "careers_url": "https://careers.smartrecruiters.com/BoschGroup"},
+        {"company": "Stripe", "careers_url": "https://boards.greenhouse.io/stripe"},
+        {"company": "Databricks", "careers_url": "https://boards.greenhouse.io/databricks"},
+        {"company": "Snowflake", "careers_url": "https://boards.greenhouse.io/snowflakecomputing"},
+        {"company": "Anthropic", "careers_url": "https://jobs.ashbyhq.com/anthropic"},
+        {"company": "GitLab", "careers_url": "https://boards.greenhouse.io/gitlab"},
     ]
 
 

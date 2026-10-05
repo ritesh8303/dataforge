@@ -42,6 +42,13 @@ def _truthy_audience(job: dict) -> bool:
     return str(v or "").strip().lower() in {"1", "true", "yes", "y"}
 
 
+def _truthy_remote_ww(job: dict) -> bool:
+    v = job.get("audience_remote_ww")
+    if isinstance(v, bool):
+        return v
+    return str(v or "").strip().lower() in {"1", "true", "yes", "y"}
+
+
 def _product_jobs(all_jobs: list[dict]) -> list[dict]:
     """Prefer audience_accept rows; if flags missing, treat board as product (legacy Gold)."""
     if not all_jobs:
@@ -49,6 +56,10 @@ def _product_jobs(all_jobs: list[dict]) -> list[dict]:
     if any("audience_accept" in (j or {}) for j in all_jobs):
         return [j for j in all_jobs if _truthy_audience(j)]
     return list(all_jobs)
+
+
+def _remote_ww_jobs(all_jobs: list[dict]) -> list[dict]:
+    return [j for j in all_jobs if _truthy_remote_ww(j)]
 
 
 def _coverage_funnel(product_jobs: list[dict], lakehouse_active: int) -> dict:
@@ -262,6 +273,7 @@ def build_metrics_payload(bucket: str) -> dict:
     desc = desc_rows[0] if desc_rows else {}
     english_jobs_title = int(desc.get("english_jobs", 0))
     product_jobs = _product_jobs(all_jobs)
+    remote_ww_jobs = _remote_ww_jobs(all_jobs)
     lakehouse_jobs = list(all_jobs)
 
     stats = stats_rows[0] if stats_rows else {}
@@ -352,6 +364,7 @@ def build_metrics_payload(bucket: str) -> dict:
         "new_today": headline_new,
         "early_career_jobs": product_total,
         "product_jobs": product_total,
+        "remote_ww_jobs": len(remote_ww_jobs),
         "lakehouse_total_jobs": lakehouse_total,
         "audience": "eu_data_ai_early_career",
         "audience_product": "eu_data_ai_early_career",

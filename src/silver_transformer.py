@@ -10,7 +10,17 @@ from processing.europe_filter import is_in_europe
 from processing.company_normalize import normalize_company
 
 VALID_SOURCES = frozenset(
-    {"ba_api", "direct", "eures", "arbeitnow", "berlin_startups", "himalayas", "hn_whoishiring"}
+    {
+        "ba_api",
+        "direct",
+        "eures",
+        "arbeitnow",
+        "berlin_startups",
+        "himalayas",
+        "hn_whoishiring",
+        "remotive",
+        "jobicy",
+    }
 )
 REMOVED_SOURCES = frozenset({"indeed", "hacker_news"})
 BRONZE_SOURCE_PREFIXES = (
@@ -21,6 +31,8 @@ BRONZE_SOURCE_PREFIXES = (
     "eures",
     "himalayas",
     "hn_whoishiring",
+    "remotive",
+    "jobicy",
 )
 # Reserved for future tuning; not used for daily SCD (Bronze snapshot < cumulative Silver).
 MIN_BRONZE_ACTIVE_RATIO = float(os.environ.get("MIN_BRONZE_ACTIVE_RATIO", "0.6"))
@@ -215,7 +227,16 @@ def _normalize_bronze_before_dedup(bronze_df: pd.DataFrame) -> pd.DataFrame:
 
         def row_is_in_europe(r):
             source = r.get("source", "")
-            if source in ("ba_api", "arbeitnow", "berlin_startups", "eures", "himalayas", "hn_whoishiring"):
+            if source in (
+                "ba_api",
+                "arbeitnow",
+                "berlin_startups",
+                "eures",
+                "himalayas",
+                "hn_whoishiring",
+                "remotive",
+                "jobicy",
+            ):
                 return True
             return is_in_europe(
                 location_str=r.get("location", ""),
@@ -407,13 +428,15 @@ def deduplicate_bronze(df):
     )
     df["dedup_key"] = df["semantic_key"] + "_" + df["desc_hash"]
 
-    # Prioritize sources: direct > eures > arbeitnow > berlin_startups > himalayas > hn > ba_api
+    # Prioritize sources: direct > eures > arbeitnow > remotive/jobicy/himalayas > berlin > hn > ba
     source_priority = {
         "direct": 0,
         "eures": 1,
         "arbeitnow": 2,
-        "berlin_startups": 3,
-        "himalayas": 4,
+        "remotive": 3,
+        "jobicy": 3,
+        "himalayas": 3,
+        "berlin_startups": 4,
         "hn_whoishiring": 5,
         "ba_api": 6,
     }

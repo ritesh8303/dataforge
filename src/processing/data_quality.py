@@ -5,7 +5,17 @@ from typing import Any, Dict
 import pandas as pd
 
 VALID_SOURCES = frozenset(
-    {"ba_api", "direct", "eures", "arbeitnow", "berlin_startups", "himalayas", "hn_whoishiring"}
+    {
+        "ba_api",
+        "direct",
+        "eures",
+        "arbeitnow",
+        "berlin_startups",
+        "himalayas",
+        "hn_whoishiring",
+        "remotive",
+        "jobicy",
+    }
 )
 REMOVED_SOURCES = frozenset({"indeed", "hacker_news"})
 

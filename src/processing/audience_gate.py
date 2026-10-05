@@ -236,6 +236,39 @@ def is_eu_location(
     return False
 
 
+def is_remote_job(job: dict[str, Any]) -> bool:
+    """True when the posting is (or claims to be) remote / work-from-anywhere."""
+    ws = _norm(job.get("work_style"))
+    if ws == "remote":
+        return True
+    remote_flag = job.get("remote")
+    if remote_flag is True or str(remote_flag).strip().lower() in {"1", "true", "yes", "y"}:
+        return True
+    is_remote = job.get("is_remote")
+    if is_remote is True or str(is_remote).strip().lower() in {"1", "true", "yes", "y"}:
+        return True
+    blob = " ".join(
+        filter(
+            None,
+            [
+                _norm(job.get("location")),
+                _norm(job.get("region")),
+                _norm(job.get("title")),
+                _norm(job.get("job_types")),
+                _norm(job.get("tags")),
+            ],
+        )
+    )
+    return bool(
+        re.search(
+            r"\b(remote|work[\s-]?from[\s-]?home|wfh|worldwide|anywhere|fully[\s-]?remote|"
+            r"remote[\s-]?first|home[\s-]?office|distributed)\b",
+            blob,
+            flags=re.I,
+        )
+    )
+
+
 def classify_for_audience(
     job: dict[str, Any],
     *,
@@ -275,6 +308,7 @@ def classify_for_audience(
                 "audience_seniority": accept,
                 "audience_uncertain": False,
                 "audience_accept": accept,
+                "audience_remote_ww": accept and is_remote_job(job),
                 "audience_reject_reasons": [] if accept else ["agent_reject"],
                 "audience_override": "ingest_review_agent",
                 "audience_override_reason": override.get("reason") or "",
@@ -409,6 +443,9 @@ def classify_for_audience(
     )
 
     accept = eu_ok and field_ok and seniority_ok and not uncertain
+    remote_ok = is_remote_job(job)
+    # Worldwide remote board: same field/seniority bar, no EU requirement.
+    remote_ww = remote_ok and field_ok and seniority_ok and not uncertain
     reasons: list[str] = []
     if not eu_ok:
         reasons.append("not_eu")
@@ -430,6 +467,7 @@ def classify_for_audience(
         "audience_seniority": seniority_ok,
         "audience_uncertain": uncertain,
         "audience_accept": accept,
+        "audience_remote_ww": remote_ww,
         "audience_reject_reasons": reasons,
         "product_fields": sorted(PRODUCT_DATA_AI_FIELDS),
         "product_seniorities": sorted(PRODUCT_SENIORITY),

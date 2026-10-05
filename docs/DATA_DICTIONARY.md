@@ -13,7 +13,7 @@ Gold is the contract for BI, APIs, and (later) the matching agent. Row-level `al
 | `company` | Employer name | Source + `normalize_company` | Gold top-companies uses normalized form |
 | `location` | Free-text location | Source | First comma segment used for top locations |
 | `region` | Geographic country/region | Derived | Must **not** be `Remote` (work style is separate) |
-| `source` | Ingest channel | `ba_api` \| `eures` \| `arbeitnow` \| `direct` \| `berlin_startups` | Closed set |
+| `source` | Ingest channel | `ba_api` \| `eures` \| `arbeitnow` \| `direct` \| `berlin_startups` \| `himalayas` \| `remotive` \| `jobicy` \| `hn_whoishiring` | Closed set |
 | `work_style` | remote / hybrid / onsite | Derived | Gold `remote_vs_onsite` |
 | `url` / `job_url` | Apply link | Source | Renamed in Gold extract |
 | `preferred_apply_url` | Best apply URL | `trust_signals` | Prefer ATS/careers over portal pages |

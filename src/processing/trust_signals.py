@@ -123,7 +123,16 @@ def trust_tier(job: dict[str, Any]) -> str:
     source = str(job.get("source") or "").lower().strip()
     if source == "direct":
         return "verified"
-    if source in {"ba_api", "eures", "arbeitnow", "berlin_startups", "himalayas", "hn_whoishiring"}:
+    if source in {
+        "ba_api",
+        "eures",
+        "arbeitnow",
+        "berlin_startups",
+        "himalayas",
+        "hn_whoishiring",
+        "remotive",
+        "jobicy",
+    }:
         return "aggregator"
     url = preferred_apply_url(job)
     host = _host(url)

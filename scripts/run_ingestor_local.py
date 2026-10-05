@@ -11,6 +11,9 @@ INGESTORS = {
     "berlin": ("ingest_berlin_startups", "Berlin Startup Jobs Ingestor"),
     "direct": ("ingest_company_careers", "Direct Company Careers Ingestor"),
     "eures": ("ingest_eures", "EURES Portal Ingestor"),
+    "himalayas": ("ingest_himalayas", "Himalayas Worldwide Remote Ingestor"),
+    "remotive": ("ingest_remotive", "Remotive Remote Jobs Ingestor"),
+    "jobicy": ("ingest_jobicy", "Jobicy Remote Jobs Ingestor"),
 }
 
 def main():
