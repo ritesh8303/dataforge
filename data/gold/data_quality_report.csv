@@ -1,2 +1,2 @@
 ﻿total_jobs,missing_company_rate,missing_title_rate,missing_location_rate,duplicate_job_id_rate,duplicate_rate_per_source,tech_share,stale_jobs_count,invalid_source_count,remote_in_country_dimension,schema_validation_pass,computed_at
-1273,0.0,0.0,0.0102,0.0,"{'arbeitnow': 0.0, 'ba_api': 0.0, 'berlin_startups': 0.0, 'direct': 0.0, 'eures': 0.0}",1.0,678,0,0,True,2026-10-05T18:42:50.308308+00:00
+1579,0.0,0.0,0.0095,0.0,"{'arbeitnow': 0.0, 'ba_api': 0.0, 'berlin_startups': 0.0, 'direct': 0.0, 'eures': 0.0, 'jobicy': 0.0, 'remotive': 0.0}",1.0,691,0,0,True,2026-10-05T20:40:13.527186+00:00
