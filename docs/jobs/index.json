@@ -78,12 +78,6 @@
     "job_id": "sem_actief-personalmanagement-berlin_fachinformatiker-daten-und-prozessanalyse_berlin"
   },
   {
-    "slug": "backend-developer-web-developer-per_de-de712",
-    "title": "Backend Developer (Web Developer)",
-    "company": "activjob GmbH",
-    "job_id": "sem_activjob_backend-developer-web-developer_de-de712"
-  },
-  {
     "slug": "controller-w-m-d-schwerpunkt-business-intelligence-regional--al-club_k-ln",
     "title": "Controller (w/m/d) Schwerpunkt Business Intelligence, Regional Club",
     "company": "ADAC Nordrhein e.V.",
@@ -130,12 +124,6 @@
     "title": "Data Scientist",
     "company": "Adecco Personalbereitstellungs GmbH",
     "job_id": "sem_adecco-personalbereitstellungs_data-scientist_trumau"
-  },
-  {
-    "slug": "softwareentwickler-m-w-d-softwareentwickler-in--in_de-de711",
-    "title": "Softwareentwickler (m/w/d) (Softwareentwickler/in)",
-    "company": "adesta GmbH & Co. KG",
-    "job_id": "sem_adesta-kg_softwareentwickler-softwareentwickler-in_de-de711"
   },
   {
     "slug": "fraud-prevention-engineer-neer_hamburg",
@@ -406,12 +394,6 @@
     "title": "Data Scientist Machine Learning & Messtechnik (m/w/d)",
     "company": "Akkodis Germany Tech Experts GmbH",
     "job_id": "sem_akkodis-germany-tech-experts_data-scientist-machine-learning-messtechnik_oberkochen"
-  },
-  {
-    "slug": "scrum-master-m-w-d-wirtschaftsinformatiker-in-fachschule-bac-aft_de-de254",
-    "title": "Scrum Master (m/w/d) (Wirtschaftsinformatiker/in (Fachschule)/Bachelor Professional in Wirtschaft)",
-    "company": "Akkodis Germany Tech Experts GmbH",
-    "job_id": "sem_akkodis-germany-tech-experts_scrum-master-wirtschaftsinformatiker-in-fachschule-bachelor-professional-in-wirtschaft_de-de254"
   },
   {
     "slug": "informatiker-m-w-d-oder-data-scientist-m-w-d-ch-an-der-ri",
@@ -1020,12 +1002,6 @@
     "job_id": "sem_bechtle_werkstudent-business-intelligence-low-code-entwicklung_w-rzburg"
   },
   {
-    "slug": "business-analyst-m-w-d-f-r-online-shop-e-commerce-payment-bu--in_de-de600",
-    "title": "Business Analyst (m/w/d) f\u00fcr Online-Shop, E-Commerce & Payment (Business-Analyst/in)",
-    "company": "Beckerbillett GmbH",
-    "job_id": "sem_beckerbillett_business-analyst-f-r-online-shop-e-commerce-payment-business-analyst-in_de-de600"
-  },
-  {
     "slug": "data-scientist-m-w-d-st_espelkamp",
     "title": "Data Scientist (m/w/d)",
     "company": "BEIT GmbH",
@@ -1458,24 +1434,6 @@
     "job_id": "sem_brunel-nl-braunschweig_machine-learning-engineer_braunschweig"
   },
   {
-    "slug": "product-owner-w-m-d-wirtschaftsinformatiker-in-hochschule-chule_de-de9",
-    "title": "Product Owner (w/m/d) (Wirtschaftsinformatiker/in (Hochschule))",
-    "company": "Brunel GmbH NL Braunschweig",
-    "job_id": "sem_brunel-nl-braunschweig_product-owner-wirtschaftsinformatiker-in-hochschule_de-de9"
-  },
-  {
-    "slug": "softwaretester-w-m-d-it-tester-in--in_de-de711",
-    "title": "Softwaretester (w/m/d) (IT-Tester/in)",
-    "company": "Brunel GmbH NL Frankfurt",
-    "job_id": "sem_brunel-nl-frankfurt_softwaretester-it-tester-in_de-de711"
-  },
-  {
-    "slug": "systemtest-ingenieur-f-r-siemens-testingenieur-in-ur-in_de-de1",
-    "title": "Systemtest Ingenieur f\u00fcr Siemens (Testingenieur/in)",
-    "company": "Brunel GmbH NL Karlsuhe",
-    "job_id": "sem_brunel-nl-karlsuhe_systemtest-ingenieur-f-r-siemens-testingenieur-in_de-de1"
-  },
-  {
     "slug": "business-intelligence-spezialist-in-oder-datenanalyst-in-w-m-lyst-in_kiel",
     "title": "Business Intelligence Spezialist/in oder Datenanalyst/in (w/m/d)",
     "company": "Brunel GmbH NL Kiel",
@@ -1486,12 +1444,6 @@
     "title": "Data Analyst / IT-Systemexperte (m/w/d)",
     "company": "Brunel GmbH NL Mannheim",
     "job_id": "sem_brunel-nl-mannheim_data-analyst-it-systemexperte_mannheim"
-  },
-  {
-    "slug": "test-automation-engineer-defence-w-m-d-fachinformatiker-in-a-ung_de-de111",
-    "title": "Test Automation Engineer Defence (w/m/d) (Fachinformatiker/in - Anwendungsentwicklung)",
-    "company": "Brunel GmbH NL Stuttgart",
-    "job_id": "sem_brunel-nl-stuttgart_test-automation-engineer-defence-fachinformatiker-in-anwendungsentwicklung_de-de111"
   },
   {
     "slug": "duales-studium-master-informatik-ai-und-data-science-m-sc-20-4_regensburg",
@@ -1888,12 +1840,6 @@
     "title": "Junior Produktmanager (m/w/d) f\u00fcr KI, UX & Automatisierung, InsurTech, CHECK24 Versicherung...",
     "company": "CHECK24 - InsurTech",
     "job_id": "sem_check24-insurtech_junior-produktmanager-f-r-ki-ux-automatisierung-insurtech-check24-versicherung_frankfurt-am-main"
-  },
-  {
-    "slug": "ausbildung-zum-it-fachinformatiker-m-w-d-anwendungsentwicklu--in_de-dea11",
-    "title": "Ausbildung zum IT Fachinformatiker (m/w/d) Anwendungsentwicklung Reise, 2027 (Fullstack-Entwickler/in)",
-    "company": "CHECK24 Services Personal GmbH",
-    "job_id": "sem_check24-services-personal_ausbildung-zum-it-fachinformatiker-anwendungsentwicklung-reise-2027-fullstack-entwickler-in_de-dea11"
   },
   {
     "slug": "junior-business-intelligence-ai-manager-m-w-d-mobilfunk-bilfunk_k-ln",
@@ -3954,118 +3900,16 @@
     "job_id": "sem_femsure_werkstudent-social-media-content-creator_berlin"
   },
   {
-    "slug": "cloud-architekt-kubernetes-m-w-d-architekt-in--in_de-dea2b",
-    "title": "Cloud-Architekt Kubernetes (m/w/d) (Architekt/in)",
-    "company": "FERCHAU Contract GmbH Dortmund CONTRACT",
-    "job_id": "sem_ferchau-contract-dortmund-contract_cloud-architekt-kubernetes-architekt-in_de-dea2b"
-  },
-  {
-    "slug": "senior-softwareentwickler-microsoft-dynamics-365-business-ce--in_de-dea14",
-    "title": "Senior Softwareentwickler Microsoft Dynamics 365 Business Central (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU Contract GmbH K\u00f6ln CONTRACT",
-    "job_id": "sem_ferchau-contract-k-ln-contract_senior-softwareentwickler-microsoft-dynamics-365-business-central-softwareentwickler-in_de-dea14"
-  },
-  {
-    "slug": "system-engineer-devops-automatisierung-m-w-d-devops-engineer-eer_de-de122",
-    "title": "System Engineer DevOps / Automatisierung (m/w/d) (DevOps Engineer)",
-    "company": "FERCHAU Contract GmbH Mannheim CONTRACT",
-    "job_id": "sem_ferchau-contract-mannheim-contract_system-engineer-devops-automatisierung-devops-engineer_de-de122"
-  },
-  {
-    "slug": "salesforce-developer-inhouse-m-w-d-informatiker-in--in_de-dea2a",
-    "title": "Salesforce Developer Inhouse (m/w/d) (Informatiker/in)",
-    "company": "FERCHAU Management GmbH",
-    "job_id": "sem_ferchau-management_salesforce-developer-inhouse-informatiker-in_de-dea2a"
-  },
-  {
-    "slug": "cloud-engineer-devops-m-w-d-cloud-architect-ect_de-de211",
-    "title": "Cloud Engineer / DevOps (m/w/d) (Cloud-Architect)",
-    "company": "FERCHAU GmbH Niederlassung Augsburg",
-    "job_id": "sem_ferchau-niederlassung-augsburg_cloud-engineer-devops-cloud-architect_de-de211"
-  },
-  {
-    "slug": "softwareentwickler-m-w-d-bei-airbus-softwareentwickler-in--in_de-de21j",
-    "title": "Softwareentwickler (m/w/d) bei AIRBUS (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung Augsburg",
-    "job_id": "sem_ferchau-niederlassung-augsburg_softwareentwickler-bei-airbus-softwareentwickler-in_de-de21j"
-  },
-  {
-    "slug": "devops-softwareentwickler-m-w-d-softwareentwickler-in--in_de-de300",
-    "title": "DevOps Softwareentwickler (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung Berlin",
-    "job_id": "sem_ferchau-niederlassung-berlin_devops-softwareentwickler-softwareentwickler-in_de-de300"
-  },
-  {
     "slug": "ki-manager-m-w-d-er_bielefeld",
     "title": "KI-Manager (m/w/d)",
     "company": "FERCHAU GmbH Niederlassung Bielefeld",
     "job_id": "sem_ferchau-niederlassung-bielefeld_ki-manager_bielefeld"
   },
   {
-    "slug": "kotlin-developer-m-w-d-fachinformatiker-in-anwendungsentwick-ung_de-dea42",
-    "title": "Kotlin Developer (m/w/d) (Fachinformatiker/in - Anwendungsentwicklung)",
-    "company": "FERCHAU GmbH Niederlassung Bielefeld",
-    "job_id": "sem_ferchau-niederlassung-bielefeld_kotlin-developer-fachinformatiker-in-anwendungsentwicklung_de-dea42"
-  },
-  {
-    "slug": "devops-engineer-m-w-d-devops-engineer-eer_de-de501",
-    "title": "DevOps Engineer (m/w/d) (DevOps Engineer)",
-    "company": "FERCHAU GmbH Niederlassung Bremen City",
-    "job_id": "sem_ferchau-niederlassung-bremen-city_devops-engineer-devops-engineer_de-de501"
-  },
-  {
-    "slug": "senior-softwareentwickler-frontend-m-w-d-softwareentwickler---in_de-de711",
-    "title": "Senior Softwareentwickler Frontend (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung Darmstadt",
-    "job_id": "sem_ferchau-niederlassung-darmstadt_senior-softwareentwickler-frontend-softwareentwickler-in_de-de711"
-  },
-  {
-    "slug": "software-test-engineer-m-w-d-it-tester-in--in_de-de711",
-    "title": "Software Test Engineer (m/w/d) (IT-Tester/in)",
-    "company": "FERCHAU GmbH Niederlassung Darmstadt",
-    "job_id": "sem_ferchau-niederlassung-darmstadt_software-test-engineer-it-tester-in_de-de711"
-  },
-  {
-    "slug": "softwareentwickler-c-net-m-w-d-softwareentwickler-in--in_de-de711",
-    "title": "Softwareentwickler C# / .NET (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung Darmstadt",
-    "job_id": "sem_ferchau-niederlassung-darmstadt_softwareentwickler-c-net-softwareentwickler-in_de-de711"
-  },
-  {
-    "slug": "operations-engineer-it-m-w-d-informatiker-in--in_de-de712",
-    "title": "Operations Engineer IT (m/w/d) (Informatiker/in)",
-    "company": "FERCHAU GmbH Niederlassung Frankfurt",
-    "job_id": "sem_ferchau-niederlassung-frankfurt_operations-engineer-it-informatiker-in_de-de712"
-  },
-  {
-    "slug": "quality-engineer-test-automation-m-w-d-qualit-tsingenieur-in--in_de-de712",
-    "title": "Quality Engineer Test Automation (m/w/d) (Qualit\u00e4tsingenieur/in)",
-    "company": "FERCHAU GmbH Niederlassung Frankfurt",
-    "job_id": "sem_ferchau-niederlassung-frankfurt_quality-engineer-test-automation-qualit-tsingenieur-in_de-de712"
-  },
-  {
-    "slug": "software-ai-engineer-m-w-d-informatiker-in--in_de-de713",
-    "title": "Software & AI Engineer (m/w/d) (Informatiker/in)",
-    "company": "FERCHAU GmbH Niederlassung Frankfurt",
-    "job_id": "sem_ferchau-niederlassung-frankfurt_software-ai-engineer-informatiker-in_de-de713"
-  },
-  {
     "slug": "software-ai-engineer-m-w-d-bach-am-main",
     "title": "Software & AI Engineer (m/w/d)",
     "company": "FERCHAU GmbH Niederlassung Frankfurt",
     "job_id": "sem_ferchau-niederlassung-frankfurt_software-ai-engineer_offenbach-am-main"
-  },
-  {
-    "slug": "system-integration-engineer-m-w-d-defence-informatiker-in--in_de-de147",
-    "title": "System Integration Engineer (m/w/d) Defence (Informatiker/in)",
-    "company": "FERCHAU GmbH Niederlassung Friedrichshafen",
-    "job_id": "sem_ferchau-niederlassung-friedrichshafen_system-integration-engineer-defence-informatiker-in_de-de147"
-  },
-  {
-    "slug": "softwareentwickler-m-w-d-softwareentwickler-in--in_de-de722",
-    "title": "Softwareentwickler (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung Giessen",
-    "job_id": "sem_ferchau-niederlassung-giessen_softwareentwickler-softwareentwickler-in_de-de722"
   },
   {
     "slug": "data-analyst-im-bereich-ki-m-w-d-airbus-rbus_hamburg",
@@ -4092,94 +3936,16 @@
     "job_id": "sem_ferchau-niederlassung-k-ln_data-engineer_k-ln"
   },
   {
-    "slug": "devops-engineer-ci-cd-m-w-d-devops-engineer-eer_de-dea2c",
-    "title": "DevOps Engineer CI/CD (m/w/d) (DevOps Engineer)",
-    "company": "FERCHAU GmbH Niederlassung K\u00f6ln",
-    "job_id": "sem_ferchau-niederlassung-k-ln_devops-engineer-ci-cd-devops-engineer_de-dea2c"
-  },
-  {
-    "slug": "platform-engineer-m-w-d-kubernetes-linux-informatiker-in--in_de-dea2c",
-    "title": "Platform Engineer (m/w/d) Kubernetes / Linux (Informatiker/in)",
-    "company": "FERCHAU GmbH Niederlassung K\u00f6ln",
-    "job_id": "sem_ferchau-niederlassung-k-ln_platform-engineer-kubernetes-linux-informatiker-in_de-dea2c"
-  },
-  {
-    "slug": "systems-engineer-m-w-d-kubernetes-linux-informatiker-in--in_de-dea2c",
-    "title": "Systems Engineer (m/w/d) Kubernetes / Linux (Informatiker/in)",
-    "company": "FERCHAU GmbH Niederlassung K\u00f6ln",
-    "job_id": "sem_ferchau-niederlassung-k-ln_systems-engineer-kubernetes-linux-informatiker-in_de-dea2c"
-  },
-  {
-    "slug": "devops-engineer-m-w-d-devops-engineer-eer_de-de122",
-    "title": "DevOps Engineer (m/w/d) (DevOps Engineer)",
-    "company": "FERCHAU GmbH Niederlassung Karlsruhe City",
-    "job_id": "sem_ferchau-niederlassung-karlsruhe-city_devops-engineer-devops-engineer_de-de122"
-  },
-  {
     "slug": "ki-ai-engineer-m-w-d-lsruhe-baden",
     "title": "KI / AI Engineer (m/w/d)",
     "company": "FERCHAU GmbH Niederlassung Karlsruhe City",
     "job_id": "sem_ferchau-niederlassung-karlsruhe-city_ki-ai-engineer_karlsruhe-baden"
   },
   {
-    "slug": "senior-embedded-software-entwickler-c-c-m-w-d-f-r-die-siemen--in_de-de122",
-    "title": "(Senior-) Embedded-Software-Entwickler C/C++ (m/w/d) f\u00fcr die Siemens AG (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung Karlsruhe City",
-    "job_id": "sem_ferchau-niederlassung-karlsruhe-city_senior-embedded-software-entwickler-c-c-f-r-die-siemens-softwareentwickler-in_de-de122"
-  },
-  {
-    "slug": "junior-software-developer-c-net-m-w-d-softwareentwickler-in--in_de-de122",
-    "title": "(Junior) Software Developer C#.NET (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung Karlsruhe City",
-    "job_id": "sem_ferchau-niederlassung-karlsruhe-city_software-developer-c-net-softwareentwickler-in_de-de122"
-  },
-  {
-    "slug": "junior-softwareentwickler-c-net-m-w-d-softwareentwickler-in--in_de-de122",
-    "title": "(Junior) Softwareentwickler C# / .Net (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung Karlsruhe City",
-    "job_id": "sem_ferchau-niederlassung-karlsruhe-city_softwareentwickler-c-net-softwareentwickler-in_de-de122"
-  },
-  {
-    "slug": "softwareentwickler-c-backend-m-w-d-softwareentwickler-in--in_de-de731",
-    "title": "Softwareentwickler C# Backend (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung Kassel",
-    "job_id": "sem_ferchau-niederlassung-kassel_softwareentwickler-c-backend-softwareentwickler-in_de-de731"
-  },
-  {
-    "slug": "devops-engineer-m-w-d-devops-engineer-eer_de-def02",
-    "title": "DevOps Engineer (m/w/d) (DevOps Engineer)",
-    "company": "FERCHAU GmbH Niederlassung Kiel",
-    "job_id": "sem_ferchau-niederlassung-kiel_devops-engineer-devops-engineer_de-def02"
-  },
-  {
-    "slug": "softwareentwickler-m-w-d-softwareentwickler-in--in_de-def03",
-    "title": "Softwareentwickler (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung L\u00fcbeck",
-    "job_id": "sem_ferchau-niederlassung-l-beck_softwareentwickler-softwareentwickler-in_de-def03"
-  },
-  {
-    "slug": "softwareentwickler-ai-devops-m-w-d-softwareentwickler-in--in_de-de212",
-    "title": "Softwareentwickler AI DevOps (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung M\u00fcnchen Mobility",
-    "job_id": "sem_ferchau-niederlassung-m-nchen-mobility_softwareentwickler-ai-devops-softwareentwickler-in_de-de212"
-  },
-  {
     "slug": "data-engineer-digitalisierung-datenintegration-m-w-d-ion_erlangen",
     "title": "Data Engineer Digitalisierung & Datenintegration (m/w/d)",
     "company": "FERCHAU GmbH Niederlassung N\u00fcrnberg City",
     "job_id": "sem_ferchau-niederlassung-n-rnberg-city_data-engineer-digitalisierung-datenintegration_erlangen"
-  },
-  {
-    "slug": "softwareentwickler-bei-siemens-m-w-d-softwareentwickler-in--in_de-de252",
-    "title": "Softwareentwickler bei Siemens (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung N\u00fcrnberg City",
-    "job_id": "sem_ferchau-niederlassung-n-rnberg-city_softwareentwickler-bei-siemens-softwareentwickler-in_de-de252"
-  },
-  {
-    "slug": "softwareentwickler-windows-os-experte-m-w-d-softwareentwickl--in_de-de248",
-    "title": "Softwareentwickler / Windows OS Experte (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung N\u00fcrnberg City",
-    "job_id": "sem_ferchau-niederlassung-n-rnberg-city_softwareentwickler-windows-os-experte-softwareentwickler-in_de-de248"
   },
   {
     "slug": "data-engineer-m-w-d-er_lemwerder",
@@ -4198,18 +3964,6 @@
     "title": "Data Engineer (m/w/d)",
     "company": "FERCHAU GmbH Niederlassung Osnabr\u00fcck",
     "job_id": "sem_ferchau-niederlassung-osnabr-ck_data-engineer_osnabr-ck"
-  },
-  {
-    "slug": "power-platform-entwickler-m-w-d-informatiker-in--in_de-de94f",
-    "title": "Power Platform Entwickler (m/w/d) (Informatiker/in)",
-    "company": "FERCHAU GmbH Niederlassung Osnabr\u00fcck",
-    "job_id": "sem_ferchau-niederlassung-osnabr-ck_power-platform-entwickler-informatiker-in_de-de94f"
-  },
-  {
-    "slug": "ai-engineer-m-w-d-informatiker-in--in_de-de21k",
-    "title": "AI Engineer (m/w/d) (Informatiker/in)",
-    "company": "FERCHAU GmbH Niederlassung Rosenheim",
-    "job_id": "sem_ferchau-niederlassung-rosenheim_ai-engineer-informatiker-in_de-de21k"
   },
   {
     "slug": "ai-engineer-m-w-d-rburg-am-inn",
@@ -4234,18 +3988,6 @@
     "title": "Data Analyst (m/w/d)",
     "company": "FERCHAU GmbH Niederlassung Rostock",
     "job_id": "sem_ferchau-niederlassung-rostock_data-analyst_rostock"
-  },
-  {
-    "slug": "embedded-softwareentwickler-c-m-w-d-softwareentwickler-in--in_de-de26c",
-    "title": "Embedded Softwareentwickler C++ (m/w/d) (Softwareentwickler/in)",
-    "company": "FERCHAU GmbH Niederlassung Schweinfurt",
-    "job_id": "sem_ferchau-niederlassung-schweinfurt_embedded-softwareentwickler-c-softwareentwickler-in_de-de26c"
-  },
-  {
-    "slug": "devops-engineer-azure-m-w-d-devops-engineer-eer_de-de113",
-    "title": "DevOps Engineer Azure (m/w/d) (DevOps Engineer)",
-    "company": "FERCHAU GmbH Niederlassung Stuttgart Mobility",
-    "job_id": "sem_ferchau-niederlassung-stuttgart-mobility_devops-engineer-azure-devops-engineer_de-de113"
   },
   {
     "slug": "data-scientist-life-science-m-w-d-ch-an-der-ri",
@@ -4386,6 +4128,12 @@
     "job_id": "sem_flexit-consulting_director-it-digital-innovation_hamm"
   },
   {
+    "slug": "software-engineer-m-w-d-eer_at-at213",
+    "title": "Software Engineer (m/w/d)",
+    "company": "Flextronics International Gesellschaft m.b.H.",
+    "job_id": "sem_flextronics-international-gesellschaft-m-b-h_software-engineer_at-at213"
+  },
+  {
     "slug": "customer-success-intern-m-f-d-tgart-remote",
     "title": "Customer Success Intern (m/f/d)",
     "company": "Flip GmbH",
@@ -4518,10 +4266,40 @@
     "job_id": "sem_fom-hochschule_data-engineer-im-ki-team_essen-ruhr"
   },
   {
+    "slug": "account-manager-dach-m-w-d-ach_at-at130",
+    "title": "Account Manager DACH (m/w/d)",
+    "company": "fonio",
+    "job_id": "sem_fonio_account-manager-dach_at-at130"
+  },
+  {
     "slug": "data-scientist-_wien-neubau",
     "title": "Data Scientist",
     "company": "fonio GmbH",
     "job_id": "sem_fonio_data-scientist_wien-neubau"
+  },
+  {
+    "slug": "forward-deployment-engineer-m-w-d-eer_at-at130",
+    "title": "Forward Deployment Engineer (m/w/d)",
+    "company": "fonio",
+    "job_id": "sem_fonio_forward-deployment-engineer_at-at130"
+  },
+  {
+    "slug": "product-engineer-m-w-d-eer_at-at130",
+    "title": "Product Engineer (m/w/d)",
+    "company": "fonio",
+    "job_id": "sem_fonio_product-engineer_at-at130"
+  },
+  {
+    "slug": "seo-manager-german-speaking-m-w-d-ing_at-at130",
+    "title": "SEO Manager (German speaking) (m/w/d)",
+    "company": "fonio",
+    "job_id": "sem_fonio_seo-manager-german-speaking_at-at130"
+  },
+  {
+    "slug": "talent-acquisition-manager-m-w-d-ger_at-at130",
+    "title": "Talent Acquisition Manager (m/w/d)",
+    "company": "fonio",
+    "job_id": "sem_fonio_talent-acquisition-manager_at-at130"
   },
   {
     "slug": "founding-engineer-gn-hardware-bioengineering-munich-yern-germany",
@@ -4798,5 +4576,227 @@
     "title": "Demo Architect, EMEA",
     "company": "GitLab",
     "job_id": "sem_gitlab_demo-architect-emea_remote-ireland-remote-germany-remote-spain-remote-united-kingdom"
+  },
+  {
+    "slug": "forward-deployed-engineer-emea-ited-kingdom",
+    "title": "Forward Deployed Engineer - EMEA",
+    "company": "GitLab",
+    "job_id": "sem_gitlab_forward-deployed-engineer-emea_remote-ireland-remote-france-remote-germany-remote-netherlands-remote-united-kingdom"
+  },
+  {
+    "slug": "partner-sales-manager-emea-ds-london-uk",
+    "title": "Partner Sales Manager, EMEA",
+    "company": "Glean",
+    "job_id": "sem_glean_partner-sales-manager-emea_amsterdam-netherlands-london-uk"
+  },
+  {
+    "slug": "globalfoundries-management-services-gmbh-co-kg-machine-learn-turi_dresden",
+    "title": "GlobalFoundries Management Services GmbH & Co. KG: Machine Learning Engineer for Digital Manufacturi",
+    "company": "GlobalFoundries Management Services GmbH & Co. KG",
+    "job_id": "sem_globalfoundries-management-services-kg_globalfoundries-management-services-kg-machine-learning-engineer-for-digital-manufacturi_dresden"
+  },
+  {
+    "slug": "globalfoundries-management-services-gmbh-co-kg-werkstudent-i-ning_dresden",
+    "title": "GlobalFoundries Management Services GmbH & Co. KG: Werkstudent*in im Bereich TCAD \u2013 Machine Learning",
+    "company": "GlobalFoundries Management Services GmbH & Co. KG",
+    "job_id": "sem_globalfoundries-management-services-kg_globalfoundries-management-services-kg-werkstudent-in-im-bereich-tcad-machine-learning_dresden"
+  },
+  {
+    "slug": "accounting-manager-accounts-payable-all-genders-germany-only",
+    "title": "Accounting Manager \u2013 Accounts Payable (all genders)",
+    "company": "Glow25",
+    "job_id": "sem_glow25_accounting-manager-accounts-payable-all-genders_remote-germany-only"
+  },
+  {
+    "slug": "data-scientist-chrome-rome_m-nchen",
+    "title": "Data Scientist, Chrome",
+    "company": "Google Germany GmbH",
+    "job_id": "sem_google-germany_data-scientist-chrome_m-nchen"
+  },
+  {
+    "slug": "operational-technology-architect-nd-nederland",
+    "title": "Operational Technology Architect",
+    "company": "GradeMatch",
+    "job_id": "sem_gradematch_operational-technology-architect_rotterdam-rijnmond-zuid-holland-nederland"
+  },
+  {
+    "slug": "engineering-manager-observability-germany-remote-rmany-remote",
+    "title": "Engineering Manager - Observability | Germany | Remote",
+    "company": "Grafana Labs",
+    "job_id": "sem_grafana-labs_engineering-manager-observability-germany-remote_germany-remote"
+  },
+  {
+    "slug": "engineering-manager-observability-ireland-remote-eland-remote",
+    "title": "Engineering Manager - Observability | Ireland | Remote",
+    "company": "Grafana Labs",
+    "job_id": "sem_grafana-labs_engineering-manager-observability-ireland-remote_republic-of-ireland-remote"
+  },
+  {
+    "slug": "engineering-manager-observability-spain-remote-spain-remote",
+    "title": "Engineering Manager - Observability | Spain | Remote",
+    "company": "Grafana Labs",
+    "job_id": "sem_grafana-labs_engineering-manager-observability-spain-remote_spain-remote"
+  },
+  {
+    "slug": "engineering-manager-observability-sweden-remote-weden-remote",
+    "title": "Engineering Manager - Observability | Sweden | Remote",
+    "company": "Grafana Labs",
+    "job_id": "sem_grafana-labs_engineering-manager-observability-sweden-remote_sweden-remote"
+  },
+  {
+    "slug": "quantitative-researcher-2027-graduates--netherlands",
+    "title": "Quantitative Researcher - 2027 Graduates",
+    "company": "Graviton Research Capital LLP",
+    "job_id": "sem_graviton-research-capital-llp_quantitative-researcher-2027-graduates_amsterdam-north-holland-netherlands"
+  },
+  {
+    "slug": "ai-engineer-m-w-d-generative-ai-llm-ki-konzepte-pte_dortmund",
+    "title": "AI-Engineer (m/w/d) - Generative AI, LLM & KI-Konzepte",
+    "company": "Green IT Das Systemhaus GmbH",
+    "job_id": "sem_green-it-das-systemhaus_ai-engineer-generative-ai-llm-ki-konzepte_dortmund"
+  },
+  {
+    "slug": "ai-solutions-engineer-m-w-d-rg-oberpfalz",
+    "title": "AI Solutions Engineer (m/w/d)",
+    "company": "grey engineering GmbH",
+    "job_id": "sem_grey-engineering_ai-solutions-engineer_amberg-oberpfalz"
+  },
+  {
+    "slug": "d-veloppeur-ia-machine-learning-h-f-h-f_fr-frj23",
+    "title": "D\u00e9veloppeur IA / Machine Learning (H/F)",
+    "company": "GROUPE EXPERTISE & CONCEPT",
+    "job_id": "sem_groupe-expertise-concept_d-veloppeur-ia-machine-learning-h-f_fr-frj23"
+  },
+  {
+    "slug": "consultant-und-support-business-intelligence-m-w-d--oberfranken",
+    "title": "Consultant und Support Business Intelligence (m/w/d)",
+    "company": "GSD Ges. f. Software, Entwicklung undDatentechnik mbH",
+    "job_id": "sem_gsd-ges-f-software-entwicklung-unddatentechnik-mbh_consultant-und-support-business-intelligence_stockheim-oberfranken"
+  },
+  {
+    "slug": "data-analyst-m-w-d-nalyst_weeze",
+    "title": "Data Analyst (m/w/d)",
+    "company": "Guldberg GmbH",
+    "job_id": "sem_guldberg_data-analyst_weeze"
+  },
+  {
+    "slug": "data-engineer-aws-data-warehouse-w-m-d-furt-am-main",
+    "title": "Data Engineer AWS / Data Warehouse (w/m/d)",
+    "company": "Guldberg GmbH",
+    "job_id": "sem_guldberg_data-engineer-aws-data-warehouse_frankfurt-am-main"
+  },
+  {
+    "slug": "contr-leur-euse-de-gestion-secteur-ambulatoire-ire_ch-ch022",
+    "title": "Contr\u00f4leur-euse de gestion \u2013 secteur ambulatoire",
+    "company": "h\u00f4pital fribourgeois",
+    "job_id": "sem_h-pital-fribourgeois_contr-leur-euse-de-gestion-secteur-ambulatoire_ch-ch022"
+  },
+  {
+    "slug": "data-engineer-schwerpunkt-programmierung-datenpipelines-m-w--pelines_bonn",
+    "title": "Data Engineer \u2013 Schwerpunkt Programmierung & Datenpipelines* (m/w/d)",
+    "company": "Haeger Consulting",
+    "job_id": "sem_haeger-consulting_data-engineer-schwerpunkt-programmierung-datenpipelines_bonn"
+  },
+  {
+    "slug": "haema-gmbh-data-analyst-data-engineer-m-w-d-neer_leipzig",
+    "title": "Haema GmbH: Data Analyst / Data Engineer (m/w/d)",
+    "company": "Haema GmbH",
+    "job_id": "sem_haema_haema-data-analyst-data-engineer_leipzig"
+  },
+  {
+    "slug": "data-analyst-gn-engagement-d-sseldorf-f_d-sseldorf",
+    "title": "Data Analyst (gn) - Engagement, D\u00fcsseldorf",
+    "company": "Handelsblatt GmbH",
+    "job_id": "sem_handelsblatt_data-analyst-gn-engagement-d-sseldorf_d-sseldorf"
+  },
+  {
+    "slug": "data-analyst-m-w-d-st_stuttgart",
+    "title": "Data Analyst (m/w/d)",
+    "company": "Hanselmann & Cie. Solutions GmbH",
+    "job_id": "sem_hanselmann-cie-solutions_data-analyst_stuttgart"
+  },
+  {
+    "slug": "it-business-intelligence-professional-w-m-d-rofessional_",
+    "title": "IT Business Intelligence Professional (w/m/d)",
+    "company": "Harry-Brot Group SE & Co. KG",
+    "job_id": "sem_harry-brot-group-kg_it-business-intelligence-professional_"
+  },
+  {
+    "slug": "werkstudent-m-w-d-business-intelligence-ence_hamburg",
+    "title": "Werkstudent (m/w/d) Business Intelligence",
+    "company": "HAUSGOLD | talocasa GmbH",
+    "job_id": "sem_hausgold-talocasa_werkstudent-business-intelligence_hamburg"
+  },
+  {
+    "slug": "data-scientist-m-w-d-a-scientist_",
+    "title": "Data Scientist (m/w/d)",
+    "company": "Hays Professional Solutions GmbH Standort Frankfurt",
+    "job_id": "sem_hays-professional-solutions-standort-frankfurt_data-scientist_"
+  },
+  {
+    "slug": "data-engineer-analytics-and-data-products-m-f-d--bei-m-nchen",
+    "title": "Data Engineer - Analytics and Data Products (m/f/d)",
+    "company": "Hays Professional Solutions GmbH",
+    "job_id": "sem_hays-professional-solutions_data-engineer-analytics-and-data-products_poing-bei-m-nchen"
+  },
+  {
+    "slug": "data-engineer-f-r-it-ot-integration-m-w-d-ion_mannheim",
+    "title": "Data Engineer f\u00fcr IT/OT-Integration  (m/w/d)",
+    "company": "Hays Professional Solutions GmbH",
+    "job_id": "sem_hays-professional-solutions_data-engineer-f-r-it-ot-integration_mannheim"
+  },
+  {
+    "slug": "data-scientist-algorithmik-ml-engineering-messtechnik-m-w-d-messtechnik_",
+    "title": "Data Scientist Algorithmik-/ML-Engineering Messtechnik (m/w/d)",
+    "company": "Hays Professional Solutions GmbH",
+    "job_id": "sem_hays-professional-solutions_data-scientist-algorithmik-ml-engineering-messtechnik_"
+  },
+  {
+    "slug": "konzerncontroller-schwerpunkt-konsolidierung-business-intell-gen-am-rhein",
+    "title": "Konzerncontroller Schwerpunkt Konsolidierung & Business Intelligence (m/w/d)",
+    "company": "Hays AG",
+    "job_id": "sem_hays_konzerncontroller-schwerpunkt-konsolidierung-business-intelligence_bingen-am-rhein"
+  },
+  {
+    "slug": "data-scientist-advanced-analytics-ai-engineer-in-insurance-surance_k-ln",
+    "title": "Data Scientist: Advanced Analytics & AI Engineer in Insurance",
+    "company": "HDI AG",
+    "job_id": "sem_hdi_data-scientist-advanced-analytics-ai-engineer-in-insurance_k-ln"
+  },
+  {
+    "slug": "duales-hochschulstudium-bachelor-of-science-data-science-und-027_wiesloch",
+    "title": "Duales Hochschulstudium Bachelor of Science Data Science und K\u00fcnstliche Intelligenz 2027 (m/w/d)",
+    "company": "Heidelberger Druckmaschinen AG",
+    "job_id": "sem_heidelberger-druckmaschinen_duales-hochschulstudium-bachelor-of-science-data-science-und-k-nstliche-intelligenz-2027_wiesloch"
+  },
+  {
+    "slug": "area-manager-production-all-genders-hsen-germany",
+    "title": "Area Manager Production (all genders)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_area-manager-production-all-genders_verden-niedersachsen-germany"
+  },
+  {
+    "slug": "category-manager-food-international-procurement-all-genders-paris-france",
+    "title": "Category manager Food, International Procurement (all genders)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_category-manager-food-international-procurement-all-genders_amsterdam-north-holland-netherlands-berlin-berlin-germany-k-benhavn-capital-regiondenmark-denmark-paris-paris-france"
+  },
+  {
+    "slug": "copywriter-global-creative-all-genders-rlin-germany",
+    "title": "Copywriter, Global Creative [All genders]",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_copywriter-global-creative-all-genders_berlin-berlin-germany"
+  },
+  {
+    "slug": "data-engineer-operations-technology-all-genders-eship-poland",
+    "title": "Data Engineer, Operations Technology (all genders)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_data-engineer-operations-technology-all-genders_warszawa-masovian-voivodeship-poland"
+  },
+  {
+    "slug": "demand-planner-f-m-x--netherlands",
+    "title": "Demand Planner (f/m/x)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_demand-planner-f-m-x_amsterdam-north-holland-netherlands"
   }
 ]
