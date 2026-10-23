@@ -241,9 +241,12 @@ module "gold_lambda" {
   env_vars = {
     SILVER_PATH             = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
     GOLD_BUCKET             = module.s3_gold.bucket_id
+    # Gold must stay under 900s: use prior enrichment CSV + rules. Live LLM = enrichment Lambda.
     AI_ENABLED              = "true"
+    AUDIENCE_AI_MAX         = "0"
     INGEST_REVIEW_AGENT     = "true"
-    INGEST_REVIEW_USE_LLM   = "true"
+    INGEST_REVIEW_USE_LLM   = "false"
+    INGEST_REVIEW_MAX_LLM   = "0"
     OPENAI_API_KEY          = var.openai_api_key
     OPENAI_COMPLETION_MODEL = "gpt-4o-mini"
     OPENAI_EMBEDDING_MODEL  = "text-embedding-3-small"

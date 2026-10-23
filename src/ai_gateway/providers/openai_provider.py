@@ -21,7 +21,8 @@ class OpenAIProvider(BaseProvider):
     def available(self) -> bool:
         return bool(self.api_key)
 
-    def _post_with_retries(self, path: str, body: dict, *, timeout: int = 30, max_retries: int = 5) -> dict:
+    def _post_with_retries(self, path: str, body: dict, *, timeout: int = 30, max_retries: int = 2) -> dict:
+        """POST with short 429 backoff. Keep retries tiny so Gold Lambda cannot burn its 900s budget."""
         url = f"{self.base_url}{path}"
         headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
         last_exc: Exception | None = None
@@ -30,18 +31,34 @@ class OpenAIProvider(BaseProvider):
                 res = requests.post(url, headers=headers, json=body, timeout=timeout)
                 if res.status_code == 429:
                     err_body = (res.text or "")[:500]
-                    # Daily RPD exhaustion — Retry-After is misleading; fail fast.
-                    if "requests per day" in err_body.lower() or "RPD" in err_body:
+                    err_l = err_body.lower()
+                    # Hard quota / daily limits — Retry-After is misleading; fail fast.
+                    if any(
+                        tip in err_l
+                        for tip in (
+                            "requests per day",
+                            "rpd",
+                            "insufficient_quota",
+                            "billing",
+                            "exceeded your current quota",
+                        )
+                    ):
                         reset = res.headers.get("x-ratelimit-reset-requests", "unknown")
                         raise requests.HTTPError(
-                            f"429 daily request limit (RPD) exhausted; resets in {reset}. {err_body[:200]}",
+                            f"429 quota exhausted; resets in {reset}. {err_body[:200]}",
+                            response=res,
+                        )
+                    # Transient RPM — one short wait then give up (caller falls back to rules).
+                    if attempt + 1 >= max_retries:
+                        raise requests.HTTPError(
+                            f"429 Too Many Requests after {max_retries} attempts. {err_body[:200]}",
                             response=res,
                         )
                     retry_after = res.headers.get("Retry-After")
                     if retry_after and str(retry_after).replace(".", "", 1).isdigit():
-                        wait = min(float(retry_after), 60)
+                        wait = min(float(retry_after), 8)
                     else:
-                        wait = min(5 * (attempt + 1), 45)
+                        wait = min(2 * (attempt + 1), 6)
                     print(f"OpenAI 429 — sleeping {wait:.0f}s (attempt {attempt + 1}/{max_retries})", flush=True)
                     time.sleep(wait)
                     last_exc = requests.HTTPError(
@@ -52,17 +69,16 @@ class OpenAIProvider(BaseProvider):
                 res.raise_for_status()
                 return res.json()
             except requests.HTTPError as exc:
-                # Re-raise hard daily-limit errors immediately
-                if exc.response is not None and "requests per day" in (exc.response.text or "").lower():
+                # Re-raise hard quota / final 429 immediately (no second sleep).
+                if exc.response is not None and exc.response.status_code == 429:
                     raise
                 last_exc = exc
-                if exc.response is not None and exc.response.status_code == 429:
-                    time.sleep(min(5 * (attempt + 1), 45))
-                    continue
                 raise
             except requests.RequestException as exc:
                 last_exc = exc
-                time.sleep(min(2**attempt, 15))
+                if attempt + 1 >= max_retries:
+                    break
+                time.sleep(min(2**attempt, 8))
         if last_exc:
             raise last_exc
         raise RuntimeError("OpenAI request failed with no exception")

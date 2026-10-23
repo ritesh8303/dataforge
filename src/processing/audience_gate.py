@@ -20,13 +20,24 @@ from processing.europe_filter import CITY_COUNTRY_MAPPING
 
 # Cap live LLM calls during Gold when enrichment CSV is missing (enrichment Lambda is primary).
 _ai_live_calls = 0
+_ai_circuit_open = False
 
 
 def _audience_ai_max() -> int:
+    # Default 0: Gold must finish inside Lambda timeout; enrichment Lambda owns live LLM.
+    # Opt in with AUDIENCE_AI_MAX>0 for small backfills when quota is healthy.
     try:
-        return max(0, int(os.environ.get("AUDIENCE_AI_MAX", "80")))
+        return max(0, int(os.environ.get("AUDIENCE_AI_MAX", "0")))
     except ValueError:
-        return 80
+        return 0
+
+
+def _trip_ai_circuit(reason: str) -> None:
+    global _ai_circuit_open, _ai_live_calls
+    if not _ai_circuit_open:
+        print(f"Audience AI circuit open — rules fallback for remaining jobs ({reason})")
+    _ai_circuit_open = True
+    _ai_live_calls = max(_ai_live_calls, _audience_ai_max())
 
 # EU member-state display names used by CITY_COUNTRY_MAPPING values.
 _EU_COUNTRY_NAMES = frozenset(
@@ -339,20 +350,34 @@ def classify_for_audience(
             "is_tech": job.get("is_tech", True),
         }
     else:
-        from enrichment.ai_classify import classify_job_ai
+        from enrichment.rules_de_en import classify_job as _classify_job_rules
 
-        if _ai_live_calls < _audience_ai_max():
+        if not _ai_circuit_open and _ai_live_calls < _audience_ai_max():
+            from enrichment.ai_classify import classify_job_ai
+
             _ai_live_calls += 1
-            classified = classify_job_ai(
-                title,
-                description,
-                tags,
-                company=str(job.get("company") or ""),
-                location=str(job.get("location") or ""),
-            )
+            try:
+                classified = classify_job_ai(
+                    title,
+                    description,
+                    tags,
+                    company=str(job.get("company") or ""),
+                    location=str(job.get("location") or ""),
+                )
+                src = str(classified.get("classification_source") or "")
+                # Trip circuit when providers are exhausted / rate-limited so Gold finishes.
+                if src in {
+                    "rules_fallback_providers_exhausted",
+                    "rules_fallback_error",
+                } or "429" in src:
+                    _trip_ai_circuit(src or "classify_fallback")
+            except Exception as exc:
+                _trip_ai_circuit(str(exc)[:160])
+                classified = {
+                    **_classify_job_rules(title, description, tags),
+                    "classification_source": "rules_fallback_audience_error",
+                }
         else:
-            from enrichment.rules_de_en import classify_job as _classify_job_rules
-
             classified = {
                 **_classify_job_rules(title, description, tags),
                 "classification_source": "rules_fallback_audience_budget",
