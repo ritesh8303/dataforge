@@ -126,12 +126,6 @@
     "job_id": "sem_adecco-personalbereitstellungs_data-scientist_trumau"
   },
   {
-    "slug": "fraud-prevention-engineer-neer_hamburg",
-    "title": "Fraud Prevention Engineer",
-    "company": "adjoe",
-    "job_id": "sem_adjoe_fraud-prevention-engineer_hamburg"
-  },
-  {
     "slug": "consultant-supply-chain-m-w-d-chain_munich",
     "title": "Consultant Supply Chain (m/w/d)",
     "company": "admonio GmbH",
@@ -240,18 +234,6 @@
     "job_id": "sem_affirm_analytics-engineer-ii-full-stack-revenue-analytics_remote-spain"
   },
   {
-    "slug": "analytics-engineer-ii-emote-poland",
-    "title": "Analytics Engineer II",
-    "company": "Affirm",
-    "job_id": "sem_affirm_analytics-engineer-ii_remote-poland"
-  },
-  {
-    "slug": "analytics-engineer-ii-remote-spain",
-    "title": "Analytics Engineer II",
-    "company": "Affirm",
-    "job_id": "sem_affirm_analytics-engineer-ii_remote-spain"
-  },
-  {
     "slug": "software-engineer-i-backend-collections-emote-poland",
     "title": "Software Engineer I, Backend (Collections)",
     "company": "Affirm",
@@ -330,12 +312,6 @@
     "job_id": "sem_airbnb_manager-key-accounts-hotels_milan-italy"
   },
   {
-    "slug": "manager-key-accounts-hotels-hotels_paris",
-    "title": "Manager, Key Accounts - Hotels",
-    "company": "airbnb",
-    "job_id": "sem_airbnb_manager-key-accounts-hotels_paris"
-  },
-  {
     "slug": "manager-key-accounts-hotels-paris-france",
     "title": "Manager, Key Accounts - Hotels",
     "company": "Airbnb",
@@ -384,6 +360,12 @@
     "job_id": "sem_ajat_erp-cloud-spezialist_cologne"
   },
   {
+    "slug": "consultant-m-w-d-bi-analytics-ittelfranken",
+    "title": "Consultant (m/w/d) BI & Analytics",
+    "company": "Akkodis Germany Tech Experts GmbH",
+    "job_id": "sem_akkodis-germany-tech-experts_consultant-bi-analytics_n-rnberg-mittelfranken"
+  },
+  {
     "slug": "data-scientist-ai-machine-learning-m-w-d-g_oberkochen",
     "title": "Data Scientist AI & Machine Learning (m/w/d)",
     "company": "Akkodis Germany Tech Experts GmbH",
@@ -402,10 +384,10 @@
     "job_id": "sem_akut-kompetente-l-sungen_informatiker-oder-data-scientist_biberach-an-der-ri"
   },
   {
-    "slug": "data-full-stack-sels-belgium",
-    "title": "Data Full Stack",
-    "company": "Alan",
-    "job_id": "sem_alan_data-full-stack_paris-france-marseille-france-bordeaux-france-biarritz-france-brussels-belgium"
+    "slug": "analyst-automatisierung-analytics-m-w-d-k-ln-oder-k-nzelsau-nzelsau_k-ln",
+    "title": "Analyst Automatisierung & Analytics (m/w/d) - K\u00f6ln oder K\u00fcnzelsau",
+    "company": "Albert Berner Deutschland GmbH",
+    "job_id": "sem_albert-berner-deutschland_analyst-automatisierung-analytics-k-ln-oder-k-nzelsau_k-ln"
   },
   {
     "slug": "software-engineer-m-w-div-im-bereich-prototyping-data-analyt-lytics_hanau",
@@ -498,6 +480,18 @@
     "job_id": "sem_alloboissons-sa_business-analyste-chef-de-projet-odoo-100_ch-ch022"
   },
   {
+    "slug": "experimentation-tracking-engineer-_paris-paris",
+    "title": "Experimentation & Tracking engineer",
+    "company": "Alma31",
+    "job_id": "sem_alma31_experimentation-tracking-engineer_paris-paris"
+  },
+  {
+    "slug": "lifecycle-marketing-manager-_paris-paris",
+    "title": "Lifecycle Marketing Manager",
+    "company": "Alma31",
+    "job_id": "sem_alma31_lifecycle-marketing-manager_paris-paris"
+  },
+  {
     "slug": "computer-radar-software-engineer-for-drone-systems-m-w-d-chen-bavaria",
     "title": "Computer Radar Software Engineer for Drone Systems (m/w/d)",
     "company": "Alpineeagle",
@@ -522,22 +516,10 @@
     "job_id": "sem_alten-consulting-services-k-ln_data-engineer-energiewirtschaft-all-gender_"
   },
   {
-    "slug": "devops-engineer-f-m-r-f-m_aachen",
-    "title": "DevOps Engineer (F/M/*)",
-    "company": "Amber",
-    "job_id": "sem_amber_devops-engineer-f-m_aachen"
-  },
-  {
-    "slug": "sales-development-representative-f-m-ive-f-m_k-ln",
-    "title": "Sales Development Representative (F/M/*)",
-    "company": "Amber",
-    "job_id": "sem_amber_sales-development-representative-f-m_k-ln"
-  },
-  {
-    "slug": "werkstudent-marketing-f-m-ing-f-m_k-ln",
-    "title": "Werkstudent Marketing (F/M/*)",
-    "company": "Amber",
-    "job_id": "sem_amber_werkstudent-marketing-f-m_k-ln"
+    "slug": "software-development-engineer-ii-aws-config-onfig_berlin",
+    "title": "Software Development Engineer II, AWS Config",
+    "company": "Amazon Web Services Developmen t Center Germany GmbH",
+    "job_id": "sem_amazon-web-services-developmen-t-center-germany_software-development-engineer-ii-aws-config_berlin"
   },
   {
     "slug": "werkstudent-in-im-bereich-data-engineering-m-w-d-ittelfranken",
@@ -552,10 +534,28 @@
     "job_id": "sem_anduril_2027-early-career-electrical-engineer_dublin-dublin-ireland"
   },
   {
+    "slug": "2027-early-career-mechanical-engineer-blin-ireland",
+    "title": "2027 Early Career Mechanical Engineer",
+    "company": "Anduril",
+    "job_id": "sem_anduril_2027-early-career-mechanical-engineer_dublin-dublin-ireland"
+  },
+  {
+    "slug": "2027-early-career-software-development-in-test-blin-ireland",
+    "title": "2027 Early Career Software Development in Test",
+    "company": "Anduril",
+    "job_id": "sem_anduril_2027-early-career-software-development-in-test_dublin-dublin-ireland"
+  },
+  {
     "slug": "2027-early-career-software-engineer-blin-ireland",
     "title": "2027 Early Career Software Engineer",
     "company": "Anduril",
     "job_id": "sem_anduril_2027-early-career-software-engineer_dublin-dublin-ireland"
+  },
+  {
+    "slug": "2027-early-career-test-quality-engineer-blin-ireland",
+    "title": "2027 Early Career Test & Quality Engineer",
+    "company": "Anduril",
+    "job_id": "sem_anduril_2027-early-career-test-quality-engineer_dublin-dublin-ireland"
   },
   {
     "slug": "2027-new-grad-software-development-in-test-blin-ireland",
@@ -598,12 +598,6 @@
     "title": "Manufacturing Test and Quality Technician",
     "company": "Anduril",
     "job_id": "sem_anduril_manufacturing-test-and-quality-technician_dublin-dublin-ireland"
-  },
-  {
-    "slug": "mission-operations-engineer-europe--netherlands",
-    "title": "Mission Operations Engineer, Europe",
-    "company": "Anduril",
-    "job_id": "sem_anduril_mission-operations-engineer-europe_amsterdam-north-holland-netherlands"
   },
   {
     "slug": "mission-software-engineer--netherlands",
@@ -714,6 +708,12 @@
     "job_id": "sem_arrk-engineering_machine-learning-innovation-engineer_m-nchen"
   },
   {
+    "slug": "stage-marketing-b2b--75009-paris",
+    "title": "Stage Marketing B2B",
+    "company": "Artefactjobs",
+    "job_id": "sem_artefactjobs_stage-marketing-b2b_9th-arrondissement-of-paris-75009-paris"
+  },
+  {
     "slug": "analytical-engineer-ineer_warsaw",
     "title": "Analytical Engineer",
     "company": "Asana",
@@ -762,22 +762,10 @@
     "job_id": "sem_asana_product-security-engineer_warsaw"
   },
   {
-    "slug": "werkstudent-w-m-d-ki-prozessautomatisierung-hh-uz-h-uz_hamburg",
-    "title": "Werkstudent (w/m/d) KI & Prozessautomatisierung, HH-UZ",
-    "company": "Asklepios Kliniken GmbH & Co. KGaA",
-    "job_id": "sem_asklepios-kliniken-kgaa_werkstudent-ki-prozessautomatisierung-hh-uz_hamburg"
-  },
-  {
     "slug": "hr-data-analyst-alyst_berlin",
     "title": "HR Data Analyst",
     "company": "ASML Berlin AG",
     "job_id": "sem_asml-berlin_hr-data-analyst_berlin"
-  },
-  {
-    "slug": "enterprise-account-executive-dach-dach_germany",
-    "title": "Enterprise Account Executive, DACH",
-    "company": "Astronomer",
-    "job_id": "sem_astronomer_enterprise-account-executive-dach_germany"
   },
   {
     "slug": "agentic-platform-engineer-gn-ai-venture-berlin-rlin-germany",
@@ -912,16 +900,10 @@
     "job_id": "sem_axa-konzern_data-reporting-analyst-r-ckversicherung-p-c_k-ln"
   },
   {
-    "slug": "energy-markets-france-cdd-e-cdd_france",
-    "title": "Energy Markets - France (CDD)",
+    "slug": "international-expansion-_netherlands",
+    "title": "International Expansion",
     "company": "Axle Careers",
-    "job_id": "sem_axle-careers_energy-markets-france-cdd_france"
-  },
-  {
-    "slug": "growth-france-cdd-e-cdd_france",
-    "title": "Growth - France (CDD)",
-    "company": "Axle Careers",
-    "job_id": "sem_axle-careers_growth-france-cdd_france"
+    "job_id": "sem_axle-careers_international-expansion_netherlands"
   },
   {
     "slug": "werkstudent-m-w-d-qualit-tspr-fung-von-ki-daten-n_regensburg",
@@ -930,10 +912,22 @@
     "job_id": "sem_b-plus-gruppe_werkstudent-qualit-tspr-fung-von-ki-daten_regensburg"
   },
   {
+    "slug": "seller-operation-manager-anager_paris",
+    "title": "Seller Operation Manager",
+    "company": "Backmarket",
+    "job_id": "sem_backmarket_seller-operation-manager_paris"
+  },
+  {
     "slug": "market-data-analyst-m-w-d-lyst_hamburg",
     "title": "Market Data Analyst (m/w/d)",
     "company": "Bankpower GmbH",
     "job_id": "sem_bankpower_market-data-analyst_hamburg"
+  },
+  {
+    "slug": "forward-deployed-engineer-therlands-uk",
+    "title": "Forward Deployed Engineer",
+    "company": "Banyan Software",
+    "job_id": "sem_banyan-software_forward-deployed-engineer_belgium-germany-netherlands-uk"
   },
   {
     "slug": "barkhausen-institut-ggmbh-phd-position-in-secure-and-privacy--m-f_dresden",
@@ -1056,12 +1050,6 @@
     "job_id": "sem_bi2run-kg_sei-als-sales-manager-neukundenakquise-bi-controlling-teil-eines-starken-teams_d-sseldorf"
   },
   {
-    "slug": "werkstudent-m-w-d-f-r-ki-agenten-und-hr-prozesse-zesse_vechta",
-    "title": "Werkstudent (m/w/d) f\u00fcr KI-Agenten und HR-Prozesse",
-    "company": "Big Dutchman International GmbH",
-    "job_id": "sem_big-dutchman-international_werkstudent-f-r-ki-agenten-und-hr-prozesse_vechta"
-  },
-  {
     "slug": "quality-data-analytics-engineer-m-f-d-ngineer_k-ln",
     "title": "Quality & Data Analytics Engineer (m/f/d)",
     "company": "Birkenstock Europe GmbH",
@@ -1074,16 +1062,46 @@
     "job_id": "sem_bitech_ki-machine-learning-engineer_h-rth-rheinland"
   },
   {
-    "slug": "data-engineer-m-w-d-ineer_bremen",
-    "title": "Data Engineer (m/w/d)",
-    "company": "BKK firmus Kd\u00f6R",
-    "job_id": "sem_bkk-firmus-kd-r_data-engineer_bremen"
+    "slug": "technical-product-manager-ai-finance-ance_germany",
+    "title": "Technical Product Manager - AI Finance",
+    "company": "Bjak",
+    "job_id": "sem_bjak_technical-product-manager-ai-finance_germany"
   },
   {
-    "slug": "data-engineer-m-w-d-er_osnabr-ck",
-    "title": "Data Engineer (m/w/d)",
-    "company": "BKK firmus Kd\u00f6R",
-    "job_id": "sem_bkk-firmus-kd-r_data-engineer_osnabr-ck"
+    "slug": "technical-product-manager-ai-investing-app--app_germany",
+    "title": "Technical Product Manager - AI Investing App",
+    "company": "Bjak",
+    "job_id": "sem_bjak_technical-product-manager-ai-investing-app_germany"
+  },
+  {
+    "slug": "technical-product-manager-ai-investing-ting_germany",
+    "title": "Technical Product Manager - AI Investing",
+    "company": "Bjak",
+    "job_id": "sem_bjak_technical-product-manager-ai-investing_germany"
+  },
+  {
+    "slug": "technical-product-manager-ai-neobank-app--app_germany",
+    "title": "Technical Product Manager - AI Neobank App",
+    "company": "Bjak",
+    "job_id": "sem_bjak_technical-product-manager-ai-neobank-app_germany"
+  },
+  {
+    "slug": "technical-product-manager-ai-neobank-bank_germany",
+    "title": "Technical Product Manager - AI Neobank",
+    "company": "Bjak",
+    "job_id": "sem_bjak_technical-product-manager-ai-neobank_germany"
+  },
+  {
+    "slug": "technical-product-manager-ai-stockbroking-app--app_germany",
+    "title": "Technical Product Manager - AI Stockbroking App",
+    "company": "Bjak",
+    "job_id": "sem_bjak_technical-product-manager-ai-stockbroking-app_germany"
+  },
+  {
+    "slug": "technical-product-manager-ai-stockbroking-king_germany",
+    "title": "Technical Product Manager - AI Stockbroking",
+    "company": "Bjak",
+    "job_id": "sem_bjak_technical-product-manager-ai-stockbroking_germany"
   },
   {
     "slug": "ml-platform-engineer-gineer_paris",
@@ -1108,12 +1126,6 @@
     "title": "Praktikant Fahrzeugsicherheit mit Schwerpunkt Datenanalyse und K\u00fcnstliche Intelligenz (w/m/x)",
     "company": "BMW AG",
     "job_id": "sem_bmw_praktikant-fahrzeugsicherheit-mit-schwerpunkt-datenanalyse-und-k-nstliche-intelligenz-w-m-x_m-nchen"
-  },
-  {
-    "slug": "praktikant-ki-agenten-und-chatbot-integration-im-data-analyt--m-x_m-nchen",
-    "title": "Praktikant KI-Agenten und Chatbot-Integration im Data Analytics Umfeld (w/m/x)",
-    "company": "BMW AG",
-    "job_id": "sem_bmw_praktikant-ki-agenten-und-chatbot-integration-im-data-analytics-umfeld-w-m-x_m-nchen"
   },
   {
     "slug": "praktikant-machine-learning-f-r-fahrzeugeffizienz-m-w-x--w-x_m-nchen",
@@ -1206,6 +1218,12 @@
     "job_id": "sem_bosch-group_business-data-analyst-f-m_warszawa-wojew-dztwo-mazowieckie-pl"
   },
   {
+    "slug": "cloud-devops-engineer-api-front-end-integration-f-m-zowieckie-pl",
+    "title": "Cloud DevOps Engineer (API & Front-End Integration) F/M",
+    "company": "Bosch Group",
+    "job_id": "sem_bosch-group_cloud-devops-engineer-api-front-end-integration-f-m_warszawa-wojew-dztwo-mazowieckie-pl"
+  },
+  {
     "slug": "cloud-platform-engineer-napoca-cj-ro",
     "title": "Cloud Platform Engineer",
     "company": "Bosch Group",
@@ -1216,6 +1234,12 @@
     "title": "Data Analyst (f/m/div.)",
     "company": "Bosch Group",
     "job_id": "sem_bosch-group_data-analyst-f-m-div_braga-braga-pt"
+  },
+  {
+    "slug": "data-engineer-f-m-div-iv_lisboa-pt",
+    "title": "Data Engineer (f/m/div.)",
+    "company": "Bosch Group",
+    "job_id": "sem_bosch-group_data-engineer-f-m-div_lisboa-pt"
   },
   {
     "slug": "data-engineer-mit-schwerpunkt-data-governance-data-quality-w-sterreich-at",
@@ -1590,12 +1614,6 @@
     "job_id": "sem_cancom_hr-data-analyst_"
   },
   {
-    "slug": "platform-engineer-er_amsterdam",
-    "title": "Platform Engineer",
-    "company": "Catawiki",
-    "job_id": "sem_catawiki_platform-engineer_amsterdam"
-  },
-  {
     "slug": "junior-data-engineer-bi-developer-m-w-d-in-vollzei-vollzei_k-ln",
     "title": "(Junior) Data Engineer / BI Developer (m/w/d) in Vollzei ...",
     "company": "CBC Cologne Business Center GmbH",
@@ -1612,18 +1630,6 @@
     "title": "Werkstudent (m/w/d) Data Analytics & BI",
     "company": "CBC Cologne Business Center GmbH",
     "job_id": "sem_cbc-cologne-business-center_werkstudent-data-analytics-bi_k-ln"
-  },
-  {
-    "slug": "solution-architect-m-w-d-data-ai-i_heidelberg",
-    "title": "Solution Architect (m/w/d) Data & AI",
-    "company": "cbs Corporate Business Solutions GmbH",
-    "job_id": "sem_cbs-corporate-business-solutions_solution-architect-data-ai_heidelberg"
-  },
-  {
-    "slug": "software-engineer-net-ht-nederland",
-    "title": "Software Engineer (.NET)",
-    "company": "CCS Connects",
-    "job_id": "sem_ccs-connects_software-engineer-net_woerden-utrecht-nederland"
   },
   {
     "slug": "cegeka-freelance-big-data-engineer-eer_be-be100",
@@ -1680,6 +1686,12 @@
     "job_id": "sem_celonis_applied-value-engineer_amsterdam-netherlands"
   },
   {
+    "slug": "associate-ai-solution-consultant-scale-emea-french-speaking--madrid-spain",
+    "title": "Associate (AI) Solution Consultant (Scale EMEA/French-Speaking) - Orbit Program",
+    "company": "Celonis",
+    "job_id": "sem_celonis_associate-ai-solution-consultant-scale-emea-french-speaking-orbit-program_madrid-spain"
+  },
+  {
     "slug": "associate-ai-solution-consultant-scale-emea-german-speaking--madrid-spain",
     "title": "Associate (AI) Solution Consultant (Scale EMEA/German-Speaking) - Orbit Program",
     "company": "Celonis",
@@ -1690,6 +1702,12 @@
     "title": "Associate Applied (AI) Value Engineer (APAC) - Orbit Program",
     "company": "Celonis",
     "job_id": "sem_celonis_associate-applied-ai-value-engineer-apac-orbit-program_madrid-spain"
+  },
+  {
+    "slug": "associate-applied-ai-value-engineer-scale-emea-french-speaki-madrid-spain",
+    "title": "Associate Applied (AI) Value Engineer (Scale EMEA/French-Speaking) - Orbit Program",
+    "company": "Celonis",
+    "job_id": "sem_celonis_associate-applied-ai-value-engineer-scale-emea-french-speaking-orbit-program_madrid-spain"
   },
   {
     "slug": "associate-applied-ai-value-engineer-scale-emea-german-speaki-madrid-spain",
@@ -1758,6 +1776,18 @@
     "job_id": "sem_celonis_intern-applied-ai-solution-consulting-italy_milan-italy"
   },
   {
+    "slug": "intern-deployment-engineer-data-ai-nich-germany",
+    "title": "Intern Deployment Engineer - Data & AI",
+    "company": "Celonis",
+    "job_id": "sem_celonis_intern-deployment-engineer-data-ai_munich-germany"
+  },
+  {
+    "slug": "intern-technology-consultant-data-ai-nich-germany",
+    "title": "Intern Technology Consultant - Data & AI",
+    "company": "Celonis",
+    "job_id": "sem_celonis_intern-technology-consultant-data-ai_munich-germany"
+  },
+  {
     "slug": "intern-technology-management-consulting-value-engineering-paris-france",
     "title": "Intern Technology & Management Consulting (Value Engineering)",
     "company": "Celonis",
@@ -1810,12 +1840,6 @@
     "title": "International Business Development Representative - Nordics",
     "company": "Chainguard",
     "job_id": "sem_chainguard_international-business-development-representative-nordics_denmark-sweden-uk"
-  },
-  {
-    "slug": "it-specialist-pecialist_uk",
-    "title": "IT Specialist",
-    "company": "Chainguard",
-    "job_id": "sem_chainguard_it-specialist_uk"
   },
   {
     "slug": "partner-sales-engineer-ance-germany",
@@ -1934,6 +1958,18 @@
   {
     "slug": "data-engineer-kubernetes-m-w-d-etes_dresden",
     "title": "Data Engineer Kubernetes (m/w/d)",
+    "company": "Citema Group GmbH",
+    "job_id": "sem_citema-group_data-engineer-kubernetes_dresden"
+  },
+  {
+    "slug": "data-engineer-m-w-d-neer_dresden",
+    "title": "Data Engineer (m/w/d)",
+    "company": "Citema Group GmbH",
+    "job_id": "sem_citema-group_data-engineer_dresden"
+  },
+  {
+    "slug": "data-engineer-kubernetes-m-w-d-etes_dresden",
+    "title": "Data Engineer Kubernetes (m/w/d)",
     "company": "citema systems GmbH",
     "job_id": "sem_citema-systems_data-engineer-kubernetes_dresden"
   },
@@ -1978,12 +2014,6 @@
     "title": "Langfuse - DevRel Engineer, Events & Community (EMEA)",
     "company": "ClickHouse",
     "job_id": "sem_clickhouse_langfuse-devrel-engineer-events-community-emea_germany"
-  },
-  {
-    "slug": "langfuse-product-marketing-manager-emea-emea_germany",
-    "title": "Langfuse - Product Marketing Manager (EMEA)",
-    "company": "ClickHouse",
-    "job_id": "sem_clickhouse_langfuse-product-marketing-manager-emea_germany"
   },
   {
     "slug": "solutions-architect-germany-many_germany",
@@ -2334,6 +2364,12 @@
     "job_id": "sem_corpuls_abschlussarbeit-master-machine-learning-deep-learning-corpuls-kaufering-h_kaufering"
   },
   {
+    "slug": "customer-success-specialist-french-speaking-blin-ireland",
+    "title": "Customer Success Specialist (French Speaking)",
+    "company": "Coursera",
+    "job_id": "sem_coursera_customer-success-specialist-french-speaking_dublin-ireland"
+  },
+  {
     "slug": "customer-success-specialist-turkish-speaking-11-month-fixed--blin-ireland",
     "title": "Customer Success Specialist (Turkish Speaking) - 11-Month Fixed-Term Contract",
     "company": "Coursera",
@@ -2382,18 +2418,6 @@
     "job_id": "sem_cursor_solutions-architect-central-europe_germany"
   },
   {
-    "slug": "scientific-product-manager-amsterdam-nl",
-    "title": "Scientific Product Manager",
-    "company": "Cuspai",
-    "job_id": "sem_cuspai_scientific-product-manager_amsterdam-nl"
-  },
-  {
-    "slug": "cybersecurity-researcher-rcher_berlin",
-    "title": "Cybersecurity Researcher",
-    "company": "Cygrid GmbH",
-    "job_id": "sem_cygrid_cybersecurity-researcher_berlin"
-  },
-  {
     "slug": "integrator-m-w-d-rator_munich",
     "title": "Integrator (m/w/d)",
     "company": "Cyrus Digital GmbH",
@@ -2404,12 +2428,6 @@
     "title": "Data Analyst (m/w/d)",
     "company": "dabit Analytics GmbH",
     "job_id": "sem_dabit-analytics_data-analyst_frankfurt-am-main"
-  },
-  {
-    "slug": "dualer-student-m-w-d-data-science-und-k-nstliche-intelligenz-mpten-allg-u",
-    "title": "Dualer Student (m/w/d) Data Science und K\u00fcnstliche Intelligenz",
-    "company": "Dachser SE Head Office",
-    "job_id": "sem_dachser-head-office_dualer-student-data-science-und-k-nstliche-intelligenz_kempten-allg-u"
   },
   {
     "slug": "werkstudent-m-w-d-digitalisierung-ki-prozessmanagement-ent_erlensee",
@@ -2958,12 +2976,6 @@
     "job_id": "sem_datadog_software-engineering-intern_paris-france"
   },
   {
-    "slug": "engineering-manager-billing-monetization-on_amsterdam",
-    "title": "Engineering Manager, Billing & Monetization",
-    "company": "Datasnipper",
-    "job_id": "sem_datasnipper_engineering-manager-billing-monetization_amsterdam"
-  },
-  {
     "slug": "cloud-devops-engineer-kubernetes-edge-cloud-cloud_berlin",
     "title": "Cloud & DevOps Engineer \u2013 Kubernetes, Edge & Cloud",
     "company": "DATATRONiQ",
@@ -2980,12 +2992,6 @@
     "title": "AI Engineer (AI & GenAI) - Finance Domain",
     "company": "Decathlontechnology",
     "job_id": "sem_decathlontechnology_ai-engineer-ai-genai-finance-domain_lille-jardin-des-plantes-nord-paris-paris"
-  },
-  {
-    "slug": "data-steward-coe-data-ai-governance-_paris-paris",
-    "title": "Data Steward (CoE Data & AI Governance)",
-    "company": "Decathlontechnology",
-    "job_id": "sem_decathlontechnology_data-steward-coe-data-ai-governance_paris-paris"
   },
   {
     "slug": "consultant-data-engineer-m-w-d-ld-rheinland",
@@ -3066,12 +3072,6 @@
     "job_id": "sem_deloitte_consultant-data-science-ml-engineering_berlin"
   },
   {
-    "slug": "praktikant-werkstudent-audit-center-of-competence-data-analy-ytics_berlin",
-    "title": "Praktikant / Werkstudent Audit - Center of Competence Data Analytics (m/w/d)",
-    "company": "Deloitte GmbH",
-    "job_id": "sem_deloitte_praktikant-werkstudent-audit-center-of-competence-data-analytics_berlin"
-  },
-  {
     "slug": "praktikant-werkstudent-data-analytics-innovation-transformat-furt-am-main",
     "title": "Praktikant / Werkstudent Data Analytics - Innovation & Transformation (m/w/d)",
     "company": "Deloitte GmbH",
@@ -3102,12 +3102,6 @@
     "job_id": "sem_deos_business-intelligence-spezialist-data-analyst-im-controlling-vz-tz-standort-rheine_rheine"
   },
   {
-    "slug": "data-analytics-engineer-in-er-in_berlin",
-    "title": "Data & Analytics Engineer:in",
-    "company": "Deutsche Bahn AG",
-    "job_id": "sem_deutsche-bahn_data-analytics-engineer-in_berlin"
-  },
-  {
     "slug": "data-analytics-engineer-in-furt-am-main",
     "title": "Data & Analytics Engineer:in",
     "company": "Deutsche Bahn AG",
@@ -3130,12 +3124,6 @@
     "title": "Data Engineer (all genders)",
     "company": "Deutsche Lufthansa AG",
     "job_id": "sem_deutsche-lufthansa_data-engineer-all-genders_k-ln"
-  },
-  {
-    "slug": "data-scientist-ai-decision-intelligence-all-genders-_baden-baden",
-    "title": "Data Scientist (AI & Decision Intelligence) - All genders",
-    "company": "Deutsche Lufthansa AG",
-    "job_id": "sem_deutsche-lufthansa_data-scientist-ai-decision-intelligence-all-genders_baden-baden"
   },
   {
     "slug": "internship-elearning-artificial-intelligence-ence_hamburg",
@@ -3166,12 +3154,6 @@
     "title": "Werkstudent*in Data / Business Analytics bei fraenk (m/w/d/-) - congstar GmbH",
     "company": "Deutsche Telekom AG",
     "job_id": "sem_deutsche-telekom_werkstudent-in-data-business-analytics-bei-fraenk-m-w-d-congstar_k-ln"
-  },
-  {
-    "slug": "data-engineer-m-w-d-neer_m-nchen",
-    "title": "Data Engineer (m/w/d)",
-    "company": "Deutscher Landwirtschaftsverlag GmbH",
-    "job_id": "sem_deutscher-landwirtschaftsverlag_data-engineer_m-nchen"
   },
   {
     "slug": "analyst-vertriebsperformance-bi-reporting-m-w-d-ern-hunsr-ck",
@@ -3366,6 +3348,12 @@
     "job_id": "sem_doctolib-gh_platform-security-engineer-x-f-m_paris-paris-france"
   },
   {
+    "slug": "praktikum-campaign-management-x-f-m-rlin-germany",
+    "title": "Praktikum Campaign Management (x/f/m)",
+    "company": "Doctolib GH",
+    "job_id": "sem_doctolib-gh_praktikum-campaign-management-x-f-m_berlin-berlin-germany"
+  },
+  {
     "slug": "research-scientist-x-f-m-paris-france",
     "title": "Research Scientist (x/f/m)",
     "company": "Doctolib GH",
@@ -3474,6 +3462,12 @@
     "job_id": "sem_ds-media-team_werkstudent-in-it-ki-integration-prompt-engineering_norderstedt"
   },
   {
+    "slug": "junior-cloud-data-engineer-all-genders-rs_stuttgart",
+    "title": "(Junior) Cloud Data Engineer (all genders)",
+    "company": "DYMATRIX GmbH",
+    "job_id": "sem_dymatrix_cloud-data-engineer-all-genders_stuttgart"
+  },
+  {
     "slug": "werkstudent-softwareentwicklung-mit-schwerpunkt-azure-m-w-d-andshut-isar",
     "title": "Werkstudent Softwareentwicklung mit Schwerpunkt Azure (m/w/d)",
     "company": "E.ON Grid Solutions GmbH",
@@ -3486,10 +3480,34 @@
     "job_id": "sem_ebswien-kl-ranlage-tierservice-ges-m-b-h_data-engineer_wien-simmering"
   },
   {
+    "slug": "post-doctorant-en-hydrodynamique-tagne-france",
+    "title": "Post-doctorant en hydrodynamique",
+    "company": "ECOLE NATIONALE SUPERIEURE DE TECHNIQUES AVANCEES",
+    "job_id": "sem_ecole-nationale-superieure-de-techniques-avancees_post-doctorant-en-hydrodynamique_brest-bretagne-france"
+  },
+  {
     "slug": "snowflake-data-engineer-m-w-d-neer_hamburg",
     "title": "Snowflake Data Engineer (m/w/d)",
     "company": "EDEKA IT Stiftung & Co. OHG",
     "job_id": "sem_edeka-it-stiftung-ohg_snowflake-data-engineer_hamburg"
+  },
+  {
+    "slug": "junior-google-performance-analytics-manager-m-w-d-er_stuttgart",
+    "title": "Junior Google Performance & Analytics Manager (m/w/d)",
+    "company": "eFLY Marketplace Services GmbH",
+    "job_id": "sem_efly-marketplace-services_junior-google-performance-analytics-manager_stuttgart"
+  },
+  {
+    "slug": "online-marketing-manager-m-w-d-er_stuttgart",
+    "title": "Online Marketing Manager (m/w/d)",
+    "company": "eFLY Marketplace Services GmbH",
+    "job_id": "sem_efly-marketplace-services_online-marketing-manager_stuttgart"
+  },
+  {
+    "slug": "performance-marketing-manager-m-w-d-er_stuttgart",
+    "title": "Performance Marketing Manager (m/w/d)",
+    "company": "eFLY Marketplace Services GmbH",
+    "job_id": "sem_efly-marketplace-services_performance-marketing-manager_stuttgart"
   },
   {
     "slug": "data-scientist-m-w-d-anomalieerkennung-f-r-recyclinganlagen-lagen_aachen",
@@ -3552,12 +3570,6 @@
     "job_id": "sem_elastic_sales-development-representative-german-speaking_barcelona-spain"
   },
   {
-    "slug": "sales-specialist-security-rity_belgium",
-    "title": "Sales Specialist - Security",
-    "company": "Elastic",
-    "job_id": "sem_elastic_sales-specialist-security_belgium"
-  },
-  {
     "slug": "sales-specialist-security-curity_italy",
     "title": "Sales Specialist - security",
     "company": "Elastic",
@@ -3592,6 +3604,12 @@
     "title": "Deployment Strategist - Italy",
     "company": "ElevenLabs",
     "job_id": "sem_elevenlabs_deployment-strategist-italy_italy"
+  },
+  {
+    "slug": "engineering-internal-ai-transformation-weden-uk-usa",
+    "title": "Engineering - Internal AI Transformation",
+    "company": "Elevenlabs",
+    "job_id": "sem_elevenlabs_engineering-internal-ai-transformation_canada-germany-ireland-italy-poland-sweden-uk-usa"
   },
   {
     "slug": "it-engineer-ineer_remote",
@@ -3750,16 +3768,16 @@
     "job_id": "sem_enrichment-technology-company-niederlassung-deutschland_bachelorand-machine-learning-cfd_j-lich"
   },
   {
-    "slug": "tech-startup-customer-success-agent-m-w-d-waterflow-agent-t_heidelberg",
-    "title": "Tech StartUp - Customer Success Agent (m/w/d) - Waterflow Agent",
-    "company": "Enzo",
-    "job_id": "sem_enzo_tech-startup-customer-success-agent-waterflow-agent_heidelberg"
-  },
-  {
     "slug": "data-architect-fabric-fabric_se110",
     "title": "Data Architect - Fabric",
     "company": "Epical Sweden AB",
     "job_id": "sem_epical-sweden-ab_data-architect-fabric_se110"
+  },
+  {
+    "slug": "devsecops-engineer-final-year-internship-stage-pfe-paris-office",
+    "title": "DevSecOps Engineer - Final year Internship - Stage PFE",
+    "company": "Escape",
+    "job_id": "sem_escape_devsecops-engineer-final-year-internship-stage-pfe_paris-office"
   },
   {
     "slug": "architecte-de-domaine-justice-et-s-curit-rit_ch-ch022",
@@ -3798,12 +3816,6 @@
     "job_id": "sem_ev-group-e-thallner_data-engineer_badh-ring"
   },
   {
-    "slug": "it-automation-specialist-m-w-d-list_hamburg",
-    "title": "IT & Automation Specialist (m/w/d)",
-    "company": "EVEREST GmbH",
-    "job_id": "sem_everest_it-automation-specialist_hamburg"
-  },
-  {
     "slug": "werkstudent-data-analytics-m-w-d-sburg-bayern",
     "title": "Werkstudent Data & Analytics (m/w/d)",
     "company": "Everllence SE",
@@ -3838,12 +3850,6 @@
     "title": "Data Analyst (m/w/d) / Business-Intelligence-Consultant",
     "company": "Expert Select GmbH",
     "job_id": "sem_expert-select_data-analyst-business-intelligence-consultant_kastellaun"
-  },
-  {
-    "slug": "data-analyst-m-w-d-business-intelligence-consultant-autzenhausen",
-    "title": "Data Analyst (m/w/d) / Business-Intelligence-Consultant",
-    "company": "Expert Select GmbH",
-    "job_id": "sem_expert-select_data-analyst-business-intelligence-consultant_lautzenhausen"
   },
   {
     "slug": "business-intelligence-data-warehouse-analyst-entwickler-m-w--genhagen-han",
@@ -3894,12 +3900,6 @@
     "job_id": "sem_fega-schmitt-elektrogro-handel_data-scientist-data-engineer_ansbach-mittelfranken"
   },
   {
-    "slug": "werkstudent-social-media-content-creator-m-w-d-eator_berlin",
-    "title": "Werkstudent Social Media & Content Creator (m/w/d)",
-    "company": "femsure GmbH",
-    "job_id": "sem_femsure_werkstudent-social-media-content-creator_berlin"
-  },
-  {
     "slug": "ki-manager-m-w-d-er_bielefeld",
     "title": "KI-Manager (m/w/d)",
     "company": "FERCHAU GmbH Niederlassung Bielefeld",
@@ -3916,12 +3916,6 @@
     "title": "Data Analyst im Bereich KI (m/w/d) AIRBUS",
     "company": "FERCHAU GmbH Niederlassung Hamburg-City",
     "job_id": "sem_ferchau-niederlassung-hamburg-city_data-analyst-im-bereich-ki-airbus_hamburg"
-  },
-  {
-    "slug": "ai-data-science-engineer-m-w-d-r_oberkochen",
-    "title": "AI Data Science Engineer (m/w/d)",
-    "company": "FERCHAU GmbH Niederlassung Heidenheim",
-    "job_id": "sem_ferchau-niederlassung-heidenheim_ai-data-science-engineer_oberkochen"
   },
   {
     "slug": "data-scientist-f-r-algorithmen-machine-learning-in-der-messt-k_oberkochen",
@@ -4002,16 +3996,16 @@
     "job_id": "sem_fft-produktionssysteme-kg_duales-studium-data-science-und-k-nstliche-intelligenz-2027-dhbw_fulda"
   },
   {
-    "slug": "projektmitarbeiter-in-data-infrastructure-ai-ml-i-ml_potsdam",
-    "title": "Projektmitarbeiter*in - Data Infrastructure & AI/ML",
-    "company": "Filmuniversit\u00e4t Babelsberg  Konrad Wolf",
-    "job_id": "sem_filmuniversit-t-babelsberg-konrad-wolf_projektmitarbeiter-in-data-infrastructure-ai-ml_potsdam"
-  },
-  {
     "slug": "631-b-data-platform-ops-engineer-m-w-d-er-westfalen",
     "title": "631/B - Data Platform Ops Engineer (m/w/d)",
     "company": "Finanz Informatik GmbH & Co. KG",
     "job_id": "sem_finanz-informatik-kg_631-b-data-platform-ops-engineer_m-nster-westfalen"
+  },
+  {
+    "slug": "650-b-data-scientist-f-r-compliance-m-w-d-nce_hannover",
+    "title": "650/B - Data Scientist f\u00fcr Compliance (m/w/d)",
+    "company": "Finanz Informatik GmbH & Co. KG",
+    "job_id": "sem_finanz-informatik-kg_650-b-data-scientist-f-r-compliance_hannover"
   },
   {
     "slug": "682-b-datenanalyst-m-w-d-furt-am-main",
@@ -4030,6 +4024,12 @@
     "title": "Data Platform Ops Engineer (m/w/d) (Wirtschaftsinformatiker/in (Hochschule))",
     "company": "Finanz Informatik GmbH & Co. KG",
     "job_id": "sem_finanz-informatik-kg_data-platform-ops-engineer-wirtschaftsinformatiker-in-hochschule_de-dea33-de712-de929"
+  },
+  {
+    "slug": "data-scientist-f-r-compliance-m-w-d-er-westfalen",
+    "title": "Data Scientist f\u00fcr Compliance (m/w/d)",
+    "company": "Finanz Informatik GmbH & Co. KG",
+    "job_id": "sem_finanz-informatik-kg_data-scientist-f-r-compliance_m-nster-westfalen"
   },
   {
     "slug": "data-platform-engineer-m-w-d-furt-am-main",
@@ -4080,12 +4080,6 @@
     "job_id": "sem_fivetran_commercial-sales-director-benelux_dublin-dublin-ireland-emea"
   },
   {
-    "slug": "customer-solutions-architect-manager-ireland-emea",
-    "title": "Customer Solutions Architect, Manager",
-    "company": "Fivetran",
-    "job_id": "sem_fivetran_customer-solutions-architect-manager_dublin-dublin-ireland-emea"
-  },
-  {
     "slug": "sales-development-representative-italian-and-spanish-speaker-l-dublin-dbt",
     "title": "Sales Development Representative - Italian and Spanish Speaker",
     "company": "Fivetran",
@@ -4116,34 +4110,10 @@
     "job_id": "sem_fleury-michon_stage-data-engineer-ia-f-h-janvier-2027_pouzauges-pays-de-la-loire-france"
   },
   {
-    "slug": "devops-engineer-system-engineer-linux-data-m-w-d--linux-data_",
-    "title": "DevOps Engineer / System Engineer Linux & Data (m/w/d)",
-    "company": "FlexIT Consulting GmbH",
-    "job_id": "sem_flexit-consulting_devops-engineer-system-engineer-linux-data_"
-  },
-  {
-    "slug": "director-it-digital-innovation-m-w-d-ovation_hamm",
-    "title": "Director IT & Digital Innovation (m/w/d)",
-    "company": "FlexIT Consulting GmbH",
-    "job_id": "sem_flexit-consulting_director-it-digital-innovation_hamm"
-  },
-  {
     "slug": "software-engineer-m-w-d-eer_at-at213",
     "title": "Software Engineer (m/w/d)",
     "company": "Flextronics International Gesellschaft m.b.H.",
     "job_id": "sem_flextronics-international-gesellschaft-m-b-h_software-engineer_at-at213"
-  },
-  {
-    "slug": "customer-success-intern-m-f-d-tgart-remote",
-    "title": "Customer Success Intern (m/f/d)",
-    "company": "Flip GmbH",
-    "job_id": "sem_flip_customer-success-intern_stuttgart-remote"
-  },
-  {
-    "slug": "praktikum-customer-success-m-w-d-tgart-remote",
-    "title": "Praktikum Customer Success (m/w/d)",
-    "company": "Flip GmbH",
-    "job_id": "sem_flip_praktikum-customer-success_stuttgart-remote"
   },
   {
     "slug": "automation-solutions-engineer-celonis-m-f-d-lonis_lisbon",
@@ -4242,12 +4212,6 @@
     "job_id": "sem_flix_software-engineer_warsaw"
   },
   {
-    "slug": "workday-integration-engineer-ineer_warsaw",
-    "title": "Workday Integration Engineer",
-    "company": "Flix",
-    "job_id": "sem_flix_workday-integration-engineer_warsaw"
-  },
-  {
     "slug": "working-student-udent_berlin",
     "title": "Working Student",
     "company": "Flix",
@@ -4332,12 +4296,6 @@
     "job_id": "sem_forums-talents-handicap_ing-nieur-donn-es-et-ia-h-f_fr-fr103"
   },
   {
-    "slug": "duales-studium-data-science-und-k-nstliche-intelligenz-smart-t_neckarsulm",
-    "title": "Duales Studium Data Science und K\u00fcnstliche Intelligenz Smart Operations Management (m/w/d)",
-    "company": "Franz Binder GmbH & Co. Elektrische Bauelemente KG",
-    "job_id": "sem_franz-binder-elektrische-bauelemente-kg_duales-studium-data-science-und-k-nstliche-intelligenz-smart-operations-management_neckarsulm"
-  },
-  {
     "slug": "gruppenleitung-ai-machine-learning-mlops-f-r-prognosesysteme--in_de-de731",
     "title": "Gruppenleitung AI, Machine Learning & MLOps f\u00fcr Prognosesysteme (Wissenschaftliche/r Mitarbeiter/in)",
     "company": "Fraunhofer-Gesellschaft e.V. Zentrale M\u00fcnchen",
@@ -4360,12 +4318,6 @@
     "title": "Data Scientist Customer Analytics (w/m/d)",
     "company": "freenet",
     "job_id": "sem_freenet_data-scientist-customer-analytics_hamburg"
-  },
-  {
-    "slug": "werkstudent-m-w-q-elektromobilit-t-ladeinfrastruktur-uktur_munich",
-    "title": "Werkstudent (m/w/q) Elektromobilit\u00e4t Ladeinfrastruktur",
-    "company": "FREQUENTUM",
-    "job_id": "sem_frequentum_werkstudent-m-w-q-elektromobilit-t-ladeinfrastruktur_munich"
   },
   {
     "slug": "director-market-intelligence-data-analytics-m-f-d-vor-der-h-he",
@@ -4404,12 +4356,6 @@
     "job_id": "sem_fruitcore-robotics_pflichtpraktikum-werkstudent-ki-robotik_konstanz"
   },
   {
-    "slug": "ai-engineer--netherlands",
-    "title": "AI Engineer",
-    "company": "Gain",
-    "job_id": "sem_gain_ai-engineer_amsterdam-noord-holland-netherlands"
-  },
-  {
     "slug": "business-intelligence-analytics-specialist-m-w-d-t_d-sseldorf",
     "title": "Business Intelligence & Analytics Specialist (m/w/d)",
     "company": "GALDERMA LABORATORIUM GMBH",
@@ -4446,10 +4392,10 @@
     "job_id": "sem_general-anzeiger-bonn_data-analyst-bonn_bonn"
   },
   {
-    "slug": "werkstudent-in-w-m-d-in-der-redaktion-von-design-perspective-furt-am-main",
-    "title": "Werkstudent*in (w/m/d) in der Redaktion von Design Perspectives",
-    "company": "German Design Council - Rat f\u00fcr Formgebung",
-    "job_id": "sem_german-design-council-rat-f-r-formgebung_werkstudent-in-in-der-redaktion-von-design-perspectives_frankfurt-am-main"
+    "slug": "generative-ai-developer-m-f-d-er_g-ttingen",
+    "title": "Generative AI Developer (m/f/d)",
+    "company": "GES.F.WISS.DATENVERARBEITUNG MBH GOETTINGEN",
+    "job_id": "sem_ges-f-wiss-datenverarbeitung-mbh-goettingen_generative-ai-developer_g-ttingen"
   },
   {
     "slug": "consumer-insights-manager-nager_berlin",
@@ -4506,12 +4452,6 @@
     "job_id": "sem_gitlab_account-executive-france_remote-france"
   },
   {
-    "slug": "backend-engineer-ruby-create-change-record-rd_poland-uk",
-    "title": "Backend Engineer (Ruby), Create: Change Record",
-    "company": "GitLab",
-    "job_id": "sem_gitlab_backend-engineer-ruby-create-change-record_poland-uk"
-  },
-  {
     "slug": "backend-engineer-ruby-create-change-record-ited-kingdom",
     "title": "Backend Engineer (Ruby), Create: Change Record",
     "company": "GitLab",
@@ -4536,12 +4476,6 @@
     "job_id": "sem_gitlab_business-development-representative-german-speaking-uk-i_remote-ireland-remote-united-kingdom"
   },
   {
-    "slug": "business-development-representative-italian-speaking-nds-spain-uk",
-    "title": "Business Development Representative, Italian Speaking",
-    "company": "GitLab",
-    "job_id": "sem_gitlab_business-development-representative-italian-speaking_france-ireland-netherlands-spain-uk"
-  },
-  {
     "slug": "business-development-representative-italian-speaking-ited-kingdom",
     "title": "Business Development Representative, Italian Speaking",
     "company": "GitLab",
@@ -4552,12 +4486,6 @@
     "title": "Business Development Representative, Spanish Speaking",
     "company": "GitLab",
     "job_id": "sem_gitlab_business-development-representative-spanish-speaking_remote-spain"
-  },
-  {
-    "slug": "business-development-representative-spanish-speaking-eaking_spain",
-    "title": "Business Development Representative, Spanish Speaking",
-    "company": "GitLab",
-    "job_id": "sem_gitlab_business-development-representative-spanish-speaking_spain"
   },
   {
     "slug": "business-development-representative-ited-kingdom",
@@ -4644,16 +4572,10 @@
     "job_id": "sem_grafana-labs_engineering-manager-observability-sweden-remote_sweden-remote"
   },
   {
-    "slug": "quantitative-researcher-2027-graduates--netherlands",
-    "title": "Quantitative Researcher - 2027 Graduates",
-    "company": "Graviton Research Capital LLP",
-    "job_id": "sem_graviton-research-capital-llp_quantitative-researcher-2027-graduates_amsterdam-north-holland-netherlands"
-  },
-  {
-    "slug": "ai-engineer-m-w-d-generative-ai-llm-ki-konzepte-pte_dortmund",
-    "title": "AI-Engineer (m/w/d) - Generative AI, LLM & KI-Konzepte",
-    "company": "Green IT Das Systemhaus GmbH",
-    "job_id": "sem_green-it-das-systemhaus_ai-engineer-generative-ai-llm-ki-konzepte_dortmund"
+    "slug": "engineering-manager--netherlands",
+    "title": "Engineering Manager",
+    "company": "GreenFlux",
+    "job_id": "sem_greenflux_engineering-manager_amsterdam-noord-holland-netherlands"
   },
   {
     "slug": "ai-solutions-engineer-m-w-d-rg-oberpfalz",
@@ -4710,10 +4632,28 @@
     "job_id": "sem_handelsblatt_data-analyst-gn-engagement-d-sseldorf_d-sseldorf"
   },
   {
+    "slug": "werkstudent-ki-prozessautomatisierung-einkauf-m-w-d-zentralv-dberg-bayern",
+    "title": "Werkstudent KI & Prozessautomatisierung Einkauf (m/w/d), Zentralverwaltung Friedberg",
+    "company": "Hans Segm\u00fcller Polsterm\u00f6belfabrik GmbH & Co. KG",
+    "job_id": "sem_hans-segm-ller-polsterm-belfabrik-kg_werkstudent-ki-prozessautomatisierung-einkauf-zentralverwaltung-friedberg_friedberg-bayern"
+  },
+  {
+    "slug": "werkstudent-ki-prozessautomatisierung-einkauf-m-w-d-dberg-bayern",
+    "title": "Werkstudent KI & Prozessautomatisierung Einkauf (m/w/d)",
+    "company": "Hans Segm\u00fcller Polsterm\u00f6belfabrik GmbH & Co. KG",
+    "job_id": "sem_hans-segm-ller-polsterm-belfabrik-kg_werkstudent-ki-prozessautomatisierung-einkauf_friedberg-bayern"
+  },
+  {
     "slug": "data-analyst-m-w-d-st_stuttgart",
     "title": "Data Analyst (m/w/d)",
     "company": "Hanselmann & Cie. Solutions GmbH",
     "job_id": "sem_hanselmann-cie-solutions_data-analyst_stuttgart"
+  },
+  {
+    "slug": "deployment-strategist-german-speaking-aking_munich",
+    "title": "Deployment Strategist - German Speaking",
+    "company": "Happyrobot.ai",
+    "job_id": "sem_happyrobot-ai_deployment-strategist-german-speaking_munich"
   },
   {
     "slug": "it-business-intelligence-professional-w-m-d-rofessional_",
@@ -4798,5 +4738,65 @@
     "title": "Demand Planner (f/m/x)",
     "company": "HelloFresh",
     "job_id": "sem_hellofresh_demand-planner-f-m-x_amsterdam-north-holland-netherlands"
+  },
+  {
+    "slug": "demand-planner-f-m-x-rlin-germany",
+    "title": "Demand Planner (f/m/x)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_demand-planner-f-m-x_berlin-berlin-germany"
+  },
+  {
+    "slug": "demand-planner-f-m-x-mark-denmark",
+    "title": "Demand Planner (f/m/x)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_demand-planner-f-m-x_k-benhavn-capital-regiondenmark-denmark"
+  },
+  {
+    "slug": "demand-planner-f-m-x-paris-france",
+    "title": "Demand Planner (f/m/x)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_demand-planner-f-m-x_paris-paris-france"
+  },
+  {
+    "slug": "director-global-wms-software-engineering-and-product-design-eship-poland",
+    "title": "Director, Global WMS Software Engineering and Product Design",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_director-global-wms-software-engineering-and-product-design_warszawa-masovian-voivodeship-poland"
+  },
+  {
+    "slug": "growth-strategy-data-analyst-intern-m-f-n-paris-france",
+    "title": "Growth Strategy Data Analyst - Intern (M/F/N)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_growth-strategy-data-analyst-intern-m-f-n_paris-paris-france"
+  },
+  {
+    "slug": "international-category-manager-associate-experience-m-f-x-paris-france",
+    "title": "International Category Manager (Associate experience) - (M/F/X)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_international-category-manager-associate-experience-m-f-x_berlin-berlin-germany-paris-paris-france"
+  },
+  {
+    "slug": "junior-operations-manager-blin-ireland",
+    "title": "Junior Operations Manager",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_junior-operations-manager_dublin-dublin-ireland"
+  },
+  {
+    "slug": "lead-copywriter-global-creative-studio-m-f-x-rlin-germany",
+    "title": "Lead Copywriter, Global Creative Studio (m/f/x)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_lead-copywriter-global-creative-studio-m-f-x_berlin-berlin-germany"
+  },
+  {
+    "slug": "lifecycle-manager-reactivations-all-genders-rlin-germany",
+    "title": "Lifecycle Manager, Reactivations (all genders)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_lifecycle-manager-reactivations-all-genders_berlin-berlin-germany"
+  },
+  {
+    "slug": "marketing-business-analyst-all-genders-rlin-germany",
+    "title": "Marketing Business Analyst (all genders)",
+    "company": "HelloFresh",
+    "job_id": "sem_hellofresh_marketing-business-analyst-all-genders_berlin-berlin-germany"
   }
 ]
