@@ -3,207 +3,281 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DataForge Match Lab — second-rater labeling</title>
+<meta name="robots" content="noindex" />
+<title>DataForge Second-Rater Instrument (DF-SR-2026-10)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet" />
 <style>
 :root {
-  --bg0: #0b1f24;
-  --bg1: #123038;
-  --card: #f7f3eb;
-  --ink: #142126;
-  --muted: #5b6b70;
-  --teal: #1fa39a;
-  --teal-deep: #0f766e;
-  --sand: #e8dcc8;
-  --coral: #e07a5f;
-  --line: #d9d0c2;
-  --ok: #1b7f5a;
+  --bg: #eef1f4;
+  --ink: #15202b;
+  --muted: #5a6a78;
+  --line: #c9d2db;
+  --card: #ffffff;
+  --accent: #1b4f72;
+  --accent-soft: #e8f0f6;
+  --warn: #8a4b08;
+  --ok: #1b5e3b;
+  --err: #8b1e2d;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; }
 body {
-  font-family: "Source Sans 3", system-ui, sans-serif;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(900px 500px at 85% -10%, #2dd4bf33, transparent 55%),
-    radial-gradient(700px 420px at -10% 20%, #e07a5f22, transparent 50%),
-    linear-gradient(165deg, var(--bg0), var(--bg1) 55%, #0a171b);
+    linear-gradient(180deg, #d9e2ec 0%, var(--bg) 180px, var(--bg) 100%);
 }
-.shell {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 28px 16px 64px;
-}
-.brand {
-  display: flex; align-items: center; gap: 12px; color: #ecf8f6;
-  margin-bottom: 18px;
-}
-.brand-mark {
-  width: 42px; height: 42px; border-radius: 12px;
-  background: linear-gradient(135deg, #2dd4bf, #0f766e);
-  box-shadow: 0 8px 24px #1fa39a55;
-  display:grid; place-items:center; font-weight:800; color:#042f2e;
+.shell { max-width: 820px; margin: 0 auto; padding: 28px 16px 72px; }
+.brand { margin-bottom: 16px; }
+.brand .kicker {
+  font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 4px;
 }
 .brand h1 {
-  font-family: Fraunces, Georgia, serif;
-  font-size: 1.35rem; margin: 0; letter-spacing: -0.02em;
+  font-family: "IBM Plex Serif", Georgia, serif;
+  font-size: 1.55rem; margin: 0; letter-spacing: -0.02em;
 }
-.brand p { margin: 2px 0 0; opacity: .78; font-size: .92rem; }
+.brand p { margin: 4px 0 0; color: var(--muted); font-size: .95rem; }
+.meta-bar {
+  display:flex; flex-wrap:wrap; gap:8px 14px; margin-top:10px;
+  font-size:.8rem; color:var(--muted);
+}
+.meta-bar code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background:#fff; border:1px solid var(--line); padding:2px 6px; border-radius:4px;
+}
 .panel {
   background: var(--card);
-  border-radius: 22px;
-  padding: 22px;
-  box-shadow: 0 24px 60px rgba(0,0,0,.28);
-  animation: rise .45s ease both;
-}
-@keyframes rise {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: none; }
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 22px 22px 24px;
+  box-shadow: 0 1px 2px rgba(21,32,43,.04);
 }
 .screen { display: none; }
 .screen.on { display: block; }
 .steps {
-  display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;
+  display:flex; gap:6px; margin-bottom:18px; flex-wrap:wrap;
 }
 .steps span {
-  font-size:.75rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
-  padding:6px 10px; border-radius:999px; background:#ebe4d8; color:var(--muted);
+  font-size:.7rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  padding:5px 9px; border-radius:3px; background:#eef2f6; color:var(--muted);
+  border:1px solid transparent;
 }
-.steps span.active { background: var(--teal-deep); color:#fff; }
-.steps span.done { background: #c7f0e8; color: var(--teal-deep); }
-label.field { display:block; margin: 12px 0 6px; font-weight:600; font-size:.92rem; }
+.steps span.active { background: var(--accent); color:#fff; }
+.steps span.done { background: var(--accent-soft); color: var(--accent); border-color:#b7cde0; }
+label.field { display:block; margin: 14px 0 6px; font-weight:600; font-size:.92rem; }
 input[type=text], input[type=email] {
-  width:100%; padding:14px 14px; border-radius:12px; border:1.5px solid var(--line);
-  font: inherit; background:#fffef9;
+  width:100%; padding:12px 12px; border-radius:4px; border:1px solid var(--line);
+  font: inherit; background:#fcfdfe;
 }
-input:focus { outline: 2px solid #99f6e4; border-color: var(--teal); }
-.lead { color: var(--muted); line-height: 1.5; margin: 0 0 8px; }
+input:focus { outline: 2px solid #9bb8d1; border-color: var(--accent); }
+.lead { color: var(--muted); line-height: 1.55; margin: 0 0 10px; }
 .hero-title {
-  font-family: Fraunces, Georgia, serif;
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  margin: 0 0 8px; letter-spacing: -0.02em;
+  font-family: "IBM Plex Serif", Georgia, serif;
+  font-size: clamp(1.35rem, 3.5vw, 1.75rem);
+  margin: 0 0 10px; letter-spacing: -0.02em;
 }
+.box {
+  border: 1px solid var(--line); background: #f7f9fb; border-radius: 4px;
+  padding: 12px 14px; margin: 12px 0; font-size: .92rem; line-height: 1.5;
+}
+.box h3 { margin: 0 0 8px; font-size: .95rem; }
+.box ul { margin: 0; padding-left: 1.15rem; }
+.box li { margin: 4px 0; }
+.scale {
+  display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin: 12px 0;
+}
+.scale div {
+  border:1px solid var(--line); border-radius:4px; padding:10px; background:#fff; font-size:.85rem;
+}
+.scale b { display:block; font-size:1rem; margin-bottom:4px; }
+.consent {
+  display:flex; gap:10px; align-items:flex-start; margin-top:14px;
+  padding:12px; border:1px solid var(--line); border-radius:4px; background:#fff;
+  font-size:.92rem; line-height:1.45;
+}
+.consent input { margin-top:3px; }
 .btnrow { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
 button {
-  font: inherit; font-weight:700; border:0; border-radius:14px;
-  padding: 13px 18px; cursor: pointer;
+  font: inherit; font-weight:600; border:0; border-radius:4px;
+  padding: 11px 16px; cursor: pointer;
 }
-.btn-primary {
-  background: linear-gradient(135deg, var(--teal), var(--teal-deep));
-  color: #fff; box-shadow: 0 10px 22px #0f766e44;
-}
-.btn-primary:disabled { opacity:.45; cursor:not-allowed; box-shadow:none; }
-.btn-ghost { background:#fff; border:1.5px solid var(--line); color:var(--ink); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:disabled { opacity:.45; cursor:not-allowed; }
+.btn-ghost { background:#fff; border:1px solid var(--line); color:var(--ink); }
 .progress {
-  height: 10px; background: #e7dfd2; border-radius: 999px; overflow:hidden; margin: 10px 0 14px;
+  height: 6px; background: #e4eaf0; border-radius: 2px; overflow:hidden; margin: 10px 0 14px;
 }
 .progress > i {
-  display:block; height:100%; width:0%;
-  background: linear-gradient(90deg, #f4a261, #1fa39a);
-  transition: width .28s ease;
+  display:block; height:100%; width:0%; background: var(--accent);
+  transition: width .25s ease;
 }
-.meta { display:flex; justify-content:space-between; color:var(--muted); font-size:.9rem; }
+.meta { display:flex; justify-content:space-between; gap:10px; color:var(--muted); font-size:.88rem; }
 .pill {
-  display:inline-block; font-size:.72rem; font-weight:800; letter-spacing:.05em;
-  text-transform:uppercase; padding:5px 10px; border-radius:999px;
-  background:#d9f5f1; color:var(--teal-deep);
+  display:inline-block; font-size:.68rem; font-weight:700; letter-spacing:.05em;
+  text-transform:uppercase; padding:4px 8px; border-radius:3px;
+  background: var(--accent-soft); color: var(--accent); border:1px solid #b7cde0;
 }
 .seeker {
-  background: linear-gradient(180deg, #fff, #f3eee4);
-  border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-bottom: 12px;
+  background: #f7f9fb; border: 1px solid var(--line); border-radius: 4px; padding: 14px; margin-bottom: 12px;
 }
-.seeker strong { display:block; font-size:1.12rem; margin-top:6px; }
-.tip { color: var(--coral); font-weight:600; font-size:.92rem; margin:8px 0 0; }
+.seeker strong { display:block; font-size:1.08rem; margin-top:6px; }
+.tip { color: var(--warn); font-weight:600; font-size:.9rem; margin:8px 0 0; }
 .job {
-  border: 1px solid var(--line); border-radius: 16px; padding: 16px; background:#fffcf7;
+  border: 1px solid var(--line); border-radius: 4px; padding: 16px; background:#fff;
 }
-.job h3 { margin:0 0 4px; font-size:1.15rem; }
+.job h3 { margin:0 0 4px; font-size:1.1rem; }
 .job .sub { color:var(--muted); margin:0 0 10px; }
+.job-text { line-height:1.55; margin:0; white-space:pre-wrap; }
 .grades {
   display:grid; grid-template-columns: repeat(4,1fr); gap:8px; margin-top:14px;
 }
 .grades button {
-  background:#fff; border:2px solid var(--line); padding:14px 6px;
-  transition: transform .1s ease, border-color .15s, background .15s, color .15s;
+  background:#fff; border:1.5px solid var(--line); padding:12px 6px; border-radius:4px;
 }
-.grades button:hover { transform: translateY(-2px); border-color: var(--teal); }
+.grades button:hover { border-color: var(--accent); }
 .grades button.sel {
-  background: var(--teal-deep); color:#fff; border-color: var(--teal-deep);
-  animation: pop .2s ease;
+  background: var(--accent); color:#fff; border-color: var(--accent);
 }
-@keyframes pop {
-  50% { transform: scale(1.05); }
-}
-.grades small { display:block; font-weight:600; font-size:.7rem; opacity:.9; margin-top:4px; }
-.chk { display:flex; gap:8px; align-items:center; color:var(--muted); margin-top:12px; }
+.grades small { display:block; font-weight:600; font-size:.68rem; opacity:.95; margin-top:4px; }
+.chk { display:flex; gap:8px; align-items:center; color:var(--muted); margin-top:12px; font-size:.9rem; }
 .flash {
-  margin-top:10px; padding:10px 12px; border-radius:12px; font-size:.92rem;
-  background:#ecfdf5; color:var(--ok); display:none;
+  margin-top:12px; padding:10px 12px; border-radius:4px; font-size:.92rem;
+  background:#e8f5ee; color:var(--ok); display:none; border:1px solid #b7e0c8;
 }
-.flash.on { display:block; animation: rise .3s ease; }
-.flash.err { background:#fff1f2; color:#9f1239; }
+.flash.on { display:block; }
+.flash.err { background:#fdecee; color:var(--err); border-color:#f0b7c0; }
 .scoreboard {
-  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:14px 0;
 }
 .scoreboard div {
-  background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px;
+  background:#f7f9fb; border:1px solid var(--line); border-radius:4px; padding:12px;
 }
-.scoreboard b { font-size:1.35rem; display:block; }
-.confetti {
-  pointer-events:none; position:fixed; inset:0; overflow:hidden; z-index:5;
+.scoreboard b { font-size:1.2rem; display:block; }
+.review-wrap {
+  max-height: 320px; overflow:auto; border:1px solid var(--line); border-radius:4px; margin:12px 0;
 }
+table.review {
+  width:100%; border-collapse: collapse; font-size:.82rem;
+}
+table.review th, table.review td {
+  text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top;
+}
+table.review th { background:#f0f4f8; position:sticky; top:0; }
+.footnote { font-size:.8rem; color:var(--muted); margin-top:16px; line-height:1.45; }
 @media (max-width:560px) {
-  .grades { grid-template-columns:1fr 1fr; }
-  .shell { padding-top: 18px; }
+  .grades, .scale, .scoreboard { grid-template-columns: 1fr 1fr; }
 }
 </style>
 </head>
 <body>
 <div class="shell">
-  <div class="brand">
-    <div class="brand-mark">DF</div>
-    <div>
-      <h1>Match Lab</h1>
-      <p>Independent labeling for a DataForge thesis study</p>
+  <header class="brand">
+    <p class="kicker">University research instrument</p>
+    <h1>DataForge Second-Rater Labeling</h1>
+    <p>Independent relevance judgments for a master’s thesis evaluation study</p>
+    <div class="meta-bar">
+      <span>Protocol <code>DF-SR-2026-10</code></span>
+      <span>Version <code>1.1</code></span>
+      <span>100 judgments · ~25–40 min</span>
     </div>
-  </div>
+  </header>
 
-  <!-- STEP 0: identity form -->
-  <section id="welcome" class="screen on">
+  <!-- 0 Consent -->
+  <section id="consent" class="screen on">
     <div class="panel">
       <div class="steps">
-        <span class="active">1 · Your name</span>
-        <span>2 · Label jobs</span>
-        <span>3 · Submit</span>
+        <span class="active">1 · Consent</span>
+        <span>2 · Rater</span>
+        <span>3 · Label</span>
+        <span>4 · Review</span>
       </div>
-      <h2 class="hero-title">Rate how well each job fits the seeker</h2>
-      <p class="lead">You will see a short seeker profile, then jobs one by one. Grade the match from 0–3. About 20–40 minutes. Progress is kept on this device; final answers are saved when you submit.</p>
+      <h2 class="hero-title">Information for participants</h2>
+      <p class="lead">You are invited to provide independent relevance labels for job–seeker pairs. These labels support inter-rater agreement analysis in a design-science thesis on semantic vs keyword job matching (DataForge).</p>
 
-      <form id="idForm">
-        <label class="field" for="firstName">First name</label>
-        <input id="firstName" name="firstName" type="text" required placeholder="e.g. Aarushi" autocomplete="given-name" />
-        <label class="field" for="lastName">Last name</label>
-        <input id="lastName" name="lastName" type="text" required placeholder="e.g. Singh" autocomplete="family-name" />
-        <label class="field" for="email">Email (optional)</label>
-        <input id="email" name="email" type="email" placeholder="optional — for a thank-you note" autocomplete="email" />
-        <div class="btnrow">
-          <button class="btn-primary" type="submit">Start labeling →</button>
+      <div class="box">
+        <h3>Purpose</h3>
+        <ul>
+          <li>Compare ranking methods under hard constraints (skills, seniority, language, location, visa).</li>
+          <li>Your grades are compared with the primary author’s labels (agreement / disagreement).</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>What you will do</h3>
+        <ul>
+          <li>Read a short seeker profile and a truncated public job advertisement.</li>
+          <li>Assign a relevance grade 0–3 for each pair (100 items total).</li>
+          <li>Mark “evidence unclear” when the excerpt does not support a confident rule check.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Coding scale</h3>
+        <div class="scale">
+          <div><b>0 — No fit</b> Clear mismatch, or hard constraint fails.</div>
+          <div><b>1 — Weak</b> Partial overlap; major gaps remain.</div>
+          <div><b>2 — Good</b> Plausible match with minor gaps.</div>
+          <div><b>3 — Excellent</b> Strong match on role and applicable rules.</div>
         </div>
-      </form>
-      <p class="lead" style="margin-top:14px;font-size:.88rem">Scale: <b>0</b> No fit · <b>1</b> Weak · <b>2</b> Good · <b>3</b> Excellent. If city, seniority, language, or visa clearly fails the rule → choose <b>0</b>.</p>
-      <p class="lead" style="margin-top:8px;font-size:.82rem">Your name is used only to attribute labels in the thesis appendix. Job ads are public listings, truncated for speed.</p>
+        <p style="margin:8px 0 0">Hard constraints (seniority, language, location, visa): if the ad clearly fails the stated rule, assign <b>0</b> even if skills look related.</p>
+      </div>
+      <div class="box">
+        <h3>Data use &amp; privacy</h3>
+        <ul>
+          <li>Collected: your name, optional email, timestamps, and grades.</li>
+          <li>Use: thesis appendix / methods section (rater attribution) and agreement statistics.</li>
+          <li>Job texts are public listings, truncated for this instrument.</li>
+          <li>Participation is voluntary; you may stop at any time. Progress is stored only in this browser until you submit.</li>
+          <li>On submit, answers are emailed to the researcher and a JSON copy is downloaded to your device.</li>
+        </ul>
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" id="consentCheck" />
+        <span>I have read the information above. I am 18 or older and agree to participate as an independent second rater under protocol DF-SR-2026-10.</span>
+      </label>
+      <div class="btnrow">
+        <button class="btn-primary" type="button" id="consentBtn" disabled>Continue to rater details</button>
+      </div>
+      <p class="footnote">Investigator: Ritesh Jadhav · M.Sc. Data Science thesis · DataForge case study. Contact via the email you may optionally leave, or the invitation message.</p>
     </div>
   </section>
 
-  <!-- STEP 1: labeling -->
+  <!-- 1 Identity -->
+  <section id="welcome" class="screen">
+    <div class="panel">
+      <div class="steps">
+        <span class="done">1 · Consent</span>
+        <span class="active">2 · Rater</span>
+        <span>3 · Label</span>
+        <span>4 · Review</span>
+      </div>
+      <h2 class="hero-title">Rater identification</h2>
+      <p class="lead">Name is required so labels can be attributed in the study record. Email is optional.</p>
+      <form id="idForm">
+        <label class="field" for="firstName">First name</label>
+        <input id="firstName" name="firstName" type="text" required autocomplete="given-name" />
+        <label class="field" for="lastName">Last name</label>
+        <input id="lastName" name="lastName" type="text" required autocomplete="family-name" />
+        <label class="field" for="email">Email (optional)</label>
+        <input id="email" name="email" type="email" autocomplete="email" placeholder="optional" />
+        <div class="btnrow">
+          <button class="btn-ghost" type="button" id="backConsent">Back</button>
+          <button class="btn-primary" type="submit">Begin labeling</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- 2 Labeling -->
   <section id="label" class="screen">
     <div class="panel">
       <div class="steps">
-        <span class="done">1 · Name</span>
-        <span class="active">2 · Label jobs</span>
-        <span>3 · Submit</span>
+        <span class="done">1 · Consent</span>
+        <span class="done">2 · Rater</span>
+        <span class="active">3 · Label</span>
+        <span>4 · Review</span>
       </div>
       <div class="meta">
         <span id="stepLabel">Profile 1</span>
@@ -221,64 +295,76 @@ button {
       <div class="job">
         <h3 id="jobTitle"></h3>
         <p class="sub" id="jobSub"></p>
-        <p id="jobText" style="line-height:1.5;margin:0"></p>
+        <p class="job-text" id="jobText"></p>
         <div class="grades" id="gradeBtns">
           <button type="button" data-g="0">0<small>No fit</small></button>
           <button type="button" data-g="1">1<small>Weak</small></button>
           <button type="button" data-g="2">2<small>Good</small></button>
-          <button type="button" data-g="3">3<small>Great</small></button>
+          <button type="button" data-g="3">3<small>Excellent</small></button>
         </div>
-        <label class="chk"><input type="checkbox" id="unclear" /> Rule is unclear in this ad</label>
+        <label class="chk"><input type="checkbox" id="unclear" /> Evidence for the rule is unclear in this excerpt</label>
         <div class="btnrow">
-          <button class="btn-ghost" type="button" id="backBtn">Back</button>
-          <button class="btn-primary" type="button" id="nextBtn" disabled>Next</button>
+          <button class="btn-ghost" type="button" id="backBtn">Previous</button>
+          <button class="btn-primary" type="button" id="nextBtn" disabled>Save &amp; next</button>
         </div>
-        <p class="lead" style="margin-top:12px;font-size:.82rem">Keys: 0–3 grade · U unclear · Enter next</p>
+        <p class="lead" style="margin-top:12px;font-size:.8rem">Keyboard: 0–3 grade · U unclear · Enter next</p>
       </div>
     </div>
   </section>
 
-  <!-- STEP 2: review + submit -->
+  <!-- 3 Review + submit -->
   <section id="submit" class="screen">
     <div class="panel">
       <div class="steps">
-        <span class="done">1 · Name</span>
-        <span class="done">2 · Label jobs</span>
-        <span class="active">3 · Submit</span>
+        <span class="done">1 · Consent</span>
+        <span class="done">2 · Rater</span>
+        <span class="done">3 · Label</span>
+        <span class="active">4 · Review</span>
       </div>
-      <h2 class="hero-title">Nice work — send your answers</h2>
-      <p class="lead" id="submitLead">Review and submit the form. Ritesh gets a copy by email, and you also download a backup file.</p>
+      <h2 class="hero-title">Review and submit</h2>
+      <p class="lead" id="submitLead">Confirm completeness, then submit. A JSON archive downloads automatically; the researcher also receives the payload by email.</p>
       <div class="scoreboard">
-        <div><b id="statTotal">0</b> answers</div>
+        <div><b id="statTotal">0</b> labeled</div>
+        <div><b id="statExpected">100</b> expected</div>
         <div><b id="statName">—</b> rater</div>
       </div>
+      <div class="review-wrap">
+        <table class="review" id="reviewTable">
+          <thead><tr><th>#</th><th>Category</th><th>Job</th><th>Grade</th><th>Unclear</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
       <div class="btnrow">
-        <button class="btn-primary" type="button" id="submitBtn">Submit answers</button>
-        <button class="btn-ghost" type="button" id="dlBtn">Download backup</button>
+        <button class="btn-ghost" type="button" id="editBtn">Return to labels</button>
+        <button class="btn-ghost" type="button" id="dlBtn">Download JSON</button>
+        <button class="btn-primary" type="button" id="submitBtn">Submit instrument</button>
       </div>
       <div class="flash" id="flash"></div>
+      <p class="footnote">Submission includes protocol id, version, consent time, duration, and all grades. Incomplete sets can still be submitted if you must stop early; note this to the researcher.</p>
     </div>
   </section>
 
   <section id="thanks" class="screen">
     <div class="panel">
-      <h2 class="hero-title">Submitted — thank you!</h2>
-      <p class="lead">Your labels are saved. You can close this page.</p>
+      <h2 class="hero-title">Submission recorded</h2>
+      <p class="lead">Thank you. Your independent labels have been transmitted and a local JSON copy was saved. You may close this page.</p>
       <div class="btnrow">
-        <button class="btn-ghost" type="button" id="dlBtn2">Download my copy again</button>
+        <button class="btn-ghost" type="button" id="dlBtn2">Download JSON again</button>
       </div>
+      <p class="footnote">Protocol DF-SR-2026-10 v1.1</p>
     </div>
   </section>
 </div>
-<div class="confetti" id="confetti"></div>
 
 <script>
-const PACK = [{"query_id": "final_skills_01", "category": "skills", "profile": "Data Analyst Python SQL", "notes": "Early career. Python, SQL, dashboards.", "rule": null, "tip": "Grade skills & role fit only.", "jobs": [{"job_id": "sem_databricks_new-business-enterprise-account-executive-public-sector_london", "title": "New Business Enterprise Account Executive (Public Sector)", "company": "databricks", "location": "London", "text": "SLSQ128R110 Do you want to help solve the world’s toughest problems with Data and AI? That’s what we do every day at Databricks. Reporting to the Head of Public Sector - Growth, you’ll partner with a team of accomplished"}, {"job_id": "sem_affirm_content-designer-ii_remote-uk", "title": "Content Designer II", "company": "Affirm", "location": "Remote UK", "text": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. At Affirm, we’re reimagining how people access and exper"}, {"job_id": "sem_vercel_head-of-solutions-architecture-emea_hybrid-london-berlin", "title": "Head of Solutions Architecture, EMEA", "company": "Vercel", "location": "Hybrid - London, Berlin", "text": "About Vercel: Vercel is the agentic infrastructure company, freeing people and agents to ship what's next. For more than a decade we've helped builders move from idea to production with speed, security, and exceptional developer exper"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_doctolib-gh_medical-data-intern-x-f-m_berlin-berlin-germany", "title": "Medical Data Intern (x/f/m)", "company": "Doctolib GH", "location": "Berlin, Berlin, Germany", "text": "Medical Data Intern (x/f/m) Set a new pulse for healthcare! We are looking for a Medical Data Intern to join the Terminology and Ontology team within the Medical Excellence department at Doctolib in Berl"}, {"job_id": "sem_pix4d_junior-business-data-analyst_lausanne-switzerland", "title": "Junior Business Data Analyst", "company": "Pix4D", "location": "Lausanne, Switzerland", "text": "PIX4D is seeking a talented Business Data Analyst to bridge Finance, Product Management and Commercial Operations (Sales and Marketing), develop complex analytical tools to drive strategic decisions and optimize processes. You will be a member of PIX4D’s dynamic Finance team, in a hybrid work env"}, {"job_id": "sem_wolt_english-speaking-support-associate-part-time-remote_belgrade-savski-venac-serbia", "title": "English speaking Support Associate (Part-Time, Remote)", "company": "Wolt", "location": "Belgrade - Savski Venac, Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_elastic_senior-software-engineer-integrations-3p-platform_portugal", "title": "Senior Software Engineer - Integrations 3P - Platform", "company": "Elastic", "location": "Portugal", "text": "Elastic, the Search AI Company, enables everyone to find the answers they need in real time, using all their data, at scale — unleashing the potential of businesses and people. The Elastic Search AI Platform, used by more than 50% of the Fortune 500, brings together the"}, {"job_id": "sem_checkatrade_sales-evergreen_moorgate-london", "title": "Sales Evergreen", "company": "Checkatrade", "location": "Moorgate London", "text": "Powering Great Work We started as the place to find a trusted trade. Now, as we shape the future of home improvement, we're building the tech to transform that landscape for everyone - better products, smarter data, AI where"}, {"job_id": "sem_reddit_trust-and-safety-policy-ads-policy-lead-europe_remote-united-kingdom", "title": "Trust and Safety Policy, Ads Policy, Lead (Europe)", "company": "Reddit", "location": "Remote - United Kingdom", "text": "No description provided."}]}, {"query_id": "final_skills_02", "category": "skills", "profile": "Data Engineer Python AWS SQL", "notes": "Data engineering interest. Python, SQL, cloud basics.", "rule": null, "tip": "Grade skills & role fit only.", "jobs": [{"job_id": "sem_chainguard_senior-customer-success-manager-germany_germany", "title": "Senior Customer Success Manager - Germany", "company": "Chainguard", "location": "Germany", "text": "Chainguard is the trusted source for open source. By delivering hardened, secure, and production-ready builds of all the open source software engineers and AI agents rely on, Chainguard helps organizations build fa"}, {"job_id": "sem_databricks_startup-core-account-executive_stockholm-sweden", "title": "Startup Core Account Executive", "company": "Databricks", "location": "Stockholm, Sweden", "text": "SLSQ128R101 Want to join a fast-growth pre-IPO organisation that could define the next stage of your career? Reporting to the Manager for Startups as an Account Executive at Databricks, you come with relevant experience selling to Start-up and Mid-Market accou"}, {"job_id": "sem_figma_software-engineer-intern-london-united-kingdom-summer-2027_london-england", "title": "Software Engineer Intern (London, United Kingdom) (Summer 2027)", "company": "Figma", "location": "London, England", "text": "Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you're brainstorming, creating a prototype, translating designs into code, or iterating with AI. From i"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_databricks_staff-product-manager_berlin-germany", "title": "Staff Product Manager", "company": "Databricks", "location": "Berlin, Germany", "text": "P-1345 You will be the Product Manager for the Databricks Runtime team in Berlin . The team works at the intersection of query processing, storage, infrastructure and data governance, all key components of the Databricks data intelligence platform. As the Product Manager, y"}, {"job_id": "sem_raisin_hr-application-manager_berlin-berlin-germany", "title": "HR Application Manager (m/f/d)", "company": "Raisin", "location": "Berlin, Berlin, Germany", "text": "Raisin is the world’s leading platform for savings and investment products. Founded in 2012, the FinTech connects consumers with banks in the EU, the UK and the US. This gives"}, {"job_id": "sem_n26_senior-crm-specialist_berlin", "title": "Senior CRM Specialist", "company": "N26", "location": "Berlin", "text": "About the opportunity As a Senior CRM Specialist (Engagement & Retention), you’ll own the customer journey from month two onwards. You’ll play a pivotal role in keeping our millions of users active, engaged, and thriving within the N26 ecosystem. This is a true 50/50 h"}, {"job_id": "sem_clickhouse_principal-database-performance-engineer-core-engineering-c_germany", "title": "Principal Database Performance Engineer - Core Engineering (C++)", "company": "ClickHouse", "location": "Germany", "text": "NOTE: this role can be located anywhere ClickHouse has a hiring presence. ClickHouse — Core Analytics Database About the Role: ClickHouse is looking for a Principal Database Performance Engineer to join the team behind our high-performance analytics database service. In this role, you will drive per"}, {"job_id": "sem_getyourguide_senior-analyst-fp-a-revenue-planning_berlin", "title": "Senior Analyst, FP&A Revenue Planning", "company": "GetYourGuide", "location": "Berlin", "text": "Change the way the world travels Join the GetYourGuide journey to connect people with unforgettable travel experiences around the world. Millions look to us for unique activities they can trust, and it’s all powered by our commitment to make every single journey extraord"}, {"job_id": "sem_databricks_new-business-enterprise-account-executive-public-sector_london", "title": "New Business Enterprise Account Executive (Public Sector)", "company": "databricks", "location": "London", "text": "SLSQ128R110 Do you want to help solve the world’s toughest problems with Data and AI? That’s what we do every day at Databricks. Reporting to the Head of Public Sector - Growth, you’ll partner with a team of accomplished"}]}, {"query_id": "final_seniority_01", "category": "seniority", "profile": "Werkstudent Data Analytics", "notes": "Needs Werkstudent / working-student role.", "rule": "working student", "tip": "Must match level: working student.", "jobs": [{"job_id": "sem_sumup_performance-marketing-working-student-talent-acquisition_berlin-germany", "title": "Performance Marketing Working Student – Talent Acquisition", "company": "SumUp", "location": "Berlin, Germany", "text": "Performance Marketing Working Student – Talent Acquisition Location: Berlin Employment type: Working student, 20 hours/week Take a look at where you'll be based: watch the Berlin o"}, {"job_id": "sem_sumup_senior-hardware-engineer_berlin-germany", "title": "Senior Hardware Engineer", "company": "SumUp", "location": "Berlin, Germany", "text": "Team description You've probably paid for a coffee or tapped your card at a hairdresser using one of our card readers already. Our Hardware team designs and builds the beautifully engineered payment devices and accessories that let millions of small merchan"}, {"job_id": "sem_sumup_senior-backend-engineer-martech_berlin-germany", "title": "Senior Backend Engineer - MarTech", "company": "SumUp", "location": "Berlin, Germany", "text": "About the team: The MarTech team builds the marketing and growth systems that help SumUp reach more merchants around the world. We combine backend engineering, data engineering, data science and external marketing platforms to create reliable, scalable solutions that impro"}, {"job_id": "sem_databricks_staff-forward-deployed-engineer_berlin-germany-munich-germany", "title": "Staff Forward Deployed Engineer", "company": "Databricks", "location": "Berlin, Germany; Munich, Germany", "text": "CSQ427R243 As a Forward Deployed Engineer (FDE) you will work with customers to build and productionize solutions to their data & AI challenges using the Databricks platform. You will own the architecture, lead design decisions, and implement end-to-end systems spannin"}, {"job_id": "sem_hellofresh_werkstudent-rezeptmanagement-all-genders_berlin-berlin-germany", "title": "Werkstudent Rezeptmanagement (all genders)", "company": "HelloFresh", "location": "Berlin, Berlin, Germany", "text": "Deine Rolle Als Werkstudent/in im Rezeptmanagement unterstützt du unser Rezeptentwicklungsteam bei der Pflege und Verwaltung kulinarischer Daten. Dabei arbeitest du eng mit dem Culinary-Operations-Team zusammen und sorgst mit einem guten Blick fürs Detail, Struktur und S"}, {"job_id": "sem_sonymusicentertainment_werkstudent-praktikant-legal-business-affairs_europe-berlin", "title": "Werkstudent / Praktikant Legal & Business Affairs (m/w/d)", "company": "sonymusicentertainment", "location": "Europe, Berlin", "text": "(Berlin, ab November 2026 bis Februar 2027, als Werkstudent:in 20h pro Woche oder als Praktikant:in 38,5h pro Woche) Du interessierst dich für den legal stuff"}, {"job_id": "sem_getyourguide_senior-analyst-fp-a-revenue-planning_berlin", "title": "Senior Analyst, FP&A Revenue Planning", "company": "GetYourGuide", "location": "Berlin", "text": "Change the way the world travels Join the GetYourGuide journey to connect people with unforgettable travel experiences around the world. Millions look to us for unique activities they can trust, and it’s all powered by our commitment to make every single journey extraord"}, {"job_id": "sem_figma_software-engineer-intern-london-united-kingdom-summer-2027_london-england", "title": "Software Engineer Intern (London, United Kingdom) (Summer 2027)", "company": "Figma", "location": "London, England", "text": "Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you're brainstorming, creating a prototype, translating designs into code, or iterating with AI. From i"}, {"job_id": "sem_hellofresh_demand-planner-f-m-x_berlin-berlin-germany", "title": "Demand Planner (f/m/x)", "company": "HelloFresh", "location": "Berlin, Berlin, Germany", "text": "The role: What's in the Box We're looking for a Demand Planner who is comfortable working with data and is eager to develop their forecasting skills in a fast-paced supply chain environment. This is a hands-on analytical role: you'll spend your time writing SQL, building r"}, {"job_id": "sem_certara_business-development-representative_worldwide-remote", "title": "Business Development Representative", "company": "Certara", "location": "Worldwide Remote", "text": "Overview About Certara Certara accelerates the potential of bringing medicines to market and to patients using biosimulation software, technology, and servi"}]}, {"query_id": "final_seniority_02", "category": "seniority", "profile": "Internship Data Engineering", "notes": "Needs internship / Praktikum.", "rule": "intern", "tip": "Must match level: intern.", "jobs": [{"job_id": "sem_sonymusicentertainment_werkstudent-praktikant-legal-business-affairs_europe-berlin", "title": "Werkstudent / Praktikant Legal & Business Affairs (m/w/d)", "company": "sonymusicentertainment", "location": "Europe, Berlin", "text": "(Berlin, ab November 2026 bis Februar 2027, als Werkstudent:in 20h pro Woche oder als Praktikant:in 38,5h pro Woche) Du interessierst dich für den legal stuff"}, {"job_id": "sem_doctolib-gh_senior-machine-learning-engineer-orchestration-applied-ai-llms-x-f-m_paris-paris-france", "title": "Senior Machine Learning Engineer - Orchestration - Applied AI & LLMs (x/f/m)", "company": "Doctolib GH", "location": "Paris, Paris, France", "text": "Set a new pulse for healthcare! We are looking for a"}, {"job_id": "sem_raisin_ai-platform-engineer_berlin-berlin-germany", "title": "AI Platform Engineer (m/f/d)", "company": "Raisin", "location": "Berlin, Berlin, Germany", "text": "Raisin is the world’s leading platform for savings and investment products. Founded in 2012, the FinTech connects consumers with banks in the EU, the UK and the US. This gives"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_doctolib-gh_medical-data-intern-x-f-m_berlin-berlin-germany", "title": "Medical Data Intern (x/f/m)", "company": "Doctolib GH", "location": "Berlin, Berlin, Germany", "text": "Medical Data Intern (x/f/m) Set a new pulse for healthcare! We are looking for a Medical Data Intern to join the Terminology and Ontology team within the Medical Excellence department at Doctolib in Berl"}, {"job_id": "sem_databricks_software-engineering-intern-2027-start-berlin_berlin-germany", "title": "Software Engineering Intern (2027 Start) - Berlin", "company": "Databricks", "location": "Berlin, Germany", "text": "P-968 At Databricks, we are passionate about helping data teams solve the world's toughest problems — from making the next mode of transportation a reality to accelerating the development of medical breakthroughs. We do this by building and running the world's best data an"}, {"job_id": "sem_thoughtworks_agentic-ai-principal_amsterdam", "title": "Agentic AI Principal", "company": "thoughtworks", "location": "Amsterdam", "text": "We are looking for an Agentic AI Principal to act as a senior technical authority and trusted client advisor for complex agentic AI transformation in Germany, the Netherlands and the wider DACH region. Operating at Princip"}, {"job_id": "sem_mayer-beschl-ge_teamleitung-data-analytics_at-at323", "title": "Teamleitung Data & Analytics (m/w/d)", "company": "Mayer & Co Beschläge", "location": "AT (AT323)", "text": "1 Teamleitung Data & Analytics (m/w/d) Vollzeit ab sofort Möchten Sie ein Data-&-Analytics-Team fachlich und disziplinarisch führen und die Zukunft datengetriebener Entscheidungen aktiv mitgestalten? Begeistert es Sie, aus komplexen Datenstrukturen nachhaltigen Mehrwert für das Unternehmen zu schaff"}, {"job_id": "sem_palantir-lever_software-engineer-internship-query-engines_london-united-kingdom", "title": "Software Engineer, Internship - Query Engines", "company": "Palantir Lever", "location": "London, United Kingdom", "text": "A World-Changing Company Palantir builds the world’s leading software for data-driven decisions and operations. By bringing the right data to the people who need it, our platforms empower our partners to develop lifesaving drugs, forecast supply chain disruptions, locate missing children, and more."}, {"job_id": "sem_flix_triebfahrzeugf-hrer-als-pr-fer_berlin-cologne-hamburg", "title": "Triebfahrzeugführer als Prüfer (m/w/d)", "company": "Flix", "location": "Berlin; Cologne; Hamburg", "text": "Bei FlixTrain gestaltest du die Zukunft der Mobilität aktiv mit. Wir bieten dir nicht nur sichere Arbeitsplätze sowie attraktive Zusatzleistungen, sondern auch ein dynamisches, internationales Umfeld, in dem deine Ideen"}]}, {"query_id": "final_language_01", "category": "language", "profile": "Data role English working language", "notes": "Needs English as working language.", "rule": "English", "tip": "Language must fit: English.", "jobs": [{"job_id": "sem_wolt_english-and-romanian-speaking-support-associate-remote-work_timisoara-romania", "title": "English and Romanian Speaking Support Associate - Remote work", "company": "Wolt", "location": "Timisoara, Romania", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_certara_business-development-representative_worldwide-remote", "title": "Business Development Representative", "company": "Certara", "location": "Worldwide Remote", "text": "Overview About Certara Certara accelerates the potential of bringing medicines to market and to patients using biosimulation software, technology, and servi"}, {"job_id": "sem_wolt_english-speaking-support-associate-full-time-remote_remote-serbia", "title": "English-Speaking Support Associate (Full-time - Remote)", "company": "Wolt", "location": "Remote; Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_databricks_software-engineering-intern-2027-start-berlin_berlin-germany", "title": "Software Engineering Intern (2027 Start) - Berlin", "company": "Databricks", "location": "Berlin, Germany", "text": "P-968 At Databricks, we are passionate about helping data teams solve the world's toughest problems — from making the next mode of transportation a reality to accelerating the development of medical breakthroughs. We do this by building and running the world's best data an"}, {"job_id": "sem_sandoz_qc-analyst-ii-d-w-m_at-at335", "title": "QC Analyst II (d/w/m)", "company": "Sandoz", "location": "AT (AT335)", "text": "1 QC Analyst II (d/w/m) Qualität steht für Sie an erster Stelle?In dieser Position übernehmen Sie eine wichtige Rolle bei der Sicherstellung unserer Qualitätsstandards und unterstützen dabei, dass unsere Arzneimittel den hohen regulatorischen Anforderungen entsprechen. Sie arbeiten mit modernen Qual"}, {"job_id": "sem_wolt_support-associate-kundenservice-in-vollzeit-englisch-c1-und-deutsch-c1_berlin-germany", "title": "Support Associate / Kundenservice (m/w/d) in Vollzeit (Englisch C1 und Deutsch C1)", "company": "Wolt", "location": "Berlin, Germany", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_clickhouse_principal-database-performance-engineer-core-engineering-c_germany", "title": "Principal Database Performance Engineer - Core Engineering (C++)", "company": "ClickHouse", "location": "Germany", "text": "NOTE: this role can be located anywhere ClickHouse has a hiring presence. ClickHouse — Core Analytics Database About the Role: ClickHouse is looking for a Principal Database Performance Engineer to join the team behind our high-performance analytics database service. In this role, you will drive per"}, {"job_id": "sem_wolt_english-speaking-support-associate-part-time-remote_belgrade-savski-venac-serbia", "title": "English speaking Support Associate (Part-Time, Remote)", "company": "Wolt", "location": "Belgrade - Savski Venac, Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_sonarsource_staff-software-engineer-java-billing_geneva", "title": "Staff Software Engineer (Java) - Billing", "company": "Sonarsource", "location": "Geneva", "text": "Who is Sonar? Sonar is driving the future of agent-centric software development. As the leader in AI code verification and governance, we solve a critical problem: ensuring that software generated by AI-assisted developers or autonomous agents is reliable, secure,"}, {"job_id": "sem_sumup_senior-hardware-engineer_berlin-germany", "title": "Senior Hardware Engineer", "company": "SumUp", "location": "Berlin, Germany", "text": "Team description You've probably paid for a coffee or tapped your card at a hairdresser using one of our card readers already. Our Hardware team designs and builds the beautifully engineered payment devices and accessories that let millions of small merchan"}]}, {"query_id": "final_language_02", "category": "language", "profile": "Data role German required", "notes": "Needs German (Deutsch) in the job.", "rule": "German", "tip": "Language must fit: German.", "jobs": [{"job_id": "sem_itech-consult_product-safety-specialist_ch-ch031", "title": "Product Safety Specialist", "company": "ITech Consult AG", "location": "CH (CH031)", "text": "**Product Safety Specialist****: Product Safety / Data Management Systems /****Data Integrity / Governance / Material Declaration / Product Stewardship / EHSM / S4 HANA / REACH / RoHS/ TSCA / Prop 65 /** **English / Deutsch****Background:**We are looking for a Material Declaration Expert to ensure o"}, {"job_id": "sem_reddit_trust-and-safety-policy-ads-policy-lead-europe_remote-united-kingdom", "title": "Trust and Safety Policy, Ads Policy, Lead (Europe)", "company": "Reddit", "location": "Remote - United Kingdom", "text": "No description provided."}, {"job_id": "sem_vercel_business-development-representative-startups_hybrid-london", "title": "Business Development Representative, Startups", "company": "Vercel", "location": "Hybrid - London", "text": "About Vercel: Vercel is the agentic infrastructure company, freeing people and agents to ship what's next. For more than a decade we've helped builders move from idea to production with speed, security, and exceptional developer exper"}, {"job_id": "sem_sumup_senior-hardware-engineer_berlin-germany", "title": "Senior Hardware Engineer", "company": "SumUp", "location": "Berlin, Germany", "text": "Team description You've probably paid for a coffee or tapped your card at a hairdresser using one of our card readers already. Our Hardware team designs and builds the beautifully engineered payment devices and accessories that let millions of small merchan"}, {"job_id": "sem_databricks_staff-product-manager_berlin-germany", "title": "Staff Product Manager", "company": "Databricks", "location": "Berlin, Germany", "text": "P-1345 You will be the Product Manager for the Databricks Runtime team in Berlin . The team works at the intersection of query processing, storage, infrastructure and data governance, all key components of the Databricks data intelligence platform. As the Product Manager, y"}, {"job_id": "sem_7nxt_crm-manager-lifecycle-engagement_berlin", "title": "CRM Manager – Lifecycle & Engagement (f/m/d)", "company": "7NXT GmbH", "location": "Berlin", "text": "CRM Manager – Lifecycle & Engagement (f/m/d) – 7NXT Health Group The essentials Team: CRM & Marketing Start date: As soon as possible Location: Berlin — hybrid Working language: German & English fluency Salary band: Shared before"}, {"job_id": "sem_wolt_support-associate-fulltime-student-ljubljana_ljubljana-slovenia", "title": "Support Associate - Fulltime/Student- Ljubljana", "company": "Wolt", "location": "Ljubljana, Slovenia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_stripe_forward-deployed-security-engineer_dublin", "title": "Forward Deployed Security Engineer", "company": "Stripe", "location": "Dublin", "text": "Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies - from the world’s largest enterprises to the most ambitious startups - use Stripe to accept payments,"}, {"job_id": "sem_wolt_english-speaking-support-associate-part-time-remote_belgrade-savski-venac-serbia", "title": "English speaking Support Associate (Part-Time, Remote)", "company": "Wolt", "location": "Belgrade - Savski Venac, Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_doctolib-gh_medical-data-intern-x-f-m_berlin-berlin-germany", "title": "Medical Data Intern (x/f/m)", "company": "Doctolib GH", "location": "Berlin, Berlin, Germany", "text": "Medical Data Intern (x/f/m) Set a new pulse for healthcare! We are looking for a Medical Data Intern to join the Terminology and Ontology team within the Medical Excellence department at Doctolib in Berl"}]}, {"query_id": "final_location_01", "category": "location", "profile": "Data Analyst Berlin", "notes": "Must be Berlin.", "rule": "Berlin", "tip": "Place must fit: Berlin.", "jobs": [{"job_id": "sem_box_benefits-analyst_warsaw-poland", "title": "Benefits Analyst", "company": "Box", "location": "Warsaw, Poland", "text": "What is Box? Box (NYSE:BOX) is the leader in Intelligent Content Management. Our platform enables o"}, {"job_id": "sem_sumup_performance-marketing-working-student-talent-acquisition_berlin-germany", "title": "Performance Marketing Working Student – Talent Acquisition", "company": "SumUp", "location": "Berlin, Germany", "text": "Performance Marketing Working Student – Talent Acquisition Location: Berlin Employment type: Working student, 20 hours/week Take a look at where you'll be based: watch the Berlin o"}, {"job_id": "sem_vercel_partner-lead-emea_hybrid-london-berlin", "title": "Partner Lead, EMEA", "company": "Vercel", "location": "Hybrid - London, Berlin", "text": "About Vercel: Vercel is the agentic infrastructure company, freeing people and agents to ship what's next. For more than a decade we've helped builders move from idea to production with speed, security, and exceptional developer exper"}, {"job_id": "sem_wolt_support-associate-kundenservice-in-teilzeit-englisch-c1-und-deutsch-c1_berlin-germany", "title": "Support Associate / Kundenservice (m/w/d) in Teilzeit (Englisch C1 und Deutsch C1)", "company": "Wolt", "location": "Berlin, Germany", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_sonymusicentertainment_werkstudent-praktikant-legal-business-affairs_europe-berlin", "title": "Werkstudent / Praktikant Legal & Business Affairs (m/w/d)", "company": "sonymusicentertainment", "location": "Europe, Berlin", "text": "(Berlin, ab November 2026 bis Februar 2027, als Werkstudent:in 20h pro Woche oder als Praktikant:in 38,5h pro Woche) Du interessierst dich für den legal stuff"}, {"job_id": "sem_databricks_software-engineering-intern-2027-start-berlin_berlin-germany", "title": "Software Engineering Intern (2027 Start) - Berlin", "company": "Databricks", "location": "Berlin, Germany", "text": "P-968 At Databricks, we are passionate about helping data teams solve the world's toughest problems — from making the next mode of transportation a reality to accelerating the development of medical breakthroughs. We do this by building and running the world's best data an"}, {"job_id": "sem_wolt_support-associate-kundenservice-in-vollzeit-englisch-c1-und-deutsch-c1_berlin-germany", "title": "Support Associate / Kundenservice (m/w/d) in Vollzeit (Englisch C1 und Deutsch C1)", "company": "Wolt", "location": "Berlin, Germany", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_apaleo_senior-software-engineer-net_munich-bavaria-germany", "title": "Senior Software Engineer (.NET) (f/m/d)", "company": "Apaleo", "location": "Munich, Bavaria, Germany", "text": "Join Apaleo and Shape the Future of Hospitality Tech! Apaleo is the world's most open, API-first property management platform powering the next generation of hospitality operations. Its modular, AI-powered infrastructure enables hoteliers to customise their tech stack, automate routine w"}, {"job_id": "sem_raisin_ai-platform-engineer_berlin-berlin-germany", "title": "AI Platform Engineer (m/f/d)", "company": "Raisin", "location": "Berlin, Berlin, Germany", "text": "Raisin is the world’s leading platform for savings and investment products. Founded in 2012, the FinTech connects consumers with banks in the EU, the UK and the US. This gives"}, {"job_id": "sem_coalition-technologies_freelance-copywriter_worldwide", "title": "Freelance Copywriter", "company": "Coalition Technologies", "location": "Worldwide", "text": "CT Marketing Agency is seeking skilled Freelance Copywriters to write high-quality, SEO-driven content for eCommerce and lead generation websites. This is a freelance, project-based writing role. The ideal candidate has excellent English writing skills, strong research ability, an"}]}, {"query_id": "final_location_02", "category": "location", "profile": "Data Engineer Remote", "notes": "Remote role.", "rule": "remote", "tip": "Place must fit: remote.", "jobs": [{"job_id": "sem_datafold_forward-deployed-data-engineer-eu_europe", "title": "Forward Deployed Data Engineer - EU", "company": "Datafold", "location": "Europe", "text": "ABOUT DATAFOLD Datafold is the data engineering automation platform. A major part of our business is delivering large-scale data engineering projects such as data platform migrations with AI, at fixed price and guaranteed timeline. We are not a typical services provider or SI – we are a venture-back"}, {"job_id": "sem_databricks_staff-product-manager_berlin-germany", "title": "Staff Product Manager", "company": "Databricks", "location": "Berlin, Germany", "text": "P-1345 You will be the Product Manager for the Databricks Runtime team in Berlin . The team works at the intersection of query processing, storage, infrastructure and data governance, all key components of the Databricks data intelligence platform. As the Product Manager, y"}, {"job_id": "sem_wolt_serbian-speaking-support-associate-part-time-belgrade_belgrade-serbia", "title": "Serbian-Speaking Support Associate (Part-Time, Belgrade)", "company": "Wolt", "location": "Belgrade, Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_headquarters_finance-accounting-associate_worldwide-remote", "title": "Finance & Accounting Associate", "company": "HeadQuarters", "location": "Worldwide Remote", "text": "About Us HeadQuarters is a global start-up dedicated to empowering U.S. cannabis companies through expert support in finance, sales, operations, and logistics. Operating at the intersection of innovation and execution, we partner"}, {"job_id": "sem_affirm_analyst-ii-credit_remote-uk", "title": "Analyst II, Credit", "company": "Affirm", "location": "Remote UK", "text": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. As a Merchant Risk Analyst, you will assess financial ri"}, {"job_id": "sem_fivetran_senior-account-executive-enterprise_remote-germany-emea", "title": "Senior Account Executive, Enterprise", "company": "Fivetran", "location": "Remote, Germany, EMEA", "text": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’r"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_itech-consult_product-safety-specialist_ch-ch031", "title": "Product Safety Specialist", "company": "ITech Consult AG", "location": "CH (CH031)", "text": "**Product Safety Specialist****: Product Safety / Data Management Systems /****Data Integrity / Governance / Material Declaration / Product Stewardship / EHSM / S4 HANA / REACH / RoHS/ TSCA / Prop 65 /** **English / Deutsch****Background:**We are looking for a Material Declaration Expert to ensure o"}, {"job_id": "sem_wolt_support-associate-kundenservice-in-vollzeit-englisch-c1-und-deutsch-c1_berlin-germany", "title": "Support Associate / Kundenservice (m/w/d) in Vollzeit (Englisch C1 und Deutsch C1)", "company": "Wolt", "location": "Berlin, Germany", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_doximity_senior-software-engineer-data_latam-canada-usa", "title": "Senior Software Engineer, Data", "company": "Doximity", "location": "LATAM,  Canada,  USA", "text": "Location : This role is remote in the United States, Canada, or some countries in South America. Visa sponsorship is not available for this role. Doximity is t"}]}, {"query_id": "final_visa_01", "category": "visa", "profile": "Data analyst visa sponsorship", "notes": "Needs visa sponsorship.", "rule": "visa sponsorship", "tip": "Visa need: visa sponsorship.", "jobs": [{"job_id": "sem_doximity_senior-software-engineer-data_latam-canada-usa", "title": "Senior Software Engineer, Data", "company": "Doximity", "location": "LATAM,  Canada,  USA", "text": "Location : This role is remote in the United States, Canada, or some countries in South America. Visa sponsorship is not available for this role. Doximity is t"}, {"job_id": "sem_raisin_ai-platform-engineer_berlin-berlin-germany", "title": "AI Platform Engineer (m/f/d)", "company": "Raisin", "location": "Berlin, Berlin, Germany", "text": "Raisin is the world’s leading platform for savings and investment products. Founded in 2012, the FinTech connects consumers with banks in the EU, the UK and the US. This gives"}, {"job_id": "sem_clickhouse_principal-database-performance-engineer-core-engineering-c_germany", "title": "Principal Database Performance Engineer - Core Engineering (C++)", "company": "ClickHouse", "location": "Germany", "text": "NOTE: this role can be located anywhere ClickHouse has a hiring presence. ClickHouse — Core Analytics Database About the Role: ClickHouse is looking for a Principal Database Performance Engineer to join the team behind our high-performance analytics database service. In this role, you will drive per"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_grafana-labs_staff-technical-writer-remote-germany_germany-remote", "title": "Staff Technical Writer | Remote | Germany", "company": "Grafana Labs", "location": "Germany (Remote)", "text": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed fo"}, {"job_id": "sem_flix_triebfahrzeugf-hrer-als-pr-fer_berlin-cologne-hamburg", "title": "Triebfahrzeugführer als Prüfer (m/w/d)", "company": "Flix", "location": "Berlin; Cologne; Hamburg", "text": "Bei FlixTrain gestaltest du die Zukunft der Mobilität aktiv mit. Wir bieten dir nicht nur sichere Arbeitsplätze sowie attraktive Zusatzleistungen, sondern auch ein dynamisches, internationales Umfeld, in dem deine Ideen"}, {"job_id": "sem_sumup_senior-product-data-analyst-consumer-growth_london-england-united-kingdom", "title": "Senior Product Data Analyst- Consumer Growth", "company": "SumUp", "location": "London, England, United Kingdom", "text": "SumUp | Senior Data Analyst - Consumer Growth | London, United Kingdom Competitive salary · Office-first This role does not support Visa sponsorship and candidates must have the right to work in the UK. About the team"}, {"job_id": "sem_affirm_content-designer-ii_remote-uk", "title": "Content Designer II", "company": "Affirm", "location": "Remote UK", "text": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. At Affirm, we’re reimagining how people access and exper"}, {"job_id": "sem_wolt_english-and-romanian-speaking-support-associate-remote-work_timisoara-romania", "title": "English and Romanian Speaking Support Associate - Remote work", "company": "Wolt", "location": "Timisoara, Romania", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_wolt_english-speaking-support-associate-full-time-remote_remote-serbia", "title": "English-Speaking Support Associate (Full-time - Remote)", "company": "Wolt", "location": "Remote; Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}]}, {"query_id": "final_visa_02", "category": "visa", "profile": "Engineer Blue Card path", "notes": "Needs Blue Card / sponsorship path.", "rule": "Blue Card", "tip": "Visa need: Blue Card.", "jobs": [{"job_id": "sem_sumup_senior-product-data-analyst-consumer-growth_london-england-united-kingdom", "title": "Senior Product Data Analyst- Consumer Growth", "company": "SumUp", "location": "London, England, United Kingdom", "text": "SumUp | Senior Data Analyst - Consumer Growth | London, United Kingdom Competitive salary · Office-first This role does not support Visa sponsorship and candidates must have the right to work in the UK. About the team"}, {"job_id": "sem_junior-data-scientist-downstream-demand-forecast-value-chain_senior-user-researcher-personal-buying-experience_villeneuve-d-ascq-nord", "title": "Senior User Researcher - Personal buying experience (f/m/d)", "company": "Junior Data Scientist - Downstream Demand Forecast - Value Chain ...", "location": "Villeneuve-d'Ascq, Nord", "text": "Personal Buying experience Senior UX Researcher Job description In a nutshell &"}, {"job_id": "sem_collective-work_ing-nieur-mlops-confirm-banque-freelance-h-f_fr-fr105", "title": "Ingénieur MLOps confirmé - Banque - Freelance (H/F)", "company": "Collective.work", "location": "FR (FR105)", "text": "Taux journalier (TJM): 550CONTEXTE * Programme stratégique d'un grand groupe bancaire visant à déployer à l'échelle des solutions d'IA générative et agentique souveraines (modèles de langage français, solution low code), hébergées sur les infrastructures internes du groupe, dans un SI bancaire compl"}, {"job_id": "sem_twilio_senior-software-engineer_remote-ireland", "title": "Senior Software Engineer", "company": "Twilio", "location": "Remote - Ireland", "text": "Who we are At Twilio, we’re shaping the future of communications, all from the comfort of our homes. We deliver innovative solutions to"}, {"job_id": "sem_doximity_senior-software-engineer-data_latam-canada-usa", "title": "Senior Software Engineer, Data", "company": "Doximity", "location": "LATAM,  Canada,  USA", "text": "Location : This role is remote in the United States, Canada, or some countries in South America. Visa sponsorship is not available for this role. Doximity is t"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_commercetools_senior-search-backend-engineer-m-f-x_berlin-germany-hybrid", "title": "Senior Search Backend Engineer (m/f/x)", "company": "commercetools", "location": "Berlin, Germany (Hybrid)", "text": "No description provided."}, {"job_id": "sem_stripe_forward-deployed-security-engineer_dublin", "title": "Forward Deployed Security Engineer", "company": "Stripe", "location": "Dublin", "text": "Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies - from the world’s largest enterprises to the most ambitious startups - use Stripe to accept payments,"}, {"job_id": "sem_stripe_staff-security-engineer-abuse-control_london", "title": "Staff Security Engineer, Abuse Control", "company": "Stripe", "location": "London", "text": "Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new"}, {"job_id": "sem_merck-kgaa_software-engineer-all-genders-full-part-time-informatiker-in_de-de716", "title": "(Senior) Software Engineer (all genders, full-/part-time) (Informatiker/in)", "company": "Merck KGaA", "location": "DE (DE716)", "text": "Work Your Magic with us! Ready to explore, break barriers, and discover more? We know you’ve got big plans – so do we! Our colleagues across the globe love innovating with science and technology to enrich people’s lives with our solutions in Healthcare, Life Science, and Electronics. Together, we dr"}]}];
+const PACK = [{"query_id": "final_skills_01", "category": "skills", "profile": "Data Analyst Python SQL", "notes": "Early career. Python, SQL, dashboards.", "rule": null, "tip": "Focus: skills and role fit only (ignore location/visa unless they block the role entirely).", "jobs": [{"job_id": "sem_databricks_new-business-enterprise-account-executive-public-sector_london", "title": "New Business Enterprise Account Executive (Public Sector)", "company": "databricks", "location": "London", "text": "SLSQ128R110 Do you want to help solve the world’s toughest problems with Data and AI? That’s what we do every day at Databricks. Reporting to the Head of Public Sector - Growth, you’ll partner with a team of accomplished"}, {"job_id": "sem_affirm_content-designer-ii_remote-uk", "title": "Content Designer II", "company": "Affirm", "location": "Remote UK", "text": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. At Affirm, we’re reimagining how people access and exper"}, {"job_id": "sem_vercel_head-of-solutions-architecture-emea_hybrid-london-berlin", "title": "Head of Solutions Architecture, EMEA", "company": "Vercel", "location": "Hybrid - London, Berlin", "text": "About Vercel: Vercel is the agentic infrastructure company, freeing people and agents to ship what's next. For more than a decade we've helped builders move from idea to production with speed, security, and exceptional developer exper"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_doctolib-gh_medical-data-intern-x-f-m_berlin-berlin-germany", "title": "Medical Data Intern (x/f/m)", "company": "Doctolib GH", "location": "Berlin, Berlin, Germany", "text": "Medical Data Intern (x/f/m) Set a new pulse for healthcare! We are looking for a Medical Data Intern to join the Terminology and Ontology team within the Medical Excellence department at Doctolib in Berl"}, {"job_id": "sem_pix4d_junior-business-data-analyst_lausanne-switzerland", "title": "Junior Business Data Analyst", "company": "Pix4D", "location": "Lausanne, Switzerland", "text": "PIX4D is seeking a talented Business Data Analyst to bridge Finance, Product Management and Commercial Operations (Sales and Marketing), develop complex analytical tools to drive strategic decisions and optimize processes. You will be a member of PIX4D’s dynamic Finance team, in a hybrid work env"}, {"job_id": "sem_wolt_english-speaking-support-associate-part-time-remote_belgrade-savski-venac-serbia", "title": "English speaking Support Associate (Part-Time, Remote)", "company": "Wolt", "location": "Belgrade - Savski Venac, Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_elastic_senior-software-engineer-integrations-3p-platform_portugal", "title": "Senior Software Engineer - Integrations 3P - Platform", "company": "Elastic", "location": "Portugal", "text": "Elastic, the Search AI Company, enables everyone to find the answers they need in real time, using all their data, at scale — unleashing the potential of businesses and people. The Elastic Search AI Platform, used by more than 50% of the Fortune 500, brings together the"}, {"job_id": "sem_checkatrade_sales-evergreen_moorgate-london", "title": "Sales Evergreen", "company": "Checkatrade", "location": "Moorgate London", "text": "Powering Great Work We started as the place to find a trusted trade. Now, as we shape the future of home improvement, we're building the tech to transform that landscape for everyone - better products, smarter data, AI where"}, {"job_id": "sem_reddit_trust-and-safety-policy-ads-policy-lead-europe_remote-united-kingdom", "title": "Trust and Safety Policy, Ads Policy, Lead (Europe)", "company": "Reddit", "location": "Remote - United Kingdom", "text": "No description provided."}]}, {"query_id": "final_skills_02", "category": "skills", "profile": "Data Engineer Python AWS SQL", "notes": "Data engineering interest. Python, SQL, cloud basics.", "rule": null, "tip": "Focus: skills and role fit only (ignore location/visa unless they block the role entirely).", "jobs": [{"job_id": "sem_chainguard_senior-customer-success-manager-germany_germany", "title": "Senior Customer Success Manager - Germany", "company": "Chainguard", "location": "Germany", "text": "Chainguard is the trusted source for open source. By delivering hardened, secure, and production-ready builds of all the open source software engineers and AI agents rely on, Chainguard helps organizations build fa"}, {"job_id": "sem_databricks_startup-core-account-executive_stockholm-sweden", "title": "Startup Core Account Executive", "company": "Databricks", "location": "Stockholm, Sweden", "text": "SLSQ128R101 Want to join a fast-growth pre-IPO organisation that could define the next stage of your career? Reporting to the Manager for Startups as an Account Executive at Databricks, you come with relevant experience selling to Start-up and Mid-Market accou"}, {"job_id": "sem_figma_software-engineer-intern-london-united-kingdom-summer-2027_london-england", "title": "Software Engineer Intern (London, United Kingdom) (Summer 2027)", "company": "Figma", "location": "London, England", "text": "Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you're brainstorming, creating a prototype, translating designs into code, or iterating with AI. From i"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_databricks_staff-product-manager_berlin-germany", "title": "Staff Product Manager", "company": "Databricks", "location": "Berlin, Germany", "text": "P-1345 You will be the Product Manager for the Databricks Runtime team in Berlin . The team works at the intersection of query processing, storage, infrastructure and data governance, all key components of the Databricks data intelligence platform. As the Product Manager, y"}, {"job_id": "sem_raisin_hr-application-manager_berlin-berlin-germany", "title": "HR Application Manager (m/f/d)", "company": "Raisin", "location": "Berlin, Berlin, Germany", "text": "Raisin is the world’s leading platform for savings and investment products. Founded in 2012, the FinTech connects consumers with banks in the EU, the UK and the US. This gives"}, {"job_id": "sem_n26_senior-crm-specialist_berlin", "title": "Senior CRM Specialist", "company": "N26", "location": "Berlin", "text": "About the opportunity As a Senior CRM Specialist (Engagement & Retention), you’ll own the customer journey from month two onwards. You’ll play a pivotal role in keeping our millions of users active, engaged, and thriving within the N26 ecosystem. This is a true 50/50 h"}, {"job_id": "sem_clickhouse_principal-database-performance-engineer-core-engineering-c_germany", "title": "Principal Database Performance Engineer - Core Engineering (C++)", "company": "ClickHouse", "location": "Germany", "text": "NOTE: this role can be located anywhere ClickHouse has a hiring presence. ClickHouse — Core Analytics Database About the Role: ClickHouse is looking for a Principal Database Performance Engineer to join the team behind our high-performance analytics database service. In this role, you will drive per"}, {"job_id": "sem_getyourguide_senior-analyst-fp-a-revenue-planning_berlin", "title": "Senior Analyst, FP&A Revenue Planning", "company": "GetYourGuide", "location": "Berlin", "text": "Change the way the world travels Join the GetYourGuide journey to connect people with unforgettable travel experiences around the world. Millions look to us for unique activities they can trust, and it’s all powered by our commitment to make every single journey extraord"}, {"job_id": "sem_databricks_new-business-enterprise-account-executive-public-sector_london", "title": "New Business Enterprise Account Executive (Public Sector)", "company": "databricks", "location": "London", "text": "SLSQ128R110 Do you want to help solve the world’s toughest problems with Data and AI? That’s what we do every day at Databricks. Reporting to the Head of Public Sector - Growth, you’ll partner with a team of accomplished"}]}, {"query_id": "final_seniority_01", "category": "seniority", "profile": "Werkstudent Data Analytics", "notes": "Needs Werkstudent / working-student role.", "rule": "working student", "tip": "Hard rule: seniority / contract level must match “working student”. Fail → grade 0.", "jobs": [{"job_id": "sem_sumup_performance-marketing-working-student-talent-acquisition_berlin-germany", "title": "Performance Marketing Working Student – Talent Acquisition", "company": "SumUp", "location": "Berlin, Germany", "text": "Performance Marketing Working Student – Talent Acquisition Location: Berlin Employment type: Working student, 20 hours/week Take a look at where you'll be based: watch the Berlin o"}, {"job_id": "sem_sumup_senior-hardware-engineer_berlin-germany", "title": "Senior Hardware Engineer", "company": "SumUp", "location": "Berlin, Germany", "text": "Team description You've probably paid for a coffee or tapped your card at a hairdresser using one of our card readers already. Our Hardware team designs and builds the beautifully engineered payment devices and accessories that let millions of small merchan"}, {"job_id": "sem_sumup_senior-backend-engineer-martech_berlin-germany", "title": "Senior Backend Engineer - MarTech", "company": "SumUp", "location": "Berlin, Germany", "text": "About the team: The MarTech team builds the marketing and growth systems that help SumUp reach more merchants around the world. We combine backend engineering, data engineering, data science and external marketing platforms to create reliable, scalable solutions that impro"}, {"job_id": "sem_databricks_staff-forward-deployed-engineer_berlin-germany-munich-germany", "title": "Staff Forward Deployed Engineer", "company": "Databricks", "location": "Berlin, Germany; Munich, Germany", "text": "CSQ427R243 As a Forward Deployed Engineer (FDE) you will work with customers to build and productionize solutions to their data & AI challenges using the Databricks platform. You will own the architecture, lead design decisions, and implement end-to-end systems spannin"}, {"job_id": "sem_hellofresh_werkstudent-rezeptmanagement-all-genders_berlin-berlin-germany", "title": "Werkstudent Rezeptmanagement (all genders)", "company": "HelloFresh", "location": "Berlin, Berlin, Germany", "text": "Deine Rolle Als Werkstudent/in im Rezeptmanagement unterstützt du unser Rezeptentwicklungsteam bei der Pflege und Verwaltung kulinarischer Daten. Dabei arbeitest du eng mit dem Culinary-Operations-Team zusammen und sorgst mit einem guten Blick fürs Detail, Struktur und S"}, {"job_id": "sem_sonymusicentertainment_werkstudent-praktikant-legal-business-affairs_europe-berlin", "title": "Werkstudent / Praktikant Legal & Business Affairs (m/w/d)", "company": "sonymusicentertainment", "location": "Europe, Berlin", "text": "(Berlin, ab November 2026 bis Februar 2027, als Werkstudent:in 20h pro Woche oder als Praktikant:in 38,5h pro Woche) Du interessierst dich für den legal stuff"}, {"job_id": "sem_getyourguide_senior-analyst-fp-a-revenue-planning_berlin", "title": "Senior Analyst, FP&A Revenue Planning", "company": "GetYourGuide", "location": "Berlin", "text": "Change the way the world travels Join the GetYourGuide journey to connect people with unforgettable travel experiences around the world. Millions look to us for unique activities they can trust, and it’s all powered by our commitment to make every single journey extraord"}, {"job_id": "sem_figma_software-engineer-intern-london-united-kingdom-summer-2027_london-england", "title": "Software Engineer Intern (London, United Kingdom) (Summer 2027)", "company": "Figma", "location": "London, England", "text": "Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you're brainstorming, creating a prototype, translating designs into code, or iterating with AI. From i"}, {"job_id": "sem_hellofresh_demand-planner-f-m-x_berlin-berlin-germany", "title": "Demand Planner (f/m/x)", "company": "HelloFresh", "location": "Berlin, Berlin, Germany", "text": "The role: What's in the Box We're looking for a Demand Planner who is comfortable working with data and is eager to develop their forecasting skills in a fast-paced supply chain environment. This is a hands-on analytical role: you'll spend your time writing SQL, building r"}, {"job_id": "sem_certara_business-development-representative_worldwide-remote", "title": "Business Development Representative", "company": "Certara", "location": "Worldwide Remote", "text": "Overview About Certara Certara accelerates the potential of bringing medicines to market and to patients using biosimulation software, technology, and servi"}]}, {"query_id": "final_seniority_02", "category": "seniority", "profile": "Internship Data Engineering", "notes": "Needs internship / Praktikum.", "rule": "intern", "tip": "Hard rule: seniority / contract level must match “intern”. Fail → grade 0.", "jobs": [{"job_id": "sem_sonymusicentertainment_werkstudent-praktikant-legal-business-affairs_europe-berlin", "title": "Werkstudent / Praktikant Legal & Business Affairs (m/w/d)", "company": "sonymusicentertainment", "location": "Europe, Berlin", "text": "(Berlin, ab November 2026 bis Februar 2027, als Werkstudent:in 20h pro Woche oder als Praktikant:in 38,5h pro Woche) Du interessierst dich für den legal stuff"}, {"job_id": "sem_doctolib-gh_senior-machine-learning-engineer-orchestration-applied-ai-llms-x-f-m_paris-paris-france", "title": "Senior Machine Learning Engineer - Orchestration - Applied AI & LLMs (x/f/m)", "company": "Doctolib GH", "location": "Paris, Paris, France", "text": "Set a new pulse for healthcare! We are looking for a"}, {"job_id": "sem_raisin_ai-platform-engineer_berlin-berlin-germany", "title": "AI Platform Engineer (m/f/d)", "company": "Raisin", "location": "Berlin, Berlin, Germany", "text": "Raisin is the world’s leading platform for savings and investment products. Founded in 2012, the FinTech connects consumers with banks in the EU, the UK and the US. This gives"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_doctolib-gh_medical-data-intern-x-f-m_berlin-berlin-germany", "title": "Medical Data Intern (x/f/m)", "company": "Doctolib GH", "location": "Berlin, Berlin, Germany", "text": "Medical Data Intern (x/f/m) Set a new pulse for healthcare! We are looking for a Medical Data Intern to join the Terminology and Ontology team within the Medical Excellence department at Doctolib in Berl"}, {"job_id": "sem_databricks_software-engineering-intern-2027-start-berlin_berlin-germany", "title": "Software Engineering Intern (2027 Start) - Berlin", "company": "Databricks", "location": "Berlin, Germany", "text": "P-968 At Databricks, we are passionate about helping data teams solve the world's toughest problems — from making the next mode of transportation a reality to accelerating the development of medical breakthroughs. We do this by building and running the world's best data an"}, {"job_id": "sem_thoughtworks_agentic-ai-principal_amsterdam", "title": "Agentic AI Principal", "company": "thoughtworks", "location": "Amsterdam", "text": "We are looking for an Agentic AI Principal to act as a senior technical authority and trusted client advisor for complex agentic AI transformation in Germany, the Netherlands and the wider DACH region. Operating at Princip"}, {"job_id": "sem_mayer-beschl-ge_teamleitung-data-analytics_at-at323", "title": "Teamleitung Data & Analytics (m/w/d)", "company": "Mayer & Co Beschläge", "location": "AT (AT323)", "text": "1 Teamleitung Data & Analytics (m/w/d) Vollzeit ab sofort Möchten Sie ein Data-&-Analytics-Team fachlich und disziplinarisch führen und die Zukunft datengetriebener Entscheidungen aktiv mitgestalten? Begeistert es Sie, aus komplexen Datenstrukturen nachhaltigen Mehrwert für das Unternehmen zu schaff"}, {"job_id": "sem_palantir-lever_software-engineer-internship-query-engines_london-united-kingdom", "title": "Software Engineer, Internship - Query Engines", "company": "Palantir Lever", "location": "London, United Kingdom", "text": "A World-Changing Company Palantir builds the world’s leading software for data-driven decisions and operations. By bringing the right data to the people who need it, our platforms empower our partners to develop lifesaving drugs, forecast supply chain disruptions, locate missing children, and more."}, {"job_id": "sem_flix_triebfahrzeugf-hrer-als-pr-fer_berlin-cologne-hamburg", "title": "Triebfahrzeugführer als Prüfer (m/w/d)", "company": "Flix", "location": "Berlin; Cologne; Hamburg", "text": "Bei FlixTrain gestaltest du die Zukunft der Mobilität aktiv mit. Wir bieten dir nicht nur sichere Arbeitsplätze sowie attraktive Zusatzleistungen, sondern auch ein dynamisches, internationales Umfeld, in dem deine Ideen"}]}, {"query_id": "final_language_01", "category": "language", "profile": "Data role English working language", "notes": "Needs English as working language.", "rule": "English", "tip": "Hard rule: working language must fit “English”. Fail → grade 0.", "jobs": [{"job_id": "sem_wolt_english-and-romanian-speaking-support-associate-remote-work_timisoara-romania", "title": "English and Romanian Speaking Support Associate - Remote work", "company": "Wolt", "location": "Timisoara, Romania", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_certara_business-development-representative_worldwide-remote", "title": "Business Development Representative", "company": "Certara", "location": "Worldwide Remote", "text": "Overview About Certara Certara accelerates the potential of bringing medicines to market and to patients using biosimulation software, technology, and servi"}, {"job_id": "sem_wolt_english-speaking-support-associate-full-time-remote_remote-serbia", "title": "English-Speaking Support Associate (Full-time - Remote)", "company": "Wolt", "location": "Remote; Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_databricks_software-engineering-intern-2027-start-berlin_berlin-germany", "title": "Software Engineering Intern (2027 Start) - Berlin", "company": "Databricks", "location": "Berlin, Germany", "text": "P-968 At Databricks, we are passionate about helping data teams solve the world's toughest problems — from making the next mode of transportation a reality to accelerating the development of medical breakthroughs. We do this by building and running the world's best data an"}, {"job_id": "sem_sandoz_qc-analyst-ii-d-w-m_at-at335", "title": "QC Analyst II (d/w/m)", "company": "Sandoz", "location": "AT (AT335)", "text": "1 QC Analyst II (d/w/m) Qualität steht für Sie an erster Stelle?In dieser Position übernehmen Sie eine wichtige Rolle bei der Sicherstellung unserer Qualitätsstandards und unterstützen dabei, dass unsere Arzneimittel den hohen regulatorischen Anforderungen entsprechen. Sie arbeiten mit modernen Qual"}, {"job_id": "sem_wolt_support-associate-kundenservice-in-vollzeit-englisch-c1-und-deutsch-c1_berlin-germany", "title": "Support Associate / Kundenservice (m/w/d) in Vollzeit (Englisch C1 und Deutsch C1)", "company": "Wolt", "location": "Berlin, Germany", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_clickhouse_principal-database-performance-engineer-core-engineering-c_germany", "title": "Principal Database Performance Engineer - Core Engineering (C++)", "company": "ClickHouse", "location": "Germany", "text": "NOTE: this role can be located anywhere ClickHouse has a hiring presence. ClickHouse — Core Analytics Database About the Role: ClickHouse is looking for a Principal Database Performance Engineer to join the team behind our high-performance analytics database service. In this role, you will drive per"}, {"job_id": "sem_wolt_english-speaking-support-associate-part-time-remote_belgrade-savski-venac-serbia", "title": "English speaking Support Associate (Part-Time, Remote)", "company": "Wolt", "location": "Belgrade - Savski Venac, Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_sonarsource_staff-software-engineer-java-billing_geneva", "title": "Staff Software Engineer (Java) - Billing", "company": "Sonarsource", "location": "Geneva", "text": "Who is Sonar? Sonar is driving the future of agent-centric software development. As the leader in AI code verification and governance, we solve a critical problem: ensuring that software generated by AI-assisted developers or autonomous agents is reliable, secure,"}, {"job_id": "sem_sumup_senior-hardware-engineer_berlin-germany", "title": "Senior Hardware Engineer", "company": "SumUp", "location": "Berlin, Germany", "text": "Team description You've probably paid for a coffee or tapped your card at a hairdresser using one of our card readers already. Our Hardware team designs and builds the beautifully engineered payment devices and accessories that let millions of small merchan"}]}, {"query_id": "final_language_02", "category": "language", "profile": "Data role German required", "notes": "Needs German (Deutsch) in the job.", "rule": "German", "tip": "Hard rule: working language must fit “German”. Fail → grade 0.", "jobs": [{"job_id": "sem_itech-consult_product-safety-specialist_ch-ch031", "title": "Product Safety Specialist", "company": "ITech Consult AG", "location": "CH (CH031)", "text": "**Product Safety Specialist****: Product Safety / Data Management Systems /****Data Integrity / Governance / Material Declaration / Product Stewardship / EHSM / S4 HANA / REACH / RoHS/ TSCA / Prop 65 /** **English / Deutsch****Background:**We are looking for a Material Declaration Expert to ensure o"}, {"job_id": "sem_reddit_trust-and-safety-policy-ads-policy-lead-europe_remote-united-kingdom", "title": "Trust and Safety Policy, Ads Policy, Lead (Europe)", "company": "Reddit", "location": "Remote - United Kingdom", "text": "No description provided."}, {"job_id": "sem_vercel_business-development-representative-startups_hybrid-london", "title": "Business Development Representative, Startups", "company": "Vercel", "location": "Hybrid - London", "text": "About Vercel: Vercel is the agentic infrastructure company, freeing people and agents to ship what's next. For more than a decade we've helped builders move from idea to production with speed, security, and exceptional developer exper"}, {"job_id": "sem_sumup_senior-hardware-engineer_berlin-germany", "title": "Senior Hardware Engineer", "company": "SumUp", "location": "Berlin, Germany", "text": "Team description You've probably paid for a coffee or tapped your card at a hairdresser using one of our card readers already. Our Hardware team designs and builds the beautifully engineered payment devices and accessories that let millions of small merchan"}, {"job_id": "sem_databricks_staff-product-manager_berlin-germany", "title": "Staff Product Manager", "company": "Databricks", "location": "Berlin, Germany", "text": "P-1345 You will be the Product Manager for the Databricks Runtime team in Berlin . The team works at the intersection of query processing, storage, infrastructure and data governance, all key components of the Databricks data intelligence platform. As the Product Manager, y"}, {"job_id": "sem_7nxt_crm-manager-lifecycle-engagement_berlin", "title": "CRM Manager – Lifecycle & Engagement (f/m/d)", "company": "7NXT GmbH", "location": "Berlin", "text": "CRM Manager – Lifecycle & Engagement (f/m/d) – 7NXT Health Group The essentials Team: CRM & Marketing Start date: As soon as possible Location: Berlin — hybrid Working language: German & English fluency Salary band: Shared before"}, {"job_id": "sem_wolt_support-associate-fulltime-student-ljubljana_ljubljana-slovenia", "title": "Support Associate - Fulltime/Student- Ljubljana", "company": "Wolt", "location": "Ljubljana, Slovenia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_stripe_forward-deployed-security-engineer_dublin", "title": "Forward Deployed Security Engineer", "company": "Stripe", "location": "Dublin", "text": "Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies - from the world’s largest enterprises to the most ambitious startups - use Stripe to accept payments,"}, {"job_id": "sem_wolt_english-speaking-support-associate-part-time-remote_belgrade-savski-venac-serbia", "title": "English speaking Support Associate (Part-Time, Remote)", "company": "Wolt", "location": "Belgrade - Savski Venac, Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_doctolib-gh_medical-data-intern-x-f-m_berlin-berlin-germany", "title": "Medical Data Intern (x/f/m)", "company": "Doctolib GH", "location": "Berlin, Berlin, Germany", "text": "Medical Data Intern (x/f/m) Set a new pulse for healthcare! We are looking for a Medical Data Intern to join the Terminology and Ontology team within the Medical Excellence department at Doctolib in Berl"}]}, {"query_id": "final_location_01", "category": "location", "profile": "Data Analyst Berlin", "notes": "Must be Berlin.", "rule": "Berlin", "tip": "Hard rule: place of work must fit “Berlin”. Fail → grade 0.", "jobs": [{"job_id": "sem_box_benefits-analyst_warsaw-poland", "title": "Benefits Analyst", "company": "Box", "location": "Warsaw, Poland", "text": "What is Box? Box (NYSE:BOX) is the leader in Intelligent Content Management. Our platform enables o"}, {"job_id": "sem_sumup_performance-marketing-working-student-talent-acquisition_berlin-germany", "title": "Performance Marketing Working Student – Talent Acquisition", "company": "SumUp", "location": "Berlin, Germany", "text": "Performance Marketing Working Student – Talent Acquisition Location: Berlin Employment type: Working student, 20 hours/week Take a look at where you'll be based: watch the Berlin o"}, {"job_id": "sem_vercel_partner-lead-emea_hybrid-london-berlin", "title": "Partner Lead, EMEA", "company": "Vercel", "location": "Hybrid - London, Berlin", "text": "About Vercel: Vercel is the agentic infrastructure company, freeing people and agents to ship what's next. For more than a decade we've helped builders move from idea to production with speed, security, and exceptional developer exper"}, {"job_id": "sem_wolt_support-associate-kundenservice-in-teilzeit-englisch-c1-und-deutsch-c1_berlin-germany", "title": "Support Associate / Kundenservice (m/w/d) in Teilzeit (Englisch C1 und Deutsch C1)", "company": "Wolt", "location": "Berlin, Germany", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_sonymusicentertainment_werkstudent-praktikant-legal-business-affairs_europe-berlin", "title": "Werkstudent / Praktikant Legal & Business Affairs (m/w/d)", "company": "sonymusicentertainment", "location": "Europe, Berlin", "text": "(Berlin, ab November 2026 bis Februar 2027, als Werkstudent:in 20h pro Woche oder als Praktikant:in 38,5h pro Woche) Du interessierst dich für den legal stuff"}, {"job_id": "sem_databricks_software-engineering-intern-2027-start-berlin_berlin-germany", "title": "Software Engineering Intern (2027 Start) - Berlin", "company": "Databricks", "location": "Berlin, Germany", "text": "P-968 At Databricks, we are passionate about helping data teams solve the world's toughest problems — from making the next mode of transportation a reality to accelerating the development of medical breakthroughs. We do this by building and running the world's best data an"}, {"job_id": "sem_wolt_support-associate-kundenservice-in-vollzeit-englisch-c1-und-deutsch-c1_berlin-germany", "title": "Support Associate / Kundenservice (m/w/d) in Vollzeit (Englisch C1 und Deutsch C1)", "company": "Wolt", "location": "Berlin, Germany", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_apaleo_senior-software-engineer-net_munich-bavaria-germany", "title": "Senior Software Engineer (.NET) (f/m/d)", "company": "Apaleo", "location": "Munich, Bavaria, Germany", "text": "Join Apaleo and Shape the Future of Hospitality Tech! Apaleo is the world's most open, API-first property management platform powering the next generation of hospitality operations. Its modular, AI-powered infrastructure enables hoteliers to customise their tech stack, automate routine w"}, {"job_id": "sem_raisin_ai-platform-engineer_berlin-berlin-germany", "title": "AI Platform Engineer (m/f/d)", "company": "Raisin", "location": "Berlin, Berlin, Germany", "text": "Raisin is the world’s leading platform for savings and investment products. Founded in 2012, the FinTech connects consumers with banks in the EU, the UK and the US. This gives"}, {"job_id": "sem_coalition-technologies_freelance-copywriter_worldwide", "title": "Freelance Copywriter", "company": "Coalition Technologies", "location": "Worldwide", "text": "CT Marketing Agency is seeking skilled Freelance Copywriters to write high-quality, SEO-driven content for eCommerce and lead generation websites. This is a freelance, project-based writing role. The ideal candidate has excellent English writing skills, strong research ability, an"}]}, {"query_id": "final_location_02", "category": "location", "profile": "Data Engineer Remote", "notes": "Remote role.", "rule": "remote", "tip": "Hard rule: place of work must fit “remote”. Fail → grade 0.", "jobs": [{"job_id": "sem_datafold_forward-deployed-data-engineer-eu_europe", "title": "Forward Deployed Data Engineer - EU", "company": "Datafold", "location": "Europe", "text": "ABOUT DATAFOLD Datafold is the data engineering automation platform. A major part of our business is delivering large-scale data engineering projects such as data platform migrations with AI, at fixed price and guaranteed timeline. We are not a typical services provider or SI – we are a venture-back"}, {"job_id": "sem_databricks_staff-product-manager_berlin-germany", "title": "Staff Product Manager", "company": "Databricks", "location": "Berlin, Germany", "text": "P-1345 You will be the Product Manager for the Databricks Runtime team in Berlin . The team works at the intersection of query processing, storage, infrastructure and data governance, all key components of the Databricks data intelligence platform. As the Product Manager, y"}, {"job_id": "sem_wolt_serbian-speaking-support-associate-part-time-belgrade_belgrade-serbia", "title": "Serbian-Speaking Support Associate (Part-Time, Belgrade)", "company": "Wolt", "location": "Belgrade, Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_headquarters_finance-accounting-associate_worldwide-remote", "title": "Finance & Accounting Associate", "company": "HeadQuarters", "location": "Worldwide Remote", "text": "About Us HeadQuarters is a global start-up dedicated to empowering U.S. cannabis companies through expert support in finance, sales, operations, and logistics. Operating at the intersection of innovation and execution, we partner"}, {"job_id": "sem_affirm_analyst-ii-credit_remote-uk", "title": "Analyst II, Credit", "company": "Affirm", "location": "Remote UK", "text": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. As a Merchant Risk Analyst, you will assess financial ri"}, {"job_id": "sem_fivetran_senior-account-executive-enterprise_remote-germany-emea", "title": "Senior Account Executive, Enterprise", "company": "Fivetran", "location": "Remote, Germany, EMEA", "text": "From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses, canonical and ready to query, with no engineering or maintenance required. We’r"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_itech-consult_product-safety-specialist_ch-ch031", "title": "Product Safety Specialist", "company": "ITech Consult AG", "location": "CH (CH031)", "text": "**Product Safety Specialist****: Product Safety / Data Management Systems /****Data Integrity / Governance / Material Declaration / Product Stewardship / EHSM / S4 HANA / REACH / RoHS/ TSCA / Prop 65 /** **English / Deutsch****Background:**We are looking for a Material Declaration Expert to ensure o"}, {"job_id": "sem_wolt_support-associate-kundenservice-in-vollzeit-englisch-c1-und-deutsch-c1_berlin-germany", "title": "Support Associate / Kundenservice (m/w/d) in Vollzeit (Englisch C1 und Deutsch C1)", "company": "Wolt", "location": "Berlin, Germany", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_doximity_senior-software-engineer-data_latam-canada-usa", "title": "Senior Software Engineer, Data", "company": "Doximity", "location": "LATAM,  Canada,  USA", "text": "Location : This role is remote in the United States, Canada, or some countries in South America. Visa sponsorship is not available for this role. Doximity is t"}]}, {"query_id": "final_visa_01", "category": "visa", "profile": "Data analyst visa sponsorship", "notes": "Needs visa sponsorship.", "rule": "visa sponsorship", "tip": "Hard rule: visa / work authorization must fit “visa sponsorship”. Fail → grade 0.", "jobs": [{"job_id": "sem_doximity_senior-software-engineer-data_latam-canada-usa", "title": "Senior Software Engineer, Data", "company": "Doximity", "location": "LATAM,  Canada,  USA", "text": "Location : This role is remote in the United States, Canada, or some countries in South America. Visa sponsorship is not available for this role. Doximity is t"}, {"job_id": "sem_raisin_ai-platform-engineer_berlin-berlin-germany", "title": "AI Platform Engineer (m/f/d)", "company": "Raisin", "location": "Berlin, Berlin, Germany", "text": "Raisin is the world’s leading platform for savings and investment products. Founded in 2012, the FinTech connects consumers with banks in the EU, the UK and the US. This gives"}, {"job_id": "sem_clickhouse_principal-database-performance-engineer-core-engineering-c_germany", "title": "Principal Database Performance Engineer - Core Engineering (C++)", "company": "ClickHouse", "location": "Germany", "text": "NOTE: this role can be located anywhere ClickHouse has a hiring presence. ClickHouse — Core Analytics Database About the Role: ClickHouse is looking for a Principal Database Performance Engineer to join the team behind our high-performance analytics database service. In this role, you will drive per"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_grafana-labs_staff-technical-writer-remote-germany_germany-remote", "title": "Staff Technical Writer | Remote | Germany", "company": "Grafana Labs", "location": "Germany (Remote)", "text": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed fo"}, {"job_id": "sem_flix_triebfahrzeugf-hrer-als-pr-fer_berlin-cologne-hamburg", "title": "Triebfahrzeugführer als Prüfer (m/w/d)", "company": "Flix", "location": "Berlin; Cologne; Hamburg", "text": "Bei FlixTrain gestaltest du die Zukunft der Mobilität aktiv mit. Wir bieten dir nicht nur sichere Arbeitsplätze sowie attraktive Zusatzleistungen, sondern auch ein dynamisches, internationales Umfeld, in dem deine Ideen"}, {"job_id": "sem_sumup_senior-product-data-analyst-consumer-growth_london-england-united-kingdom", "title": "Senior Product Data Analyst- Consumer Growth", "company": "SumUp", "location": "London, England, United Kingdom", "text": "SumUp | Senior Data Analyst - Consumer Growth | London, United Kingdom Competitive salary · Office-first This role does not support Visa sponsorship and candidates must have the right to work in the UK. About the team"}, {"job_id": "sem_affirm_content-designer-ii_remote-uk", "title": "Content Designer II", "company": "Affirm", "location": "Remote UK", "text": "At Affirm, we exist for the moments that matter—giving people a clear, predictable way to pay over time, with no hidden fees, no surprises, and no tradeoffs on what matters most. At Affirm, we’re reimagining how people access and exper"}, {"job_id": "sem_wolt_english-and-romanian-speaking-support-associate-remote-work_timisoara-romania", "title": "English and Romanian Speaking Support Associate - Remote work", "company": "Wolt", "location": "Timisoara, Romania", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}, {"job_id": "sem_wolt_english-speaking-support-associate-full-time-remote_remote-serbia", "title": "English-Speaking Support Associate (Full-time - Remote)", "company": "Wolt", "location": "Remote; Serbia", "text": "About Wolt At Wolt, we create technology that brings joy, simplicity and earnings to the neighborhoods of the world. In 2014 we started with delivery of restaurant food. Now we’re building the deliver"}]}, {"query_id": "final_visa_02", "category": "visa", "profile": "Engineer Blue Card path", "notes": "Needs Blue Card / sponsorship path.", "rule": "Blue Card", "tip": "Hard rule: visa / work authorization must fit “Blue Card”. Fail → grade 0.", "jobs": [{"job_id": "sem_sumup_senior-product-data-analyst-consumer-growth_london-england-united-kingdom", "title": "Senior Product Data Analyst- Consumer Growth", "company": "SumUp", "location": "London, England, United Kingdom", "text": "SumUp | Senior Data Analyst - Consumer Growth | London, United Kingdom Competitive salary · Office-first This role does not support Visa sponsorship and candidates must have the right to work in the UK. About the team"}, {"job_id": "sem_junior-data-scientist-downstream-demand-forecast-value-chain_senior-user-researcher-personal-buying-experience_villeneuve-d-ascq-nord", "title": "Senior User Researcher - Personal buying experience (f/m/d)", "company": "Junior Data Scientist - Downstream Demand Forecast - Value Chain ...", "location": "Villeneuve-d'Ascq, Nord", "text": "Personal Buying experience Senior UX Researcher Job description In a nutshell &"}, {"job_id": "sem_collective-work_ing-nieur-mlops-confirm-banque-freelance-h-f_fr-fr105", "title": "Ingénieur MLOps confirmé - Banque - Freelance (H/F)", "company": "Collective.work", "location": "FR (FR105)", "text": "Taux journalier (TJM): 550CONTEXTE * Programme stratégique d'un grand groupe bancaire visant à déployer à l'échelle des solutions d'IA générative et agentique souveraines (modèles de langage français, solution low code), hébergées sur les infrastructures internes du groupe, dans un SI bancaire compl"}, {"job_id": "sem_twilio_senior-software-engineer_remote-ireland", "title": "Senior Software Engineer", "company": "Twilio", "location": "Remote - Ireland", "text": "Who we are At Twilio, we’re shaping the future of communications, all from the comfort of our homes. We deliver innovative solutions to"}, {"job_id": "sem_doximity_senior-software-engineer-data_latam-canada-usa", "title": "Senior Software Engineer, Data", "company": "Doximity", "location": "LATAM,  Canada,  USA", "text": "Location : This role is remote in the United States, Canada, or some countries in South America. Visa sponsorship is not available for this role. Doximity is t"}, {"job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote", "title": "Summer 2027 Evaluation Analytics Graduate Intern", "company": "Highmark Health", "location": "Worldwide Remote", "text": "Company : Highmark Health Job Description : Applicants must be authorized to work in the United States independently. At this time, visa sponsorship is not available for this position. The Sum"}, {"job_id": "sem_commercetools_senior-search-backend-engineer-m-f-x_berlin-germany-hybrid", "title": "Senior Search Backend Engineer (m/f/x)", "company": "commercetools", "location": "Berlin, Germany (Hybrid)", "text": "No description provided."}, {"job_id": "sem_stripe_forward-deployed-security-engineer_dublin", "title": "Forward Deployed Security Engineer", "company": "Stripe", "location": "Dublin", "text": "Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies - from the world’s largest enterprises to the most ambitious startups - use Stripe to accept payments,"}, {"job_id": "sem_stripe_staff-security-engineer-abuse-control_london", "title": "Staff Security Engineer, Abuse Control", "company": "Stripe", "location": "London", "text": "Who we are About Stripe Stripe is a financial infrastructure platform for businesses. Millions of companies—from the world’s largest enterprises to the most ambitious startups—use Stripe to accept payments, grow their revenue, and accelerate new"}, {"job_id": "sem_merck-kgaa_software-engineer-all-genders-full-part-time-informatiker-in_de-de716", "title": "(Senior) Software Engineer (all genders, full-/part-time) (Informatiker/in)", "company": "Merck KGaA", "location": "DE (DE716)", "text": "Work Your Magic with us! Ready to explore, break barriers, and discover more? We know you’ve got big plans – so do we! Our colleagues across the globe love innovating with science and technology to enrich people’s lives with our solutions in Healthcare, Life Science, and Electronics. Together, we dr"}]}];
+const PROTOCOL = { id: "DF-SR-2026-10", version: "1.1" };
 const SUBMIT_TO = "https://formsubmit.co/ajax/riteshjadhav359@gmail.com";
+const EXPECTED = 100;
 const answers = {};
-const rater = { firstName: "", lastName: "", email: "" };
+const rater = { firstName: "", lastName: "", email: "", consentedAt: "" };
 const state = { qi: 0, ji: 0, grade: null, started: Date.now() };
-const storageKey = "df_matchlab_v2";
+const storageKey = "df_second_rater_v3";
 
 function plainText(s) {
   if (!s) return "";
@@ -291,8 +377,7 @@ function plainText(s) {
     t = next;
   }
   t = t.replace(/<[^>]+>/g, " ").replace(/<[^>]*$/g, " ").replace(/<[^>\s][^<\s]{0,120}/g, " ");
-  t = t.replace(/\s+/g, " ").trim();
-  return t;
+  return t.replace(/\s+/g, " ").trim();
 }
 function loadLocal() {
   try {
@@ -303,14 +388,18 @@ function loadLocal() {
     Object.assign(rater, o.rater || {});
     if (typeof o.qi === "number") state.qi = o.qi;
     if (typeof o.ji === "number") state.ji = o.ji;
+    if (o.started) state.started = o.started;
   } catch (e) {}
 }
 function saveLocal() {
-  localStorage.setItem(storageKey, JSON.stringify({ answers, rater, qi: state.qi, ji: state.ji }));
+  localStorage.setItem(storageKey, JSON.stringify({
+    answers, rater, qi: state.qi, ji: state.ji, started: state.started
+  }));
 }
 function show(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("on"));
   document.getElementById(id).classList.add("on");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 function totalItems() { return PACK.reduce((n,q) => n + q.jobs.length, 0); }
 function answeredCount() { return Object.keys(answers).length; }
@@ -320,12 +409,17 @@ function keyNow() {
 }
 function payload() {
   return {
-    form: "DataForge Match Lab second-rater",
+    instrument: "DataForge Second-Rater Labeling",
+    protocol_id: PROTOCOL.id,
+    protocol_version: PROTOCOL.version,
     first_name: rater.firstName,
     last_name: rater.lastName,
     email: rater.email || "",
     full_name: (rater.firstName + " " + rater.lastName).trim(),
+    consented_at: rater.consentedAt || "",
     n_answers: answeredCount(),
+    n_expected: EXPECTED,
+    complete: answeredCount() >= EXPECTED,
     duration_min: Math.max(1, Math.round((Date.now() - state.started) / 60000)),
     created: new Date().toISOString(),
     answers: Object.values(answers),
@@ -335,23 +429,10 @@ function downloadBackup() {
   const p = payload();
   const blob = new Blob([JSON.stringify(p, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
-  const safe = (rater.firstName || "rater").replace(/[^a-z0-9_-]/gi, "_");
+  const safe = (rater.lastName || rater.firstName || "rater").replace(/[^a-z0-9_-]/gi, "_");
   a.href = URL.createObjectURL(blob);
-  a.download = `matchlab_${safe}_answers.json`;
+  a.download = `second_rater_${PROTOCOL.id}_{safe}.json`;
   a.click();
-}
-function burst() {
-  const root = document.getElementById("confetti");
-  root.innerHTML = "";
-  for (let i = 0; i < 40; i++) {
-    const d = document.createElement("div");
-    d.style.cssText = `position:absolute;top:-10px;left:${Math.random()*100}%;width:8px;height:12px;background:hsl(${160+Math.random()*80},70%,55%);border-radius:2px;animation:fall ${1.2+Math.random()}s linear forwards;`;
-    root.appendChild(d);
-  }
-  const st = document.createElement("style");
-  st.textContent = `@keyframes fall { to { transform: translateY(100vh) rotate(400deg); opacity:0; } }`;
-  root.appendChild(st);
-  setTimeout(() => root.innerHTML = "", 2200);
 }
 
 function render() {
@@ -361,8 +442,8 @@ function render() {
   const done = answeredCount();
   const tot = totalItems();
   document.getElementById("bar").style.width = Math.round((done/tot)*100) + "%";
-  document.getElementById("stepLabel").textContent = `Profile ${state.qi+1}/${PACK.length} · Job ${state.ji+1}/${q.jobs.length}`;
-  document.getElementById("hiName").textContent = rater.firstName ? `Hi ${rater.firstName}` : "";
+  document.getElementById("stepLabel").textContent = `Profile ${state.qi+1}/${PACK.length} · Item ${state.ji+1}/${q.jobs.length} · ${done}/${tot} saved`;
+  document.getElementById("hiName").textContent = rater.firstName ? `Rater: ${rater.firstName} ${rater.lastName}` : "";
   document.getElementById("catPill").textContent = q.category;
   document.getElementById("profileText").textContent = q.profile;
   document.getElementById("notesText").textContent = q.notes || "";
@@ -387,7 +468,8 @@ function setGrade(g) {
   const q = PACK[state.qi]; const j = q.jobs[state.ji];
   answers[keyNow()] = {
     query_id: q.query_id, category: q.category, job_id: j.job_id,
-    grade: g, unclear: document.getElementById("unclear").checked,
+    job_title: j.title, grade: g,
+    unclear: document.getElementById("unclear").checked,
     ts: new Date().toISOString(),
   };
   document.getElementById("nextBtn").disabled = false;
@@ -410,6 +492,14 @@ function back() {
 function prepSubmit() {
   document.getElementById("statTotal").textContent = answeredCount();
   document.getElementById("statName").textContent = (rater.firstName + " " + rater.lastName).trim() || "—";
+  const tb = document.querySelector("#reviewTable tbody");
+  tb.innerHTML = "";
+  const rows = Object.values(answers).slice().sort((a,b) => (a.query_id+a.job_id).localeCompare(b.query_id+b.job_id));
+  rows.forEach((a, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${i+1}</td><td>${a.category||""}</td><td>${(a.job_title||a.job_id||"").slice(0,48)}</td><td>${a.grade}</td><td>${a.unclear ? "yes" : ""}</td>`;
+    tb.appendChild(tr);
+  });
 }
 
 async function submitForm() {
@@ -417,18 +507,23 @@ async function submitForm() {
   const btn = document.getElementById("submitBtn");
   btn.disabled = true;
   flash.className = "flash on";
-  flash.textContent = "Sending…";
+  flash.textContent = "Submitting…";
   const p = payload();
-  downloadBackup(); // always keep a local copy
+  downloadBackup();
   try {
     const body = {
-      _subject: `Match Lab labels from ${p.full_name}`,
+      _subject: `Second-rater ${PROTOCOL.id} — ${p.full_name} (${p.n_answers}/${p.n_expected})`,
       _template: "table",
       name: p.full_name,
       email: p.email || "no-reply@dataforge.local",
-      message: JSON.stringify(p),
+      protocol_id: p.protocol_id,
+      protocol_version: p.protocol_version,
       n_answers: p.n_answers,
+      n_expected: p.n_expected,
+      complete: p.complete,
       duration_min: p.duration_min,
+      consented_at: p.consented_at,
+      message: JSON.stringify(p),
     };
     const res = await fetch(SUBMIT_TO, {
       method: "POST",
@@ -437,22 +532,33 @@ async function submitForm() {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.message || ("HTTP " + res.status));
-    flash.textContent = "Submitted! Check: Ritesh gets an email. You also downloaded a backup.";
-    burst();
-    setTimeout(() => show("thanks"), 700);
+    flash.textContent = "Submission received. JSON archive downloaded to your device.";
+    setTimeout(() => show("thanks"), 600);
   } catch (err) {
     flash.className = "flash on err";
-    flash.textContent = "Online send failed (" + err.message + "). Your backup JSON still downloaded — please send that file to Ritesh.";
+    flash.textContent = "Email delivery failed (" + err.message + "). Your JSON file still downloaded — please send that file to the researcher.";
     btn.disabled = false;
   }
 }
 
+document.getElementById("consentCheck").addEventListener("change", (e) => {
+  document.getElementById("consentBtn").disabled = !e.target.checked;
+});
+document.getElementById("consentBtn").onclick = () => {
+  if (!document.getElementById("consentCheck").checked) return;
+  rater.consentedAt = new Date().toISOString();
+  saveLocal();
+  show("welcome");
+};
+document.getElementById("backConsent").onclick = () => show("consent");
 document.getElementById("idForm").addEventListener("submit", (e) => {
   e.preventDefault();
   rater.firstName = document.getElementById("firstName").value.trim();
   rater.lastName = document.getElementById("lastName").value.trim();
   rater.email = document.getElementById("email").value.trim();
   if (!rater.firstName || !rater.lastName) return;
+  if (!rater.consentedAt) rater.consentedAt = new Date().toISOString();
+  state.started = Date.now();
   saveLocal();
   show("label");
   render();
@@ -462,6 +568,10 @@ document.getElementById("backBtn").onclick = back;
 document.getElementById("submitBtn").onclick = submitForm;
 document.getElementById("dlBtn").onclick = downloadBackup;
 document.getElementById("dlBtn2").onclick = downloadBackup;
+document.getElementById("editBtn").onclick = () => {
+  if (state.qi >= PACK.length) { state.qi = PACK.length - 1; state.ji = PACK[state.qi].jobs.length - 1; }
+  show("label"); render();
+};
 document.getElementById("unclear").onchange = () => {
   if (answers[keyNow()]) { answers[keyNow()].unclear = document.getElementById("unclear").checked; saveLocal(); }
 };
@@ -479,13 +589,17 @@ document.addEventListener("keydown", (e) => {
 });
 
 loadLocal();
+if (rater.consentedAt) document.getElementById("consentCheck").checked = true;
 if (rater.firstName) {
   document.getElementById("firstName").value = rater.firstName;
   document.getElementById("lastName").value = rater.lastName;
   document.getElementById("email").value = rater.email || "";
+  document.getElementById("consentBtn").disabled = !document.getElementById("consentCheck").checked;
   if (answeredCount() > 0 || state.qi > 0 || state.ji > 0) {
     show("label");
     render();
+  } else if (rater.consentedAt) {
+    show("welcome");
   }
 }
 </script>
