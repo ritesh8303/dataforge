@@ -1,0 +1,117 @@
+{
+  "started": "2026-10-25T15:57:09.651564+00:00",
+  "short_before": 28,
+  "filled": 13,
+  "still_short": 15,
+  "methods": {
+    "ashby:lovable:bd6cb2a8-85c4-4650-94a6-94bf780713e8": 1,
+    "ashby:datafold:5b68673e-e56b-429e-918c-4fa652f668ca": 1,
+    "greenhouse:fivetran:7785672003": 1,
+    "greenhouse:elastic:8129741": 1,
+    "ashby:clickhouse:99ec4a62-ec22-484e-ac1d-d291ad892114": 1,
+    "greenhouse:mongodb:7588895": 1,
+    "greenhouse:mongodb:8241351": 1,
+    "ashby:shieldai:1525b443-b19b-4394-b090-aa3404379e52": 1,
+    "greenhouse:hellofresh:8226101": 1,
+    "greenhouse:fivetran:7659463003": 1,
+    "greenhouse:elastic:8131025": 1,
+    "ashby:clickhouse:54bbf446-8b59-419d-b52e-035ed06fa645": 1,
+    "greenhouse:hellofresh:8002501": 1
+  },
+  "failures": [
+    {
+      "job_id": "sem_merck-kgaa_software-engineer-all-genders-full-part-time-informatiker-in_de-de716",
+      "status": "unresolved",
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTI2NDktMTYyMzI5Mi0xLVMgMQ?jvDisplayLanguage=de&lang=de",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_mayer-beschl-ge_teamleitung-data-analytics_at-at323",
+      "status": "unresolved",
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTczMTIzNDIgNDM?jvDisplayLanguage=de&lang=de",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_itech-consult_associate-oligonucleotides-analytics_ch-ch031",
+      "status": "unresolved",
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/YzZmMjU5MDctZTliYy00ZTc5LThjNGEtYTAxNTVmN2Y3Yzk0IDYx?jvDisplayLanguage=en&lang=en",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_delivery-hero_senior-machine-learning-engineer-logistics-optimization-machine-learning-engineer_de",
+      "status": "unresolved",
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MjAzOTAtOTY1NzcyNzAyLVMgMQ?jvDisplayLanguage=de&lang=de",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_siehe-beschreibung_fullstack-entwickler-in-c-und-php_at-at221",
+      "status": "unresolved",
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTczNTgwMDYgNDM?jvDisplayLanguage=de&lang=de",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_migros-bank_ai-plattformengineer_ch-ch040",
+      "status": "unresolved",
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MGM0YTk1YmYtYTI5ZC00OTVhLTk1OWQtNDdkN2YyYzEwZGQyIDYx?jvDisplayLanguage=en&lang=en",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_itech-consult_product-safety-specialist_ch-ch031",
+      "status": "unresolved",
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/NmI5N2FlOTUtMGU4My00Y2JhLTg1NjgtY2E0OWUwY2Y5Y2M4IDYx?jvDisplayLanguage=en&lang=en",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_collective-work_ing-nieur-mlops-confirm-banque-freelance-h-f_fr-fr105",
+      "status": "unresolved",
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/ODAwOTEwNiA5?jvDisplayLanguage=fr&lang=fr",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_hellofresh_mechatroniker-instandhaltung-all-genders_verden-niedersachsen-germany",
+      "status": "unresolved",
+      "url": "https://careers.hellofresh.com/global/en/job/8068945?gh_jid=8068945",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_certara_business-development-representative_worldwide-remote",
+      "status": "unresolved",
+      "url": "https://himalayas.app/companies/certara/jobs/business-development-representative-4832647061?utm_source=api",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote",
+      "status": "unresolved",
+      "url": "https://himalayas.app/companies/highmark-health/jobs/summer-2027-evaluation-analytics-graduate-intern?utm_source=api",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_werhahn-nauen-ohg-vertreten-durch-basalt-actien-gesellschaft_data-ai-lead-informatiker-in_de-deb18-de300",
+      "status": "unresolved",
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTQyNjAtMDAwNDUzMDNhYmEwMDEtUyAx?jvDisplayLanguage=de&lang=de",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_headquarters_finance-accounting-associate_worldwide-remote",
+      "status": "unresolved",
+      "url": "https://himalayas.app/companies/headquarters/jobs/finance-accounting-associate?utm_source=api",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_sandoz_qc-analyst-ii-d-w-m_at-at335",
+      "status": "unresolved",
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTczNjM3NzkgNDM?jvDisplayLanguage=de&lang=de",
+      "chars": 300
+    },
+    {
+      "job_id": "sem_bechtle-suisse-sa_solution-architect-virtualisation-stockage-cloud-80-100_ch-ch011",
+      "status": "unresolved",
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MmM3MzA0OTUtZGE4Yi00MTVhLWFiYmQtYzRlMDJmZjU5N2Y0IDYx?jvDisplayLanguage=en&lang=en",
+      "chars": 300
+    }
+  ],
+  "short_after": 15,
+  "avg_chars": 5996.0,
+  "max_chars": 18368,
+  "finished": "2026-10-25T15:57:32.239140+00:00"
+}
