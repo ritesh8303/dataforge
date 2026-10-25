@@ -85,7 +85,7 @@ cols = [
 ]
 all_jobs = current[cols].copy()
 if "description" in all_jobs.columns:
-    all_jobs["description"] = all_jobs["description"].fillna("").astype(str).str.slice(0, 4000)
+    all_jobs["description"] = all_jobs["description"].fillna("").astype(str).str.slice(0, 50000)
 all_jobs["date_added"] = pd.to_datetime(all_jobs["scd_start_date"]).dt.date.astype(str)
 all_jobs.drop(columns=["scd_start_date"], inplace=True)
 all_jobs.rename(columns={"url": "job_url", "remote": "is_remote"}, inplace=True)

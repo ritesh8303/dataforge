@@ -372,8 +372,8 @@ def lambda_handler(event, context):
         ]
         all_jobs = current[cols].copy()
         if "description" in all_jobs.columns:
-            # Keep role/requirements text for classification, matching, and second-rater labeling.
-            all_jobs["description"] = all_jobs["description"].fillna("").astype(str).str.slice(0, 4000)
+            # Keep full role/requirements text (soft cap only for pathological blobs).
+            all_jobs["description"] = all_jobs["description"].fillna("").astype(str).str.slice(0, 50000)
         all_jobs["date_added"] = pd.to_datetime(all_jobs["scd_start_date"]).dt.date.astype(str)
         all_jobs.drop(columns=["scd_start_date"], inplace=True)
         all_jobs.rename(columns={"url": "job_url", "remote": "is_remote"}, inplace=True)
@@ -508,9 +508,8 @@ def lambda_handler(event, context):
         # Match/dashboard product KPIs keep using audience_accept=True rows.
         all_jobs = pd.DataFrame(enriched_all)
         if "description" in all_jobs.columns:
-            # Board/API must keep role requirements, not only the company intro
-            # (300 chars was cutting most ATS posts before responsibilities).
-            all_jobs["description"] = all_jobs["description"].fillna("").astype(str).str.slice(0, 4000)
+            # Board/API must keep full role requirements (old 300/4000 caps cut JDs).
+            all_jobs["description"] = all_jobs["description"].fillna("").astype(str).str.slice(0, 50000)
         for col in (
             "ai_field",
             "ai_seniority",

@@ -1,89 +1,175 @@
 {
-  "started": "2026-10-24T20:16:15.733127+00:00",
+  "started": "2026-10-25T15:37:40.527536+00:00",
   "n": 120,
-  "ok": 94,
-  "kept_short": 11,
-  "failed": 15,
-  "longer": 94,
+  "refreshed": 40,
+  "skipped_ok": 54,
+  "failed": 26,
   "failures": [
     {
       "job_id": "sem_merck-kgaa_software-engineer-all-genders-full-part-time-informatiker-in_de-de716",
       "status": "err_URLError",
-      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTI2NDktMTYyMzI5Mi0xLVMgMQ?jvDisplayLanguage=de&lang=de"
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTI2NDktMTYyMzI5Mi0xLVMgMQ?jvDisplayLanguage=de&lang=de",
+      "got": 0
+    },
+    {
+      "job_id": "sem_lovable_growth-engineer_london",
+      "status": "thin_ok",
+      "url": "https://jobs.ashbyhq.com/lovable/bd6cb2a8-85c4-4650-94a6-94bf780713e8",
+      "got": 0
+    },
+    {
+      "job_id": "sem_datafold_forward-deployed-data-engineer-eu_europe",
+      "status": "thin_ok",
+      "url": "https://jobs.ashbyhq.com/datafold/5b68673e-e56b-429e-918c-4fa652f668ca",
+      "got": 0
     },
     {
       "job_id": "sem_mayer-beschl-ge_teamleitung-data-analytics_at-at323",
       "status": "err_URLError",
-      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTczMTIzNDIgNDM?jvDisplayLanguage=de&lang=de"
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTczMTIzNDIgNDM?jvDisplayLanguage=de&lang=de",
+      "got": 0
     },
     {
       "job_id": "sem_itech-consult_associate-oligonucleotides-analytics_ch-ch031",
       "status": "err_URLError",
-      "url": "https://europa.eu/eures/portal/jv-se/jv-details/YzZmMjU5MDctZTliYy00ZTc5LThjNGEtYTAxNTVmN2Y3Yzk0IDYx?jvDisplayLanguage=en&lang=en"
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/YzZmMjU5MDctZTliYy00ZTc5LThjNGEtYTAxNTVmN2Y3Yzk0IDYx?jvDisplayLanguage=en&lang=en",
+      "got": 0
     },
     {
       "job_id": "sem_delivery-hero_senior-machine-learning-engineer-logistics-optimization-machine-learning-engineer_de",
       "status": "err_URLError",
-      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MjAzOTAtOTY1NzcyNzAyLVMgMQ?jvDisplayLanguage=de&lang=de"
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MjAzOTAtOTY1NzcyNzAyLVMgMQ?jvDisplayLanguage=de&lang=de",
+      "got": 0
     },
     {
       "job_id": "sem_siehe-beschreibung_fullstack-entwickler-in-c-und-php_at-at221",
       "status": "err_URLError",
-      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTczNTgwMDYgNDM?jvDisplayLanguage=de&lang=de"
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTczNTgwMDYgNDM?jvDisplayLanguage=de&lang=de",
+      "got": 0
     },
     {
       "job_id": "sem_migros-bank_ai-plattformengineer_ch-ch040",
       "status": "err_URLError",
-      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MGM0YTk1YmYtYTI5ZC00OTVhLTk1OWQtNDdkN2YyYzEwZGQyIDYx?jvDisplayLanguage=en&lang=en"
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MGM0YTk1YmYtYTI5ZC00OTVhLTk1OWQtNDdkN2YyYzEwZGQyIDYx?jvDisplayLanguage=en&lang=en",
+      "got": 0
+    },
+    {
+      "job_id": "sem_fivetran_senior-sales-engineer-enterprise-german-speaking_remote-ireland-emea",
+      "status": "thin_ok",
+      "url": "https://www.fivetran.com/careers/job?gh_jid=7785672003",
+      "got": 132
     },
     {
       "job_id": "sem_itech-consult_product-safety-specialist_ch-ch031",
       "status": "err_URLError",
-      "url": "https://europa.eu/eures/portal/jv-se/jv-details/NmI5N2FlOTUtMGU4My00Y2JhLTg1NjgtY2E0OWUwY2Y5Y2M4IDYx?jvDisplayLanguage=en&lang=en"
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/NmI5N2FlOTUtMGU4My00Y2JhLTg1NjgtY2E0OWUwY2Y5Y2M4IDYx?jvDisplayLanguage=en&lang=en",
+      "got": 0
     },
     {
       "job_id": "sem_collective-work_ing-nieur-mlops-confirm-banque-freelance-h-f_fr-fr105",
       "status": "err_URLError",
-      "url": "https://europa.eu/eures/portal/jv-se/jv-details/ODAwOTEwNiA5?jvDisplayLanguage=fr&lang=fr"
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/ODAwOTEwNiA5?jvDisplayLanguage=fr&lang=fr",
+      "got": 0
+    },
+    {
+      "job_id": "sem_elastic_sales-development-representative-african-region-english-speaking_barcelona-spain",
+      "status": "thin_ok",
+      "url": "https://jobs.elastic.co/jobs?gh_jid=8129741&gh_jid=8129741",
+      "got": 0
     },
     {
       "job_id": "sem_hellofresh_mechatroniker-instandhaltung-all-genders_verden-niedersachsen-germany",
       "status": "http_410",
-      "url": "https://careers.hellofresh.com/global/en/job/8068945?gh_jid=8068945"
+      "url": "https://careers.hellofresh.com/global/en/job/8068945?gh_jid=8068945",
+      "got": 0
+    },
+    {
+      "job_id": "sem_clickhouse_senior-software-engineer-cloud-infrastructure-emea-remote_the-netherlands",
+      "status": "thin_ok",
+      "url": "https://jobs.ashbyhq.com/clickhouse/99ec4a62-ec22-484e-ac1d-d291ad892114",
+      "got": 0
     },
     {
       "job_id": "sem_certara_business-development-representative_worldwide-remote",
       "status": "http_403",
-      "url": "https://himalayas.app/companies/certara/jobs/business-development-representative-4832647061?utm_source=api"
+      "url": "https://himalayas.app/companies/certara/jobs/business-development-representative-4832647061?utm_source=api",
+      "got": 0
+    },
+    {
+      "job_id": "sem_mongodb_senior-software-engineer-atlas-clusters_dublin",
+      "status": "thin_ok",
+      "url": "https://www.mongodb.com/careers/job/?gh_jid=7588895",
+      "got": 0
+    },
+    {
+      "job_id": "sem_mongodb_senior-software-engineer-product-security_cork-ireland-dublin-ireland-ireland",
+      "status": "thin_ok",
+      "url": "https://www.mongodb.com/careers/job/?gh_jid=8241351",
+      "got": 0
+    },
+    {
+      "job_id": "sem_shield-ai_ashby-senior-software-engineer-test_london-uk",
+      "status": "thin_ok",
+      "url": "https://jobs.ashbyhq.com/shieldai/1525b443-b19b-4394-b090-aa3404379e52",
+      "got": 0
     },
     {
       "job_id": "sem_highmark-health_summer-2027-evaluation-analytics-graduate-intern_worldwide-remote",
       "status": "http_403",
-      "url": "https://himalayas.app/companies/highmark-health/jobs/summer-2027-evaluation-analytics-graduate-intern?utm_source=api"
+      "url": "https://himalayas.app/companies/highmark-health/jobs/summer-2027-evaluation-analytics-graduate-intern?utm_source=api",
+      "got": 0
     },
     {
       "job_id": "sem_werhahn-nauen-ohg-vertreten-durch-basalt-actien-gesellschaft_data-ai-lead-informatiker-in_de-deb18-de300",
       "status": "err_URLError",
-      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTQyNjAtMDAwNDUzMDNhYmEwMDEtUyAx?jvDisplayLanguage=de&lang=de"
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTQyNjAtMDAwNDUzMDNhYmEwMDEtUyAx?jvDisplayLanguage=de&lang=de",
+      "got": 0
     },
     {
       "job_id": "sem_headquarters_finance-accounting-associate_worldwide-remote",
       "status": "http_403",
-      "url": "https://himalayas.app/companies/headquarters/jobs/finance-accounting-associate?utm_source=api"
+      "url": "https://himalayas.app/companies/headquarters/jobs/finance-accounting-associate?utm_source=api",
+      "got": 0
+    },
+    {
+      "job_id": "sem_fivetran_senior-account-executive-enterprise_remote-germany-emea",
+      "status": "thin_ok",
+      "url": "https://www.fivetran.com/careers/job?gh_jid=7659463003",
+      "got": 132
     },
     {
       "job_id": "sem_sandoz_qc-analyst-ii-d-w-m_at-at335",
       "status": "err_URLError",
-      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTczNjM3NzkgNDM?jvDisplayLanguage=de&lang=de"
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MTczNjM3NzkgNDM?jvDisplayLanguage=de&lang=de",
+      "got": 0
+    },
+    {
+      "job_id": "sem_elastic_senior-software-engineer-integrations-3p-platform_portugal",
+      "status": "thin_ok",
+      "url": "https://jobs.elastic.co/jobs?gh_jid=8131025&gh_jid=8131025",
+      "got": 0
+    },
+    {
+      "job_id": "sem_clickhouse_principal-database-performance-engineer-core-engineering-c_germany",
+      "status": "thin_ok",
+      "url": "https://jobs.ashbyhq.com/clickhouse/54bbf446-8b59-419d-b52e-035ed06fa645",
+      "got": 0
     },
     {
       "job_id": "sem_bechtle-suisse-sa_solution-architect-virtualisation-stockage-cloud-80-100_ch-ch011",
       "status": "err_URLError",
-      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MmM3MzA0OTUtZGE4Yi00MTVhLWFiYmQtYzRlMDJmZjU5N2Y0IDYx?jvDisplayLanguage=en&lang=en"
+      "url": "https://europa.eu/eures/portal/jv-se/jv-details/MmM3MzA0OTUtZGE4Yi00MTVhLWFiYmQtYzRlMDJmZjU5N2Y0IDYx?jvDisplayLanguage=en&lang=en",
+      "got": 0
     }
   ],
-  "length_before_avg": 300.0,
-  "length_after_avg": 2840.9,
-  "finished": "2026-10-24T20:18:00.754120+00:00",
-  "max_after": 4000
+  "length_before_avg": 4951.1,
+  "length_after_avg": 5346.4,
+  "max_after": 18368,
+  "ge_8k": 23,
+  "sources": {
+    "job_url_backfill": 47,
+    "ats_api_backfill": 46
+  },
+  "exactly_4000": 0,
+  "finished": "2026-10-25T15:39:39.688821+00:00"
 }
