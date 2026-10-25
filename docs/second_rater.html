@@ -449,7 +449,7 @@ function downloadBackup() {
   const a = document.createElement("a");
   const safe = (rater.lastName || rater.firstName || "rater").replace(/[^a-z0-9_-]/gi, "_");
   a.href = URL.createObjectURL(blob);
-  a.download = `second_rater_${PROTOCOL.id}_{safe}.json`;
+  a.download = `second_rater_${PROTOCOL.id}_${safe}.json`;
   a.click();
 }
 
