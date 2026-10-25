@@ -10,7 +10,15 @@ models:
           - unique
           - accepted_values:
               arguments:
-                values: ["ba_api", "direct", "eures", "arbeitnow", "berlin_startups"]
+                values:
+                  - ba_api
+                  - direct
+                  - eures
+                  - arbeitnow
+                  - berlin_startups
+                  - remotive
+                  - himalayas
+                  - jobicy
       - name: job_count
         tests:
           - not_null

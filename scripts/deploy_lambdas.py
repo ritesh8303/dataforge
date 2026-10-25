@@ -36,6 +36,12 @@ LAMBDA_CONFIG = {
 }
 
 ENV_PATCH = {
+    "dataforge-gold-generator": {
+        # Prevent Gold 900s timeouts when OpenAI 429s (Oct 2026 outage).
+        "AUDIENCE_AI_MAX": "0",
+        "INGEST_REVIEW_USE_LLM": "false",
+        "INGEST_REVIEW_MAX_LLM": "0",
+    },
     "dataforge-enrichment": {
         "INDEX_BUILD_LIMIT": "2500",
         "ENRICHMENT_MAX_LLM": "800",
@@ -87,15 +93,23 @@ def main():
             print(f"  WARN {fn} concurrency not set ({exc}); S3 lock in transformer is the fallback")
 
     for fn, cfg in LAMBDA_CONFIG.items():
-        lc.update_function_configuration(FunctionName=fn, **cfg)
-        print(f"  OK {fn} config -> {cfg}")
+        try:
+            lc.get_waiter("function_updated").wait(FunctionName=fn, WaiterConfig={"Delay": 2, "MaxAttempts": 30})
+            lc.update_function_configuration(FunctionName=fn, **cfg)
+            print(f"  OK {fn} config -> {cfg}")
+        except Exception as exc:
+            print(f"  WARN {fn} config: {exc}")
 
     for fn, patch in ENV_PATCH.items():
-        cur = lc.get_function_configuration(FunctionName=fn)
-        env = dict((cur.get("Environment") or {}).get("Variables") or {})
-        env.update(patch)
-        lc.update_function_configuration(FunctionName=fn, Environment={"Variables": env})
-        print(f"  OK {fn} env patch -> {sorted(patch)}")
+        try:
+            lc.get_waiter("function_updated").wait(FunctionName=fn, WaiterConfig={"Delay": 2, "MaxAttempts": 30})
+            cur = lc.get_function_configuration(FunctionName=fn)
+            env = dict((cur.get("Environment") or {}).get("Variables") or {})
+            env.update(patch)
+            lc.update_function_configuration(FunctionName=fn, Environment={"Variables": env})
+            print(f"  OK {fn} env patch -> {sorted(patch)}")
+        except Exception as exc:
+            print(f"  WARN {fn} env patch: {exc}")
 
     try:
         lc.update_function_url_config(

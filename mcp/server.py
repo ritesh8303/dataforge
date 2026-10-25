@@ -7,8 +7,9 @@ Tools:
   - match_resume
 
 Env:
-  DATAFORGE_API_BASE  — e.g. http://127.0.0.1:8001 or Function URL
-  DATAFORGE_API_KEY   — optional X-API-Key
+  DATAFORGE_API_BASE       — Match Function URL (auth for /match)
+  DATAFORGE_JOBS_API_BASE  — public Jobs API (no key; preferred for search/get)
+  DATAFORGE_API_KEY        — optional X-API-Key for Match
 """
 
 from __future__ import annotations
@@ -22,7 +23,14 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-BASE = os.environ.get("DATAFORGE_API_BASE", "http://127.0.0.1:8001").rstrip("/")
+MATCH_BASE = os.environ.get("DATAFORGE_API_BASE", "http://127.0.0.1:8001").rstrip("/")
+JOBS_BASE = os.environ.get(
+    "DATAFORGE_JOBS_API_BASE",
+    os.environ.get(
+        "DATAFORGE_JOBS_API",
+        "https://br1sodhn2e.execute-api.eu-central-1.amazonaws.com",
+    ),
+).rstrip("/")
 
 
 def _load_api_key() -> str:
@@ -43,13 +51,21 @@ def _load_api_key() -> str:
 API_KEY = _load_api_key()
 
 
-def _request(method: str, path: str, body: dict | None = None, query: dict | None = None) -> Any:
-    url = f"{BASE}{path}"
+def _request(
+    method: str,
+    path: str,
+    *,
+    base: str,
+    body: dict | None = None,
+    query: dict | None = None,
+    auth: bool = False,
+) -> Any:
+    url = f"{base}{path}"
     if query:
         url += "?" + urlencode({k: v for k, v in query.items() if v is not None and v != ""})
     data = None
     headers = {"Accept": "application/json", "User-Agent": "dataforge-mcp/0.1"}
-    if API_KEY:
+    if auth and API_KEY:
         headers["X-API-Key"] = API_KEY
     if body is not None:
         data = json.dumps(body).encode("utf-8")
@@ -66,11 +82,18 @@ def _request(method: str, path: str, body: dict | None = None, query: dict | Non
 
 
 def tool_search_jobs(query: str = "", limit: int = 20) -> dict:
-    return _request("GET", "/jobs", query={"search": query, "limit": limit, "tech_only": "true"})
+    # Public Jobs API (root) — no API key required.
+    return _request(
+        "GET",
+        "/",
+        base=JOBS_BASE,
+        query={"search": query, "limit": limit},
+        auth=False,
+    )
 
 
 def tool_get_job(job_id: str) -> dict:
-    payload = _request("GET", "/jobs", query={"limit": 500})
+    payload = _request("GET", "/", base=JOBS_BASE, query={"limit": 500}, auth=False)
     for job in payload.get("jobs") or []:
         if str(job.get("job_id")) == job_id:
             return job
@@ -88,6 +111,7 @@ def tool_match_resume(
     return _request(
         "POST",
         "/match",
+        base=MATCH_BASE,
         body={
             "resume": resume,
             "dream_role": dream_role,
@@ -97,6 +121,7 @@ def tool_match_resume(
             "limit": limit,
             "tech_only": True,
         },
+        auth=True,
     )
 
 

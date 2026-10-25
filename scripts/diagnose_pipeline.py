@@ -6,8 +6,8 @@ import boto3
 
 s3 = boto3.client("s3", region_name="eu-central-1")
 logs = boto3.client("logs", region_name="eu-central-1")
-bronze = "dataforge-bronze-dev-eu-central-1"
-gold = "dataforge-gold-dev-eu-central-1"
+bronze = "dataforge-bronze-dev-366945363779"
+gold = "dataforge-gold-dev-366945363779"
 
 sources = ["arbeitnow", "ba_api", "company_careers", "berlin_startups", "eures"]
 
@@ -76,7 +76,7 @@ for fn in lambdas:
 print("\n=== Silver partition inspection ===")
 import awswrangler as wr
 
-silver = "s3://dataforge-silver-dev-eu-central-1/cleaned/jobs_history.parquet/"
+silver = "s3://dataforge-silver-dev-366945363779/cleaned/jobs_history.parquet/"
 for part in ["is_current=True/", "is_current=False/"]:
     path = silver + part
     objs = wr.s3.list_objects(path=path) or []
