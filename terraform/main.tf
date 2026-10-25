@@ -239,8 +239,8 @@ module "gold_lambda" {
   timeout          = 900
   layers           = ["arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python311:12"]
   env_vars = {
-    SILVER_PATH             = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
-    GOLD_BUCKET             = module.s3_gold.bucket_id
+    SILVER_PATH = "s3://${module.s3_silver.bucket_id}/cleaned/jobs_history.parquet/"
+    GOLD_BUCKET = module.s3_gold.bucket_id
     # Gold must stay under 900s: use prior enrichment CSV + rules. Live LLM = enrichment Lambda.
     AI_ENABLED              = "true"
     AUDIENCE_AI_MAX         = "0"
