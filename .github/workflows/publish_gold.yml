@@ -58,3 +58,29 @@ jobs:
           git add data/gold/ docs/metrics.json docs/jobs/ docs/sitemap.xml docs/robots.txt
           git diff --staged --quiet || git commit -m "chore: refresh gold data $(date -u +%Y-%m-%d)"
           git push origin main
+
+  # GITHUB_TOKEN pushes do not trigger other workflows, so Pages never
+  # redeployed after gold refresh. Deploy in the same run permanently.
+  deploy-pages:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/configure-pages@v4
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
