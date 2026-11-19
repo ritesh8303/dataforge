@@ -1,21 +1,21 @@
 ﻿skill,job_count
-Databricks,68
+Databricks,66
 Machine Learning,60
-OpenAI,23
+OpenAI,24
+AWS,16
 Azure,15
-Go,13
 Grafana,12
-AWS,11
-LLM,9
+Go,11
 SQL,8
 Generative AI,8
 Power BI,8
+Kubernetes,8
 Python,7
+LLM,7
 RAG,6
-Java,5
+Java,6
 dbt,5
 LangChain,5
-GCP,4
 Deep Learning,3
-Kubernetes,3
+GCP,3
 Computer Vision,2
